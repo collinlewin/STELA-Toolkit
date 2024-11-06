@@ -1,8 +1,0 @@
-LICENSE
-README.md
-setup.py
-tsi_toolkit/__init__.py
-tsi_toolkit.egg-info/PKG-INFO
-tsi_toolkit.egg-info/SOURCES.txt
-tsi_toolkit.egg-info/dependency_links.txt
-tsi_toolkit.egg-info/top_level.txt
