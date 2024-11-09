@@ -38,7 +38,10 @@ class TimeSeries:
                     "[time_column, rate_column, optional error_column]."
                 )
 
-            self._load_file(file_path, file_columns)
+            file_data = self.load_file(file_path, file_columns)
+            self.times = file_data[0]
+            self.rates = file_data[1]
+            self.errors = file_data[2]
 
         elif times and rates:
             self.times = np.array(times)
@@ -49,6 +52,9 @@ class TimeSeries:
             raise ValueError(
                 "Please provide time and rate arrays or a file path."
             )
+        
+        self.mean = np.mean(self.rates)
+        self.std = np.std(self.rates)
         
         if plot:
             self.plot()
@@ -83,28 +89,30 @@ class TimeSeries:
                 raise ValueError(f"HDU {hdu} does not exist in the FITS file.")
 
             try:
-                self.times = np.array(
+                times = np.array(
                     data.field(time_column) if isinstance(time_column, int)
                     else data[time_column]
                 )
 
-                self.rates = np.array(
+                rates = np.array(
                     data.field(rate_column) if isinstance(rate_column, int)
                     else data[rate_column]
                 )
 
                 if error_column:
-                    self.errors = np.array(
+                    errors = np.array(
                         data.field(error_column) if isinstance(error_column, int)
                         else data[error_column]
                     )
                 else:
-                    self.errors = None
+                    errors = None
 
             except KeyError:
                 raise ValueError(
                     "Specified column/s not found in the FITS file."
                 )
+            
+        return times, rates, errors
 
     def load_text_file(self, file_path, file_columns, delimiter=None):
         """Loads data from a CSV or DAT file."""
@@ -152,8 +160,6 @@ class TimeSeries:
 
     def standardize(self):
         """Standardizes the time series data."""
-        self.mean = np.mean(self.rates)
-        self.std = np.std(self.rates)
         self.rates = (self.rates - self.mean) / self.std
 
         if self.errors:
