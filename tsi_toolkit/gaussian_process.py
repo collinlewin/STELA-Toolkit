@@ -6,7 +6,8 @@ from .data_loader import TimeSeries
 
 # to do: consider noise prior
 class GaussianProcess(gpytorch.models.ExactGP):
-    def __init__(self, timeseries=None, train_t=[], train_y=[], train_e=[], kernel_form='auto', white_noise=True, run_training=True, train_iter=1000, learn_rate=0.01, verbose=True):
+    def __init__(self, timeseries=None, train_t=[], train_y=[], train_e=[], kernel_form='auto', white_noise=True, run_training=True, 
+                 train_iter=1000, learn_rate=0.01, sample_time_grid=[], num_samples=1000, verbose=True):
 
         if timeseries:
             if isinstance(timeseries, TimeSeries):
@@ -49,8 +50,11 @@ class GaussianProcess(gpytorch.models.ExactGP):
                 self.train(train_iter, learn_rate, verbose)
 
             # Calculate marginal log likelihood, BIC, and optimal hyperparameters
-            train_pred = self.model(self.train_t)
- 
+        if sample_time_grid:
+            self.samples = self.sample(sample_time_grid, num_samples)
+            if verbose:
+                print(f"Samples generated: {self.samples.shape}, access with 'samples' attribute.")
+
     def create_gp_model(train_t, train_y, likelihood, kernel):
 
         class GPModel(gpytorch.models.ExactGP):
@@ -196,6 +200,9 @@ class GaussianProcess(gpytorch.models.ExactGP):
 
             optimizer.step()
 
+        if verbose:
+            print(f"Training complete. Final loss: {loss.item()}. Final hyperparameters: {self.get_hyperparameters()}")
+
     def get_hyperparameters(self):
         hypers = self.model.covar_module.base_kernel.hypers
         if self.white_noise:
@@ -235,3 +242,12 @@ class GaussianProcess(gpytorch.models.ExactGP):
             samples = pred_dist.sample(sample_shape=torch.Size([num_samples]))
 
         return samples
+
+    def save_model(self, path):
+        torch.save(self.model.state_dict(), path)
+
+    def load_model(self, path):
+        self.model.load_state_dict(torch.load(path))
+        self.model.eval()
+        self.likelihood.eval()
+        print(f"Model loaded from {path}.")

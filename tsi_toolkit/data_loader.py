@@ -10,7 +10,7 @@ class TimeSeries:
                  errors=[],
                  file_path=None,
                  file_columns=[0,1,2],
-                 plot=True
+                 plot_data=False
                  ):
         # to do: implement snipping, use of the lower functions from arguments
         # need data cleaning somewhere: standardize, nan, trimming, etc.
@@ -38,7 +38,7 @@ class TimeSeries:
                     "[time_column, rate_column, optional error_column]."
                 )
 
-            file_data = self.load_file(file_path, file_columns)
+            file_data = self.load_file(file_path, file_columns=file_columns)
             self.times = file_data[0]
             self.rates = file_data[1]
             self.errors = file_data[2]
@@ -56,10 +56,10 @@ class TimeSeries:
         self.mean = np.mean(self.rates)
         self.std = np.std(self.rates)
         
-        if plot:
+        if plot_data:
             self.plot()
 
-    def load_file(self, file_path, file_columns):
+    def load_file(self, file_path, file_columns=[0,1,2]):
         """
         Loads data from a file and sets the times, rates, and errors.
         Supports .fits and text-based files.
@@ -67,17 +67,19 @@ class TimeSeries:
         file_extension = file_path.split('.')[-1].lower()
 
         if file_extension == 'fits':
-            self._load_fits(file_path, file_columns)
+            times, rates, errors = self.load_fits(file_path, file_columns)
 
         else:
             try:
-                self._load_text_file(file_path, file_columns)
+                times, rates, errors = self.load_text_file(file_path, file_columns)
             except Exception as e:
-                print(f"Failed to read the file '{file_path}' with _load_text_file.")
-                print(f"Error message: {e}")
-                
-            
-    def load_fits(self, file_path, file_columns, hdu=1):
+                raise RuntimeError(
+                    f"Failed to read the file '{file_path}' with load_text_file. Error message: {e}"
+                    )
+
+        return times, rates, errors
+    
+    def load_fits(self, file_path, file_columns=[0,1,2], hdu=1):
         """Loads data from a FITS file."""
         time_column, rate_column = file_columns[0], file_columns[1]
         error_column = file_columns[2] if len(file_columns) == 3 else None
@@ -114,62 +116,57 @@ class TimeSeries:
             
         return times, rates, errors
 
-    def load_text_file(self, file_path, file_columns, delimiter=None):
-        """Loads data from a CSV or DAT file."""
+    def load_text_file(self, file_path, file_columns=[0,1,2], delimiter=None):
         time_column, rate_column = file_columns[0], file_columns[1]
         error_column = file_columns[2] if len(file_columns) == 3 else None
-
-        # Check if the file has a header by inspecting the first line
-        try:
-            with open(file_path, 'r') as file:
-                first_line = file.readline()
-                has_header = not first_line.strip().replace('.', '').isdigit()
-
-        except FileNotFoundError:
-            raise ValueError(f"File {file_path} not found.")
 
         # Load data, assuming delimiter based on file extension if unspecified
         if delimiter is None:
             delimiter = ',' if file_path.endswith('.csv') else None
 
-        data = np.genfromtxt(
-            file_path,
-            delimiter=delimiter,
-            names=has_header
-        )
+        try:
+            data = np.genfromtxt(
+                file_path,
+                delimiter=delimiter,
+            )
+
+        except Exception as e:
+            raise(f"Failed to read the file '{file_path}' with np.genfromtxt.")
 
         # Retrieve file_columns by name or index directly, simplifying access
-        self.times = np.array(
+        times = np.array(
             data[time_column] if isinstance(time_column, str)
             else data[:, time_column]
         ).astype(float)
 
-        self.rates = np.array(
+        rates = np.array(
             data[rate_column] if isinstance(rate_column, str)
             else data[:, rate_column]
         ).astype(float)
 
         if error_column:
-            self.errors = np.array(
+            errors = np.array(
                 data[error_column] if isinstance(error_column, str)
                 else data[:, error_column]
             ).astype(float)
 
         else:
-            self.errors = None
+            errors = None
+
+        return times, rates, errors
 
     def standardize(self):
         """Standardizes the time series data."""
         self.rates = (self.rates - self.mean) / self.std
 
-        if self.errors:
+        if self.errors is not None:
             self.errors = self.errors / self.std
 
     def unstandardize(self):
         """Unstandardizes the time series data."""
         self.rates = (self.rates * self.std) + self.mean
 
-        if self.errors:
+        if self.errors is not None:
             self.errors = self.errors * self.std
 
     def trim(self, start_time, end_time):
@@ -178,23 +175,21 @@ class TimeSeries:
         self.times = self.times[mask]
         self.rates = self.rates[mask]
 
-        if self.errors:
+        if self.errors is not None:
             self.errors = self.errors[mask]
 
     def plot(self):
         """Plots the time series with error bars if errors are provided."""
-        plt.figure(figsize=(10, 6))
+        plt.figure(figsize=(8, 4))
 
-        if self.errors:
-            plt.errorbar(self.times, self.rates, yerr=self.errors)
-
-        else:
+        if self.errors is None:
             plt.scatter(self.times, self.rates)
 
+        else:
+            plt.errorbar(self.times, self.rates, yerr=self.errors, fmt='o', color='black', ms=2, lw=1)
+            
         plt.xlabel("Time")
-        plt.ylabel("rates")
-        plt.title("Time Series")
-        plt.legend()
+        plt.ylabel("Rates")
         plt.show()
 
     def __add__(self, other_timeseries):
@@ -208,11 +203,11 @@ class TimeSeries:
             raise ValueError("Time arrays do not match.")
 
         new_rates = self.rates + other_timeseries.rates
-        if self.errors and other_timeseries.errors:
-            new_errors = np.sqrt(self.errors**2 + other_timeseries.errors**2)
+        if self.errors is None or other_timeseries.errors is None:
+            new_errors = None
 
         else:
-            new_errors = None
+            new_errors = np.sqrt(self.errors**2 + other_timeseries.errors**2)
 
         return TimeSeries(times=self.times,
                           rates=new_rates,
@@ -229,11 +224,11 @@ class TimeSeries:
             raise ValueError("Time arrays do not match.")
 
         new_rates = self.rates - other_timeseries.rates
-        if self.errors and other_timeseries.errors:
-            new_errors = np.sqrt(self.errors**2 + other_timeseries.errors**2)
+        if self.errors is None or other_timeseries.errors is None:
+            new_errors = None
 
         else:
-            new_errors = None
+            new_errors = np.sqrt(self.errors**2 + other_timeseries.errors**2)
 
         return TimeSeries(times=self.times,
                           rates=new_rates,
@@ -250,14 +245,14 @@ class TimeSeries:
             raise ValueError("Time arrays do not match.")
 
         new_rates = self.rates / other_timeseries.rates
-        if self.errors and other_timeseries.errors:
+        if self.errors is None or other_timeseries.errors is None:
+            new_errors = None
+
+        else:
             new_errors = np.sqrt(
                 (self.errors / self.rates) ** 2 +
                 (other_timeseries.errors / other_timeseries.rates) ** 2
             )
-
-        else:
-            new_errors = None
 
         return TimeSeries(times=self.times,
                           rates=new_rates,
