@@ -6,7 +6,7 @@ from .data_loader import TimeSeries
 
 # to do: consider noise prior
 class GaussianProcess(gpytorch.models.ExactGP):
-    def __init__(self, kernel_form, timeseries=None, train_t=[], train_y=[], train_e=[], white_noise=True, run_training=True, train_iter=100, learn_rate=0.1, verbose=False):
+    def __init__(self, timeseries=None, train_t=[], train_y=[], train_e=[], kernel_form='auto', white_noise=True, run_training=True, train_iter=1000, learn_rate=0.01, verbose=True):
 
         if timeseries:
             if isinstance(timeseries, TimeSeries):
@@ -29,44 +29,56 @@ class GaussianProcess(gpytorch.models.ExactGP):
         # Convert time series data to PyTorch tensors
         self.train_t = torch.tensor(self.timeseries.times)
         self.train_y = torch.tensor(self.timeseries.rates)
+        if self.timeseries.errors:
+            self.train_e = torch.tensor(self.timeseries.errors)
 
         # Set likelihood
-        self.likelihood = self.set_likelihood(white_noise)
+        self.likelihood = self.set_likelihood(white_noise, train_e=self.train_e)
 
-        # Inherit from ExactGP class
-        self.model = super(GaussianProcess, self).__init__(self.train_t, self.train_y, self.likelihood)
+        # Find best kernel based on AIC
+        if kernel_form in ['auto', 'advise me, please?'] or isinstance(kernel_form, list):
+            if isinstance(kernel_form, list):
+                kernel_list = kernel_form
+            else:
+                kernel_list = ['Matern12', 'Matern32', 'Matern52', 'RQ', 'RBF', 'SpectralMixture, 4']
+            self.model = self.find_best_kernel(kernel_list, train_iter, learn_rate, verbose)
 
-        # Set mean and covariance
-        self.mean_module = gpytorch.means.ZeroMean()
-        self.covar_module = self.set_kernel(kernel_form)
-
-        # Training
-        if run_training:
-            self.train(train_iter, learn_rate, verbose)
+        else:
+            self.model = self.create_gp_model(self.train_t, self.train_y, self.likelihood, kernel_form)
+            if run_training:
+                self.train(train_iter, learn_rate, verbose)
 
             # Calculate marginal log likelihood, BIC, and optimal hyperparameters
             train_pred = self.model(self.train_t)
-            marg_log_like = gpytorch.mlls.ExactMarginalLogLikelihood(self.likelihood, self.model)
-            self.opt_marg_log_like = marg_log_like(train_pred, self.train_y)
-            self.bic = self.bayesian_inf_crit(self.log_marg_like, self.model.num_params, len(self.train_t))
-            self.opt_hypers = self.model.covar_module.base_kernel.hypers
+ 
+    def create_gp_model(train_t, train_y, likelihood, kernel):
+
+        class GPModel(gpytorch.models.ExactGP):
+            def __init__(self, train_t, train_y, likelihood):
+                super(GPModel, self).__init__(train_t, train_y, likelihood)
+                self.mean_module = gpytorch.means.ZeroMean()
+                self.covar_module = self.set_kernel(kernel)
+
+            def forward(self, x):
+                mean_x = self.mean_module(x)
+                covar_x = self.covar_module(x)
+                return gpytorch.distributions.MultivariateNormal(mean_x, covar_x)
+
+        return GPModel(train_t, train_y, likelihood)
     
-    def set_likelihood(self, white_noise):
+    def set_likelihood(self, white_noise, train_e=None):
         
-        if self.timeseries.errors:
-            self.train_e = torch.tensor(self.timeseries.errors)
-            if white_noise:
-                likelihood = gpytorch.likelihoods.FixedNoiseGaussianLikelihood(
-                    noise=self.train_e ** 2, 
-                    learn_additional_noise=white_noise
-                )
+        if train_e:
+            likelihood = gpytorch.likelihoods.FixedNoiseGaussianLikelihood(
+                noise=self.train_e ** 2, 
+                learn_additional_noise=white_noise
+            )
 
         else:
-            if white_noise:
-                likelihood = gpytorch.likelihoods.FixedNoiseGaussianLikelihood(
-                        noise=1e-8,
-                        learn_additional_noise=white_noise
-                )
+            likelihood = gpytorch.likelihoods.FixedNoiseGaussianLikelihood(
+                    noise=1e-8,
+                    learn_additional_noise=white_noise
+            )
 
         return likelihood
 
@@ -124,13 +136,26 @@ class GaussianProcess(gpytorch.models.ExactGP):
         
         return covar_module
     
-    def forward(self, x):
-        mean_x = self.mean_module(x)
-        covar_x = self.covar_module(x)
-        return gpytorch.distributions.MultivariateNormal(mean_x, covar_x)
+    def find_best_kernel(self, kernel_list, train_iter, learn_rate, verbose=True):
+        aics = []
+        best_model = None
+        for kernel_form in kernel_list:
+            self.model = self.create_gp_model(self.train_t, self.train_y, self.likelihood, kernel_form)
+            self.model, aic, _ = self.train(train_iter, learn_rate, verbose)
+            aics.append(aic)
+            if aic <= min(aics):
+                best_model = self.model
+        
+        best_aic = min(aics)
+        best_kernel = kernel_list[aics.index(best_aic)]
+        if verbose:
+            print(f"Kernel AICs (lower is better): {for (k, a) in zip(kernel_list, aics)}")
+            print(f"Best kernel: {best_kernel} with AIC: {best_aic}")
+
+        return best_model
     
-    def train(self, train_iter, learn_rate, verbose=False):
-        self.model.train()
+    def train(self, model, train_iter, learn_rate, verbose=False):
+        model.train()
         self.likelihood.train()
 
         optimizer = torch.optim.Adam(self.model.parameters(), lr=learn_rate)
@@ -141,7 +166,7 @@ class GaussianProcess(gpytorch.models.ExactGP):
             optimizer.zero_grad()
 
             # Model output
-            output = self.model(self.train_t)
+            output = model(self.train_t)
 
             # Calc negative likelihood and backprop gradients
             loss = -mll(output, self.train_y)
@@ -151,32 +176,55 @@ class GaussianProcess(gpytorch.models.ExactGP):
                 if self.kernel_form == 'SpectralMixture':
                     print('Iter %d/%d - Loss: %.3f   mixture_lengthscales: %.3f   mixture_weights: %s' % (
                         i + 1, train_iter, loss.item(),
-                        self.model.covar_module.base_kernel.mixture_scales.item(),
-                        self.model.covar_module.base_kernel.mixture_weights.item()
+                        model.covar_module.base_kernel.mixture_scales.item(),
+                        model.covar_module.base_kernel.mixture_weights.item()
                     ))
 
                 else:
                     if self.white_noise:
                         print('Iter %d/%d - Loss: %.3f   lengthscale: %.3f   noise: %.3f' % (
                             i + 1, train_iter, loss.item(),
-                            self.model.covar_module.base_kernel.lengthscale.item(),
-                            self.model.likelihood.noise.item()
+                            model.covar_module.base_kernel.lengthscale.item(),
+                            model.likelihood.noise.item()
                         ))
                     
                     else:
                         print('Iter %d/%d - Loss: %.3f   lengthscale: %.3f' % (
                             i + 1, train_iter, loss.item(),
-                            self.model.covar_module.base_kernel.lengthscale.item()
+                            model.covar_module.base_kernel.lengthscale.item()
                         ))
 
             optimizer.step()
 
-    def bayesian_inf_crit(self, log_marg_like, num_params, num_data):
+    def get_hyperparameters(self):
+        hypers = self.model.covar_module.base_kernel.hypers
+        if self.white_noise:
+            hypers += [self.model.likelihood.second_noise.item()]
+
+        return hypers
+
+    def bayesian_inf_crit(self):
+        mll = gpytorch.mlls.ExactMarginalLogLikelihood(self.likelihood, self.model)
+        log_marg_like = mll(self.model(self.train_t), self.train_y)
+
+        # need to check if this includes the white noise hyperparameter!!
         num_params = sum([p.numel() for p in self.model.parameters()])
+        num_data = len(self.train_t)
+
         bic = -2 * log_marg_like + num_params * np.log(num_data)
         return bic
     
-    def predict(self, pred_times, num_samples):
+    def akaike_inf_crit(self, log_marg_like, num_params):
+        mll = gpytorch.mlls.ExactMarginalLogLikelihood(self.likelihood, self.model)
+        log_marg_like = mll(self.model(self.train_t), self.train_y)
+
+        # need to check if this includes the white noise hyperparameter!!
+        num_params = sum([p.numel() for p in self.model.parameters()])
+
+        aic = -2 * log_marg_like + 2 * num_params
+        return aic
+    
+    def sample(self, pred_times, num_samples):
         # Predictive posterior mode
         self.model.eval()
         self.likelihood.eval()
@@ -184,6 +232,6 @@ class GaussianProcess(gpytorch.models.ExactGP):
         # Make predictions
         with torch.no_grad(), gpytorch.settings.fast_pred_var():
             pred_dist = self.likelihood(self.model(pred_times))
-            samples = pred_dist.rsample(sample_shape=torch.Size([num_samples]))
+            samples = pred_dist.sample(sample_shape=torch.Size([num_samples]))
 
         return samples
