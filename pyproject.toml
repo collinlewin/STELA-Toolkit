@@ -1,0 +1,18 @@
+[project]
+name = "tsi-toolkit"
+version = "0.0.0"
+authors = [
+  { name="Collin Lewin", email="clewin@mit.edu" },
+]
+description = "In construction :)"
+readme = "README.md"
+requires-python = ">=3.8"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+
+[project.urls]
+Homepage = "https://github.com/collinlewin/tsi-toolkit"
+Issues = "https://github.com/collinlewin/tsi-toolkit/issues"
