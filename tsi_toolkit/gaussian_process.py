@@ -153,7 +153,7 @@ class GaussianProcess(gpytorch.models.ExactGP):
         best_aic = min(aics)
         best_kernel = kernel_list[aics.index(best_aic)]
         if verbose:
-            print(f"Kernel AICs (lower is better): {for (k, a) in zip(kernel_list, aics)}")
+            print(f"Kernel AICs (lower is better): {[f'{k}: {a}' for k, a in zip(kernel_list, aics)]}")
             print(f"Best kernel: {best_kernel} with AIC: {best_aic}")
 
         return best_model
