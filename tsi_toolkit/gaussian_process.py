@@ -6,7 +6,7 @@ from .data_loader import TimeSeries
 
 # to do: consider noise prior
 class GaussianProcess(gpytorch.models.ExactGP):
-    def __init__(self, timeseries=None, train_t=[], train_y=[], train_e=[], kernel_form='auto', white_noise=True, run_training=True, 
+    def __init__(self, timeseries=None, train_times=[], train_values=[], train_errors=[], kernel_form='auto', white_noise=True, run_training=True, 
                  train_iter=1000, learn_rate=0.01, sample_time_grid=[], num_samples=1000, verbose=True):
 
         if timeseries:
@@ -15,26 +15,26 @@ class GaussianProcess(gpytorch.models.ExactGP):
             else:
                 raise TypeError("Expected timeseries to be a TimeSeries object.")
         
-        elif train_t and train_y:
-            self.timeseries = TimeSeries(times=train_t, values=train_y, errors=train_e)
+        elif train_times and train_values:
+            self.timeseries = TimeSeries(times=train_times, values=train_values, errors=train_errors)
         
         else:
             raise ValueError(
                 "Please provide either a TimeSeries object as 'timeseries' "
-                "or arrays for 'train_t' and 'train_y' (and optionally 'train_e')."
+                "or arrays for 'train_times' and 'train_values' (and optionally 'train_errors')."
             )
     
         # Standardize the time series data to match zero mean function
         self.timeseries.standardize()
 
         # Convert time series data to PyTorch tensors
-        self.train_t = torch.tensor(self.timeseries.times)
-        self.train_y = torch.tensor(self.timeseries.rates)
+        self.train_times = torch.tensor(self.timeseries.times)
+        self.train_values = torch.tensor(self.timeseries.values)
         if self.timeseries.errors:
-            self.train_e = torch.tensor(self.timeseries.errors)
+            self.train_errors = torch.tensor(self.timeseries.errors)
 
         # Set likelihood
-        self.likelihood = self.set_likelihood(white_noise, train_e=self.train_e)
+        self.likelihood = self.set_likelihood(white_noise, train_errors=self.train_errors)
 
         # Find best kernel based on AIC
         if kernel_form in ['auto', 'advise me, please?'] or isinstance(kernel_form, list):
@@ -45,7 +45,7 @@ class GaussianProcess(gpytorch.models.ExactGP):
             self.model = self.find_best_kernel(kernel_list, train_iter, learn_rate, verbose)
 
         else:
-            self.model = self.create_gp_model(self.train_t, self.train_y, self.likelihood, kernel_form)
+            self.model = self.create_gp_model(self.train_times, self.train_values, self.likelihood, kernel_form)
             if run_training:
                 self.train(train_iter, learn_rate, verbose)
 
@@ -55,11 +55,11 @@ class GaussianProcess(gpytorch.models.ExactGP):
             if verbose:
                 print(f"Samples generated: {self.samples.shape}, access with 'samples' attribute.")
 
-    def create_gp_model(train_t, train_y, likelihood, kernel):
+    def create_gp_model(train_times, train_values, likelihood, kernel):
 
         class GPModel(gpytorch.models.ExactGP):
-            def __init__(self, train_t, train_y, likelihood):
-                super(GPModel, self).__init__(train_t, train_y, likelihood)
+            def __init__(self, train_times, train_values, likelihood):
+                super(GPModel, self).__init__(train_times, train_values, likelihood)
                 self.mean_module = gpytorch.means.ZeroMean()
                 self.covar_module = self.set_kernel(kernel)
 
@@ -68,13 +68,13 @@ class GaussianProcess(gpytorch.models.ExactGP):
                 covar_x = self.covar_module(x)
                 return gpytorch.distributions.MultivariateNormal(mean_x, covar_x)
 
-        return GPModel(train_t, train_y, likelihood)
+        return GPModel(train_times, train_values, likelihood)
     
-    def set_likelihood(self, white_noise, train_e=None):
+    def set_likelihood(self, white_noise, train_errors=None):
         
-        if train_e:
+        if train_errors:
             likelihood = gpytorch.likelihoods.FixedNoiseGaussianLikelihood(
-                noise=self.train_e ** 2, 
+                noise=self.train_errors ** 2, 
                 learn_additional_noise=white_noise
             )
 
@@ -131,7 +131,7 @@ class GaussianProcess(gpytorch.models.ExactGP):
         if kernel_type in kernel_mapping:
             kernel = kernel_mapping[kernel_type]
             if kernel_type == 'SpectralMixture':
-                kernel.initialize_from_data(self.train_t, self.train_y)
+                kernel.initialize_from_data(self.train_times, self.train_values)
 
             covar_module = gpytorch.kernels.ScaleKernel(kernel)
             
@@ -144,7 +144,7 @@ class GaussianProcess(gpytorch.models.ExactGP):
         aics = []
         best_model = None
         for kernel_form in kernel_list:
-            self.model = self.create_gp_model(self.train_t, self.train_y, self.likelihood, kernel_form)
+            self.model = self.create_gp_model(self.train_times, self.train_values, self.likelihood, kernel_form)
             self.model, aic, _ = self.train(train_iter, learn_rate, verbose)
             aics.append(aic)
             if aic <= min(aics):
@@ -170,10 +170,10 @@ class GaussianProcess(gpytorch.models.ExactGP):
             optimizer.zero_grad()
 
             # Model output
-            output = model(self.train_t)
+            output = model(self.train_times)
 
             # Calc negative likelihood and backprop gradients
-            loss = -mll(output, self.train_y)
+            loss = -mll(output, self.train_values)
             loss.backward()
 
             if verbose:
@@ -212,18 +212,18 @@ class GaussianProcess(gpytorch.models.ExactGP):
 
     def bayesian_inf_crit(self):
         mll = gpytorch.mlls.ExactMarginalLogLikelihood(self.likelihood, self.model)
-        log_marg_like = mll(self.model(self.train_t), self.train_y)
+        log_marg_like = mll(self.model(self.train_times), self.train_values)
 
         # need to check if this includes the white noise hyperparameter!!
         num_params = sum([p.numel() for p in self.model.parameters()])
-        num_data = len(self.train_t)
+        num_data = len(self.train_times)
 
         bic = -2 * log_marg_like + num_params * np.log(num_data)
         return bic
     
     def akaike_inf_crit(self, log_marg_like, num_params):
         mll = gpytorch.mlls.ExactMarginalLogLikelihood(self.likelihood, self.model)
-        log_marg_like = mll(self.model(self.train_t), self.train_y)
+        log_marg_like = mll(self.model(self.train_times), self.train_values)
 
         # need to check if this includes the white noise hyperparameter!!
         num_params = sum([p.numel() for p in self.model.parameters()])
