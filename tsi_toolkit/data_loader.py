@@ -178,18 +178,60 @@ class TimeSeries:
         if self.errors.size > 0:
             self.errors = self.errors[mask]
 
-    def plot(self):
-        """Plots the time series with error bars if errors are provided."""
-        plt.figure(figsize=(8, 4))
+    def plot(self, **kwargs):
+        """
+        Plots the time series data.
+        
+        Keyword arguments:
+        - figsize (tuple): Figure size (width, height).
+        - title (str): Title of the plot.
+        - xlabel (str): Label for the x-axis.
+        - ylabel (str): Label for the y-axis.
+        - xlim (tuple): Limits for the x-axis.
+        - ylim (tuple): Limits for the y-axis.
+        - fig_kwargs (dict): Additional keyword arguments for the figure function.
+        - plot_kwargs (dict): Additional keyword arguments for the plot function.
+        - major_tick_kwargs (dict): Additional keyword arguments for the tick_params function.
+        - minor_tick_kwargs (dict): Additional keyword arguments for the tick_params function.
+        """
+        title = kwargs.get('title', None)
 
+        # Default plotting settings
         if self.errors.size > 0:
-            plt.errorbar(self.times, self.values, yerr=self.errors, fmt='o', color='black', ms=2, lw=1)
-
+            default_plot_kwargs = {'color': 'black', 'fmt': 'o', 'ms': 2, 'lw': 1, 'label': None}
         else:
-            plt.scatter(self.times, self.values, color='black', s=2)
+            default_plot_kwargs = {'color': 'black', 's': 2, 'label': None}
 
-        plt.xlabel("Time")
-        plt.ylabel("Values")
+        figsize = kwargs.get('figsize', (8, 4))
+        fig_kwargs = {'figsize':figsize, **kwargs.pop('fig_kwargs', {})}
+        plot_kwargs = {**default_plot_kwargs, **kwargs.pop('plot_kwargs', {})}
+        major_tick_kwargs = {'which':'major', **kwargs.pop('major_tick_kwargs', {})}
+        minor_tick_kwargs = {'which':'minor', **kwargs.pop('minor_tick_kwargs', {})}
+
+        plt.figure(**fig_kwargs)
+        if self.errors.size > 0:
+            plt.errorbar(self.times, self.values, yerr=self.errors, **plot_kwargs)
+        else:
+            plt.scatter(self.times, self.values, **plot_kwargs)
+
+        # Set labels and title
+        plt.xlabel(kwargs.get('xlabel', 'Time'))
+        plt.ylabel(kwargs.get('ylabel', 'Values'))
+        plt.xlim(kwargs.get('xlim', None))
+        plt.ylim(kwargs.get('ylim', None))
+
+        # Show legend if label is provided
+        if plot_kwargs['label'] is not None:
+            plt.legend()
+
+        if title is not None:
+            plt.title(title)
+
+        plt.tick_params(**major_tick_kwargs)
+        if len(minor_tick_kwargs) > 1:
+            plt.minorticks_on()
+            plt.tick_params(**minor_tick_kwargs)
+
         plt.show()
 
     def __add__(self, other_timeseries):
