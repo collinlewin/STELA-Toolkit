@@ -5,8 +5,10 @@ import numpy as np
 from .data_loader import TimeSeries
 
 # to do: consider noise prior
+
+
 class GaussianProcess(gpytorch.models.ExactGP):
-    def __init__(self, timeseries=None, train_times=[], train_values=[], train_errors=[], kernel_form='auto', white_noise=True, run_training=True, 
+    def __init__(self, timeseries=None, train_times=[], train_values=[], train_errors=[], kernel_form='auto', white_noise=True, run_training=True,
                  train_iter=1000, learn_rate=0.01, sample_time_grid=[], num_samples=1000, verbose=True):
 
         if timeseries:
@@ -14,16 +16,17 @@ class GaussianProcess(gpytorch.models.ExactGP):
                 self.timeseries = timeseries
             else:
                 raise TypeError("Expected timeseries to be a TimeSeries object.")
-        
+
         elif train_times and train_values:
-            self.timeseries = TimeSeries(times=train_times, values=train_values, errors=train_errors)
-        
+            self.timeseries = TimeSeries(
+                times=train_times, values=train_values, errors=train_errors)
+
         else:
             raise ValueError(
                 "Please provide either a TimeSeries object as 'timeseries' "
                 "or arrays for 'train_times' and 'train_values' (and optionally 'train_errors')."
             )
-    
+
         # Standardize the time series data to match zero mean function
         self.timeseries.standardize()
 
@@ -41,11 +44,13 @@ class GaussianProcess(gpytorch.models.ExactGP):
             if isinstance(kernel_form, list):
                 kernel_list = kernel_form
             else:
-                kernel_list = ['Matern12', 'Matern32', 'Matern52', 'RQ', 'RBF', 'SpectralMixture, 4']
+                kernel_list = ['Matern12', 'Matern32',
+                               'Matern52', 'RQ', 'RBF', 'SpectralMixture, 4']
             self.model = self.find_best_kernel(kernel_list, train_iter, learn_rate, verbose)
 
         else:
-            self.model = self.create_gp_model(self.train_times, self.train_values, self.likelihood, kernel_form)
+            self.model = self.create_gp_model(
+                self.train_times, self.train_values, self.likelihood, kernel_form)
             if run_training:
                 self.train(train_iter, learn_rate, verbose)
 
@@ -69,19 +74,19 @@ class GaussianProcess(gpytorch.models.ExactGP):
                 return gpytorch.distributions.MultivariateNormal(mean_x, covar_x)
 
         return GPModel(train_times, train_values, likelihood)
-    
+
     def set_likelihood(self, white_noise, train_errors=None):
-        
+
         if train_errors:
             likelihood = gpytorch.likelihoods.FixedNoiseGaussianLikelihood(
-                noise=self.train_errors ** 2, 
+                noise=self.train_errors ** 2,
                 learn_additional_noise=white_noise
             )
 
         else:
             likelihood = gpytorch.likelihoods.FixedNoiseGaussianLikelihood(
-                    noise=1e-8,
-                    learn_additional_noise=white_noise
+                noise=1e-8,
+                learn_additional_noise=white_noise
             )
 
         return likelihood
@@ -113,10 +118,11 @@ class GaussianProcess(gpytorch.models.ExactGP):
             try:
                 num_mixtures = int(num_mixtures_str.strip())
             except ValueError:
-                raise ValueError(f"Invalid number of mixtures '{num_mixtures_str}' for Spectral Mixture kernel.")
+                raise ValueError(
+                    f"Invalid number of mixtures '{num_mixtures_str}' for Spectral Mixture kernel.")
         else:
             kernel_type = kernel_form.strip()
-        
+
         # Kernel mapping with special handling for Spectral Mixture kernel
         kernel_mapping = {
             'Matern12': gpytorch.kernels.MaternKernel(nu=0.5),
@@ -126,7 +132,7 @@ class GaussianProcess(gpytorch.models.ExactGP):
             'RBF': gpytorch.kernels.RBFKernel(),
             'SpectralMixture': gpytorch.kernels.SpectralMixtureKernel(num_mixtures=num_mixtures)
         }
-        
+
         # Assign kernel if type is valid
         if kernel_type in kernel_mapping:
             kernel = kernel_mapping[kernel_type]
@@ -134,30 +140,33 @@ class GaussianProcess(gpytorch.models.ExactGP):
                 kernel.initialize_from_data(self.train_times, self.train_values)
 
             covar_module = gpytorch.kernels.ScaleKernel(kernel)
-            
+
         else:
-            raise ValueError(f"Invalid kernel type '{kernel_type}'. Choose from {list(kernel_mapping.keys())}.")
-        
+            raise ValueError(
+                f"Invalid kernel type '{kernel_type}'. Choose from {list(kernel_mapping.keys())}.")
+
         return covar_module
-    
+
     def find_best_kernel(self, kernel_list, train_iter, learn_rate, verbose=True):
         aics = []
         best_model = None
         for kernel_form in kernel_list:
-            self.model = self.create_gp_model(self.train_times, self.train_values, self.likelihood, kernel_form)
+            self.model = self.create_gp_model(
+                self.train_times, self.train_values, self.likelihood, kernel_form)
             self.model, aic, _ = self.train(train_iter, learn_rate, verbose)
             aics.append(aic)
             if aic <= min(aics):
                 best_model = self.model
-        
+
         best_aic = min(aics)
         best_kernel = kernel_list[aics.index(best_aic)]
         if verbose:
-            print(f"Kernel AICs (lower is better): {[f'{k}: {a}' for k, a in zip(kernel_list, aics)]}")
+            print(
+                f"Kernel AICs (lower is better): {[f'{k}: {a}' for k, a in zip(kernel_list, aics)]}")
             print(f"Best kernel: {best_kernel} with AIC: {best_aic}")
 
         return best_model
-    
+
     def train(self, model, train_iter, learn_rate, verbose=False):
         model.train()
         self.likelihood.train()
@@ -191,7 +200,7 @@ class GaussianProcess(gpytorch.models.ExactGP):
                             model.covar_module.base_kernel.lengthscale.item(),
                             model.likelihood.noise.item()
                         ))
-                    
+
                     else:
                         print('Iter %d/%d - Loss: %.3f   lengthscale: %.3f' % (
                             i + 1, train_iter, loss.item(),
@@ -201,7 +210,8 @@ class GaussianProcess(gpytorch.models.ExactGP):
             optimizer.step()
 
         if verbose:
-            print(f"Training complete. Final loss: {loss.item()}. Final hyperparameters: {self.get_hyperparameters()}")
+            print(
+                f"Training complete. Final loss: {loss.item()}. Final hyperparameters: {self.get_hyperparameters()}")
 
     def get_hyperparameters(self):
         hypers = self.model.covar_module.base_kernel.hypers
@@ -220,7 +230,7 @@ class GaussianProcess(gpytorch.models.ExactGP):
 
         bic = -2 * log_marg_like + num_params * np.log(num_data)
         return bic
-    
+
     def akaike_inf_crit(self, log_marg_like, num_params):
         mll = gpytorch.mlls.ExactMarginalLogLikelihood(self.likelihood, self.model)
         log_marg_like = mll(self.model(self.train_times), self.train_values)
@@ -230,7 +240,7 @@ class GaussianProcess(gpytorch.models.ExactGP):
 
         aic = -2 * log_marg_like + 2 * num_params
         return aic
-    
+
     def sample(self, pred_times, num_samples):
         # Predictive posterior mode
         self.model.eval()

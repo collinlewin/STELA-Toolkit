@@ -9,7 +9,7 @@ class TimeSeries:
                  values=[],
                  errors=[],
                  file_path=None,
-                 file_columns=[0,1,2],
+                 file_columns=[0, 1, 2],
                  clean_data=False,
                  outlier_threshold=2.2,
                  outlier_rolling_window=None,
@@ -64,12 +64,12 @@ class TimeSeries:
         if plot_data:
             self.plot()
 
-    def load_file(self, file_path, file_columns=[0,1,2]):
+    def load_file(self, file_path, file_columns=[0, 1, 2]):
         """
         Loads data from a file and sets the times, values, and errors.
         Supports .fits and text-based files.
         """
-        try: 
+        try:
             times, values, errors = self.load_fits(file_path, file_columns)
 
         except:
@@ -80,11 +80,11 @@ class TimeSeries:
                     f"Failed to read the file '{file_path}' with fits or text-based loader."
                     "Verify the file path and file_columns, or file format unsupported."
                     f"Error message: {e}"
-                    )
+                )
 
         return times, values, errors
-    
-    def load_fits(self, file_path, file_columns=[0,1,2], hdu=1):
+
+    def load_fits(self, file_path, file_columns=[0, 1, 2], hdu=1):
         """Loads data from a FITS file."""
         time_column, value_column = file_columns[0], file_columns[1]
         error_column = file_columns[2] if len(file_columns) == 3 else None
@@ -118,10 +118,10 @@ class TimeSeries:
                 raise ValueError(
                     "Specified column/s not found in the FITS file."
                 )
-            
+
         return times, values, errors
 
-    def load_text_file(self, file_path, file_columns=[0,1,2], delimiter=None):
+    def load_text_file(self, file_path, file_columns=[0, 1, 2], delimiter=None):
         time_column, value_column = file_columns[0], file_columns[1]
         error_column = file_columns[2] if len(file_columns) == 3 else None
 
@@ -136,7 +136,7 @@ class TimeSeries:
             )
 
         except Exception as e:
-            raise(f"Failed to read the file '{file_path}' with np.genfromtxt.")
+            raise (f"Failed to read the file '{file_path}' with np.genfromtxt.")
 
         # Retrieve file_columns by name or index directly, simplifying access
         times = np.array(
@@ -163,7 +163,7 @@ class TimeSeries:
     def plot(self, **kwargs):
         """
         Plots the time series data.
-        
+
         Keyword arguments:
         - figsize (tuple): Figure size (width, height).
         - title (str): Title of the plot.
@@ -185,10 +185,10 @@ class TimeSeries:
             default_plot_kwargs = {'color': 'black', 's': 2, 'label': None}
 
         figsize = kwargs.get('figsize', (8, 4))
-        fig_kwargs = {'figsize':figsize, **kwargs.pop('fig_kwargs', {})}
+        fig_kwargs = {'figsize': figsize, **kwargs.pop('fig_kwargs', {})}
         plot_kwargs = {**default_plot_kwargs, **kwargs.pop('plot_kwargs', {})}
-        major_tick_kwargs = {'which':'major', **kwargs.pop('major_tick_kwargs', {})}
-        minor_tick_kwargs = {'which':'minor', **kwargs.pop('minor_tick_kwargs', {})}
+        major_tick_kwargs = {'which': 'major', **kwargs.pop('major_tick_kwargs', {})}
+        minor_tick_kwargs = {'which': 'minor', **kwargs.pop('minor_tick_kwargs', {})}
 
         plt.figure(**fig_kwargs)
         if self.errors.size > 0:
@@ -219,8 +219,8 @@ class TimeSeries:
     def clean_data(self, outlier_threshold=2.2, outlier_rolling_window=None, verbose=True):
         """Cleans the time series data by removing NaNs and outliers and standardizing."""
         self.remove_nans(verbose=verbose)
-        self.remove_outliers(threshold=outlier_threshold, 
-                             rolling_window=outlier_rolling_window, 
+        self.remove_outliers(threshold=outlier_threshold,
+                             rolling_window=outlier_rolling_window,
                              verbose=verbose
                              )
         self.standardize()
@@ -268,8 +268,8 @@ class TimeSeries:
             print(f"Removed {np.sum(~nonnan_mask)} NaN points.\n"
                   f"({np.sum(np.isnan(self.values))} NaN values, "
                   f"{np.sum(np.isnan(self.errors))} NaN errors)"
-                )
-            
+                  )
+
         self.times = self.times[nonnan_mask]
         self.values = self.values[nonnan_mask]
         if self.errors.size > 0:
@@ -279,7 +279,7 @@ class TimeSeries:
         """
         Identifies and removes outliers based on the Interquartile Range (IQR).
         Stores a mask of outliers for plotting.
-        
+
         Parameters:
         - threshold (float): Multiplier for the IQR to define the outlier range.
         - rolling_window (int): If specified, applies a local IQR over a rolling 
@@ -290,7 +290,8 @@ class TimeSeries:
             Plots the data flagged as outliers.
             """
             plt.plot(self.times[~outlier_mask], self.values[~outlier_mask])
-            plt.scatter(self.times[outlier_mask], self.values[outlier_mask], color='red', label='Outliers')
+            plt.scatter(self.times[outlier_mask], self.values[outlier_mask],
+                        color='red', label='Outliers')
             plt.xlabel('Time')
             plt.ylabel('Values')
             plt.legend()
@@ -414,4 +415,3 @@ class TimeSeries:
         return TimeSeries(times=self.times,
                           values=new_values,
                           errors=new_errors)
-    
