@@ -20,13 +20,13 @@ class TimeSeries:
         Parameters:
         - times (array-like): Array of time values.
         - values (array-like): Array of values or flux values.
-        - errors (array-like): Array of errors associated with each rate.
+        - errors (array-like): Array of errors associated with each value.
         - file_path (str): Path to file containing data (.fits, .csv,
           text files).
-        - file_columns (list): List of file_columns for time, rate,
+        - file_columns (list): List of file_columns for time, value,
           and optionally error. The list should contain
           2 or 3 integers (column index) or strings (column_name):
-          [time_column, rate_column, error_column (optional)]
+          [time_column, value_column, error_column (optional)]
         - **kwargs: Additional keyword arguments.
             - hdu (int): HDU index for reading FITS files.
             - delimiter (str): Column delimiter for text files.
@@ -35,7 +35,7 @@ class TimeSeries:
             if not (2 <= len(file_columns) <= 3):
                 raise ValueError(
                     "The 'file_columns' parameter must be a list with 2 or 3 items: "
-                    "[time_column, rate_column, optional error_column]."
+                    "[time_column, value_column, optional error_column]."
                 )
 
             file_data = self.load_file(file_path, file_columns=file_columns)
@@ -43,14 +43,14 @@ class TimeSeries:
             self.values = file_data[1]
             self.errors = file_data[2]
 
-        elif times and values:
+        elif times.size > 0 and values.size > 0:
             self.times = np.array(times)
             self.values = np.array(values)
-            self.errors = np.array(errors) if errors else None
+            self.errors = np.array(errors)
 
         else:
             raise ValueError(
-                "Please provide time and rate arrays or a file path."
+                "Please provide time and value arrays or a file path."
             )
         
         self.mean = np.mean(self.values)
@@ -81,7 +81,7 @@ class TimeSeries:
     
     def load_fits(self, file_path, file_columns=[0,1,2], hdu=1):
         """Loads data from a FITS file."""
-        time_column, rate_column = file_columns[0], file_columns[1]
+        time_column, value_column = file_columns[0], file_columns[1]
         error_column = file_columns[2] if len(file_columns) == 3 else None
 
         with fits.open(file_path) as hdul:
@@ -97,8 +97,8 @@ class TimeSeries:
                 )
 
                 values = np.array(
-                    data.field(rate_column) if isinstance(rate_column, int)
-                    else data[rate_column]
+                    data.field(value_column) if isinstance(value_column, int)
+                    else data[value_column]
                 )
 
                 if error_column:
@@ -107,7 +107,7 @@ class TimeSeries:
                         else data[error_column]
                     )
                 else:
-                    errors = None
+                    errors = []
 
             except KeyError:
                 raise ValueError(
@@ -117,7 +117,7 @@ class TimeSeries:
         return times, values, errors
 
     def load_text_file(self, file_path, file_columns=[0,1,2], delimiter=None):
-        time_column, rate_column = file_columns[0], file_columns[1]
+        time_column, value_column = file_columns[0], file_columns[1]
         error_column = file_columns[2] if len(file_columns) == 3 else None
 
         # Load data, assuming delimiter based on file extension if unspecified
@@ -140,8 +140,8 @@ class TimeSeries:
         ).astype(float)
 
         values = np.array(
-            data[rate_column] if isinstance(rate_column, str)
-            else data[:, rate_column]
+            data[value_column] if isinstance(value_column, str)
+            else data[:, value_column]
         ).astype(float)
 
         if error_column:
@@ -151,7 +151,7 @@ class TimeSeries:
             ).astype(float)
 
         else:
-            errors = None
+            errors = []
 
         return times, values, errors
 
@@ -159,14 +159,14 @@ class TimeSeries:
         """Standardizes the time series data."""
         self.values = (self.values - self.mean) / self.std
 
-        if self.errors is not None:
+        if self.errors.size > 0:
             self.errors = self.errors / self.std
 
     def unstandardize(self):
         """Unstandardizes the time series data."""
         self.values = (self.values * self.std) + self.mean
 
-        if self.errors is not None:
+        if self.errors.size > 0:
             self.errors = self.errors * self.std
 
     def trim(self, start_time, end_time):
@@ -175,21 +175,21 @@ class TimeSeries:
         self.times = self.times[mask]
         self.values = self.values[mask]
 
-        if self.errors is not None:
+        if self.errors.size > 0:
             self.errors = self.errors[mask]
 
     def plot(self):
         """Plots the time series with error bars if errors are provided."""
         plt.figure(figsize=(8, 4))
 
-        if self.errors is None:
-            plt.scatter(self.times, self.values)
+        if self.errors.size > 0:
+            plt.errorbar(self.times, self.values, yerr=self.errors, fmt='o', color='black', ms=2, lw=1)
 
         else:
-            plt.errorbar(self.times, self.values, yerr=self.errors, fmt='o', color='black', ms=2, lw=1)
-            
+            plt.scatter(self.times, self.values, color='black', s=2)
+
         plt.xlabel("Time")
-        plt.ylabel("Rates")
+        plt.ylabel("Values")
         plt.show()
 
     def __add__(self, other_timeseries):
@@ -203,8 +203,8 @@ class TimeSeries:
             raise ValueError("Time arrays do not match.")
 
         new_values = self.values + other_timeseries.values
-        if self.errors is None or other_timeseries.errors is None:
-            new_errors = None
+        if self.errors.size == 0 or other_timeseries.errors.size == 0:
+            new_errors = []
 
         else:
             new_errors = np.sqrt(self.errors**2 + other_timeseries.errors**2)
@@ -224,8 +224,8 @@ class TimeSeries:
             raise ValueError("Time arrays do not match.")
 
         new_values = self.values - other_timeseries.values
-        if self.errors is None or other_timeseries.errors is None:
-            new_errors = None
+        if self.errors.size == 0 or other_timeseries.errors.size == 0:
+            new_errors = []
 
         else:
             new_errors = np.sqrt(self.errors**2 + other_timeseries.errors**2)
@@ -245,8 +245,8 @@ class TimeSeries:
             raise ValueError("Time arrays do not match.")
 
         new_values = self.values / other_timeseries.values
-        if self.errors is None or other_timeseries.errors is None:
-            new_errors = None
+        if self.errors.size == 0 or other_timeseries.errors.size == 0:
+            new_errors = []
 
         else:
             new_errors = np.sqrt(
