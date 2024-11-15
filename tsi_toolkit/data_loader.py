@@ -10,9 +10,10 @@ class TimeSeries:
                  errors=[],
                  file_path=None,
                  file_columns=[0, 1, 2],
-                 clean_data=False,
-                 outlier_threshold=2.2,
-                 outlier_rolling_window=None,
+                 remove_nans=True,
+                 detect_outliers=False,
+                 outlier_threshold=1.5,
+                 outlier_rolling_window=10,
                  plot_data=False,
                  verbose=True
                  ):
@@ -55,11 +56,13 @@ class TimeSeries:
                 "Please provide time and value arrays or a file path."
             )
 
-        if clean_data:
-            self.clean_data(outlier_threshold=outlier_threshold,
-                            outlier_rolling_window=outlier_rolling_window,
-                            verbose=verbose
-                            )
+        if remove_nans:
+            self.remove_nans(verbose=verbose)
+
+        if detect_outliers:
+            self.remove_outliers(threshold=outlier_threshold,
+                                 rolling_window=outlier_rolling_window,
+                                 verbose=verbose)
 
         if plot_data:
             self.plot()
@@ -99,18 +102,18 @@ class TimeSeries:
                 times = np.array(
                     data.field(time_column) if isinstance(time_column, int)
                     else data[time_column]
-                )
+                ).astype(float)
 
                 values = np.array(
                     data.field(value_column) if isinstance(value_column, int)
                     else data[value_column]
-                )
+                ).astype(float)
 
                 if error_column:
                     errors = np.array(
                         data.field(error_column) if isinstance(error_column, int)
                         else data[error_column]
-                    )
+                    ).astype(float)
                 else:
                     errors = []
 
@@ -151,7 +154,7 @@ class TimeSeries:
 
         if error_column:
             errors = np.array(
-                data[error_column] if isinstance(error_column, str)
+                data[error_column]if isinstance(error_column, str)
                 else data[:, error_column]
             ).astype(float)
 
@@ -216,7 +219,7 @@ class TimeSeries:
 
         plt.show()
 
-    def clean_data(self, outlier_threshold=2.2, outlier_rolling_window=None, verbose=True):
+    def clean_data(self, outlier_threshold=1.5, outlier_rolling_window=None, verbose=True):
         """Cleans the time series data by removing NaNs and outliers and standardizing."""
         self.remove_nans(verbose=verbose)
         self.remove_outliers(threshold=outlier_threshold,
@@ -275,7 +278,7 @@ class TimeSeries:
         if self.errors.size > 0:
             self.errors = self.errors[nonnan_mask]
 
-    def remove_outliers(self, threshold=2.2, rolling_window=None, plot=True, verbose=False):
+    def remove_outliers(self, threshold=1.5, rolling_window=None, plot=True, verbose=False):
         """
         Identifies and removes outliers based on the Interquartile Range (IQR).
         Stores a mask of outliers for plotting.
@@ -293,26 +296,30 @@ class TimeSeries:
                 plt.errorbar(
                     self.times[~outlier_mask], self.values[~outlier_mask],
                     yerr=self.errors[~outlier_mask], fmt='o', color='black', lw=1, ms=2
-                    )
+                )
+
                 plt.errorbar(
                     self.times[outlier_mask], self.values[outlier_mask],
                     yerr=self.errors[outlier_mask], fmt='o', color='red', label='Outliers', lw=1, ms=2
-                    )
+                )
+
             else:
                 plt.scatter(self.times[~outlier_mask], self.values[~outlier_mask], s=2)
-                plt.scatter(self.times[outlier_mask], self.values[outlier_mask],
-                            color='red', label='Outliers', s=2)
-                
+                plt.scatter(
+                    self.times[outlier_mask], self.values[outlier_mask],
+                    color='red', label='Outliers', s=2
+                )
+
             plt.xlabel('Time')
             plt.ylabel('Values')
             plt.title('Outliers Detection')
             plt.legend()
             plt.show()
 
-        def detect_outliers(threshold=2.2, rolling_window=None):
+        def detect_outliers(threshold=1.5, rolling_window=None):
             if rolling_window:
                 # Initialize an array to store the outlier mask
-                self.outlier_mask = np.zeros_like(self.values, dtype=bool)
+                outlier_mask = np.zeros_like(self.values, dtype=bool)
 
                 # Apply a rolling IQR filter
                 half_window = rolling_window // 2
@@ -332,7 +339,7 @@ class TimeSeries:
 
                     # Mark as outlier if outside bounds
                     if self.values[i] < lower_bound or self.values[i] > upper_bound:
-                        self.outlier_mask[i] = True
+                        outlier_mask[i] = True
 
             else:
                 # Global IQR calculation
@@ -402,7 +409,8 @@ class TimeSeries:
 
         return TimeSeries(times=self.times,
                           values=new_values,
-                          errors=new_errors)
+                          errors=new_errors
+                          )
 
     def __truediv__(self, other_timeseries):
         """Divides two TimeSeries objects with matching times."""
@@ -420,8 +428,8 @@ class TimeSeries:
 
         else:
             new_errors = np.sqrt(
-                (self.errors / self.values) ** 2 +
-                (other_timeseries.errors / other_timeseries.values) ** 2
+                (self.errors / self.values) ** 2
+                + (other_timeseries.errors / other_timeseries.values) ** 2
             )
 
         return TimeSeries(times=self.times,
