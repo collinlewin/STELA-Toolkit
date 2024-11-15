@@ -17,6 +17,7 @@ class TimeSeries:
                  plot_data=False,
                  verbose=True
                  ):
+        # To do: Improve commenting and docstrings
         """
         Initializes the TimeSeries class.
 
@@ -219,7 +220,7 @@ class TimeSeries:
 
         plt.show()
 
-    def clean_data(self, outlier_threshold=1.5, outlier_rolling_window=None, verbose=True):
+    def clean_data(self, outlier_threshold=1.5, outlier_rolling_window=10, verbose=True):
         """Cleans the time series data by removing NaNs and outliers and standardizing."""
         self.remove_nans(verbose=verbose)
         self.remove_outliers(threshold=outlier_threshold,
