@@ -289,11 +289,23 @@ class TimeSeries:
             """
             Plots the data flagged as outliers.
             """
-            plt.plot(self.times[~outlier_mask], self.values[~outlier_mask])
-            plt.scatter(self.times[outlier_mask], self.values[outlier_mask],
-                        color='red', label='Outliers')
+            if len(self.errors) > 0:
+                plt.errorbar(
+                    self.times[~outlier_mask], self.values[~outlier_mask],
+                    yerr=self.errors[~outlier_mask], fmt='o', color='black', lw=1, ms=2
+                    )
+                plt.errorbar(
+                    self.times[outlier_mask], self.values[outlier_mask],
+                    yerr=self.errors[outlier_mask], fmt='o', color='red', label='Outliers', lw=1, ms=2
+                    )
+            else:
+                plt.scatter(self.times[~outlier_mask], self.values[~outlier_mask], s=2)
+                plt.scatter(self.times[outlier_mask], self.values[outlier_mask],
+                            color='red', label='Outliers', s=2)
+                
             plt.xlabel('Time')
             plt.ylabel('Values')
+            plt.title('Outliers Detection')
             plt.legend()
             plt.show()
 
