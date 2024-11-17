@@ -43,7 +43,8 @@ class GaussianProcess():
             self.train_errors = torch.tensor(self.timeseries.errors)
 
         # Set likelihood
-        self.likelihood = self.set_likelihood(white_noise, train_errors=self.train_errors)
+        self.white_noise = white_noise
+        self.likelihood = self.set_likelihood(self.white_noise, train_errors=self.train_errors)
 
         # Find best kernel based on AIC
         if kernel_form in ['auto', 'advise me, please?'] or isinstance(kernel_form, list):
@@ -195,18 +196,27 @@ class GaussianProcess():
 
             if verbose:
                 if self.kernel_form == 'SpectralMixture':
-                    print('Iter %d/%d - Loss: %.3f   mixture_lengthscales: %.3f   mixture_weights: %s' % (
-                        i + 1, train_iter, loss.item(),
-                        self.model.covar_module.base_kernel.mixture_scales.item(),
-                        self.model.covar_module.base_kernel.mixture_weights.item()
-                    ))
+                    if self.white_noise:
+                        print('Iter %d/%d - Loss: %.3f   mixture_lengthscales: %.3f   mixture_weights: %s   noise: %.3f' % (
+                            i + 1, train_iter, loss.item(),
+                            self.model.covar_module.base_kernel.mixture_scales.item(),
+                            self.model.covar_module.base_kernel.mixture_weights.item(),
+                            self.model.likelihood.second_noise.item()
+                        ))
+                    
+                    else:
+                        print('Iter %d/%d - Loss: %.3f   mixture_lengthscales: %.3f   mixture_weights: %s' % (
+                            i + 1, train_iter, loss.item(),
+                            self.model.covar_module.base_kernel.mixture_scales.item(),
+                            self.model.covar_module.base_kernel.mixture_weights.item()
+                        ))
 
                 else:
                     if self.white_noise:
                         print('Iter %d/%d - Loss: %.3f   lengthscale: %.3f   noise: %.3f' % (
                             i + 1, train_iter, loss.item(),
                             self.model.covar_module.base_kernel.lengthscale.item(),
-                            self.model.likelihood.noise.item()
+                            self.model.likelihood.second_noise.item()
                         ))
 
                     else:
@@ -218,16 +228,45 @@ class GaussianProcess():
             optimizer.step()
 
         if verbose:
+            final_hypers = self.get_hyperparameters()
             print(
-                f"Training complete. Final loss: {loss.item()}. Final hyperparameters: {self.get_hyperparameters()}")
+                "Training complete. \n"
+                f"   - Final loss (NLML): {loss.item():0.5}\n"
+                f"   - Final hyperparameters:"
+            )
+            for key, value in final_hypers.items():
+                print(f"      {key:42}: {value:0.3}")
 
     def get_hyperparameters(self):
-        hypers = self.model.covar_module.base_kernel.hypers
-        if self.white_noise:
-            hypers += [self.model.likelihood.second_noise.item()]
+        raw_hypers = self.model.named_parameters()
+        hypers = {}
+        for param_name, param in raw_hypers:
+            # Split the parameter name into hierarchy
+            parts = param_name.split('.')
+            module = self.model
+
+            # Traverse structure of the model to get the constraint
+            for part in parts[:-1]: # last part is parameter
+                module = getattr(module, part, None)
+                if module is None:
+                    raise AttributeError(f"Module '{part}' not found while traversing '{param_name}'.")
+
+            final_param_name = parts[-1]
+            constraint_name = f"{final_param_name}_constraint"
+            constraint = getattr(module, constraint_name, None)
+
+            if constraint is None:
+                raise AttributeError(f"Constraint '{constraint_name}' not found in module '{module}'.")
+
+            # Transform the parameter using the constraint
+            transform_param = constraint.transform(param)
+
+            # Remove 'raw_' prefix from the parameter name for readability
+            param_name_withoutraw = param_name.replace('raw_', '')
+            hypers[param_name_withoutraw] = transform_param.item()
 
         return hypers
-
+    
     def bayesian_inf_crit(self):
         mll = gpytorch.mlls.ExactMarginalLogLikelihood(self.likelihood, self.model)
         log_marg_like = mll(self.model(self.train_times), self.train_values)
