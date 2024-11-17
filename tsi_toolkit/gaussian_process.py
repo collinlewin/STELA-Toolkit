@@ -5,7 +5,7 @@ import numpy as np
 from .data_loader import TimeSeries
 
 
-class GaussianProcess(gpytorch.models.ExactGP):
+class GaussianProcess():
     def __init__(self,
                  timeseries=None,
                  train_times=[], train_values=[], train_errors=[], 
@@ -66,23 +66,23 @@ class GaussianProcess(gpytorch.models.ExactGP):
             if verbose:
                 print(f"Samples generated: {self.samples.shape}, access with 'samples' attribute.")
 
-    def create_gp_model(train_times, train_values, likelihood, kernel):
+    def create_gp_model(self, train_times, train_values, likelihood, kernel):
         class GPModel(gpytorch.models.ExactGP):
-            def __init__(self, train_times, train_values, likelihood):
-                super(GPModel, self).__init__(train_times, train_values, likelihood)
-                self.mean_module = gpytorch.means.ZeroMean()
-                self.covar_module = self.set_kernel(kernel)
+            def __init__(gp_self, train_times, train_values, likelihood):
+                super(GPModel, gp_self).__init__(train_times, train_values, likelihood)
+                gp_self.mean_module = gpytorch.means.ZeroMean()
+                gp_self.covar_module = self.set_kernel(kernel)
 
-            def forward(self, x):
-                mean_x = self.mean_module(x)
-                covar_x = self.covar_module(x)
+            def forward(gp_self, x):
+                mean_x = gp_self.mean_module(x)
+                covar_x = gp_self.covar_module(x)
                 return gpytorch.distributions.MultivariateNormal(mean_x, covar_x)
-
+            
         return GPModel(train_times, train_values, likelihood)
 
-    def set_likelihood(self, white_noise, train_errors=None):
+    def set_likelihood(self, white_noise, train_errors=torch.tensor([])):
 
-        if train_errors.size > 0:
+        if train_errors.size(dim=0) > 0:
             likelihood = gpytorch.likelihoods.FixedNoiseGaussianLikelihood(
                 noise=self.train_errors ** 2,
                 learn_additional_noise=white_noise
@@ -96,7 +96,7 @@ class GaussianProcess(gpytorch.models.ExactGP):
 
         return likelihood
 
-    def set_kernel(self, kernel_form: str):
+    def set_kernel(self, kernel_form):
         """
         Sets the covariance module (kernel) for the Gaussian Process model.
 
@@ -127,6 +127,7 @@ class GaussianProcess(gpytorch.models.ExactGP):
                     f"Invalid number of mixtures '{num_mixtures_str}' for Spectral Mixture kernel.")
         else:
             kernel_type = kernel_form.strip()
+            num_mixtures = 4
 
         # Kernel mapping with special handling for Spectral Mixture kernel
         kernel_mapping = {
