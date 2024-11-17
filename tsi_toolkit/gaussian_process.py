@@ -8,12 +8,12 @@ from .data_loader import TimeSeries
 class GaussianProcess():
     def __init__(self,
                  timeseries=None,
-                 train_times=[], train_values=[], train_errors=[], 
+                 train_times=[], train_values=[], train_errors=[],
                  kernel_form='auto', white_noise=True,
                  run_training=True, train_iter=1000, learn_rate=1e-2,
                  sample_time_grid=[], num_samples=1000,
                  verbose=True):
-        
+
         # To Do: reconsider noise prior, add a mean function function for forecasting, more verbose options
         if timeseries:
             if isinstance(timeseries, TimeSeries):
@@ -53,7 +53,8 @@ class GaussianProcess():
             else:
                 kernel_list = ['Matern12', 'Matern32',
                                'Matern52', 'RQ', 'RBF', 'SpectralMixture, 4']
-            self.model = self.find_best_kernel(kernel_list, train_iter=train_iter, learn_rate=learn_rate, verbose=verbose)
+            self.model = self.find_best_kernel(
+                kernel_list, train_iter=train_iter, learn_rate=learn_rate, verbose=verbose)
 
         else:
             self.model = self.create_gp_model(
@@ -77,7 +78,7 @@ class GaussianProcess():
                 mean_x = gp_self.mean_module(x)
                 covar_x = gp_self.covar_module(x)
                 return gpytorch.distributions.MultivariateNormal(mean_x, covar_x)
-            
+
         return GPModel(train_times, train_values, likelihood)
 
     def set_likelihood(self, white_noise, train_errors=torch.tensor([])):
@@ -126,8 +127,8 @@ class GaussianProcess():
                 kernel_form, num_mixtures_str = kernel_form.split(',')
                 num_mixtures = int(num_mixtures_str.strip())
         else:
-            num_mixtures = 4 # set value for kernel_mapping when Spectral Mixture kernel not used
-        
+            num_mixtures = 4  # set value for kernel_mapping when Spectral Mixture kernel not used
+
         kernel_mapping = {
             'Matern12': gpytorch.kernels.MaternKernel(nu=0.5),
             'Matern32': gpytorch.kernels.MaternKernel(nu=1.5),
@@ -159,7 +160,8 @@ class GaussianProcess():
         for kernel_form in kernel_list:
             self.model = self.create_gp_model(
                 self.train_times, self.train_values, self.likelihood, kernel_form)
-            self.train_model(train_iter=train_iter, learn_rate=learn_rate, verbose=False) # suppress output, even for verbose=True
+            self.train_model(train_iter=train_iter, learn_rate=learn_rate,
+                             verbose=False)  # suppress output, even for verbose=True
             aic = self.akaike_inf_crit()
             aics.append(aic)
             if aic <= min(aics):
@@ -172,10 +174,10 @@ class GaussianProcess():
             print(
                 "Kernel selection complete. \n"
                 f"   Kernel AICs (lower is better):"
-                )
+            )
             for kernel, aic in kernel_results:
                 print(f"     - {kernel:15}: {aic:0.5}")
-            
+
             print(f"   Best kernel: {best_kernel} (AIC: {best_aic:0.5})")
 
         self.kernel_form = best_kernel
@@ -211,7 +213,7 @@ class GaussianProcess():
                             mixture_weights.round(4),
                             self.model.likelihood.second_noise.item()
                         ))
-                    
+
                     else:
                         print('Iter %d/%d - Loss: %.3f   mixture_lengthscales: %s   mixture_weights: %s' % (
                             i + 1, train_iter, loss.item(),
@@ -241,7 +243,7 @@ class GaussianProcess():
                 f"   - Final hyperparameters:"
             )
             for key, value in final_hypers.items():
-                print(f"      {key:42}: {np.round(value,4)}")
+                print(f"      {key:42}: {np.round(value, 4)}")
 
     def get_hyperparameters(self):
         raw_hypers = self.model.named_parameters()
@@ -252,17 +254,19 @@ class GaussianProcess():
             module = self.model
 
             # Traverse structure of the model to get the constraint
-            for part in parts[:-1]: # last part is parameter
+            for part in parts[:-1]:  # last part is parameter
                 module = getattr(module, part, None)
                 if module is None:
-                    raise AttributeError(f"Module '{part}' not found while traversing '{param_name}'.")
+                    raise AttributeError(
+                        f"Module '{part}' not found while traversing '{param_name}'.")
 
             final_param_name = parts[-1]
             constraint_name = f"{final_param_name}_constraint"
             constraint = getattr(module, constraint_name, None)
 
             if constraint is None:
-                raise AttributeError(f"Constraint '{constraint_name}' not found in module '{module}'.")
+                raise AttributeError(
+                    f"Constraint '{constraint_name}' not found in module '{module}'.")
 
             # Transform the parameter using the constraint
             transform_param = constraint.transform(param)
@@ -278,7 +282,7 @@ class GaussianProcess():
             hypers[param_name_withoutraw] = transform_param
 
         return hypers
-    
+
     def bayesian_inf_crit(self):
         mll = gpytorch.mlls.ExactMarginalLogLikelihood(self.likelihood, self.model)
         log_marg_like = mll(self.model(self.train_times), self.train_values).item()
