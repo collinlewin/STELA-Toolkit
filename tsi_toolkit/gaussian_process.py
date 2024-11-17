@@ -61,7 +61,6 @@ class GaussianProcess():
             if run_training:
                 self.train_model(train_iter=train_iter, learn_rate=learn_rate, verbose=verbose)
 
-            # Calculate marginal log likelihood, BIC, and optimal hyperparameters
         if sample_time_grid:
             self.samples = self.sample(sample_time_grid, num_samples=num_samples)
             if verbose:
@@ -160,7 +159,7 @@ class GaussianProcess():
         for kernel_form in kernel_list:
             self.model = self.create_gp_model(
                 self.train_times, self.train_values, self.likelihood, kernel_form)
-            self.train_model(train_iter=train_iter, learn_rate=learn_rate, verbose=False)
+            self.train_model(train_iter=train_iter, learn_rate=learn_rate, verbose=False) # suppress output, even for verbose=True
             aic = self.akaike_inf_crit()
             aics.append(aic)
             if aic <= min(aics):
@@ -169,9 +168,15 @@ class GaussianProcess():
         best_aic = min(aics)
         best_kernel = kernel_list[aics.index(best_aic)]
         if verbose:
+            kernel_results = zip(kernel_list, aics)
             print(
-                f"Kernel AICs (lower is better): {[f'{k}: {a}' for k, a in zip(kernel_list, aics)]}")
-            print(f"Best kernel: {best_kernel} with AIC: {best_aic}")
+                "Kernel selection complete. \n"
+                f"   Kernel AICs (lower is better):"
+                )
+            for kernel, aic in kernel_results:
+                print(f"     - {kernel:15}: {aic:0.5}")
+            
+            print(f"   Best kernel: {best_kernel} (AIC: {best_aic:0.5})")
 
         self.kernel_form = best_kernel
         return best_model
