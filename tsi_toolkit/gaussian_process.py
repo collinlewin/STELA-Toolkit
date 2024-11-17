@@ -4,22 +4,28 @@ import numpy as np
 
 from .data_loader import TimeSeries
 
-# to do: consider noise prior
-
 
 class GaussianProcess(gpytorch.models.ExactGP):
-    def __init__(self, timeseries=None, train_times=[], train_values=[], train_errors=[], kernel_form='auto', white_noise=True, run_training=True,
-                 train_iter=1000, learn_rate=0.01, sample_time_grid=[], num_samples=1000, verbose=True):
-
+    def __init__(self,
+                 timeseries=None,
+                 train_times=[], train_values=[], train_errors=[], 
+                 kernel_form='auto', white_noise=True,
+                 run_training=True, train_iter=1000, learn_rate=1e-2,
+                 sample_time_grid=[], num_samples=1000,
+                 verbose=True):
+        
+        # To Do: reconsider noise prior, add a mean function function for forecasting
         if timeseries:
             if isinstance(timeseries, TimeSeries):
                 self.timeseries = timeseries
             else:
                 raise TypeError("Expected timeseries to be a TimeSeries object.")
 
-        elif train_times and train_values:
+        elif train_times.size > 0 and train_values > 0:
             self.timeseries = TimeSeries(
-                times=train_times, values=train_values, errors=train_errors)
+                times=train_times, values=train_values)
+            if train_errors.size > 0:
+                self.timeseries.errors = train_errors
 
         else:
             raise ValueError(
@@ -33,7 +39,7 @@ class GaussianProcess(gpytorch.models.ExactGP):
         # Convert time series data to PyTorch tensors
         self.train_times = torch.tensor(self.timeseries.times)
         self.train_values = torch.tensor(self.timeseries.values)
-        if self.timeseries.errors:
+        if self.timeseries.errors.size > 0:
             self.train_errors = torch.tensor(self.timeseries.errors)
 
         # Set likelihood
@@ -61,7 +67,6 @@ class GaussianProcess(gpytorch.models.ExactGP):
                 print(f"Samples generated: {self.samples.shape}, access with 'samples' attribute.")
 
     def create_gp_model(train_times, train_values, likelihood, kernel):
-
         class GPModel(gpytorch.models.ExactGP):
             def __init__(self, train_times, train_values, likelihood):
                 super(GPModel, self).__init__(train_times, train_values, likelihood)
@@ -77,7 +82,7 @@ class GaussianProcess(gpytorch.models.ExactGP):
 
     def set_likelihood(self, white_noise, train_errors=None):
 
-        if train_errors:
+        if train_errors.size > 0:
             likelihood = gpytorch.likelihoods.FixedNoiseGaussianLikelihood(
                 noise=self.train_errors ** 2,
                 learn_additional_noise=white_noise
