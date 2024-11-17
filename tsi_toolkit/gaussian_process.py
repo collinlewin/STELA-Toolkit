@@ -58,7 +58,7 @@ class GaussianProcess():
             self.model = self.create_gp_model(
                 self.train_times, self.train_values, self.likelihood, kernel_form)
             if run_training:
-                self.train(train_iter=train_iter, learn_rate=learn_rate, verbose=verbose)
+                self.train_model(train_iter=train_iter, learn_rate=learn_rate, verbose=verbose)
 
             # Calculate marginal log likelihood, BIC, and optimal hyperparameters
         if sample_time_grid:
@@ -160,7 +160,7 @@ class GaussianProcess():
         for kernel_form in kernel_list:
             self.model = self.create_gp_model(
                 self.train_times, self.train_values, self.likelihood, kernel_form)
-            self.model, aic, _ = self.train(train_iter, learn_rate, verbose=False)
+            self.model, aic, _ = self.train_model(train_iter, learn_rate, verbose=False)
             aics.append(aic)
             if aic <= min(aics):
                 best_model = self.model
@@ -175,7 +175,7 @@ class GaussianProcess():
         self.kernel_form = best_kernel
         return best_model
 
-    def train(self, train_iter=1000, learn_rate=1e-2, verbose=False):
+    def train_model(self, train_iter=1000, learn_rate=1e-2, verbose=False):
         self.model.train()
         self.likelihood.train()
 
