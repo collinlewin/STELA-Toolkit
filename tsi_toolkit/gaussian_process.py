@@ -275,9 +275,8 @@ class GaussianProcess():
     
     def bayesian_inf_crit(self):
         mll = gpytorch.mlls.ExactMarginalLogLikelihood(self.likelihood, self.model)
-        log_marg_like = mll(self.model(self.train_times), self.train_values)
+        log_marg_like = mll(self.model(self.train_times), self.train_values).item()
 
-        # need to check if this includes the white noise hyperparameter!!
         num_params = sum([p.numel() for p in self.model.parameters()])
         num_data = len(self.train_times)
 
@@ -286,9 +285,8 @@ class GaussianProcess():
 
     def akaike_inf_crit(self, log_marg_like, num_params):
         mll = gpytorch.mlls.ExactMarginalLogLikelihood(self.likelihood, self.model)
-        log_marg_like = mll(self.model(self.train_times), self.train_values)
+        log_marg_like = mll(self.model(self.train_times), self.train_values).item()
 
-        # need to check if this includes the white noise hyperparameter!!
         num_params = sum([p.numel() for p in self.model.parameters()])
 
         aic = -2 * log_marg_like + 2 * num_params
