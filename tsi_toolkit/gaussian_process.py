@@ -117,20 +117,18 @@ class GaussianProcess():
         ValueError
             If an invalid kernel type is provided or if the mixture count is not valid.
         """
-        # Parse kernel type and optional number of mixtures
-        if ',' in kernel_form:
-            kernel_form, num_mixtures_str = kernel_form.split(',')
-            kernel_form = kernel_form.strip()
-            try:
-                num_mixtures = int(num_mixtures_str.strip())
-            except ValueError:
+        kernel_form = kernel_form.strip()
+        if 'SpectralMixture' in kernel_form:
+            if ',' not in kernel_form:
                 raise ValueError(
-                    f"Invalid number of mixtures '{num_mixtures_str}' for Spectral Mixture kernel.")
+                    "Invalid Spectral Mixture kernel format (use 'SpectralMixture, N'). N=4 is a good starting point."
+                )
+            else:
+                kernel_form, num_mixtures_str = kernel_form.split(',')
+                num_mixtures = int(num_mixtures_str.strip())
         else:
-            kernel_form = kernel_form.strip()
-            num_mixtures = 4
-
-        # Kernel mapping with special handling for Spectral Mixture kernel
+            num_mixtures = 4 # set value for kernel_mapping when Spectral Mixture kernel not used
+        
         kernel_mapping = {
             'Matern12': gpytorch.kernels.MaternKernel(nu=0.5),
             'Matern32': gpytorch.kernels.MaternKernel(nu=1.5),
@@ -144,6 +142,7 @@ class GaussianProcess():
         if kernel_form in kernel_mapping:
             kernel = kernel_mapping[kernel_form]
             if kernel_form == 'SpectralMixture':
+
                 kernel.initialize_from_data(self.train_times, self.train_values)
 
             covar_module = gpytorch.kernels.ScaleKernel(kernel)
@@ -193,22 +192,25 @@ class GaussianProcess():
             # Calc negative likelihood and backprop gradients
             loss = -mll(output, self.train_values)
             loss.backward()
+            optimizer.step()
 
             if verbose:
                 if self.kernel_form == 'SpectralMixture':
+                    mixture_scales = self.model.covar_module.base_kernel.mixture_scales.detach().numpy().flatten()
+                    mixture_weights = self.model.covar_module.base_kernel.mixture_weights.detach().numpy().flatten()
                     if self.white_noise:
-                        print('Iter %d/%d - Loss: %.3f   mixture_lengthscales: %.3f   mixture_weights: %s   noise: %.3f' % (
+                        print('Iter %d/%d - Loss: %.3f   mixture_lengthscales: %s   mixture_weights: %s   noise: %.3f' % (
                             i + 1, train_iter, loss.item(),
-                            self.model.covar_module.base_kernel.mixture_scales.item(),
-                            self.model.covar_module.base_kernel.mixture_weights.item(),
+                            mixture_scales.round(4),
+                            mixture_weights.round(4),
                             self.model.likelihood.second_noise.item()
                         ))
                     
                     else:
-                        print('Iter %d/%d - Loss: %.3f   mixture_lengthscales: %.3f   mixture_weights: %s' % (
+                        print('Iter %d/%d - Loss: %.3f   mixture_lengthscales: %s   mixture_weights: %s' % (
                             i + 1, train_iter, loss.item(),
-                            self.model.covar_module.base_kernel.mixture_scales.item(),
-                            self.model.covar_module.base_kernel.mixture_weights.item()
+                            mixture_scales.round(4),
+                            mixture_weights.round(4)
                         ))
 
                 else:
@@ -225,8 +227,6 @@ class GaussianProcess():
                             self.model.covar_module.base_kernel.lengthscale.item()
                         ))
 
-            optimizer.step()
-
         if verbose:
             final_hypers = self.get_hyperparameters()
             print(
@@ -235,7 +235,7 @@ class GaussianProcess():
                 f"   - Final hyperparameters:"
             )
             for key, value in final_hypers.items():
-                print(f"      {key:42}: {value:0.3}")
+                print(f"      {key:42}: {np.round(value,4)}")
 
     def get_hyperparameters(self):
         raw_hypers = self.model.named_parameters()
@@ -263,7 +263,13 @@ class GaussianProcess():
 
             # Remove 'raw_' prefix from the parameter name for readability
             param_name_withoutraw = param_name.replace('raw_', '')
-            hypers[param_name_withoutraw] = transform_param.item()
+
+            if self.kernel_form == 'SpectralMixture':
+                transform_param = transform_param.detach().numpy().flatten()
+            else:
+                transform_param = transform_param.item()
+
+            hypers[param_name_withoutraw] = transform_param
 
         return hypers
     
