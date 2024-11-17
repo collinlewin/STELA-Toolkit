@@ -14,7 +14,7 @@ class GaussianProcess():
                  sample_time_grid=[], num_samples=1000,
                  verbose=True):
         
-        # To Do: reconsider noise prior, add a mean function function for forecasting
+        # To Do: reconsider noise prior, add a mean function function for forecasting, more verbose options
         if timeseries:
             if isinstance(timeseries, TimeSeries):
                 self.timeseries = timeseries
@@ -53,7 +53,7 @@ class GaussianProcess():
             else:
                 kernel_list = ['Matern12', 'Matern32',
                                'Matern52', 'RQ', 'RBF', 'SpectralMixture, 4']
-            self.model = self.find_best_kernel(kernel_list, train_iter, learn_rate, verbose)
+            self.model = self.find_best_kernel(kernel_list, train_iter=train_iter, learn_rate=learn_rate, verbose=verbose)
 
         else:
             self.model = self.create_gp_model(
@@ -63,7 +63,7 @@ class GaussianProcess():
 
             # Calculate marginal log likelihood, BIC, and optimal hyperparameters
         if sample_time_grid:
-            self.samples = self.sample(sample_time_grid, num_samples)
+            self.samples = self.sample(sample_time_grid, num_samples=num_samples)
             if verbose:
                 print(f"Samples generated: {self.samples.shape}, access with 'samples' attribute.")
 
@@ -154,13 +154,14 @@ class GaussianProcess():
         self.kernel_form = kernel_form
         return covar_module
 
-    def find_best_kernel(self, kernel_list, train_iter, learn_rate, verbose=True):
+    def find_best_kernel(self, kernel_list, train_iter=1000, learn_rate=1e-2, verbose=False):
         aics = []
         best_model = None
         for kernel_form in kernel_list:
             self.model = self.create_gp_model(
                 self.train_times, self.train_values, self.likelihood, kernel_form)
-            self.model, aic, _ = self.train_model(train_iter, learn_rate, verbose=False)
+            self.train_model(train_iter=train_iter, learn_rate=learn_rate, verbose=False)
+            aic = self.akaike_inf_crit()
             aics.append(aic)
             if aic <= min(aics):
                 best_model = self.model
@@ -283,7 +284,7 @@ class GaussianProcess():
         bic = -2 * log_marg_like + num_params * np.log(num_data)
         return bic
 
-    def akaike_inf_crit(self, log_marg_like, num_params):
+    def akaike_inf_crit(self):
         mll = gpytorch.mlls.ExactMarginalLogLikelihood(self.likelihood, self.model)
         log_marg_like = mll(self.model(self.train_times), self.train_values).item()
 
