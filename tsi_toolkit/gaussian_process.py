@@ -58,7 +58,7 @@ class GaussianProcess():
             self.model = self.create_gp_model(
                 self.train_times, self.train_values, self.likelihood, kernel_form)
             if run_training:
-                self.train(train_iter, learn_rate, verbose)
+                self.train(train_iter=train_iter, learn_rate=learn_rate, verbose=verbose)
 
             # Calculate marginal log likelihood, BIC, and optimal hyperparameters
         if sample_time_grid:
@@ -118,15 +118,15 @@ class GaussianProcess():
         """
         # Parse kernel type and optional number of mixtures
         if ',' in kernel_form:
-            kernel_type, num_mixtures_str = kernel_form.split(',')
-            kernel_type = kernel_type.strip()
+            kernel_form, num_mixtures_str = kernel_form.split(',')
+            kernel_form = kernel_form.strip()
             try:
                 num_mixtures = int(num_mixtures_str.strip())
             except ValueError:
                 raise ValueError(
                     f"Invalid number of mixtures '{num_mixtures_str}' for Spectral Mixture kernel.")
         else:
-            kernel_type = kernel_form.strip()
+            kernel_form = kernel_form.strip()
             num_mixtures = 4
 
         # Kernel mapping with special handling for Spectral Mixture kernel
@@ -140,17 +140,18 @@ class GaussianProcess():
         }
 
         # Assign kernel if type is valid
-        if kernel_type in kernel_mapping:
-            kernel = kernel_mapping[kernel_type]
-            if kernel_type == 'SpectralMixture':
+        if kernel_form in kernel_mapping:
+            kernel = kernel_mapping[kernel_form]
+            if kernel_form == 'SpectralMixture':
                 kernel.initialize_from_data(self.train_times, self.train_values)
 
             covar_module = gpytorch.kernels.ScaleKernel(kernel)
 
         else:
             raise ValueError(
-                f"Invalid kernel type '{kernel_type}'. Choose from {list(kernel_mapping.keys())}.")
+                f"Invalid kernel functional form '{kernel_form}'. Choose from {list(kernel_mapping.keys())}.")
 
+        self.kernel_form = kernel_form
         return covar_module
 
     def find_best_kernel(self, kernel_list, train_iter, learn_rate, verbose=True):
@@ -159,7 +160,7 @@ class GaussianProcess():
         for kernel_form in kernel_list:
             self.model = self.create_gp_model(
                 self.train_times, self.train_values, self.likelihood, kernel_form)
-            self.model, aic, _ = self.train(train_iter, learn_rate, verbose)
+            self.model, aic, _ = self.train(train_iter, learn_rate, verbose=False)
             aics.append(aic)
             if aic <= min(aics):
                 best_model = self.model
@@ -171,10 +172,11 @@ class GaussianProcess():
                 f"Kernel AICs (lower is better): {[f'{k}: {a}' for k, a in zip(kernel_list, aics)]}")
             print(f"Best kernel: {best_kernel} with AIC: {best_aic}")
 
+        self.kernel_form = best_kernel
         return best_model
 
-    def train(self, model, train_iter, learn_rate, verbose=False):
-        model.train()
+    def train(self, train_iter=1000, learn_rate=1e-2, verbose=False):
+        self.model.train()
         self.likelihood.train()
 
         optimizer = torch.optim.Adam(self.model.parameters(), lr=learn_rate)
@@ -185,7 +187,7 @@ class GaussianProcess():
             optimizer.zero_grad()
 
             # Model output
-            output = model(self.train_times)
+            output = self.model(self.train_times)
 
             # Calc negative likelihood and backprop gradients
             loss = -mll(output, self.train_values)
@@ -195,22 +197,22 @@ class GaussianProcess():
                 if self.kernel_form == 'SpectralMixture':
                     print('Iter %d/%d - Loss: %.3f   mixture_lengthscales: %.3f   mixture_weights: %s' % (
                         i + 1, train_iter, loss.item(),
-                        model.covar_module.base_kernel.mixture_scales.item(),
-                        model.covar_module.base_kernel.mixture_weights.item()
+                        self.model.covar_module.base_kernel.mixture_scales.item(),
+                        self.model.covar_module.base_kernel.mixture_weights.item()
                     ))
 
                 else:
                     if self.white_noise:
                         print('Iter %d/%d - Loss: %.3f   lengthscale: %.3f   noise: %.3f' % (
                             i + 1, train_iter, loss.item(),
-                            model.covar_module.base_kernel.lengthscale.item(),
-                            model.likelihood.noise.item()
+                            self.model.covar_module.base_kernel.lengthscale.item(),
+                            self.model.likelihood.noise.item()
                         ))
 
                     else:
                         print('Iter %d/%d - Loss: %.3f   lengthscale: %.3f' % (
                             i + 1, train_iter, loss.item(),
-                            model.covar_module.base_kernel.lengthscale.item()
+                            self.model.covar_module.base_kernel.lengthscale.item()
                         ))
 
             optimizer.step()
