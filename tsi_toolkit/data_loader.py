@@ -17,7 +17,7 @@ class TimeSeries:
                  plot_data=False,
                  verbose=True
                  ):
-        # To do: Improve commenting and docstrings
+        # To do: Improve commenting and docstrings, check lengths of input arrays
         """
         Initializes the TimeSeries class.
 
@@ -56,6 +56,9 @@ class TimeSeries:
             raise ValueError(
                 "Please provide time and value arrays or a file path."
             )
+        
+        self.mean = np.mean(self.values)
+        self.std = np.std(self.values)
 
         if remove_nans:
             self.remove_nans(verbose=verbose)
@@ -231,17 +234,20 @@ class TimeSeries:
 
     def standardize(self):
         """Standardizes the time series data."""
-        self.mean = np.mean(self.values)
-        self.std = np.std(self.values)
-        self.values = (self.values - self.mean) / self.std
+        self.unstandard_mean = np.mean(self.values)
+        self.unstandard_std = np.std(self.values)
 
+        self.values = (self.values - self.mean) / self.std
         if self.errors.size > 0:
             self.errors = self.errors / self.std
+            
+        self.mean = np.mean(self.values)
+        self.std = np.std(self.values)
 
     def unstandardize(self):
         """Unstandardizes the time series data."""
         try:
-            self.values = (self.values * self.std) + self.mean
+            self.values = (self.values * self.unstandard_std) + self.unstandard_mean
 
         except AttributeError:
             raise AttributeError(
@@ -251,6 +257,9 @@ class TimeSeries:
 
         if self.errors.size > 0:
             self.errors = self.errors * self.std
+
+        self.mean = np.mean(self.values)
+        self.std = np.std(self.values)
 
     def trim_time_segment(self, start_time, end_time):
         """Trims the time series data to a specific time range."""
