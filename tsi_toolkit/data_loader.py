@@ -57,6 +57,9 @@ class TimeSeries:
                 "Please provide time and value arrays or a file path."
             )
         
+        if len(self.times) != len(self.values):
+            raise ValueError("times and values arrays must have the same length.")
+        
         self.mean = np.mean(self.values)
         self.std = np.std(self.values)
 
