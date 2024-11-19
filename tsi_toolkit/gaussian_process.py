@@ -7,31 +7,19 @@ from .data_loader import TimeSeries
 
 class GaussianProcess():
     def __init__(self,
-                 timeseries=None,
-                 train_times=[], train_values=[], train_errors=[],
+                 timeseries,
                  kernel_form='auto', white_noise=True,
                  run_training=True, train_iter=1000, learn_rate=1e-2,
                  sample_time_grid=[], num_samples=1000,
                  verbose=True):
 
         # To Do: reconsider noise prior, add a mean function function for forecasting, more verbose options
-        if timeseries:
-            if isinstance(timeseries, TimeSeries):
-                self.timeseries = timeseries
-            else:
-                raise TypeError("Expected timeseries to be a TimeSeries object.")
-
-        elif train_times.size > 0 and train_values > 0:
-            self.timeseries = TimeSeries(
-                times=train_times, values=train_values)
-            if train_errors.size > 0:
-                self.timeseries.errors = train_errors
-
+        if isinstance(timeseries, TimeSeries):
+            self.timeseries = timeseries
         else:
-            raise ValueError(
-                "Please provide either a TimeSeries object as 'timeseries' "
-                "or arrays for 'train_times' and 'train_values' (and optionally 'train_errors')."
-            )
+            raise TypeError("Expected timeseries to be a TimeSeries object."
+                            "Please input your data into the TimeSeries class first."
+                        )
 
         # Standardize the time series data to match zero mean function
         self.timeseries.standardize()
