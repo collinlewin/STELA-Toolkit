@@ -6,13 +6,11 @@ from .data_loader import TimeSeries
 
 class PowerSpectrum:
     def __init__(self,
-                 times=[],
-                 values=[],
-                 errors=[],
                  timeseries=None,
                  gp_samples=None,
-                 fmin='auto',
-                 fmax='auto',
+                 norm=True,
+                 fmin=None,
+                 fmax=None,
                  num_bins=None,
                  plot_fft=True
                  ):
@@ -25,17 +23,8 @@ class PowerSpectrum:
             times = timeseries.times
             values = timeseries.values
             errors = timeseries.errors
-
-        elif times.size > 0 and values.size > 0:
-            if times.size != values.size:
-                raise ValueError("times and values arrays must have the same length.")
-            times = np.array(times)
-            values = np.array(values)
-            errors = np.array(errors)
-
         elif gp_samples:
             pass
-
         else:
             raise ValueError("Either provide a TimeSeries object, times and values arrays, or array of GP samples.")
             
@@ -50,6 +39,9 @@ class PowerSpectrum:
             self.freq, self.power, self.power_error = self.compute_gp_fft(gp_samples, fmin=fmin, fmax=fmax, num_bins=num_bins)
         else:
             self.freq, self.power, self.power_error = self.compute_fft(fmin=fmin, fmax=fmax, num_bins=num_bins)
+
+        if norm:
+            self.power = 2 * self.dt / ( )
 
         if plot_fft:
             self.plot()
