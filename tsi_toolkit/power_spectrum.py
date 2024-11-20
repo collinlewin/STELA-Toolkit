@@ -6,6 +6,8 @@ from .data_loader import TimeSeries
 
 class PowerSpectrum:
     def __init__(self,
+                 times=[],
+                 values=[],
                  timeseries=None,
                  gp_samples=None,
                  norm=True,
@@ -23,25 +25,25 @@ class PowerSpectrum:
             times = timeseries.times
             values = timeseries.values
             errors = timeseries.errors
+            time_diffs = np.diff(times)
         elif gp_samples:
-            pass
+            # need to implement this
+            # self.dt needs to be defined properly for GPs
+            # find out how time information will be entered for GP samples
         else:
             raise ValueError("Either provide a TimeSeries object, times and values arrays, or array of GP samples.")
             
-        time_diffs = np.diff(times)
         if list(set(time_diffs)).size > 1:
             raise ValueError("Time series must have a uniform sampling interval."
                             "Interpolate the data to a uniform grid first."
                         )
         self.dt = time_diffs[0]
+        self.norm = norm
 
         if gp_samples:
             self.freq, self.power, self.power_error = self.compute_gp_fft(gp_samples, fmin=fmin, fmax=fmax, num_bins=num_bins)
         else:
-            self.freq, self.power, self.power_error = self.compute_fft(fmin=fmin, fmax=fmax, num_bins=num_bins)
-
-        if norm:
-            self.power = 2 * self.dt / ( )
+            self.freq, self.power, self.power_error = self.compute_fft(times, values, fmin=fmin, fmax=fmax, num_bins=num_bins)
 
         if plot_fft:
             self.plot()
@@ -70,6 +72,9 @@ class PowerSpectrum:
         freqs = freqs[valid_mask]
         power = power[valid_mask]
 
+        #if self.norm:
+        #    power /= n ** 2 # need to do this
+
         if num_bins:
             freqs, power, power_error = self._bin_frequency_logspace(freqs, power, num_bins)
         else:
@@ -77,8 +82,10 @@ class PowerSpectrum:
             
         return freqs, power, power_error
     
-    #def compute_gp_fft(self, gp_samples, fmin='auto', fmax='auto', num_bins=None):
-    # make once finalizing the gp sample structure
+    def compute_gp_fft(self, gp_samples, fmin=None, fmax=None, num_bins=None):
+        for sample in gp_samples:
+
+
     
     def plot(self, **kwargs):
         """
