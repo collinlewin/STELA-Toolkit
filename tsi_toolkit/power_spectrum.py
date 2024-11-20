@@ -25,25 +25,31 @@ class PowerSpectrum:
             times = timeseries.times
             values = timeseries.values
             errors = timeseries.errors
+
+        elif times.size > 0 and values.size > 0:
+            if times.size != values.size:
+                raise ValueError("times and values arrays must have the same length.")
+            times = np.array(times)
+            values = np.array(values)
+            errors = np.array(errors)
+
+        elif gp_samples:
+            pass
+
         else:
-            if times.size > 0 and values.size > 0:
-                times = np.array(times)
-                values = np.array(values)
-                errors = np.array(errors)
-            else:
-                raise ValueError("Either provide a TimeSeries object or times and values arrays.")
+            raise ValueError("Either provide a TimeSeries object, times and values arrays, or array of GP samples.")
             
         time_diffs = np.diff(times)
         if list(set(time_diffs)).size > 1:
             raise ValueError("Time series must have a uniform sampling interval."
                             "Interpolate the data to a uniform grid first."
-                            )
+                        )
         self.dt = time_diffs[0]
 
-        if len(self.times) != len(self.values):
-            raise ValueError("times and values arrays must have the same length.")
-        
-        self.freq, self.power, self.power_error = self.compute_fft(fmin=fmin, fmax=fmax, num_bins=num_bins)
+        if gp_samples:
+            self.freq, self.power, self.power_error = self.compute_gp_fft(gp_samples, fmin=fmin, fmax=fmax, num_bins=num_bins)
+        else:
+            self.freq, self.power, self.power_error = self.compute_fft(fmin=fmin, fmax=fmax, num_bins=num_bins)
 
         if plot_fft:
             self.plot()
