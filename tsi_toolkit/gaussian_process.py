@@ -8,9 +8,13 @@ from .data_loader import TimeSeries
 class GaussianProcess():
     def __init__(self,
                  timeseries,
-                 kernel_form='auto', white_noise=True,
-                 run_training=True, train_iter=1000, learn_rate=1e-2,
-                 sample_time_grid=[], num_samples=1000,
+                 kernel_form='auto',
+                 white_noise=True,
+                 run_training=True,
+                 train_iter=1000,
+                 learn_rate=1e-2,
+                 sample_time_grid=[],
+                 num_samples=1000,
                  verbose=True):
 
         # To Do: reconsider noise prior, add a mean function function for forecasting, more verbose options
