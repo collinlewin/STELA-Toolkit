@@ -312,6 +312,13 @@ class GaussianProcess():
         return aic
 
     def sample(self, pred_times, num_samples):
+        # Check if pred_times is a torch tensor
+        if not isinstance(pred_times, torch.Tensor):
+            try: 
+                pred_times = torch.tensor(pred_times, dtype=torch.float32)
+            except TypeError:
+                raise TypeError("pred_times must be a torch tensor or convertible to one.")
+
         # Predictive posterior mode
         self.model.eval()
         self.likelihood.eval()
@@ -324,6 +331,13 @@ class GaussianProcess():
         return samples
     
     def predict(self, pred_times):
+        # Check if pred_times is a torch tensor
+        if not isinstance(pred_times, torch.Tensor):
+            try:
+                pred_times = torch.tensor(pred_times, dtype=torch.float32)
+            except TypeError:
+                raise TypeError("pred_times must be a torch tensor or convertible to one.")
+
         self.model.eval()
         self.likelihood.eval()
 
@@ -334,8 +348,8 @@ class GaussianProcess():
 
         return mean, lower, upper
     
-    def plot(self, pred_times=np.array([])):
-        if pred_times.size == 0:
+    def plot(self, pred_times=None):
+        if pred_times is None:
             pred_times = torch.linspace(self.train_times.min(), self.train_times.max(), 1000)
 
         predict_mean, predict_lower, predict_upper = self.predict(pred_times)
