@@ -50,29 +50,25 @@ class Preprocessing:
         
         # Apply mask to trim data
         mask = (ts.times >= start_time) & (ts.times <= end_time)
-        if plot: 
-            removed_times = ts.times[~mask]
-            removed_values = ts.values[~mask]
-            removed_errors = ts.errors[~mask] if ts.errors.size > 0 else None
-        
-        ts.times = ts.times[mask]
-        ts.values = ts.values[mask]
-        if ts.errors.size > 0:
-            ts.errors = ts.errors[mask]
-
         if plot:
             if ts.errors.size > 0:
-                plt.errorbar(ts.times, ts.values, yerr=ts.errors, fmt='o', lw=1, ms=2, color='black', label='Kept Data')
-                plt.errorbar(removed_times, removed_values, yerr=removed_errors, fmt='o', lw=1, ms=2, color='red', label='Trimmed Data')
+                plt.errorbarts.times[mask], ts.values[mask], yerr=ts.errors[mask], fmt='o', lw=1, ms=2, color='black', label='Kept Data')
+                plt.errorbar(ts.times[~mask], ts.values[~mask], yerr=ts.errors[~mask], fmt='o', lw=1, ms=2, color='red', label='Trimmed Data')
             else:
-                plt.scatter(ts.times, ts.values, s=2, color="black", label="Kept Data")
-                plt.scatter(removed_times, removed_values, s=2, color="red", label="Trimmed Data")
+                plt.scatter(ts.times[mask], ts.values[mask], s=2, color="black", label="Kept Data")
+                plt.scatter(ts.times[~mask], ts.values[~mask], s=2, color="red", label="Trimmed Data")
 
             plt.xlabel("Time")
             plt.ylabel("Values")
             plt.title("Trimming")
             plt.legend()
             plt.show()
+        
+        if save:
+            ts.times = ts.times[mask]
+            ts.values = ts.values[mask]
+            if ts.errors.size > 0:
+                ts.errors = ts.errors[mask]
 
     @staticmethod
     def remove_nans(timeseries, verbose=True):
