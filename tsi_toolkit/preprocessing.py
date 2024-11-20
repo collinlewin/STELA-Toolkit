@@ -29,14 +29,50 @@ class Preprocessing:
             ts.errors = ts.errors * ts.unstandard_std
 
     @staticmethod
-    def trim_time_segment(timeseries, start_time, end_time):
-        """Trims the time series data to a specific time range."""
+    def trim_time_segment(timeseries, start_time=None, end_time=None, plot=False):
+        """
+        Trims the time series data to a specific time range.
+        
+        Parameters:
+        - timeseries (TimeSeries): The time series object to trim.
+        - start_time (float): The starting time for the range.
+        - end_time (float): The ending time for the range.
+        - plot (bool): Whether to plot the data before and after trimming.
+        """
         ts = timeseries
+
+        if start_time is None:
+            start_time = ts.times[0]
+        if end_time is None:
+            end_time = ts.times[-1]
+        if start_time and end_time is None:
+            raise ValueError("Please specify a start and/or end time.")
+        
+        # Apply mask to trim data
         mask = (ts.times >= start_time) & (ts.times <= end_time)
+        if plot: 
+            removed_times = ts.times[~mask]
+            removed_values = ts.values[~mask]
+            removed_errors = ts.errors[~mask] if ts.errors.size > 0 else None
+        
         ts.times = ts.times[mask]
         ts.values = ts.values[mask]
         if ts.errors.size > 0:
             ts.errors = ts.errors[mask]
+
+        if plot:
+            plt.figure(figsize=(10, 5))
+            if ts.errors.size > 0:
+                plt.errorbar(ts.times, ts.values, yerr=ts.errors, fmt='o', color='black', label='Kept Data')
+                plt.errorbar(removed_times, removed_values, yerr=removed_errors, fmt='o', color='red', label='Trimmed Data')
+            else:
+                plt.scatter(ts.times, ts.values, color="black", label="Kept Data")
+                plt.scatter(removed_times, removed_values, color="red", label="Trimmed Data")
+
+            plt.xlabel("Time")
+            plt.ylabel("Values")
+            plt.legend()
+            plt.show()
 
     @staticmethod
     def remove_nans(timeseries, verbose=True):
