@@ -10,7 +10,7 @@ class TimeSeries:
                  file_path=None,
                  file_columns=[0, 1, 2],
                  ):
-        # To do: Improve commenting and docstrings, check lengths of input arrays
+        # To do: Improve commenting and docstrings
         """
         Initializes the TimeSeries class.
 
@@ -51,7 +51,7 @@ class TimeSeries:
             )
         
         if len(self.times) != len(self.values):
-            raise ValueError("times and values arrays must have the same length.")
+            raise ValueError("Times and values arrays must have the same length.")
 
     @property
     def mean(self):
