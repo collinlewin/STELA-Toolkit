@@ -326,7 +326,7 @@ class GaussianProcess():
         # Make predictions
         with torch.no_grad(), gpytorch.settings.fast_pred_var():
             pred_dist = self.likelihood(self.model(pred_times))
-            samples = pred_dist.sample(sample_shape=torch.Size([1]))
+            samples = pred_dist.sample(sample_shape=torch.Size([num_samples]))
 
         return samples
     
