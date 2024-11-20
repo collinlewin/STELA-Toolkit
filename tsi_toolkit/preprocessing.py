@@ -29,7 +29,7 @@ class Preprocessing:
             ts.errors = ts.errors * ts.unstandard_std
 
     @staticmethod
-    def trim_time_segment(timeseries, start_time=None, end_time=None, plot=False):
+    def trim_time_segment(timeseries, start_time=None, end_time=None, plot=False, save=True):
         """
         Trims the time series data to a specific time range.
         
@@ -61,16 +61,16 @@ class Preprocessing:
             ts.errors = ts.errors[mask]
 
         if plot:
-            plt.figure(figsize=(10, 5))
             if ts.errors.size > 0:
-                plt.errorbar(ts.times, ts.values, yerr=ts.errors, fmt='o', color='black', label='Kept Data')
-                plt.errorbar(removed_times, removed_values, yerr=removed_errors, fmt='o', color='red', label='Trimmed Data')
+                plt.errorbar(ts.times, ts.values, yerr=ts.errors, fmt='o', lw=1, ms=2, color='black', label='Kept Data')
+                plt.errorbar(removed_times, removed_values, yerr=removed_errors, fmt='o', lw=1, ms=2, color='red', label='Trimmed Data')
             else:
-                plt.scatter(ts.times, ts.values, color="black", label="Kept Data")
-                plt.scatter(removed_times, removed_values, color="red", label="Trimmed Data")
+                plt.scatter(ts.times, ts.values, s=2, color="black", label="Kept Data")
+                plt.scatter(removed_times, removed_values, s=2, color="red", label="Trimmed Data")
 
             plt.xlabel("Time")
             plt.ylabel("Values")
+            plt.title("Trimming")
             plt.legend()
             plt.show()
 
@@ -104,17 +104,6 @@ class Preprocessing:
         - rolling_window (int): If specified, applies a local IQR over a rolling
             window. Otherwise, uses the global IQR.
         """
-        ts = timeseries
-        # Create copies if save is False
-        if not save:
-            times = ts.times.copy()
-            values = ts.values.copy()
-            errors = ts.errors.copy()
-        else:
-            times = ts.times
-            values = ts.values
-            errors = ts.errors
-
         def plot_outliers(outlier_mask):
             """Plots the data flagged as outliers."""
             if errors is not None:
@@ -134,7 +123,7 @@ class Preprocessing:
                 )
             plt.xlabel('Time')
             plt.ylabel('Values')
-            plt.title('Outliers Detection')
+            plt.title('Outlier Detection')
             plt.legend()
             plt.show()
 
@@ -160,7 +149,11 @@ class Preprocessing:
                 outlier_mask = (values < lower_bound) | (values > upper_bound)
             return outlier_mask
 
-        # Detect outliers
+        ts = timeseries
+        times = ts.times
+        values = ts.values
+        errors = ts.errors
+
         outlier_mask = detect_outliers(values, threshold=threshold, rolling_window=rolling_window)
 
         if verbose:
@@ -170,14 +163,9 @@ class Preprocessing:
         if plot:
             plot_outliers(outlier_mask)
 
-        # Apply mask
-        cleaned_times = times[~outlier_mask]
-        cleaned_values = values[~outlier_mask]
-        cleaned_errors = errors[~outlier_mask] if errors is not None else None
-
         # Save results back to the original timeseries if save=True
         if save:
-            ts.times = cleaned_times
-            ts.values = cleaned_values
-            if errors is not None:
-                ts.errors = cleaned_errors
+            ts.times = times[~outlier_mask]
+            ts.values =  values[~outlier_mask]
+            if errors.size > 0:
+                ts.errors = errors[~outlier_mask]
