@@ -3,6 +3,7 @@ import gpytorch
 import numpy as np
 
 from .data_loader import TimeSeries
+from .preprocessing import Preprocessing
 
 
 class GaussianProcess():
@@ -26,7 +27,7 @@ class GaussianProcess():
                         )
 
         # Standardize the time series data to match zero mean function
-        self.timeseries.standardize()
+        Preprocessing.standardize(self.timeseries)
 
         # Convert time series data to PyTorch tensors
         self.train_times = torch.tensor(self.timeseries.times)
@@ -39,18 +40,21 @@ class GaussianProcess():
         self.likelihood = self.set_likelihood(self.white_noise, train_errors=self.train_errors)
 
         # Find best kernel based on AIC
-        if kernel_form in ['auto', 'advise me, please?'] or isinstance(kernel_form, list):
+        if kernel_form == 'auto' or isinstance(kernel_form, list):
             if isinstance(kernel_form, list):
                 kernel_list = kernel_form
             else:
-                kernel_list = ['Matern12', 'Matern32',
-                               'Matern52', 'RQ', 'RBF', 'SpectralMixture, 4']
+                kernel_list = ['Matern12', 'Matern32', 'Matern52', 'RQ', 'RBF', 'SpectralMixture, 4']
+
             self.model = self.find_best_kernel(
-                kernel_list, train_iter=train_iter, learn_rate=learn_rate, verbose=verbose)
+                kernel_list, train_iter=train_iter, learn_rate=learn_rate, verbose=verbose
+                )
 
         else:
             self.model = self.create_gp_model(
-                self.train_times, self.train_values, self.likelihood, kernel_form)
+                self.train_times, self.train_values, self.likelihood, kernel_form
+                )
+            
             if run_training:
                 self.train_model(train_iter=train_iter, learn_rate=learn_rate, verbose=verbose)
 
@@ -151,9 +155,10 @@ class GaussianProcess():
         best_model = None
         for kernel_form in kernel_list:
             self.model = self.create_gp_model(
-                self.train_times, self.train_values, self.likelihood, kernel_form)
-            self.train_model(train_iter=train_iter, learn_rate=learn_rate,
-                             verbose=False)  # suppress output, even for verbose=True
+                self.train_times, self.train_values, self.likelihood, kernel_form
+                )
+            # suppress output, even for verbose=True
+            self.train_model(train_iter=train_iter, learn_rate=learn_rate, verbose=True) 
             aic = self.akaike_inf_crit()
             aics.append(aic)
             if aic <= min(aics):
@@ -277,7 +282,9 @@ class GaussianProcess():
 
     def bayesian_inf_crit(self):
         mll = gpytorch.mlls.ExactMarginalLogLikelihood(self.likelihood, self.model)
-        log_marg_like = mll(self.model(self.train_times), self.train_values).item()
+        log_marg_like = mll(
+            self.model(self.train_times), self.train_values
+            ).item()
 
         num_params = sum([p.numel() for p in self.model.parameters()])
         num_data = len(self.train_times)
@@ -287,7 +294,9 @@ class GaussianProcess():
 
     def akaike_inf_crit(self):
         mll = gpytorch.mlls.ExactMarginalLogLikelihood(self.likelihood, self.model)
-        log_marg_like = mll(self.model(self.train_times), self.train_values).item()
+        log_marg_like = mll(
+            self.model(self.train_times), self.train_values
+            ).item()
 
         num_params = sum([p.numel() for p in self.model.parameters()])
 
