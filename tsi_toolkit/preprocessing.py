@@ -5,14 +5,6 @@ import matplotlib.pyplot as plt
 
 class Preprocessing:
     @staticmethod
-    def clean_data(timeseries, outlier_threshold=1.5, outlier_rolling_window=10, verbose=True):
-        """Cleans the time series data by removing NaNs and outliers and standardizing."""
-        ts = timeseries
-        Preprocessing.remove_nans(ts, verbose=verbose)
-        Preprocessing.remove_outliers(ts, threshold=outlier_threshold, rolling_window=outlier_rolling_window, verbose=verbose)
-        Preprocessing.standardize(ts)
-
-    @staticmethod
     def standardize(timeseries):
         """Standardizes the time series data."""
         ts = timeseries
