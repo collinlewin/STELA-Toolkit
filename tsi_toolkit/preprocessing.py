@@ -52,7 +52,7 @@ class Preprocessing:
         mask = (ts.times >= start_time) & (ts.times <= end_time)
         if plot:
             if ts.errors.size > 0:
-                plt.errorbarts.times[mask], ts.values[mask], yerr=ts.errors[mask], fmt='o', lw=1, ms=2, color='black', label='Kept Data')
+                plt.errorbar(ts.times[mask], ts.values[mask], yerr=ts.errors[mask], fmt='o', lw=1, ms=2, color='black', label='Kept Data')
                 plt.errorbar(ts.times[~mask], ts.values[~mask], yerr=ts.errors[~mask], fmt='o', lw=1, ms=2, color='red', label='Trimmed Data')
             else:
                 plt.scatter(ts.times[mask], ts.values[mask], s=2, color="black", label="Kept Data")
