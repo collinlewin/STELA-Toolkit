@@ -169,3 +169,48 @@ class Preprocessing:
             ts.values =  values[~outlier_mask]
             if errors.size > 0:
                 ts.errors = errors[~outlier_mask]
+
+    @staticmethod
+    def polynomial_detrend(timeseries, degree=1, plot=False, save=True):
+        """
+        Removes a polynomial trend from the time series data.
+
+        Parameters:
+        - timeseries (TimeSeries): The time series object to detrend.
+        - degree (int): The degree of the polynomial to fit.
+        - plot (bool): Whether to plot the original data, fitted trend, and detrended data.
+        - save (bool): If True, modifies the original timeseries object. If False, returns the detrended data.
+
+        Returns:
+        If save=False:
+            - detrended_values (array): Values after detrending.
+        """
+        ts = timeseries
+
+        # Fit polynomial to the data
+        if ts.errors.size > 0:
+            coefficients = np.polyfit(ts.times, ts.values, degree, w=1/ts.errors)
+        else:
+            coefficients = np.polyfit(ts.times, ts.values, degree)
+        polynomial = np.poly1d(coefficients)
+        trend = polynomial(ts.times)
+
+        detrended_values = ts.values - trend
+        if plot:
+            if ts.errors.size > 0:
+                plt.errorbar(ts.times, ts.values, yerr=ts.errors, fmt='o', color='black', lw=1, ms=2, label='Original Data')
+                plt.errorbar(ts.times, detrended_values, yerr=ts.errors, fmt='o', color='dodgerblue', lw=1, ms=2, label='Detrended Data')
+            else:
+                plt.plot(ts.times, ts.values, label="Original Data", color="black", alpha=0.6)
+                plt.plot(ts.times, detrended_values, label="Detrended Data", color="dodgerblue")
+
+            plt.plot(ts.times, trend, color='orange', linestyle='--', label=f'Fitted Polynomial (degree={degree})')
+
+            plt.xlabel("Time")
+            plt.ylabel("Values")
+            plt.title("Polynomial Detrending")
+            plt.legend()
+            plt.show()
+
+        if save:
+            ts.values = detrended_values
