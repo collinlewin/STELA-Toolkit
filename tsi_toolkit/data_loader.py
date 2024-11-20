@@ -9,12 +9,6 @@ class TimeSeries:
                  errors=[],
                  file_path=None,
                  file_columns=[0, 1, 2],
-                 remove_nans=True,
-                 detect_outliers=False,
-                 outlier_threshold=1.5,
-                 outlier_rolling_window=10,
-                 plot_data=False,
-                 verbose=True
                  ):
         # To do: Improve commenting and docstrings, check lengths of input arrays
         """
@@ -58,17 +52,6 @@ class TimeSeries:
         
         if len(self.times) != len(self.values):
             raise ValueError("times and values arrays must have the same length.")
-        
-        if remove_nans:
-            self.remove_nans(verbose=verbose)
-
-        if detect_outliers:
-            self.remove_outliers(threshold=outlier_threshold,
-                                 rolling_window=outlier_rolling_window,
-                                 verbose=verbose)
-
-        if plot_data:
-            self.plot_timeseries()
 
     @property
     def mean(self):
