@@ -2,6 +2,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 from astropy.io import fits
 
+from .data_loader import TimeSeries
+
 
 class TimeSeries:
     def __init__(self,
@@ -60,9 +62,6 @@ class TimeSeries:
         if len(self.times) != len(self.values):
             raise ValueError("times and values arrays must have the same length.")
         
-        self.mean = np.mean(self.values)
-        self.std = np.std(self.values)
-
         if remove_nans:
             self.remove_nans(verbose=verbose)
 
@@ -72,8 +71,16 @@ class TimeSeries:
                                  verbose=verbose)
 
         if plot_data:
-            self.plot()
+            self.plot_timeseries()
 
+    @property
+    def mean(self):
+        return np.mean(self.values)
+    
+    @property
+    def std(self):
+        return np.std(self.values)
+    
     def load_file(self, file_path, file_columns=[0, 1, 2]):
         """
         Loads data from a file and sets the times, values, and errors.
@@ -225,162 +232,6 @@ class TimeSeries:
             plt.tick_params(**minor_tick_kwargs)
 
         plt.show()
-
-    def clean_data(self, outlier_threshold=1.5, outlier_rolling_window=10, verbose=True):
-        """Cleans the time series data by removing NaNs and outliers and standardizing."""
-        self.remove_nans(verbose=verbose)
-        self.remove_outliers(threshold=outlier_threshold,
-                             rolling_window=outlier_rolling_window,
-                             verbose=verbose
-                             )
-        self.standardize()
-
-    def standardize(self):
-        """Standardizes the time series data."""
-        self.unstandard_mean = np.mean(self.values)
-        self.unstandard_std = np.std(self.values)
-
-        self.values = (self.values - self.mean) / self.std
-        if self.errors.size > 0:
-            self.errors = self.errors / self.std
-            
-        self.mean = np.mean(self.values)
-        self.std = np.std(self.values)
-
-    def unstandardize(self):
-        """Unstandardizes the time series data."""
-        try:
-            self.values = (self.values * self.unstandard_std) + self.unstandard_mean
-
-        except AttributeError:
-            raise AttributeError(
-                "The data has not been standardized yet. "
-                "Please call the 'standardize' method first."
-            )
-
-        if self.errors.size > 0:
-            self.errors = self.errors * self.std
-
-        self.mean = np.mean(self.values)
-        self.std = np.std(self.values)
-
-    def trim_time_segment(self, start_time, end_time):
-        """Trims the time series data to a specific time range."""
-        mask = (self.times >= start_time) & (self.times <= end_time)
-        self.times = self.times[mask]
-        self.values = self.values[mask]
-
-        if self.errors.size > 0:
-            self.errors = self.errors[mask]
-
-    def remove_nans(self, verbose=False):
-        """Removes NaN values where time, value, or measurement error is NaN."""
-        if self.errors.size > 0:
-            nonnan_mask = ~np.isnan(self.values) & ~np.isnan(self.times) & ~np.isnan(self.errors)
-        else:
-            nonnan_mask = ~np.isnan(self.values) & ~np.isnan(self.times)
-
-        if verbose:
-            print(f"Removed {np.sum(~nonnan_mask)} NaN points.\n"
-                  f"({np.sum(np.isnan(self.values))} NaN values, "
-                  f"{np.sum(np.isnan(self.errors))} NaN errors)"
-                  )
-
-        self.times = self.times[nonnan_mask]
-        self.values = self.values[nonnan_mask]
-        if self.errors.size > 0:
-            self.errors = self.errors[nonnan_mask]
-
-    def remove_outliers(self, threshold=1.5, rolling_window=None, plot=True, verbose=False):
-        """
-        Identifies and removes outliers based on the Interquartile Range (IQR).
-        Stores a mask of outliers for plotting.
-
-        Parameters:
-        - threshold (float): Multiplier for the IQR to define the outlier range.
-        - rolling_window (int): If specified, applies a local IQR over a rolling 
-            window. Otherwise, uses the global IQR.
-        """
-        def plot_outliers(outlier_mask):
-            """
-            Plots the data flagged as outliers.
-            """
-            if len(self.errors) > 0:
-                plt.errorbar(
-                    self.times[~outlier_mask], self.values[~outlier_mask],
-                    yerr=self.errors[~outlier_mask], fmt='o', color='black', lw=1, ms=2
-                )
-
-                plt.errorbar(
-                    self.times[outlier_mask], self.values[outlier_mask],
-                    yerr=self.errors[outlier_mask], fmt='o', color='red', label='Outliers', lw=1, ms=2
-                )
-
-            else:
-                plt.scatter(self.times[~outlier_mask], self.values[~outlier_mask], s=2)
-                plt.scatter(
-                    self.times[outlier_mask], self.values[outlier_mask],
-                    color='red', label='Outliers', s=2
-                )
-
-            plt.xlabel('Time')
-            plt.ylabel('Values')
-            plt.title('Outliers Detection')
-            plt.legend()
-            plt.show()
-
-        def detect_outliers(threshold=1.5, rolling_window=None):
-            if rolling_window:
-                # Initialize an array to store the outlier mask
-                outlier_mask = np.zeros_like(self.values, dtype=bool)
-
-                # Apply a rolling IQR filter
-                half_window = rolling_window // 2
-                for i in range(len(self.values)):
-                    # Define the local window range
-                    start = max(0, i - half_window)
-                    end = min(len(self.values), i + half_window + 1)
-
-                    # Calculate local IQR
-                    local_data = self.values[start:end]
-                    q1, q3 = np.percentile(local_data, [25, 75])
-                    iqr = q3 - q1
-
-                    # Determine bounds
-                    lower_bound = q1 - threshold * iqr
-                    upper_bound = q3 + threshold * iqr
-
-                    # Mark as outlier if outside bounds
-                    if self.values[i] < lower_bound or self.values[i] > upper_bound:
-                        outlier_mask[i] = True
-
-            else:
-                # Global IQR calculation
-                q1 = np.percentile(self.values, 25)
-                q3 = np.percentile(self.values, 75)
-                iqr = q3 - q1
-
-                # Define global lower and upper bounds
-                lower_bound = q1 - threshold * iqr
-                upper_bound = q3 + threshold * iqr
-
-                # Create outlier mask and replace values
-                outlier_mask = (self.values < lower_bound) | (self.values > upper_bound)
-
-            return outlier_mask
-
-        outlier_mask = detect_outliers(threshold=threshold, rolling_window=rolling_window)
-        if verbose:
-            print(f"Removed {np.sum(outlier_mask)} outliers "
-                  f"({np.sum(outlier_mask) / len(self.values) * 100:.2f}% of data)."
-                  )
-
-        if plot:
-            plot_outliers(outlier_mask)
-
-        self.times = self.times[~outlier_mask]
-        self.values = self.values[~outlier_mask]
-        self.errors = self.errors[~outlier_mask]
 
     def __add__(self, other_timeseries):
         """Adds two TimeSeries objects with matching times."""
