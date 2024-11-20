@@ -14,7 +14,7 @@ class PowerSpectrum:
                  fmin='auto',
                  fmax='auto',
                  num_bins=None,
-                 plot=True
+                 plot_fft=True
                  ):
         """
 
@@ -44,6 +44,9 @@ class PowerSpectrum:
             raise ValueError("times and values arrays must have the same length.")
         
         self.freq, self.power, self.power_error = self.compute_fft(fmin=fmin, fmax=fmax, num_bins=num_bins)
+
+        if plot_fft:
+            self.plot()
 
     def compute_fft(self, times, values, fmin='auto', fmax='auto', num_bins=None):
         """
