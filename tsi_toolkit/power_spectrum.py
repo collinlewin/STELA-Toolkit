@@ -11,50 +11,31 @@ class PowerSpectrum:
                  timeseries=None,
                  fmin='auto',
                  fmax='auto',
-                 num_freq_bins=None,
+                 num_bins=None,
                  norm=True,
                  plot_fft=False
                  ):
         """
 
         """
-        if timeseries:
-            if not isinstance(timeseries, TimeSeries):
-                raise TypeError("timeseries must be an instance of the TimeSeries class.")
-            times = timeseries.times
-            values = timeseries.values
-        elif len(times) > 0 and len(values) > 0:
-            times = np.array(times)
-            values = np.array(values)
-            if len(values.shape) == 1 and len(times) != len(values):
-                raise ValueError("Times and values must have the same length.")
-            elif len(values.shape) == 2 and values.shape[1] != len(times):
-                raise ValueError("Times and values must have the same length for each time series.\n"
-                                 "Check the shape of the values array: expecting (n_series, n_times)."
-                            )
-        else:
-            raise ValueError("Either provide a TimeSeries object or times and values arrays.")
-            
-        unique_time_diffs = np.unique(np.diff(times))
-        if unique_time_diffs.size > 1:
-            raise ValueError("Time series must have a uniform sampling interval.\n"
-                            "Interpolate the data to a uniform grid first."
-                        )
-        self.dt = unique_time_diffs[0]
-        
+        self.times, self.values = self._check_input(timeseries, times, values)
+        self.fmin = fmin
+        self.fmax = fmax
+
+        # if multiple time series are provided, compute the stacked power spectrum
         if len(values.shape) == 2:
             self.freq, self.power, self.power_std = self.compute_stacked_power_spectrum(
-                times, values, fmin=fmin, fmax=fmax, num_bins=num_freq_bins, norm=norm
+                fmin=self.fmin, fmax=self.fmax, num_bins=num_bins, norm=norm
             )
         else:
             self.freq, self.power, self.power_std = self.compute_power_spectrum(
-                times, values, fmin=fmin, fmax=fmax, num_bins=num_freq_bins, norm=norm
+                fmin=self.fmin, fmax=self.fmax, num_bins=num_bins, norm=norm
             )
 
         if plot_fft:
             self.plot()
 
-    def compute_power_spectrum(self, times, values, fmin='auto', fmax='auto', num_freq_bins=None, norm=True):
+    def compute_power_spectrum(self, times=None, values=None, fmin='auto', fmax='auto', num_bins=None, norm=True):
         """
         Computes the FFT of the values data and bins the output in frequency space.
 
@@ -62,14 +43,26 @@ class PowerSpectrum:
         - binned_freqs (array-like): Binned frequencies.
         - binned_power (array-like): Binned power spectrum.
         """
+        if times is None:
+            times = self.times
+        if values is None:
+            values = self.values
+
+        time_diffs = np.round(np.diff(times),10)
+        if np.unique(time_diffs).size > 1:
+            raise ValueError("Time series must have a uniform sampling interval.\n"
+                            "Interpolate the data to a uniform grid first."
+                        )
+        dt = time_diffs[0]
+            
         length = len(values)
 
         # Use absolute min and max frequencies if set to 'auto'
-        fmin = 1 / (times.max() - times.min()) if self.fmin == 'auto' else self.fmin
-        fmax = 1 / (2 * self.dt)if self.fmax == 'auto' else self.fmax # Nyquist frequency
+        fmin = 1 / (times.max() - times.min()) if fmin == 'auto' else fmin
+        fmax = 1 / (2 * dt)if fmax == 'auto' else fmax # Nyquist frequency
 
-        fft_vals = np.fft.fft(self.values)
-        freqs = np.fft.fftfreq(length, d=self.dt)
+        fft_vals = np.fft.fft(values)
+        freqs = np.fft.fftfreq(length, d=dt)
         power = np.abs(fft_vals) ** 2
 
         # Filter frequencies within [fmin, fmax]
@@ -77,21 +70,21 @@ class PowerSpectrum:
         freqs = freqs[valid_mask]
         power = power[valid_mask]
 
-        if num_freq_bins:
-            freqs, power, power_error = self._bin_frequency_logspace(freqs, power, num_freq_bins)
+        if num_bins:
+            freqs, power, power_error = self._bin_frequency_logspace(freqs, power, num_bins)
         else:
             power_error = None
 
         # Normalize power spectrum to units of variance
         if norm:
-            power /= length * np.mean(self.values) ** 2 / (2 * self.dt)
+            power /= length * np.mean(values) ** 2 / (2 * self.dt)
             
         return freqs, power, power_error
     
-    def compute_stacked_power_spectrum(self, times, values, fmin='auto', fmax='auto', num_freq_bins=None, norm=True):
-        for i in range(values.shape[0]):
+    def compute_stacked_power_spectrum(self, fmin='auto', fmax='auto', num_bins=None, norm=True):
+        for i in range(self.values.shape[0]):
             freqs, power, power_error = self.compute_power_spectrum(
-                times, values[i], fmin=fmin, fmax=fmax, num_freq_bins=num_freq_bins, norm=norm
+                self.times, self.values[i], fmin=fmin, fmax=fmax, num_bins=num_bins, norm=norm
                 )
             if i == 0:
                 stacked_power = power
@@ -182,6 +175,28 @@ class PowerSpectrum:
         """
         self.freqs, self.power, self.power_error = self._bin_frequency_logspace(self.freqs, self.power, num_bins)
     
+    def _check_input(timeseries, times, values):
+        if timeseries:
+            if not isinstance(timeseries, TimeSeries):
+                raise TypeError("timeseries must be an instance of the TimeSeries class.")
+            times = timeseries.times
+            values = timeseries.values
+            
+        elif len(times) > 0 and len(values) > 0:
+            times = np.array(times)
+            values = np.array(values)
+            if len(values.shape) == 1 and len(times) != len(values):
+                raise ValueError("Times and values must have the same length.")
+            
+            elif len(values.shape) == 2 and values.shape[1] != len(times):
+                raise ValueError("Times and values must have the same length for each time series.\n"
+                                 "Check the shape of the values array: expecting (n_series, n_times)."
+                            )
+        else:
+            raise ValueError("Either provide a TimeSeries object or times and values arrays.")
+        
+        return times, values
+        
     def _bin_frequency_logspace(self, freqs, power, num_bins):
         """
         Bins the FFT output in frequency space.
