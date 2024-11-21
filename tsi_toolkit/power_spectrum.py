@@ -2,6 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 from .data_loader import TimeSeries
+from .frequency_binning import FrequencyBinning
 
 
 class PowerSpectrum:
@@ -24,11 +25,11 @@ class PowerSpectrum:
 
         # if multiple time series are provided, compute the stacked power spectrum
         if len(values.shape) == 2:
-            self.freq, self.power, self.power_std = self.compute_stacked_power_spectrum(
+            self.freqs, self.powers, self.power_sigmas = self.compute_stacked_power_spectrum(
                 fmin=self.fmin, fmax=self.fmax, num_bins=num_bins, norm=norm
             )
         else:
-            self.freq, self.power, self.power_std = self.compute_power_spectrum(
+            self.freqs, self.powers, self.power_sigmas = self.compute_power_spectrum(
                 fmin=self.fmin, fmax=self.fmax, num_bins=num_bins, norm=norm
             )
 
@@ -53,81 +54,73 @@ class PowerSpectrum:
             raise ValueError("Time series must have a uniform sampling interval.\n"
                             "Interpolate the data to a uniform grid first."
                         )
-        dt = time_diffs[0]
-            
+        dt = time_diffs[0] 
         length = len(values)
 
         # Use absolute min and max frequencies if set to 'auto'
         fmin = 1 / (times.max() - times.min()) if fmin == 'auto' else fmin
-        fmax = 1 / (2 * dt)if fmax == 'auto' else fmax # Nyquist frequency
+        fmax = 1 / (2 * dt) if fmax == 'auto' else fmax # Nyquist frequency
 
-        fft_vals = np.fft.fft(values)
+        fft = np.fft.fft(values)
         freqs = np.fft.fftfreq(length, d=dt)
-        power = np.abs(fft_vals) ** 2
+        powers = np.abs(fft) ** 2
 
         # Filter frequencies within [fmin, fmax]
         valid_mask = (freqs >= fmin) & (freqs <= fmax)
         freqs = freqs[valid_mask]
-        power = power[valid_mask]
+        powers = powers[valid_mask]
 
         if num_bins:
-            freqs, power, power_error = self._bin_frequency_logspace(freqs, power, num_bins)
+            freqs, freq_widths, powers, power_sigmas = FrequencyBinning.bin_frequency_logspace(freqs, powers, num_bins)
         else:
-            power_error = None
+            freq_widths, power_sigmas = None, None
 
         # Normalize power spectrum to units of variance
         if norm:
-            power /= length * np.mean(values) ** 2 / (2 * self.dt)
+            powers /= length * np.mean(values) ** 2 / (2 * dt)
             
-        return freqs, power, power_error
+        return freqs, freq_widths, powers, power_sigmas
     
     def compute_stacked_power_spectrum(self, fmin='auto', fmax='auto', num_bins=None, norm=True):
+        powers = []
+        power_sigmas = []
         for i in range(self.values.shape[0]):
-            freqs, power, power_error = self.compute_power_spectrum(
+            freqs_oneseries, freq_widths, powers_oneseries, power_sigmas_oneseries = self.compute_power_spectrum(
                 self.times, self.values[i], fmin=fmin, fmax=fmax, num_bins=num_bins, norm=norm
-                )
-            if i == 0:
-                stacked_power = power
-            else:
-                stacked_power = np.vstack((stacked_power, power))
+            )
+            powers.append(powers_oneseries)
+            if num_bins:
+                power_sigmas.append(power_sigmas_oneseries)
 
-            # Weight final power spectrum by inverse error squared
-            weights = 1 / power_error ** 2
-            weights[np.isinf(weights)] = 0  # Handle cases where uncertainty is 0
-            power_mean = np.average(stacked_power, axis=0, weights=weights)
-            power_std = np.sum(weights * (stacked_power - power_mean)**2, axis=0) / np.sum(weights, axis=0)
+        # Stack the collected powers and sigmas
+        powers = np.vstack(powers)
 
-        return freqs, power_mean, power_std
+        if num_bins:
+            power_sigmas = np.vstack(power_sigmas)
+
+        freqs = freqs_oneseries
+        freq_widths = freq_widths
+        power_mean = np.mean(powers, axis=0)
+        power_std = np.std(powers, axis=0)
+
+        return freqs, freq_widths, power_mean, power_std
     
-    def plot(self, **kwargs):
+    def plot(self, freqs=None, powers=None, power_sigmas=None, **kwargs):
         """
-        Plots the FFT power spectrum.
 
-        Parameters:
-        - freqs (array-like): Frequencies.
-        - power (array-like): Power spectrum.
-        - power_error (array-like, optional): Errors in power spectrum.
-        - kwargs: Plot customization arguments.
-
-        Keyword arguments:
-        - figsize (tuple): Figure size (width, height).
-        - title (str): Title of the plot.
-        - xlabel (str): Label for the x-axis.
-        - ylabel (str): Label for the y-axis.
-        - xlim (tuple): Limits for the x-axis.
-        - ylim (tuple): Limits for the y-axis.
-        - fig_kwargs (dict): Additional keyword arguments for the figure function.
-        - plot_kwargs (dict): Additional keyword arguments for the plot function.
-        - major_tick_kwargs (dict): Additional keyword arguments for the tick_params function.
-        - minor_tick_kwargs (dict): Additional keyword arguments for the tick_params function.
         """
+        if freqs is None and powers is None and power_sigmas is None:
+            freqs = self.freqs
+            powers = self.powers
+            power_sigmas = self.power_sigmas
+
         title = kwargs.get('title', None)
 
         # Default plotting settings
-        if self.power_error is None:
-            default_plot_kwargs = {'color': 'black', 'fmt': 'o', 'ms': 2, 'lw': 1, 'label': None}
-        else:
+        if power_sigmas is None:
             default_plot_kwargs = {'color': 'black', 's': 2, 'label': None}
+        else:
+            default_plot_kwargs = {'color': 'black', 'fmt': 'o', 'ms': 2, 'lw': 1, 'label': None}
 
         figsize = kwargs.get('figsize', (8, 5))
         fig_kwargs = {'figsize': figsize, **kwargs.pop('fig_kwargs', {})}
@@ -137,16 +130,17 @@ class PowerSpectrum:
 
         plt.figure(**fig_kwargs)
 
-        if self.power_error is not None:
-            plt.errorbar(self.freqs, self.power, yerr=self.power_error, **plot_kwargs)
+        if power_sigmas is None:
+            plt.scatter(freqs, powers, **plot_kwargs)
         else:
-            plt.scatter(self.freqs, self.power, **plot_kwargs)
+            plt.errorbar(freqs, powers, yerr=power_sigmas, **plot_kwargs)
 
         # Set labels and title
-        plt.xlabel(kwargs.get('xlabel', 'Frequency (Hz)'))
+        plt.xlabel(kwargs.get('xlabel', 'Frequency'))
         plt.ylabel(kwargs.get('ylabel', 'Power'))
-        plt.xlim(kwargs.get('xlim', None))
-        plt.ylim(kwargs.get('ylim', None))
+        plt.xlim(kwargs.get('xlim', [self.freqs.min(), self.freqs.max()]))
+        plt.xscale(kwargs.get('xscale', 'log'))
+        plt.yscale(kwargs.get('yscale', 'log'))
 
         # Show legend if label is provided
         if plot_kwargs.get('label') is not None:
@@ -162,20 +156,33 @@ class PowerSpectrum:
 
         plt.show()
 
-    def bin(self, num_bins):
+    def bin(self, num_bins, plot=False, save=True, verbose=True):
         """
-        Bins the FFT output in frequency space.
+        Bins the power spectrum data using logarithmic spacing.
 
         Parameters:
-        - num_bins (int): Number of bins.
-
-        Returns:
-        - binned_freqs (array-like): Binned frequencies.
-        - binned_power (array-like): Binned power spectrum.
+        - num_bins: Number of logarithmic bins.
+        - plot: If True, plots the binned data.
+        - save: If True, updates the internal attributes with binned data.
+        - verbose: If True, prints information about binning.
         """
-        self.freqs, self.power, self.power_error = self._bin_frequency_logspace(self.freqs, self.power, num_bins)
+        if verbose:
+            num_freqs_in_bins = FrequencyBinning.number_frequencies_in_bin(self.freqs, num_bins)
+            print(f"Number of frequencies in each bin: {num_freqs_in_bins}")
+
+        freqs, freq_widths, powers, power_sigmas = FrequencyBinning.bin_frequency_logspace(
+            self.freqs, self.powers, num_bins
+        )
+
+        if plot:
+            FrequencyBinning.plot_binned_data(
+                freqs, powers, freq_widths, power_sigmas, xlabel="Frequency", ylabel="Power"
+            )
+
+        if save:
+            self.freqs, self.freq_widths, self.powers, self.power_sigmas = freqs, freq_widths, powers, power_sigmas
     
-    def _check_input(timeseries, times, values):
+    def _check_input(self, timeseries, times, values):
         if timeseries:
             if not isinstance(timeseries, TimeSeries):
                 raise TypeError("timeseries must be an instance of the TimeSeries class.")
@@ -196,30 +203,3 @@ class PowerSpectrum:
             raise ValueError("Either provide a TimeSeries object or times and values arrays.")
         
         return times, values
-        
-    def _bin_frequency_logspace(self, freqs, power, num_bins):
-        """
-        Bins the FFT output in frequency space.
-
-        Parameters:
-        - freqs (array-like): Frequencies.
-        - power (array-like): Power spectrum.
-        - num_bins (int): Number of bins.
-
-        Returns:
-        - binned_freqs (array-like): Binned frequencies.
-        - binned_power (array-like): Binned power spectrum.
-        """
-        log_bins = np.logspace(np.log10(freqs.min()), np.log10(freqs.max()), num_bins + 1)
-        binned_freqs = []
-        binned_power = []
-        binned_power_error = []
-
-        for i in range(len(log_bins) - 1):
-            mask = (freqs >= log_bins[i]) & (freqs < log_bins[i + 1])
-            if mask.any():
-                binned_freqs.append(freqs[mask].mean())
-                binned_power.append(power[mask].mean())
-                binned_power_error.append(power[mask].std())
-
-        return np.array(binned_freqs), np.array(binned_power), np.array(binned_power_error)
