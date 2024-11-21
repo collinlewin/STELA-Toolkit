@@ -29,7 +29,11 @@ class GaussianProcess():
                         )
 
         # Standardize the time series data to match zero mean function
-        Preprocessing.standardize(self.timeseries)
+        try:
+            Preprocessing.standardize(self.timeseries)
+        except ValueError:
+            if verbose:
+                print("Data is already standardized. Skipping standardization.")
 
         # Convert time series data to PyTorch tensors
         self.train_times = torch.tensor(self.timeseries.times, dtype=torch.float32)
@@ -332,6 +336,8 @@ class GaussianProcess():
             pred_dist = self.likelihood(self.model(pred_times))
             samples = pred_dist.sample(sample_shape=torch.Size([num_samples]))
 
+        # Unstandardize
+        samples = samples * self.timeseries.unstandard_std + self.timeseries.unstandard_mean
         return samples
     
     def predict(self, pred_times):
@@ -349,6 +355,11 @@ class GaussianProcess():
             pred_dist = self.likelihood(self.model(pred_times))
             mean = pred_dist.mean
             lower, upper = pred_dist.confidence_region()
+
+        # Unstandardize
+        mean = mean * self.timeseries.unstandard_std + self.timeseries.unstandard_mean
+        lower = lower * self.timeseries.unstandard_std + self.timeseries.unstandard_mean
+        upper = upper * self.timeseries.unstandard_std + self.timeseries.unstandard_mean
 
         return mean, lower, upper
     
