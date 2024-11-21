@@ -25,11 +25,11 @@ class PowerSpectrum:
 
         # if multiple time series are provided, compute the stacked power spectrum
         if len(values.shape) == 2:
-            self.freqs, self.powers, self.power_sigmas = self.compute_stacked_power_spectrum(
+            self.freqs, self.freq_widths, self.powers, self.power_sigmas = self.compute_stacked_power_spectrum(
                 fmin=self.fmin, fmax=self.fmax, num_bins=num_bins, norm=norm
             )
         else:
-            self.freqs, self.powers, self.power_sigmas = self.compute_power_spectrum(
+            self.freqs, self.freq_widths, self.powers, self.power_sigmas = self.compute_power_spectrum(
                 fmin=self.fmin, fmax=self.fmax, num_bins=num_bins, norm=norm
             )
 
@@ -105,14 +105,14 @@ class PowerSpectrum:
 
         return freqs, freq_widths, power_mean, power_std
     
-    def plot(self, freqs=None, powers=None, power_sigmas=None, **kwargs):
+    def plot(self, freqs=None, freq_widths=None, powers=None, power_sigmas=None, **kwargs):
         """
 
         """
-        if freqs is None and powers is None and power_sigmas is None:
-            freqs = self.freqs
-            powers = self.powers
-            power_sigmas = self.power_sigmas
+        freqs = self.freqs if freqs is None else freqs
+        freq_widths = self.freq_widths if freq_widths is None else freq_widths
+        powers = self.powers if powers is None else powers
+        power_sigmas = self.power_sigmas if power_sigmas is None else power_sigmas
 
         title = kwargs.get('title', None)
 
@@ -133,7 +133,10 @@ class PowerSpectrum:
         if power_sigmas is None:
             plt.scatter(freqs, powers, **plot_kwargs)
         else:
-            plt.errorbar(freqs, powers, yerr=power_sigmas, **plot_kwargs)
+            if freq_widths is None:
+                plt.errorbar(freqs, powers, yerr=power_sigmas, **plot_kwargs)
+            else:
+                plt.errorbar(freqs, powers, xerr=freq_widths, yerr=power_sigmas, **plot_kwargs)
 
         # Set labels and title
         plt.xlabel(kwargs.get('xlabel', 'Frequency'))
@@ -175,9 +178,7 @@ class PowerSpectrum:
         )
 
         if plot:
-            FrequencyBinning.plot_binned_data(
-                freqs, powers, freq_widths, power_sigmas, xlabel="Frequency", ylabel="Power"
-            )
+            self.plot(freqs=freqs, freq_widths=freq_widths, powers=powers, power_sigmas=power_sigmas)
 
         if save:
             self.freqs, self.freq_widths, self.powers, self.power_sigmas = freqs, freq_widths, powers, power_sigmas
