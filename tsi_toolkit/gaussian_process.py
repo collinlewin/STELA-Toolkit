@@ -24,7 +24,7 @@ class GaussianProcess():
         if isinstance(timeseries, TimeSeries):
             self.timeseries = timeseries
         else:
-            raise TypeError("Expected timeseries to be a TimeSeries object."
+            raise TypeError("Expected timeseries to be a TimeSeries object.\n"
                             "Please input your data into the TimeSeries class first."
                         )
 
@@ -122,7 +122,8 @@ class GaussianProcess():
         if 'SpectralMixture' in kernel_form:
             if ',' not in kernel_form:
                 raise ValueError(
-                    "Invalid Spectral Mixture kernel format (use 'SpectralMixture, N'). N=4 is a good starting point."
+                    "Invalid Spectral Mixture kernel format (use 'SpectralMixture, N').\n"
+                    "N=4 is a good starting point."
                 )
             else:
                 kernel_form, num_mixtures_str = kernel_form.split(',')
@@ -178,7 +179,7 @@ class GaussianProcess():
         if verbose:
             kernel_results = zip(kernel_list, aics)
             print(
-                "Kernel selection complete. \n"
+                "Kernel selection complete.\n"
                 f"   Kernel AICs (lower is better):"
             )
             for kernel, aic in kernel_results:

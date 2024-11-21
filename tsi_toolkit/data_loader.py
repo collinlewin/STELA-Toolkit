@@ -8,7 +8,7 @@ class TimeSeries:
                  values=[],
                  errors=[],
                  file_path=None,
-                 file_columns=[0, 1, 2],
+                 file_columns=[0,1,2],
                  ):
         # To do: Improve commenting and docstrings
         """
@@ -74,8 +74,8 @@ class TimeSeries:
                 times, values, errors = self.load_text_file(file_path, file_columns)
             except Exception as e:
                 raise RuntimeError(
-                    f"Failed to read the file '{file_path}' with fits or text-based loader."
-                    "Verify the file path and file_columns, or file format unsupported."
+                    f"Failed to read the file '{file_path}' with fits or text-based loader.\n"
+                    "Verify the file path and file_columns, or file format unsupported.\n"
                     f"Error message: {e}"
                 )
 

@@ -29,18 +29,18 @@ class PowerSpectrum:
             if len(values.shape) == 1 and len(times) != len(values):
                 raise ValueError("Times and values must have the same length.")
             elif len(values.shape) == 2 and values.shape[1] != len(times):
-                raise ValueError("Times and values must have the same length for each time series."
+                raise ValueError("Times and values must have the same length for each time series.\n"
                                  "Check the shape of the values array: expecting (n_series, n_times)."
                             )
         else:
             raise ValueError("Either provide a TimeSeries object or times and values arrays.")
             
-        time_diffs = np.diff(times)
-        if list(set(time_diffs)).size > 1:
-            raise ValueError("Time series must have a uniform sampling interval."
+        unique_time_diffs = np.unique(np.diff(times))
+        if unique_time_diffs.size > 1:
+            raise ValueError("Time series must have a uniform sampling interval.\n"
                             "Interpolate the data to a uniform grid first."
                         )
-        self.dt = time_diffs[0]
+        self.dt = unique_time_diffs[0]
         
         if len(values.shape) == 2:
             self.freq, self.power, self.power_std = self.compute_stacked_power_spectrum(
