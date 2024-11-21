@@ -36,7 +36,8 @@ class PowerSpectrum:
         if plot_fft:
             self.plot()
 
-    def compute_power_spectrum(self, times=None, values=None, fmin='auto', fmax='auto', num_bins=None, norm=True):
+    def compute_power_spectrum(self, times=None, values=None, fmin='auto', fmax='auto', norm=True,
+                               num_bins=None, bin_type="log", bin_edges=None):        
         """
         Computes the FFT of the values data and bins the output in frequency space.
 
@@ -70,8 +71,18 @@ class PowerSpectrum:
         freqs = freqs[valid_mask]
         powers = powers[valid_mask]
 
-        if num_bins:
-            freqs, freq_widths, powers, power_sigmas = FrequencyBinning.bin_frequency_logspace(freqs, powers, num_bins)
+        if num_bins or bin_edges:
+            if bin_edges:
+                # use custom bin edges
+                bin_edges = FrequencyBinning.define_bins(freqs, num_bins=num_bins, bins=bin_edges, bin_type=bin_type)
+            elif num_bins:
+                # use equal-width bins in log or linear space
+                bin_edges = FrequencyBinning.define_bins(freqs, num_bins=num_bins, bin_type=bin_type)
+            else:
+                raise ValueError("Either num_bins or bin_edges must be provided.\n"
+                                 "In other words, you must specify the number of bins or the bin edges.")
+            
+            freqs, freq_widths, powers, power_sigmas = FrequencyBinning.bin_data(freqs, powers, bin_edges)
         else:
             freq_widths, power_sigmas = None, None
 
@@ -81,12 +92,13 @@ class PowerSpectrum:
             
         return freqs, freq_widths, powers, power_sigmas
     
-    def compute_stacked_power_spectrum(self, fmin='auto', fmax='auto', num_bins=None, norm=True):
+    def compute_stacked_power_spectrum(self, fmin='auto', fmax='auto', norm=True, num_bins=None, bin_type="log", bin_edges=None):
         powers = []
         power_sigmas = []
         for i in range(self.values.shape[0]):
             freqs_oneseries, freq_widths, powers_oneseries, power_sigmas_oneseries = self.compute_power_spectrum(
-                self.times, self.values[i], fmin=fmin, fmax=fmax, num_bins=num_bins, norm=norm
+                self.times, self.values[i], fmin=fmin, fmax=fmax, norm=norm, 
+                num_bins=num_bins, bin_type=bin_type, bin_edges=bin_edges
             )
             powers.append(powers_oneseries)
             if num_bins:
@@ -141,7 +153,6 @@ class PowerSpectrum:
         # Set labels and title
         plt.xlabel(kwargs.get('xlabel', 'Frequency'))
         plt.ylabel(kwargs.get('ylabel', 'Power'))
-        plt.xlim(kwargs.get('xlim', [self.freqs.min(), self.freqs.max()]))
         plt.xscale(kwargs.get('xscale', 'log'))
         plt.yscale(kwargs.get('yscale', 'log'))
 
@@ -159,23 +170,30 @@ class PowerSpectrum:
 
         plt.show()
 
-    def bin(self, num_bins, plot=False, save=True, verbose=True):
+    def bin(self, num_bins=None, bin_type="log",  bin_edges=None, plot=False, save=True, verbose=True):
         """
-        Bins the power spectrum data using logarithmic spacing.
+        Bins the power spectrum data.
 
         Parameters:
-        - num_bins: Number of logarithmic bins.
+        - num_bins: Number of bins (if `bins` is not provided).
+        - bins: Custom array of bin edges (optional).
+        - bin_type: Type of binning ("log", "linear", or custom).
         - plot: If True, plots the binned data.
         - save: If True, updates the internal attributes with binned data.
         - verbose: If True, prints information about binning.
         """
+        if bin_edges is None:
+            try:
+                bin_edges = FrequencyBinning.define_bins(self.freqs, num_bins=num_bins, bins=bin_edges, bin_type=bin_type)
+            except ValueError:
+                raise ValueError("Either num_bins or bin_edges must be provided.\n"
+                                 "In other words, you must specify the number of bins or the bin edges.")
+
         if verbose:
-            num_freqs_in_bins = FrequencyBinning.number_frequencies_in_bin(self.freqs, num_bins)
+            num_freqs_in_bins = FrequencyBinning.count_frequencies_in_bins(self.freqs, bin_edges)
             print(f"Number of frequencies in each bin: {num_freqs_in_bins}")
 
-        freqs, freq_widths, powers, power_sigmas = FrequencyBinning.bin_frequency_logspace(
-            self.freqs, self.powers, num_bins
-        )
+        freqs, freq_widths, powers, power_sigmas = FrequencyBinning.bin_data(self.freqs, self.powers, bin_edges)
 
         if plot:
             self.plot(freqs=freqs, freq_widths=freq_widths, powers=powers, power_sigmas=power_sigmas)
