@@ -8,7 +8,7 @@ class Preprocessing:
         """Standardizes the time series data."""
         ts = timeseries
         if np.isclose(ts.mean, 0, atol=1e-10) and np.isclose(ts.std, 1, atol=1e-10):
-            print("Data has already been standardized.")
+            raise ValueError("The data is already standardized.")
         else:
             ts.unstandard_mean = ts.mean
             ts.unstandard_std = ts.std
