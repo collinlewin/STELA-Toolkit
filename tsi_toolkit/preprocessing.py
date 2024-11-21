@@ -1,4 +1,3 @@
-
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -8,11 +7,14 @@ class Preprocessing:
     def standardize(timeseries):
         """Standardizes the time series data."""
         ts = timeseries
-        ts.unstandard_mean = ts.mean
-        ts.unstandard_std = ts.std
-        ts.values = (ts.values - ts.unstandard_mean) / ts.unstandard_std
-        if ts.errors.size > 0:
-            ts.errors = ts.errors / ts.unstandard_std
+        if np.isclose(ts.mean, 0, atol=1e-10) and np.isclose(ts.std, 1, atol=1e-10):
+            print("Data has already been standardized.")
+        else:
+            ts.unstandard_mean = ts.mean
+            ts.unstandard_std = ts.std
+            ts.values = (ts.values - ts.unstandard_mean) / ts.unstandard_std
+            if ts.errors.size > 0:
+                ts.errors = ts.errors / ts.unstandard_std
 
     @staticmethod
     def unstandardize(timeseries):
@@ -90,7 +92,7 @@ class Preprocessing:
             ts.errors = ts.errors[nonnan_mask]
 
     @staticmethod
-    def remove_outliers(timeseries, threshold=1.5, rolling_window=None, plot=True, verbose=True, save=True):
+    def remove_outliers(timeseries, threshold=1.5, rolling_window=None, plot=True, save=True, verbose=True):
         """
         Identifies and removes outliers based on the Interquartile Range (IQR).
         Stores a mask of outliers for plotting.

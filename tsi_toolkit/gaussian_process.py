@@ -52,15 +52,18 @@ class GaussianProcess():
             self.model = best_model
             self.likelihood = best_likelihood
 
+        # Use specified kernel
         else:
             self.likelihood = self.set_likelihood(self.white_noise, train_errors=self.train_errors)
             self.model = self.create_gp_model(
                 self.train_times, self.train_values, self.likelihood, kernel_form
                 )
             
+            # Separate training needed only if kernel not automatically selected
             if run_training:
                 self.train_model(train_iter=train_iter, learn_rate=learn_rate, verbose=verbose)
 
+        # Generate samples if sample_time_grid is provided
         if sample_time_grid:
             self.samples = self.sample(sample_time_grid, num_samples=num_samples)
             if verbose:
