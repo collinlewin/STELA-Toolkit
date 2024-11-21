@@ -7,6 +7,7 @@ class FrequencyBinning:
     A utility class for binning data over frequency space, with methods for logarithmic
     binning and calculating statistics for binned data.
     """
+    # To do: Modify count_frequencies_in_bins for already binned data
     @staticmethod
     def define_bins(freqs, num_bins=None, bins=None, bin_type="log"):
         """
@@ -36,18 +37,18 @@ class FrequencyBinning:
         return bin_edges
 
     @staticmethod
-    def bin_frequency(freqs, values, bin_edges):
+    def bin_data(freqs, values, bin_edges):
         """
         Bins frequencies and associated values based on provided bin edges.
 
         Parameters:
         - freqs: Array of frequencies to be binned.
-        - values: Array of values (e.g., power, flux) corresponding to the frequencies.
+        - values: Array of values corresponding to the frequencies.
         - bin_edges: Array of bin edges.
 
         Returns:
         - binned_freqs: Mean frequency for each bin.
-        - binned_freq_widths: Half-widths of frequency bins for error bars (xerr).
+        - binned_freq_widths: Half-widths of frequency bins (for error bars).
         - binned_values: Mean value for each bin.
         - binned_value_sigmas: Standard deviation of values in each bin.
         """
@@ -75,20 +76,21 @@ class FrequencyBinning:
         )
     
     @staticmethod
-    def number_frequencies_in_bin(freqs, num_bins):
+    def count_frequencies_in_bins(freqs, bin_edges):
         """
-        Computes the number of frequencies in each bin for a logarithmic binning scheme.
+        Computes the number of frequencies in each bin based on the provided bin edges.
 
         Parameters:
         - freqs: Array of frequencies to be binned.
-        - num_bins: Number of logarithmic bins.
+        - bin_edges: Array of bin edges defining the bins.
 
         Returns:
         - n_freqs_in_bin: List of counts of frequencies in each bin.
         """
-        log_bins = np.logspace(np.log10(freqs.min()), np.log10(freqs.max()), num_bins + 1)
-        n_freqs_in_bin = [
-            int(np.sum((freqs >= log_bins[i]) & (freqs < log_bins[i + 1])))
-            for i in range(len(log_bins) - 1)
-        ]
+        n_freqs_in_bin = []
+        for i in range(len(bin_edges) - 1):
+            in_bin = (freqs >= bin_edges[i]) & (freqs < bin_edges[i + 1])
+            count = int(np.sum(in_bin))
+            n_freqs_in_bin.append(count)
+
         return n_freqs_in_bin
