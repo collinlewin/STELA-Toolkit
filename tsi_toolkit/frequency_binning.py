@@ -8,6 +8,73 @@ class FrequencyBinning:
     binning and calculating statistics for binned data.
     """
     @staticmethod
+    def define_bins(freqs, num_bins=None, bins=None, bin_type="log"):
+        """
+        Defines bins based on the specified binning type or user-defined edges.
+
+        Parameters:
+        - freqs: Array of frequencies to define bins for.
+        - num_bins: Number of bins to create (ignored if `bins` is provided).
+        - bins: Custom array of bin edges (optional).
+        - bin_type: Type of binning ("log" for logarithmic, "linear" for linear).
+
+        Returns:
+        - bin_edges: Array of bin edges.
+        """
+        if bins is not None:
+            # Use custom bins
+            bin_edges = np.array(bins)
+        elif bin_type == "log":
+            # Define logarithmic bins
+            bin_edges = np.logspace(np.log10(freqs.min()), np.log10(freqs.max()), num_bins + 1)
+        elif bin_type == "linear":
+            # Define linear bins
+            bin_edges = np.linspace(freqs.min(), freqs.max(), num_bins + 1)
+        else:
+            raise ValueError(f"Unsupported bin_type '{bin_type}'. Choose 'log', 'linear', or provide custom bins.")
+
+        return bin_edges
+
+    @staticmethod
+    def bin_frequency(freqs, values, bin_edges):
+        """
+        Bins frequencies and associated values based on provided bin edges.
+
+        Parameters:
+        - freqs: Array of frequencies to be binned.
+        - values: Array of values (e.g., power, flux) corresponding to the frequencies.
+        - bin_edges: Array of bin edges.
+
+        Returns:
+        - binned_freqs: Mean frequency for each bin.
+        - binned_freq_widths: Half-widths of frequency bins for error bars (xerr).
+        - binned_values: Mean value for each bin.
+        - binned_value_sigmas: Standard deviation of values in each bin.
+        """
+        binned_freqs = []
+        binned_freq_widths = []
+        binned_values = []
+        binned_value_sigmas = []
+        for i in range(len(bin_edges) - 1):
+            mask = (freqs >= bin_edges[i]) & (freqs < bin_edges[i + 1])
+            if mask.any():
+                binned_freqs.append(freqs[mask].mean())
+                binned_values.append(values[mask].mean())
+                binned_value_sigmas.append(values[mask].std())
+
+                # Calculate bin half-widths for error bars
+                lower_bound = bin_edges[i]
+                upper_bound = bin_edges[i + 1]
+                binned_freq_widths.append((upper_bound - lower_bound) / 2)
+
+        return (
+            np.array(binned_freqs),
+            np.array(binned_freq_widths),
+            np.array(binned_values),
+            np.array(binned_value_sigmas),
+        )
+    
+    @staticmethod
     def number_frequencies_in_bin(freqs, num_bins):
         """
         Computes the number of frequencies in each bin for a logarithmic binning scheme.
@@ -25,44 +92,3 @@ class FrequencyBinning:
             for i in range(len(log_bins) - 1)
         ]
         return n_freqs_in_bin
-
-    @staticmethod
-    def bin_frequency_logspace(freqs, values, num_bins):
-        """
-        Bins frequencies and associated values (e.g., power spectra) in logarithmic space.
-
-        Parameters:
-        - freqs: Array of frequencies to be binned.
-        - values: Array of values (e.g., power, flux) corresponding to the frequencies.
-        - num_bins: Number of logarithmic bins.
-
-        Returns:
-        - binned_freqs: Mean frequency for each bin.
-        - binned_freq_widths: Half-widths of frequency bins for error bars (xerr).
-        - binned_values: Mean value for each bin.
-        - binned_value_sigmas: Standard deviation of values in each bin.
-        """
-        log_bins = np.logspace(np.log10(freqs.min()), np.log10(freqs.max()), num_bins + 1)
-        binned_freqs = []
-        binned_freq_widths = []
-        binned_values = []
-        binned_value_sigmas = []
-
-        for i in range(len(log_bins) - 1):
-            mask = (freqs >= log_bins[i]) & (freqs < log_bins[i + 1])
-            if mask.any():
-                binned_freqs.append(freqs[mask].mean())
-                binned_values.append(values[mask].mean())
-                binned_value_sigmas.append(values[mask].std())
-
-                # Calculate bin half-widths for error bars
-                lower_bound = log_bins[i]
-                upper_bound = log_bins[i + 1]
-                binned_freq_widths.append((upper_bound - lower_bound) / 2)
-
-        return (
-            np.array(binned_freqs),
-            np.array(binned_freq_widths),
-            np.array(binned_values),
-            np.array(binned_value_sigmas),
-        )
