@@ -17,7 +17,7 @@ class CrossSpectrum(PowerSpectrum):
                  num_bins=None,
                  bin_type="log",
                  norm=True,
-                 plot_fft=False):
+                 plot_cs=False):
         """
         Initializes the CrossSpectrum class.
 
@@ -52,31 +52,8 @@ class CrossSpectrum(PowerSpectrum):
                 fmin=self.fmin, fmax=self.fmax, num_bins=self.num_bins, bin_type=self.bin_type, norm=norm
             )
 
-        if plot_fft:
+        if plot_cs:
             self.plot()
-
-    def _check_input(self, timeseries, times, values):
-        """
-        Validates and extracts time and value arrays from input or TimeSeries objects.
-        """
-        if timeseries:
-            if not isinstance(timeseries, PowerSpectrum.TimeSeries):
-                raise TypeError("timeseries must be an instance of the TimeSeries class.")
-            times = timeseries.times
-            values = timeseries.values
-        elif len(times) > 0 and len(values) > 0:
-            times = np.array(times)
-            values = np.array(values)
-            if len(values.shape) == 1 and len(times) != len(values):
-                raise ValueError("Times and values must have the same length.")
-            elif len(values.shape) == 2 and values.shape[1] != len(times):
-                raise ValueError(
-                    "Times and values must have the same length for each time series.\n"
-                    "Check the shape of the values array: expecting (n_series, n_times)."
-                )
-        else:
-            raise ValueError("Either provide a TimeSeries object or times and values arrays.")
-        return times, values
 
     def compute_cross_spectrum(self, fmin='auto', fmax='auto', num_bins=None, bin_type="log", norm=True):
         """
@@ -167,3 +144,26 @@ class CrossSpectrum(PowerSpectrum):
         kwargs.setdefault('xscale', 'log')
         kwargs.setdefault('yscale', 'log')
         SpectrumPlotter.plot(x=self.freqs, y=self.cross_powers, xerr=self.freq_widths, yerr=self.cross_power_sigmas, **kwargs)
+
+    def _check_input(self, timeseries, times, values):
+        """
+        Validates and extracts time and value arrays from input or TimeSeries objects.
+        """
+        if timeseries:
+            if not isinstance(timeseries, PowerSpectrum.TimeSeries):
+                raise TypeError("timeseries must be an instance of the TimeSeries class.")
+            times = timeseries.times
+            values = timeseries.values
+        elif len(times) > 0 and len(values) > 0:
+            times = np.array(times)
+            values = np.array(values)
+            if len(values.shape) == 1 and len(times) != len(values):
+                raise ValueError("Times and values must have the same length.")
+            elif len(values.shape) == 2 and values.shape[1] != len(times):
+                raise ValueError(
+                    "Times and values must have the same length for each time series.\n"
+                    "Check the shape of the values array: expecting (n_series, n_times)."
+                )
+        else:
+            raise ValueError("Either provide a TimeSeries object or times and values arrays.")
+        return times, values
