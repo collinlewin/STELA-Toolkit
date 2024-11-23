@@ -2,7 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from astropy.io import fits
 
-from .plotter import Plotter
+from .plot import Plotter
 
 
 class TimeSeries:
@@ -15,21 +15,18 @@ class TimeSeries:
                  ):
         # To do: Improve commenting and docstrings
         """
-        Initializes the TimeSeries class.
+        Initializes the TimeSeries object.
+
+        The method initializes the time, value, and error arrays,
+        either from provided arrays or by reading from a specified file.
 
         Parameters:
         - times (array-like): Array of time values.
-        - values (array-like): Array of values or flux values.
-        - errors (array-like): Array of errors associated with each value.
-        - file_path (str): Path to file containing data (.fits, .csv,
-          text files).
-        - file_columns (list): List of file_columns for time, value,
-          and optionally error. The list should contain
-          2 or 3 integers (column index) or strings (column_name):
-          [time_column, value_column, error_column (optional)]
-        - **kwargs: Additional keyword arguments.
-            - hdu (int): HDU index for reading FITS files.
-            - delimiter (str): Column delimiter for text files.
+        - values (array-like): Array of measured values (e.g., flux, counts).
+        - errors (array-like): Array of uncertainties for the measured values (optional).
+        - file_path (str): Path to a file containing the data (FITS, CSV, or text).
+        - file_columns (list): List specifying the columns for time, value, and error
+        (e.g., [time_column, value_column, optional_error_column]).
         """
         if file_path:
             if not (2 <= len(file_columns) <= 3):
@@ -66,8 +63,14 @@ class TimeSeries:
     
     def load_file(self, file_path, file_columns=[0, 1, 2]):
         """
-        Loads data from a file and sets the times, values, and errors.
-        Supports .fits and text-based files.
+        Loads time series data from a specified file. Supports FITS and text-based files.
+
+        Parameters:
+        - file_path (str): Path to the file to load.
+        - file_columns (list): List specifying the columns for time, value, and error.
+
+        Returns:
+        - tuple: Arrays of times, values, and errors.
         """
         try:
             times, values, errors = self.load_fits(file_path, file_columns)
@@ -85,7 +88,17 @@ class TimeSeries:
         return times, values, errors
 
     def load_fits(self, file_path, file_columns=[0, 1, 2], hdu=1):
-        """Loads data from a FITS file."""
+        """
+        Loads time series data from a FITS file, from a specified HDU.
+
+        Parameters:
+        - file_path (str): Path to the FITS file to load.
+        - file_columns (list): List specifying the columns for time, value, and error.
+        - hdu (int): The HDU index to read from (default is 1).
+
+        Returns:
+        - tuple: Arrays of times, values, and errors.
+        """
         time_column, value_column = file_columns[0], file_columns[1]
         error_column = file_columns[2] if len(file_columns) == 3 else None
 
@@ -122,6 +135,18 @@ class TimeSeries:
         return times, values, errors
 
     def load_text_file(self, file_path, file_columns=[0, 1, 2], delimiter=None):
+        """
+        Loads time series data from a text-based file. Assumes a delimiter based on
+        file extension if none is provided.
+
+        Parameters:
+        - file_path (str): Path to the text file to load.
+        - file_columns (list): List specifying the columns for time, value, and error.
+        - delimiter (str): Column delimiter (optional).
+
+        Returns:
+        - tuple: Arrays of times, values, and errors.
+        """
         time_column, value_column = file_columns[0], file_columns[1]
         error_column = file_columns[2] if len(file_columns) == 3 else None
 
@@ -163,13 +188,18 @@ class TimeSeries:
     def plot(self, **kwargs):
         """
         Plots the time series data.
+
+        Parameters:
+        - **kwargs: Additional keyword arguments for plot customization (e.g., xlabel, ylabel, title).
         """
         kwargs.setdefault('xlabel', 'Time')
         kwargs.setdefault('ylabel', 'Values')
         Plotter.plot(x=self.times, y=self.values, yerr=self.errors, **kwargs)
 
     def __add__(self, other_timeseries):
-        """Adds two TimeSeries objects with matching times."""
+        """
+        Adds two TimeSeries objects.
+        """
         if not isinstance(other_timeseries, TimeSeries):
             raise TypeError(
                 "Both time series must be an instance of the TimeSeries class."
@@ -190,7 +220,9 @@ class TimeSeries:
                           errors=new_errors)
 
     def __sub__(self, other_timeseries):
-        """Subtracts two TimeSeries objects with matching times."""
+        """
+        Subtracts two TimeSeries objects.
+        """
         if not isinstance(other_timeseries, TimeSeries):
             raise TypeError(
                 "Both time series must be an instance of the TimeSeries class."
@@ -212,7 +244,9 @@ class TimeSeries:
                           )
 
     def __truediv__(self, other_timeseries):
-        """Divides two TimeSeries objects with matching times."""
+        """
+        Divides two TimeSeries objects.
+        """
         if not isinstance(other_timeseries, TimeSeries):
             raise TypeError(
                 "Both time series must be an instance of the TimeSeries class."

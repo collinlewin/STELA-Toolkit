@@ -1,6 +1,6 @@
 import numpy as np
 from .power_spectrum import PowerSpectrum
-from .spectrum_plotter import SpectrumPlotter
+from .plot import Plotter
 from .frequency_binning import FrequencyBinning
 
 
@@ -19,17 +19,23 @@ class CrossSpectrum(PowerSpectrum):
                  norm=True,
                  plot_cs=False):
         """
-        Initializes the CrossSpectrum class.
+        Initializes the CrossSpectrum object and computes the cross-spectrum. It determines whether the input represents
+        individual time series or multiple realizations and computes the corresponding
+        cross-spectrum using FFT.
 
         Parameters:
-        - times1, values1: Time and value arrays for the first time series.
-        - times2, values2: Time and value arrays for the second time series.
-        - timeseries1, timeseries2: TimeSeries objects for the two time series.
-        - fmin, fmax: Frequency range for the cross-spectrum analysis.
-        - num_bins: Number of frequency bins.
-        - bin_type: Type of binning ("log" or "linear").
-        - norm: Normalize the cross-spectrum to the variance.
-        - plot_fft: Whether to plot the cross-spectrum.
+        - times1 (array-like): Time values for the first time series.
+        - values1 (array-like): Measurement values for the first time series (e.g., flux, counts).
+        - times2 (array-like): Time values for the second time series.
+        - values2 (array-like): Measurement values for the second time series (e.g., flux, counts).
+        - timeseries1 (TimeSeries): First time series object (optional).
+        - timeseries2 (TimeSeries): Second time series object (optional).
+        - fmin (float or 'auto'): Minimum frequency for the cross-spectrum.
+        - fmax (float or 'auto'): Maximum frequency for the cross-spectrum.
+        - num_bins (int): Number of bins for frequency binning.
+        - bin_type (str): Binning type ('log' or 'linear').
+        - norm (bool): Whether to normalize the spectrum.
+        - plot_cs (bool): Whether to plot the cross-spectrum after creation.
         """
         self.times1, self.values1 = self._check_input(timeseries1, times1, values1)
         self.times2, self.values2 = self._check_input(timeseries2, times2, values2)
@@ -58,12 +64,21 @@ class CrossSpectrum(PowerSpectrum):
     def compute_cross_spectrum(self, fmin='auto', fmax='auto', num_bins=None, bin_type="log", norm=True):
         """
         Computes the cross-spectrum between two time series.
+        The method calculates the cross-spectrum as the real part of the product
+        of the FFT of the first time series and the conjugate FFT of the second.
+
+        Parameters:
+        - fmin (float or 'auto'): Minimum frequency for computation.
+        - fmax (float or 'auto'): Maximum frequency for computation.
+        - num_bins (int): Number of bins for frequency binning.
+        - bin_type (str): Type of binning ('log' or 'linear').
+        - norm (bool): Whether to normalize the spectrum.
 
         Returns:
-        - freqs: Frequencies of the cross-spectrum.
-        - freq_widths: Widths of the frequency bins (if binning is applied).
-        - cross_power: Cross power spectrum values.
-        - cross_power_sigma: Uncertainties in cross power spectrum (if binning is applied).
+        - freqs (array-like): Frequencies of the cross-spectrum.
+        - freq_widths (array-like): Bin widths of the frequencies.
+        - cross_power (array-like): Cross-power spectrum values.
+        - cross_power_sigma (array-like or None): Uncertainties in cross-power values.
         """
         # Compute individual power spectra with binning via PowerSpectrum
         ps1 = PowerSpectrum(times=self.times1, values=self.values1, fmin=fmin, fmax=fmax, num_bins=num_bins, bin_type=bin_type, norm=norm)
@@ -75,13 +90,23 @@ class CrossSpectrum(PowerSpectrum):
 
     def compute_stacked_cross_spectrum(self, fmin='auto', fmax='auto', num_bins=None, bin_type="log", norm=True):
         """
-        Computes the stacked cross-spectrum across multiple GP realizations.
+        Computes the cross-spectrum for multiple realizations.
+        For multiple realizations (e.g., GP samples), this method computes the
+        cross-spectrum for each realization pair. The resulting cross-spectra are
+        averaged to compute the mean and standard deviation for each frequency bin.
+
+        Parameters:
+        - fmin (float or 'auto'): Minimum frequency for computation.
+        - fmax (float or 'auto'): Maximum frequency for computation.
+        - num_bins (int): Number of bins for frequency binning.
+        - bin_type (str): Type of binning ('log' or 'linear').
+        - norm (bool): Whether to normalize the spectrum.
 
         Returns:
-        - freqs: Frequencies of the cross-spectrum.
-        - freq_widths: Widths of the frequency bins.
-        - cross_power_mean: Mean cross power across realizations.
-        - cross_power_std: Standard deviation of the cross power across realizations.
+        - freqs (array-like): Frequencies of the cross-spectrum.
+        - freq_widths (array-like): Bin widths of the frequencies.
+        - cross_power_mean (array-like): Mean cross-power spectrum values.
+        - cross_power_std (array-like): Standard deviation of cross-power values.
         """
         cross_powers = []
 
@@ -104,15 +129,17 @@ class CrossSpectrum(PowerSpectrum):
 
     def bin(self, num_bins=None, bin_type="log", bin_edges=None, plot=False, save=True, verbose=True):
         """
-        Bins the cross-spectrum data.
+        Bins the cross-spectrum data into specified bins.
+        Optionally, saves the binned data back to the object and plots
+        the binned spectrum.
 
         Parameters:
-        - num_bins: Number of bins (if `bins` is not provided).
-        - bin_type: Type of binning ("log" or "linear").
-        - bin_edges: Custom array of bin edges (optional).
-        - plot: If True, plots the binned data.
-        - save: If True, updates the internal attributes with binned data.
-        - verbose: If True, prints information about binning.
+        - num_bins (int): Number of bins (if `bin_edges` is not provided).
+        - bin_type (str): Type of binning ('log' or 'linear').
+        - bin_edges (array-like): Custom bin edges (optional).
+        - plot (bool): Whether to plot the binned data.
+        - save (bool): Whether to save the binned data back to the object.
+        - verbose (bool): Whether to print details about the binning process.
         """
         if bin_edges is None:
             try:
@@ -134,7 +161,7 @@ class CrossSpectrum(PowerSpectrum):
 
     def plot(self, **kwargs):
         """
-        Plots the cross-spectrum using the SpectrumPlotter.
+        Plots the cross-spectrum.
 
         Parameters:
         - **kwargs: Keyword arguments for customizing the plot.
@@ -143,8 +170,34 @@ class CrossSpectrum(PowerSpectrum):
         kwargs.setdefault('ylabel', 'Cross Power')
         kwargs.setdefault('xscale', 'log')
         kwargs.setdefault('yscale', 'log')
-        SpectrumPlotter.plot(x=self.freqs, y=self.cross_powers, xerr=self.freq_widths, yerr=self.cross_power_sigmas, **kwargs)
+        Plotter.plot(x=self.freqs, y=self.cross_powers, xerr=self.freq_widths, yerr=self.cross_power_sigmas, **kwargs)
 
+    def count_frequencies_in_bins(self, bin_edges=None, num_bins=None, bin_type="log"):
+        """
+        Counts the number of frequencies in each bin for the cross-spectrum.
+
+        Uses the frequency data to count the number of entries in each bin defined
+        by the provided edges or calculated based on the number of bins and bin type.
+
+        Parameters:
+        - bin_edges (array-like): Custom array of bin edges (optional).
+        - num_bins (int): Number of bins to create (if bin_edges is not provided).
+        - bin_type (str): Type of binning ("log" or "linear").
+
+        Returns:
+        - bin_counts (list): List of counts of frequencies in each bin.
+
+        Raises:
+        - ValueError: If neither bin_edges nor num_bins is provided.
+        """
+        if bin_edges is None:
+            if num_bins is None:
+                raise ValueError("Either bin_edges or num_bins must be provided to count frequencies in bins.")
+            bin_edges = FrequencyBinning.define_bins(self.freqs, num_bins=num_bins, bin_type=bin_type)
+
+        bin_counts = FrequencyBinning.count_frequencies_in_bins(self.freqs, bin_edges)
+        return bin_counts
+    
     def _check_input(self, timeseries, times, values):
         """
         Validates and extracts time and value arrays from input or TimeSeries objects.

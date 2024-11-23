@@ -21,6 +21,26 @@ class GaussianProcess():
                  verbose=True):
 
         # To Do: reconsider noise prior, add a mean function function for forecasting, more verbose options
+        """
+        Initializes the GaussianProcess object and trains the model.
+
+        The method sets up the GP model based either 1) the user-defined kernel, or
+        2) the best kernel found based on post-training AIC.
+        It optionally trains the model and generates samples
+        from the posterior if a sampling grid is provided.
+
+        Parameters:
+        - timeseries (TimeSeries): The time series data to model.
+        - kernel_form (str or list): Kernel to use ('auto' for selection or a specific kernel).
+        - white_noise (bool): Whether to include an additional learnable white noise term.
+        - run_training (bool): Whether to train the model upon initialization.
+        - train_iter (int): Number of iterations for model training.
+        - learn_rate (float): Learning rate for the optimizer.
+        - sample_time_grid (array-like): Time grid for posterior sampling (optional).
+        - num_samples (int): Number of posterior samples to generate (if sampling grid provided).
+        - plot_gp (bool): Whether to plot the GP prediction upon initialization.
+        - verbose (bool): Whether to print detailed output during operations.
+        """
         if isinstance(timeseries, TimeSeries):
             self.timeseries = timeseries
         else:
@@ -77,6 +97,21 @@ class GaussianProcess():
             self.plot(sample_time_grid)
 
     def create_gp_model(self, train_times, train_values, likelihood, kernel):
+        """
+        Creates and returns a Gaussian Process model.
+
+        Uses the specified kernel and likelihood to define the GP model.
+        The GP model is built as a subclass of gpytorch.models.ExactGP.
+
+        Parameters:
+        - train_times (torch.Tensor): Training time points.
+        - train_values (torch.Tensor): Training data values.
+        - likelihood (gpytorch.likelihoods.Likelihood): The likelihood function for the GP.
+        - kernel (str): Kernel type to use for the GP.
+
+        Returns:
+        - GPModel: A Gaussian Process model with the specified kernel and likelihood.
+        """
         class GPModel(gpytorch.models.ExactGP):
             def __init__(gp_self, train_times, train_values, likelihood):
                 super(GPModel, gp_self).__init__(train_times, train_values, likelihood)
@@ -91,6 +126,19 @@ class GaussianProcess():
         return GPModel(train_times, train_values, likelihood)
 
     def set_likelihood(self, white_noise, train_errors=torch.tensor([])):
+        """
+        Sets the likelihood for the GP model. 
+
+        If errors are provided, uses heteroscedastic noise. Otherwise, uses homoscedastic noise.
+        If white_noise is True, includes a learnable (homoscedastic) white noise term.
+
+        Parameters:
+        - white_noise (bool): Whether to include a learnable white noise term.
+        - train_errors (torch.Tensor): Errors for the training data values.
+
+        Returns:
+        - gpytorch.likelihoods.Likelihood: Configured likelihood for the GP model.
+        """
         if train_errors.size(dim=0) > 0:
             likelihood = gpytorch.likelihoods.FixedNoiseGaussianLikelihood(
                 noise=self.train_errors ** 2,
@@ -107,23 +155,14 @@ class GaussianProcess():
 
     def set_kernel(self, kernel_form):
         """
-        Sets the covariance module (kernel) for the Gaussian Process model.
+        Sets the covariance kernel for the Gaussian Process model, supporting a range
+        of kernel types including Matern, Rational Quadratic, RBF, and Spectral Mixture.
 
-        Parameters
-        ----------
-        kernel_form : str
-            Specifies the type of kernel to use. Options are:
-            - 'Matern12' for Matern kernel with nu=0.5
-            - 'Matern32' for Matern kernel with nu=1.5
-            - 'Matern52' for Matern kernel with nu=2.5
-            - 'RQ' for Rational Quadratic kernel
-            - 'RBF' for Radial Basis Function (RBF) kernel
-            - 'SpectralMixture, N' for Spectral Mixture kernel with N mixtures, where N is an integer
+        Parameters:
+        - kernel_form (str): Type of kernel to use (e.g., 'Matern32', 'RBF', 'SpectralMixture, N').
 
-        Raises
-        ------
-        ValueError
-            If an invalid kernel type is provided or if the mixture count is not valid.
+        Returns:
+        - gpytorch.kernels.Kernel: Configured kernel for the GP model.
         """
         kernel_form = kernel_form.strip()
         if 'SpectralMixture' in kernel_form:
@@ -164,6 +203,22 @@ class GaussianProcess():
         return covar_module
 
     def find_best_kernel(self, kernel_list, train_iter=1000, learn_rate=1e-2, verbose=False):
+        """
+        Finds the best kernel based on the Akaike Information Criterion (AIC).
+
+        Iteratively trains the GP model using different kernels from the provided list
+        and selects the kernel with the lowest AIC.
+
+        Parameters:
+        - kernel_list (list): List of kernel types to evaluate.
+        - train_iter (int): Number of training iterations for each kernel.
+        - learn_rate (float): Learning rate for the optimizer.
+        - verbose (bool): Whether to print details about the kernel selection process.
+
+        Returns:
+        - best_model (GPModel): The trained model with the best kernel.
+        - best_likelihood (gpytorch.likelihoods.Likelihood): The likelihood associated with the best model.
+        """
         aics = []
         best_model = None
         for kernel_form in kernel_list:
@@ -198,6 +253,21 @@ class GaussianProcess():
         return best_model, best_likelihood
 
     def train_model(self, train_iter=1000, learn_rate=1e-2, verbose=False):
+        """
+        Trains the Gaussian Process model, hyperparameters optimized 
+        using Adam optimizer given number of training iterations and 
+        learning rate.
+
+        If verbose is True, prints the training progress and final hyperparameters.
+        If hyperparameters not converged...
+            - monotonic progression? --> consider increasing train_iter.
+            - fluctuating around potential optimum? --> consider decreasing learn_rate.
+
+        Parameters:
+        - train_iter (int): Number of training iterations.
+        - learn_rate (float): Learning rate for the optimizer.
+        - verbose (bool): Whether to print detailed information during training.
+        """
         self.model.train()
         self.likelihood.train()
 
@@ -259,6 +329,14 @@ class GaussianProcess():
                 print(f"      {key:42}: {np.round(value, 4)}")
 
     def get_hyperparameters(self):
+        """
+        Retrieves the hyperparameters of the GP model.
+
+        Extracts and transforms the model's hyperparameters for reporting or debugging.
+
+        Returns:
+        - dict: Dictionary of hyperparameter names and their values.
+        """
         raw_hypers = self.model.named_parameters()
         hypers = {}
         for param_name, param in raw_hypers:
@@ -297,6 +375,12 @@ class GaussianProcess():
         return hypers
 
     def bayesian_inf_crit(self):
+        """
+        Calculates the Bayesian Information Criterion (BIC) for the model.
+
+        Returns:
+        - float: The BIC value for the trained model.
+        """
         mll = gpytorch.mlls.ExactMarginalLogLikelihood(self.likelihood, self.model)
         log_marg_like = mll(
             self.model(self.train_times), self.train_values
@@ -309,6 +393,12 @@ class GaussianProcess():
         return bic
 
     def akaike_inf_crit(self):
+        """
+        Calculates the Akaike Information Criterion (AIC) for the model.
+
+        Returns:
+        - float: The AIC value for the trained model.
+        """
         mll = gpytorch.mlls.ExactMarginalLogLikelihood(self.likelihood, self.model)
         log_marg_like = mll(
             self.model(self.train_times), self.train_values
@@ -320,6 +410,19 @@ class GaussianProcess():
         return aic
 
     def sample(self, pred_times, num_samples):
+        """
+        Generates samples from the posterior predictive distribution.
+
+        Uses the trained GP model to sample from the posterior at specified
+        prediction times.
+
+        Parameters:
+        - pred_times (torch.Tensor): Time points for posterior sampling.
+        - num_samples (int): Number of samples to draw from the posterior.
+
+        Returns:
+        - torch.Tensor: Samples from the posterior predictive distribution.
+        """
         # Check if pred_times is a torch tensor
         if not isinstance(pred_times, torch.Tensor):
             try: 
@@ -341,6 +444,18 @@ class GaussianProcess():
         return samples
     
     def predict(self, pred_times):
+        """
+        Predicts the posterior mean and 2-sigma confidence
+        intervals at the specified prediction times.
+
+        Parameters:
+        - pred_times (torch.Tensor): Time points for predictions.
+
+        Returns:
+        - mean (torch.Tensor): Predicted posterior mean.
+        - lower (torch.Tensor): Lower bound of the 2-sigma confidence interval.
+        - upper (torch.Tensor): Upper bound of the 2-sigma confidence interval.
+        """
         # Check if pred_times is a torch tensor
         if not isinstance(pred_times, torch.Tensor):
             try:
@@ -364,6 +479,12 @@ class GaussianProcess():
         return mean, lower, upper
     
     def plot(self, pred_times=None):
+        """
+        Plots the Gaussian Process prediction and samples.
+
+        Parameters:
+        - pred_times (torch.Tensor or None): Time points for predictions (optional).
+        """
         if pred_times is None:
             pred_times = torch.linspace(self.train_times.min(), self.train_times.max(), 1000)
 
@@ -389,9 +510,15 @@ class GaussianProcess():
         plt.show()
 
     def save_model(self, path):
+        """
+        Saves the GP model to a specified path.
+        """
         torch.save(self.model.state_dict(), path)
 
     def load_model(self, path):
+        """
+        Loads a GP model from a specified path.
+        """
         self.model.load_state_dict(torch.load(path))
         self.model.eval()
         self.likelihood.eval()

@@ -4,23 +4,28 @@ import matplotlib.pyplot as plt
 
 class FrequencyBinning:
     """
-    A utility class for binning data over frequency space, with methods for logarithmic
-    binning and calculating statistics for binned data.
+    A utility class for binning data over frequency space.
+
+    Provides methods for defining bins (linear or logarithmic, or user-defined), binning frequency
+    data and corresponding values, and calculating statistics for binned data.
     """
     # To do: Modify count_frequencies_in_bins for already binned data
     @staticmethod
     def define_bins(freqs, num_bins=None, bins=None, bin_type="log"):
         """
-        Defines bins based on the specified binning type or user-defined edges.
+        Defines bin edges for the given frequencies based on the specified binning type.
+
+        If custom bins are provided, they are used directly. Otherwise, bins are computed
+        either logarithmically or linearly based on the specified bin type.
 
         Parameters:
-        - freqs: Array of frequencies to define bins for.
-        - num_bins: Number of bins to create (ignored if `bins` is provided).
-        - bins: Custom array of bin edges (optional).
-        - bin_type: Type of binning ("log" for logarithmic, "linear" for linear).
+        - freqs (array-like): Array of frequencies to define bins for.
+        - num_bins (int): Number of bins to create (ignored if `bins` is provided).
+        - bins (array-like): Custom array of bin edges (optional).
+        - bin_type (str): Type of binning ("log" for logarithmic, "linear" for linear).
 
         Returns:
-        - bin_edges: Array of bin edges.
+        - bin_edges (array-like): Array of bin edges for the specified binning type.
         """
         if bins is not None:
             # Use custom bins
@@ -39,18 +44,18 @@ class FrequencyBinning:
     @staticmethod
     def bin_data(freqs, values, bin_edges):
         """
-        Bins frequencies and associated values based on provided bin edges.
+        Bins frequencies and corresponding values into specified bins.
 
         Parameters:
-        - freqs: Array of frequencies to be binned.
-        - values: Array of values corresponding to the frequencies.
-        - bin_edges: Array of bin edges.
+        - freqs (array-like): Array of frequencies to be binned.
+        - values (array-like): Array of values corresponding to the frequencies.
+        - bin_edges (array-like): Array of bin edges defining the bins.
 
         Returns:
-        - binned_freqs: Mean frequency for each bin.
-        - binned_freq_widths: Half-widths of frequency bins (for error bars).
-        - binned_values: Mean value for each bin.
-        - binned_value_sigmas: Standard deviation of values in each bin.
+        - binned_freqs (array-like): Mean frequency for each bin.
+        - binned_freq_widths (array-like): Half-widths of the frequency bins (for error bars).
+        - binned_values (array-like): Mean value for each bin.
+        - binned_value_sigmas (array-like): Standard deviation of the values in each bin.
         """
         binned_freqs = []
         binned_freq_widths = []
@@ -78,14 +83,14 @@ class FrequencyBinning:
     @staticmethod
     def count_frequencies_in_bins(freqs, bin_edges):
         """
-        Computes the number of frequencies in each bin based on the provided bin edges.
+        Counts the number of frequencies in each bin defined by the provided edges.
 
         Parameters:
-        - freqs: Array of frequencies to be binned.
-        - bin_edges: Array of bin edges defining the bins.
+        - freqs (array-like): Array of frequencies to count.
+        - bin_edges (array-like): Array of bin edges defining the bins.
 
         Returns:
-        - n_freqs_in_bin: List of counts of frequencies in each bin.
+        - n_freqs_in_bin (list): List of counts of frequencies in each bin.
         """
         n_freqs_in_bin = []
         for i in range(len(bin_edges) - 1):

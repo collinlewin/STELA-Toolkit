@@ -3,9 +3,20 @@ import matplotlib.pyplot as plt
 
 
 class Preprocessing:
+    """
+    Provides utility functions for preprocessing time series data.
+
+    This class includes methods for standardizing and unstandardizing data,
+    trimming time segments, removing NaN values and outliers, and detrending
+    time series using polynomial fitting. Designed to operate directly on
+    TimeSeries objects.
+    """
     @staticmethod
     def standardize(timeseries):
-        """Standardizes the time series data."""
+        """
+        Standardizes the time series data. 
+        Stores the original mean and standard deviation for future unstandardization.
+        """
         ts = timeseries
         if np.isclose(ts.mean, 0, atol=1e-10) and np.isclose(ts.std, 1, atol=1e-10):
             raise ValueError("The data is already standardized.")
@@ -18,7 +29,11 @@ class Preprocessing:
 
     @staticmethod
     def unstandardize(timeseries):
-        """Unstandardizes the time series data."""
+        """
+        Unstandardizes the time series data.
+        Restores the values and errors of the input TimeSeries object to their
+        unstandardized form using the previously stored mean and standard deviation.
+        """
         ts = timeseries
         try:
             ts.values = (ts.values * ts.unstandard_std) + ts.unstandard_mean
@@ -33,13 +48,20 @@ class Preprocessing:
     @staticmethod
     def trim_time_segment(timeseries, start_time=None, end_time=None, plot=False, save=True):
         """
-        Trims the time series data to a specific time range.
-        
+        Trims the time series data to a specified time range.
+
+        Filters the time, value, and error arrays based on the provided start and
+        end times. Optionally plots the data before and after trimming.
+
         Parameters:
         - timeseries (TimeSeries): The time series object to trim.
-        - start_time (float): The starting time for the range.
-        - end_time (float): The ending time for the range.
+        - start_time (float): The starting time for the range (default: first time point).
+        - end_time (float): The ending time for the range (default: last time point).
         - plot (bool): Whether to plot the data before and after trimming.
+        - save (bool): Whether to modify the original TimeSeries object in place.
+
+        Raises:
+        - ValueError: If neither start_time nor end_time is provided.
         """
         ts = timeseries
 
@@ -74,7 +96,13 @@ class Preprocessing:
 
     @staticmethod
     def remove_nans(timeseries, verbose=True):
-        """Removes NaN values where time, value, or measurement error is NaN."""
+        """
+        Removes rows with NaN values in time, value, or error arrays.
+
+        Parameters:
+        - timeseries (TimeSeries): The time series object to clean.
+        - verbose (bool): Whether to print the number of NaN points removed.
+        """
         ts = timeseries
         if ts.errors.size > 0:
             nonnan_mask = ~np.isnan(ts.values) & ~np.isnan(ts.times) & ~np.isnan(ts.errors)
@@ -94,13 +122,18 @@ class Preprocessing:
     @staticmethod
     def remove_outliers(timeseries, threshold=1.5, rolling_window=None, plot=True, save=True, verbose=True):
         """
-        Identifies and removes outliers based on the Interquartile Range (IQR).
-        Stores a mask of outliers for plotting.
+        Removes outliers from the time series data based on the Interquartile Range (IQR).
+
+        Detects outliers using the IQR defined either 1) globally or 2) within a rolling window
+        around each data point. Flags outliers for plotting and removes them from the data if save=True.
 
         Parameters:
-        - threshold (float): Multiplier for the IQR to define the outlier range.
-        - rolling_window (int): If specified, applies a local IQR over a rolling
-            window. Otherwise, uses the global IQR.
+        - timeseries (TimeSeries): The time series object to clean.
+        - threshold (float): Multiplier for the IQR to define outlier limits (default: 1.5).
+        - rolling_window (int): If specified, applies a local IQR within the rolling window.
+        - plot (bool): Whether to visualize the detected outliers.
+        - save (bool): Whether to remove the outliers from the original data.
+        - verbose (bool): Whether to print the number of outliers removed.
         """
         def plot_outliers(outlier_mask):
             """Plots the data flagged as outliers."""
@@ -171,17 +204,20 @@ class Preprocessing:
     @staticmethod
     def polynomial_detrend(timeseries, degree=1, plot=False, save=True):
         """
-        Removes a polynomial trend from the time series data.
+        Removes a polynomial trend from the data.
+
+        Fits a polynomial of the specified degree to the data and subtracts it
+        to produce a detrended time series. Optionally visualizes the original
+        data, fitted trend, and detrended data.
 
         Parameters:
         - timeseries (TimeSeries): The time series object to detrend.
-        - degree (int): The degree of the polynomial to fit.
-        - plot (bool): Whether to plot the original data, fitted trend, and detrended data.
-        - save (bool): If True, modifies the original timeseries object. If False, returns the detrended data.
+        - degree (int): Degree of the polynomial to fit (default: 1, linear).
+        - plot (bool): Whether to plot the original, trend, and detrended data.
+        - save (bool): Whether to modify the original TimeSeries object or return the detrended data.
 
         Returns:
-        If save=False:
-            - detrended_values (array): Values after detrending.
+        - detrended_values (array-like): The detrended values (if save=False).
         """
         ts = timeseries
 
