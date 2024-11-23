@@ -3,6 +3,7 @@ import matplotlib.pyplot as plt
 
 from .data_loader import TimeSeries
 from .frequency_binning import FrequencyBinning
+from .plot import Plotter
 
 
 class PowerSpectrum:
@@ -125,50 +126,12 @@ class PowerSpectrum:
         freq_widths = self.freq_widths if freq_widths is None else freq_widths
         powers = self.powers if powers is None else powers
         power_sigmas = self.power_sigmas if power_sigmas is None else power_sigmas
-
-        title = kwargs.get('title', None)
-
-        # Default plotting settings
-        if power_sigmas is None:
-            default_plot_kwargs = {'color': 'black', 's': 2, 'label': None}
-        else:
-            default_plot_kwargs = {'color': 'black', 'fmt': 'o', 'ms': 2, 'lw': 1, 'label': None}
-
-        figsize = kwargs.get('figsize', (8, 5))
-        fig_kwargs = {'figsize': figsize, **kwargs.pop('fig_kwargs', {})}
-        plot_kwargs = {**default_plot_kwargs, **kwargs.pop('plot_kwargs', {})}
-        major_tick_kwargs = {'which': 'major', **kwargs.pop('major_tick_kwargs', {})}
-        minor_tick_kwargs = {'which': 'minor', **kwargs.pop('minor_tick_kwargs', {})}
-
-        plt.figure(**fig_kwargs)
-
-        if power_sigmas is None:
-            plt.scatter(freqs, powers, **plot_kwargs)
-        else:
-            if freq_widths is None:
-                plt.errorbar(freqs, powers, yerr=power_sigmas, **plot_kwargs)
-            else:
-                plt.errorbar(freqs, powers, xerr=freq_widths, yerr=power_sigmas, **plot_kwargs)
-
-        # Set labels and title
-        plt.xlabel(kwargs.get('xlabel', 'Frequency'))
-        plt.ylabel(kwargs.get('ylabel', 'Power'))
-        plt.xscale(kwargs.get('xscale', 'log'))
-        plt.yscale(kwargs.get('yscale', 'log'))
-
-        # Show legend if label is provided
-        if plot_kwargs.get('label') is not None:
-            plt.legend()
-
-        if title is not None:
-            plt.title(title)
-
-        plt.tick_params(**major_tick_kwargs)
-        if len(minor_tick_kwargs) > 1:
-            plt.minorticks_on()
-            plt.tick_params(**minor_tick_kwargs)
-
-        plt.show()
+        
+        kwargs.setdefault('xlabel', 'Frequency')
+        kwargs.setdefault('ylabel', 'Power')
+        kwargs.setdefault('xscale', 'log')
+        kwargs.setdefault('yscale', 'log')
+        Plotter.plot(x=freqs, y=powers, xerr=freq_widths, yerr=power_sigmas, **kwargs)
 
     def bin(self, num_bins=None, bin_type="log",  bin_edges=None, plot=False, save=True, verbose=True):
         """
