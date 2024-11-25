@@ -1,4 +1,5 @@
 import numpy as np
+
 from .power_spectrum import PowerSpectrum
 from .plot import Plotter
 from .frequency_binning import FrequencyBinning
@@ -16,6 +17,7 @@ class CrossSpectrum(PowerSpectrum):
                  fmax='auto',
                  num_bins=None,
                  bin_type="log",
+                 bin_edges = [],
                  norm=True,
                  plot_cs=False):
         """
@@ -50,18 +52,20 @@ class CrossSpectrum(PowerSpectrum):
 
         # Check if the input values are for multiple realizations
         if len(self.values1.shape) == 2 and len(self.values2.shape) == 2:
-            self.freqs, self.freq_widths, self.cross_powers, self.cross_power_sigmas = self.compute_stacked_cross_spectrum(
-                fmin=self.fmin, fmax=self.fmax, num_bins=self.num_bins, bin_type=self.bin_type, norm=norm
-            )
+            cross_spec = self.compute_stacked_cross_spectrum(fmin=self.fmin, fmax=self.fmax, num_bins=self.num_bins,
+                                                             bin_type=self.bin_type, bin_edges=bin_edges, norm=norm
+                                                             )
         else:
-            self.freqs, self.freq_widths, self.cross_powers, self.cross_power_sigmas = self.compute_cross_spectrum(
-                fmin=self.fmin, fmax=self.fmax, num_bins=self.num_bins, bin_type=self.bin_type, norm=norm
-            )
+            cross_spec = self.compute_cross_spectrum(fmin=self.fmin, fmax=self.fmax, num_bins=self.num_bins, 
+                                                     bin_type=self.bin_type, bin_edges=bin_edges, norm=norm
+                                                     )
+        self.freqs, self.freq_widths, self.cross_powers, self.cross_power_sigmas = cross_spec
 
         if plot_cs:
             self.plot()
 
-    def compute_cross_spectrum(self, fmin='auto', fmax='auto', num_bins=None, bin_type="log", norm=True):
+    def compute_cross_spectrum(self, fmin='auto', fmax='auto', num_bins=None, bin_type="log",
+                               bin_edges=[], norm=True):
         """
         Computes the cross-spectrum between two time series.
         The method calculates the cross-spectrum as the real part of the product
@@ -80,15 +84,20 @@ class CrossSpectrum(PowerSpectrum):
         - cross_power (array-like): Cross-power spectrum values.
         - cross_power_sigma (array-like or None): Uncertainties in cross-power values.
         """
-        # Compute individual power spectra with binning via PowerSpectrum
-        ps1 = PowerSpectrum(times=self.times1, values=self.values1, fmin=fmin, fmax=fmax, num_bins=num_bins, bin_type=bin_type, norm=norm)
-        ps2 = PowerSpectrum(times=self.times2, values=self.values2, fmin=fmin, fmax=fmax, num_bins=num_bins, bin_type=bin_type, norm=norm)
+        ps1 = PowerSpectrum(
+            times=self.times1, values=self.values1, fmin=fmin, fmax=fmax,
+            num_bins=num_bins, bin_type=bin_type, bin_edges=bin_edges, norm=norm
+        )
+        ps2 = PowerSpectrum(
+            times=self.times2, values=self.values2, fmin=fmin, fmax=fmax,
+            num_bins=num_bins, bin_type=bin_type, bin_edges=bin_edges, norm=norm
+        )
 
-        # Cross-spectrum computation
         cross_power = np.real(ps1.powers * np.conj(ps2.powers))
         return ps1.freqs, ps1.freq_widths, cross_power, None
 
-    def compute_stacked_cross_spectrum(self, fmin='auto', fmax='auto', num_bins=None, bin_type="log", norm=True):
+    def compute_stacked_cross_spectrum(self, fmin='auto', fmax='auto', num_bins=None, bin_type="log", 
+                                       bin_edges=[], norm=True):
         """
         Computes the cross-spectrum for multiple realizations.
         For multiple realizations (e.g., GP samples), this method computes the
@@ -109,19 +118,21 @@ class CrossSpectrum(PowerSpectrum):
         - cross_power_std (array-like): Standard deviation of cross-power values.
         """
         cross_powers = []
-
         for i in range(self.values1.shape[0]):
-            ps1 = PowerSpectrum(times=self.times1, values=self.values1[i], fmin=fmin, fmax=fmax, num_bins=num_bins, bin_type=bin_type, norm=norm)
-            ps2 = PowerSpectrum(times=self.times2, values=self.values2[i], fmin=fmin, fmax=fmax, num_bins=num_bins, bin_type=bin_type, norm=norm)
+            ps1 = PowerSpectrum(
+                times=self.times1, values=self.values1[i], fmin=fmin, fmax=fmax, 
+                num_bins=num_bins, bin_type=bin_type, bin_edges=bin_edges, norm=norm
+            )
+            ps2 = PowerSpectrum(
+                times=self.times2, values=self.values2[i], fmin=fmin, fmax=fmax,
+                num_bins=num_bins, bin_type=bin_type, bin_edges=bin_edges, norm=norm
+            )
 
-            # Compute cross-spectrum for each realization
+            # Compute cross-spectrum for each pair of realizations
             cross_power = np.real(ps1.powers * np.conj(ps2.powers))
             cross_powers.append(cross_power)
 
-        # Stack the collected cross powers
         cross_powers = np.vstack(cross_powers)
-
-        # Compute mean and std of cross-powers
         cross_power_mean = np.mean(cross_powers, axis=0)
         cross_power_std = np.std(cross_powers, axis=0)
 
@@ -143,7 +154,9 @@ class CrossSpectrum(PowerSpectrum):
         """
         if bin_edges is None:
             try:
-                bin_edges = FrequencyBinning.define_bins(self.freqs, num_bins=num_bins, bins=bin_edges, bin_type=bin_type)
+                bin_edges = FrequencyBinning.define_bins(
+                    self.freqs, num_bins=num_bins, bins=bin_edges, bin_type=bin_type
+                )
             except ValueError:
                 raise ValueError("Either num_bins or bin_edges must be provided.")
 
@@ -151,13 +164,18 @@ class CrossSpectrum(PowerSpectrum):
             num_freqs_in_bins = FrequencyBinning.count_frequencies_in_bins(self.freqs, bin_edges)
             print(f"Number of frequencies in each bin: {num_freqs_in_bins}")
 
-        freqs, freq_widths, cross_powers, cross_power_sigmas = FrequencyBinning.bin_data(self.freqs, self.cross_powers, bin_edges)
+        freqs, freq_widths, cross_powers, cross_power_sigmas = FrequencyBinning.bin_data(
+            self.freqs, self.cross_powers, bin_edges
+        )
 
         if plot:
             self.plot(x=freqs, y=cross_powers, xerr=freq_widths, yerr=cross_power_sigmas)
 
         if save:
-            self.freqs, self.freq_widths, self.cross_powers, self.cross_power_sigmas = freqs, freq_widths, cross_powers, cross_power_sigmas
+            self.freqs = freqs
+            self.freq_widths = freq_widths
+            self.cross_powers = cross_powers
+            self.cross_power_sigmas = cross_power_sigmas
 
     def plot(self, **kwargs):
         """
@@ -170,7 +188,9 @@ class CrossSpectrum(PowerSpectrum):
         kwargs.setdefault('ylabel', 'Cross Power')
         kwargs.setdefault('xscale', 'log')
         kwargs.setdefault('yscale', 'log')
-        Plotter.plot(x=self.freqs, y=self.cross_powers, xerr=self.freq_widths, yerr=self.cross_power_sigmas, **kwargs)
+        Plotter.plot(
+            x=self.freqs, y=self.cross_powers, xerr=self.freq_widths, yerr=self.cross_power_sigmas, **kwargs
+        )
 
     def count_frequencies_in_bins(self, bin_edges=None, num_bins=None, bin_type="log"):
         """
@@ -197,26 +217,3 @@ class CrossSpectrum(PowerSpectrum):
 
         bin_counts = FrequencyBinning.count_frequencies_in_bins(self.freqs, bin_edges)
         return bin_counts
-    
-    def _check_input(self, timeseries, times, values):
-        """
-        Validates and extracts time and value arrays from input or TimeSeries objects.
-        """
-        if timeseries:
-            if not isinstance(timeseries, PowerSpectrum.TimeSeries):
-                raise TypeError("timeseries must be an instance of the TimeSeries class.")
-            times = timeseries.times
-            values = timeseries.values
-        elif len(times) > 0 and len(values) > 0:
-            times = np.array(times)
-            values = np.array(values)
-            if len(values.shape) == 1 and len(times) != len(values):
-                raise ValueError("Times and values must have the same length.")
-            elif len(values.shape) == 2 and values.shape[1] != len(times):
-                raise ValueError(
-                    "Times and values must have the same length for each time series.\n"
-                    "Check the shape of the values array: expecting (n_series, n_times)."
-                )
-        else:
-            raise ValueError("Either provide a TimeSeries object or times and values arrays.")
-        return times, values
