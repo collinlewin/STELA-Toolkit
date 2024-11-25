@@ -105,7 +105,8 @@ class FrequencyBinning:
         # Check if bin_edges or num_bins provided
         if len(bin_edges) == 0 and num_bins is None:
             bin_edges = FrequencyBinning.define_bins(
-                spectrum.fmin, spectrum.fmax, num_bins=spectrum.num_bins, bin_type=spectrum.bin_type, bin_edges=bin_edges
+                spectrum.fmin, spectrum.fmax, num_bins=spectrum.num_bins, 
+                bin_type=spectrum.bin_type, bin_edges=spectrum.bin_edges
             )
         elif num_bins is not None:
             bin_edges = FrequencyBinning.define_bins(
