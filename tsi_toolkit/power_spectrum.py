@@ -1,5 +1,6 @@
 import numpy as np
 
+from ._check_inputs import _CheckInputs
 from .data_loader import TimeSeries
 from .frequency_binning import FrequencyBinning
 from .plot import Plotter
@@ -36,7 +37,8 @@ class PowerSpectrum:
         - norm (bool): Whether to normalize the spectrum to variance units.
         - plot_fft (bool): Whether to plot the computed power spectrum.
         """
-        self.times, self.values = self._check_input(timeseries, times, values)
+        self.times, self.values = _CheckInputs._check_input_data(timeseries, times, values)
+        _CheckInputs._check_input_bins(num_bins, bin_type, bin_edges)
         self.fmin = fmin
         self.fmax = fmax
 
@@ -247,28 +249,3 @@ class PowerSpectrum:
 
         bin_counts = FrequencyBinning.count_frequencies_in_bins(self.freqs, bin_edges)
         return bin_counts
-    
-    def _check_input(self, timeseries, times, values):
-        """
-        Validates and extracts time and value arrays from input or TimeSeries objects.
-        """
-        if timeseries:
-            if not isinstance(timeseries, TimeSeries):
-                raise TypeError("timeseries must be an instance of the TimeSeries class.")
-            times = timeseries.times
-            values = timeseries.values
-            
-        elif len(times) > 0 and len(values) > 0:
-            times = np.array(times)
-            values = np.array(values)
-            if len(values.shape) == 1 and len(times) != len(values):
-                raise ValueError("Times and values must have the same length.")
-            
-            elif len(values.shape) == 2 and values.shape[1] != len(times):
-                raise ValueError("Times and values must have the same length for each time series.\n"
-                                 "Check the shape of the values array: expecting (n_series, n_times)."
-                            )
-        else:
-            raise ValueError("Either provide a TimeSeries object or times and values arrays.")
-        
-        return times, values

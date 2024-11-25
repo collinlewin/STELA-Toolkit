@@ -1,5 +1,6 @@
 import numpy as np
 
+from ._check_inputs import _CheckInputs
 from .power_spectrum import PowerSpectrum
 from .plot import Plotter
 from .frequency_binning import FrequencyBinning
@@ -41,6 +42,7 @@ class CrossSpectrum(PowerSpectrum):
         """
         self.times1, self.values1 = self._check_input(timeseries1, times1, values1)
         self.times2, self.values2 = self._check_input(timeseries2, times2, values2)
+        _CheckInputs._check_input_bins(num_bins, bin_type, bin_edges)
 
         if not np.allclose(self.times1, self.times2):
             raise ValueError("The time arrays of the two time series must be identical.")
