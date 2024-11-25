@@ -50,6 +50,15 @@ class CrossSpectrum(PowerSpectrum):
         if not np.allclose(self.times1, self.times2):
             raise ValueError("The time arrays of the two time series must be identical.")
 
+        # Use absolute min and max frequencies if set to 'auto'
+        self.dt = np.diff(self.times)[0]
+        fmin = 1 / (self.times.max() - self.times.min()) if fmin == 'auto' else fmin
+        fmax = 1 / (2 * self.dt) if fmax == 'auto' else fmax # nyquist frequency
+
+        self.num_bins = num_bins
+        self.bin_type = bin_type
+        self.bin_edges = bin_edges
+
         # Check if the input values are for multiple realizations
         if len(self.values1.shape) == 2 and len(self.values2.shape) == 2:
             cross_spec = self.compute_stacked_cross_spectrum(fmin=fmin, fmax=fmax, num_bins=self.num_bins,
@@ -201,11 +210,12 @@ class CrossSpectrum(PowerSpectrum):
         Parameters:
         - fmin (float): Minimum frequency (optional).
         - fmax (float): Maximum frequency (optional).
-            Class attributes will be used if not specified.
+            *** Class attributes will be used if not specified.
         - num_bins (int): Number of bins to create (if bin_edges is not provided).
         - bin_type (str): Type of binning ("log" or "linear").
         - bin_edges (array-like): Custom array of bin edges (optional).
-
+            *** Class attributes will be used if not specified.
+        
         Returns:
         - bin_counts (list): List of counts of frequencies in each bin.
         """
