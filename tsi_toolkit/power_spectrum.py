@@ -67,6 +67,8 @@ class PowerSpectrum:
         - fmax (float or 'auto'): Maximum frequency for the power spectrum.
         - norm (bool): Whether to normalize the spectrum to variance units.
         - num_bins (int): Number of bins for frequency binning.
+            Evenly spaced bins are created in either linear or log space.
+            Define either num_bins + bin_type, or bin_edges, not both.
         - bin_type (str): Type of binning ('log' or 'linear').
         - bin_edges (array-like): Custom array of bin edges (optional).
 

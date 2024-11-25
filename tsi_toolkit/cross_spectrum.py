@@ -35,8 +35,10 @@ class CrossSpectrum(PowerSpectrum):
         - timeseries2 (TimeSeries): Second time series object (optional).
         - fmin (float or 'auto'): Minimum frequency for the cross-spectrum.
         - fmax (float or 'auto'): Maximum frequency for the cross-spectrum.
-        - num_bins (int): Number of bins for frequency binning.
+        - num_bins (int): Number of bins for frequency binning. 
+            Choose either `num_bins` or `bin_edges` to define the bins.
         - bin_type (str): Binning type ('log' or 'linear').
+        - bin_edges (array-like): Custom bin edges for frequency binning.
         - norm (bool): Whether to normalize the spectrum.
         - plot_cs (bool): Whether to plot the cross-spectrum after creation.
         """
