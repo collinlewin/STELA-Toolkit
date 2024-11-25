@@ -21,10 +21,13 @@ class CrossSpectrum(PowerSpectrum):
                  bin_edges=[],
                  norm=True,
                  plot_cs=False):
+        # To do: case where values1 is samples (2D), values2 is 1D
+        # To do: when dim values1 != dim values2
+        # To do: update main docstring
         """
-        Initializes the CrossSpectrum object and computes the cross-spectrum. It determines whether the input represents
-        individual time series or multiple realizations and computes the corresponding
-        cross-spectrum using FFT.
+        Initializes the CrossSpectrum object and computes the cross-spectrum.
+        Determines whether the input represents individual time series or 
+        multiple realizations and computes the corresponding cross-spectrum using FFT.
 
         Parameters:
         - times1 (array-like): Time values for the first time series.
@@ -60,6 +63,7 @@ class CrossSpectrum(PowerSpectrum):
         self.bin_edges = bin_edges
 
         # Check if the input values are for multiple realizations
+        # this needs to be corrected for handling different shapes and dim val1 != dim val2
         if len(self.values1.shape) == 2 and len(self.values2.shape) == 2:
             cross_spectrum = self.compute_stacked_cross_spectrum(fmin=self.fmin, fmax=self.fmax,
                                                              num_bins=self.num_bins, bin_type=self.bin_type, 
@@ -71,7 +75,7 @@ class CrossSpectrum(PowerSpectrum):
                                                      bin_edges=bin_edges, norm=norm
                                                      )
         
-        self.freqs, self.freq_widths, self.cross_powers, self.cross_power_sigmas = cross_spectrum
+        self.freqs, self.freq_widths, self.cs, self.cs_sigmas = cross_spectrum
 
         if plot_cs:
             self.plot()
@@ -80,8 +84,6 @@ class CrossSpectrum(PowerSpectrum):
                                bin_edges=[], norm=True):
         """
         Computes the cross-spectrum between two time series.
-        The method calculates the cross-spectrum as the real part of the product
-        of the FFT of the first time series and the conjugate FFT of the second.
 
         Parameters:
         - fmin (float or 'auto'): Minimum frequency for computation.
@@ -94,7 +96,6 @@ class CrossSpectrum(PowerSpectrum):
         - freqs (array-like): Frequencies of the cross-spectrum.
         - freq_widths (array-like): Bin widths of the frequencies.
         - cross_power (array-like): Cross-power spectrum values.
-        - cross_power_sigma (array-like or None): Uncertainties in cross-power values.
         """
         ps1 = PowerSpectrum(
             times=self.times1, values=self.values1, fmin=fmin, fmax=fmax,
@@ -105,8 +106,8 @@ class CrossSpectrum(PowerSpectrum):
             num_bins=num_bins, bin_type=bin_type, bin_edges=bin_edges, norm=norm
         )
 
-        cross_power = np.real(ps1.powers * np.conj(ps2.powers))
-        return ps1.freqs, ps1.freq_widths, cross_power, None
+        cross_spectrum = np.real(np.conj(ps1.powers) * ps2.powers)
+        return ps1.freqs, ps1.freq_widths, cross_spectrum, None 
 
     def compute_stacked_cross_spectrum(self, fmin='auto', fmax='auto', num_bins=None, bin_type="log", 
                                        bin_edges=[], norm=True):
@@ -129,7 +130,7 @@ class CrossSpectrum(PowerSpectrum):
         - cross_power_mean (array-like): Mean cross-power spectrum values.
         - cross_power_std (array-like): Standard deviation of cross-power values.
         """
-        cross_powers = []
+        cross_spectra = []
         for i in range(self.values1.shape[0]):
             ps1 = PowerSpectrum(
                 times=self.times1, values=self.values1[i], fmin=fmin, fmax=fmax, 
@@ -141,14 +142,14 @@ class CrossSpectrum(PowerSpectrum):
             )
 
             # Compute cross-spectrum for each pair of realizations
-            cross_power = np.real(ps1.powers * np.conj(ps2.powers))
-            cross_powers.append(cross_power)
+            cross_spectrum = np.real(ps1.powers * np.conj(ps2.powers))
+            cross_spectra.append(cross_spectrum)
 
-        cross_powers = np.vstack(cross_powers)
-        cross_power_mean = np.mean(cross_powers, axis=0)
-        cross_power_std = np.std(cross_powers, axis=0)
+        cross_spectra = np.vstack(cross_spectra)
+        cross_spectra_mean = np.mean(cross_spectra, axis=0)
+        cross_spectra_std = np.std(cross_spectra, axis=0)
 
-        return ps1.freqs, ps1.freq_widths, cross_power_mean, cross_power_std
+        return ps1.freqs, ps1.freq_widths, cross_spectra_mean, cross_spectra_std
 
     def bin(self, num_bins=None, bin_type="log", bin_edges=None, plot=False, save=True, verbose=True):
         """
