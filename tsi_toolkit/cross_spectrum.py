@@ -50,18 +50,13 @@ class CrossSpectrum(PowerSpectrum):
         if not np.allclose(self.times1, self.times2):
             raise ValueError("The time arrays of the two time series must be identical.")
 
-        self.fmin = fmin
-        self.fmax = fmax
-        self.num_bins = num_bins
-        self.bin_type = bin_type
-
         # Check if the input values are for multiple realizations
         if len(self.values1.shape) == 2 and len(self.values2.shape) == 2:
-            cross_spec = self.compute_stacked_cross_spectrum(fmin=self.fmin, fmax=self.fmax, num_bins=self.num_bins,
+            cross_spec = self.compute_stacked_cross_spectrum(fmin=fmin, fmax=fmax, num_bins=self.num_bins,
                                                              bin_type=self.bin_type, bin_edges=bin_edges, norm=norm
                                                              )
         else:
-            cross_spec = self.compute_cross_spectrum(fmin=self.fmin, fmax=self.fmax, num_bins=self.num_bins, 
+            cross_spec = self.compute_cross_spectrum(fmin=fmin, fmax=fmax, num_bins=self.num_bins, 
                                                      bin_type=self.bin_type, bin_edges=bin_edges, norm=norm
                                                      )
         self.freqs, self.freq_widths, self.cross_powers, self.cross_power_sigmas = cross_spec
@@ -197,28 +192,23 @@ class CrossSpectrum(PowerSpectrum):
             x=self.freqs, y=self.cross_powers, xerr=self.freq_widths, yerr=self.cross_power_sigmas, **kwargs
         )
 
-    def count_frequencies_in_bins(self, bin_edges=None, num_bins=None, bin_type="log"):
+    def count_frequencies_in_bins(self, fmin=None, fmax=None, num_bins=None, bin_type="log", bin_edges=[]):
         """
-        Counts the number of frequencies in each bin for the cross-spectrum.
+        Counts the number of frequencies in each bin for the power spectrum.
+        Wrapper method to use FrequencyBinning.count_frequencies_in_bins with class attributes.
 
-        Uses the frequency data to count the number of entries in each bin defined
-        by the provided edges or calculated based on the number of bins and bin type.
-
+        If 
         Parameters:
-        - bin_edges (array-like): Custom array of bin edges (optional).
+        - fmin (float): Minimum frequency (optional).
+        - fmax (float): Maximum frequency (optional).
+            Class attributes will be used if not specified.
         - num_bins (int): Number of bins to create (if bin_edges is not provided).
         - bin_type (str): Type of binning ("log" or "linear").
+        - bin_edges (array-like): Custom array of bin edges (optional).
 
         Returns:
         - bin_counts (list): List of counts of frequencies in each bin.
-
-        Raises:
-        - ValueError: If neither bin_edges nor num_bins is provided.
         """
-        if bin_edges is None:
-            if num_bins is None:
-                raise ValueError("Either bin_edges or num_bins must be provided to count frequencies in bins.")
-            bin_edges = FrequencyBinning.define_bins(self.freqs, num_bins=num_bins, bin_type=bin_type)
-
-        bin_counts = FrequencyBinning.count_frequencies_in_bins(self.freqs, bin_edges)
-        return bin_counts
+        return FrequencyBinning.count_frequencies_in_bins(
+            parent=self, fmin=fmin, fmax=fmax, num_bins=num_bins, bin_type=bin_type, bin_edges=bin_edges
+        )

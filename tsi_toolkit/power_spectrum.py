@@ -39,17 +39,24 @@ class PowerSpectrum:
         """
         self.times, self.values = _CheckInputs._check_input_data(timeseries, times, values)
         _CheckInputs._check_input_bins(num_bins, bin_type, bin_edges)
-        self.fmin = fmin
-        self.fmax = fmax
+
+        # Use absolute min and max frequencies if set to 'auto'
+        self.dt = np.diff(self.times)[0]
+        fmin = 1 / (self.times.max() - self.times.min()) if fmin == 'auto' else fmin
+        fmax = 1 / (2 * self.dt) if fmax == 'auto' else fmax # nyquist frequency
+
+        self.num_bins = num_bins
+        self.bin_type = bin_type
+        self.bin_edges = bin_edges
 
         # if multiple time series are provided, compute the stacked power spectrum
         if len(values.shape) == 2:
             self.freqs, self.freq_widths, self.powers, self.power_sigmas = self.compute_stacked_power_spectrum(
-                fmin=self.fmin, fmax=self.fmax, num_bins=num_bins, bin_type=bin_type, bin_edges=bin_edges, norm=norm
+                fmin=fmin, fmax=fmax, num_bins=num_bins, bin_type=bin_type, bin_edges=bin_edges, norm=norm
             )
         else:
             self.freqs, self.freq_widths, self.powers, self.power_sigmas = self.compute_power_spectrum(
-                fmin=self.fmin, fmax=self.fmax, num_bins=num_bins, bin_type=bin_type, bin_edges=bin_edges, norm=norm
+                fmin=fmin, fmax=fmax, num_bins=num_bins, bin_type=bin_type, bin_edges=bin_edges, norm=norm
             )
 
         if plot_fft:
@@ -88,29 +95,28 @@ class PowerSpectrum:
             raise ValueError("Time series must have a uniform sampling interval.\n"
                             "Interpolate the data to a uniform grid first."
                         )
-        dt = time_diffs[0] 
         length = len(values)
 
-        # Use absolute min and max frequencies if set to 'auto'
-        fmin = 1 / (times.max() - times.min()) if fmin == 'auto' else fmin
-        fmax = 1 / (2 * dt) if fmax == 'auto' else fmax # Nyquist frequency
-
         fft = np.fft.fft(values)
-        freqs = np.fft.fftfreq(length, d=dt)
+        freqs = np.fft.fftfreq(length, d=self.dt)
         powers = np.abs(fft) ** 2
 
         # Filter frequencies within [fmin, fmax]
-        valid_mask = (freqs >= fmin) & (freqs <= fmax)
+        valid_mask = (freqs >= self.fmin) & (freqs <= self.fmax)
         freqs = freqs[valid_mask]
         powers = powers[valid_mask]
 
         if num_bins or bin_edges:
             if bin_edges:
                 # use custom bin edges
-                bin_edges = FrequencyBinning.define_bins(freqs, num_bins=num_bins, bins=bin_edges, bin_type=bin_type)
+                bin_edges = FrequencyBinning.define_bins(
+                    self.fmin, self.fmax, num_bins=num_bins, bins=bin_edges, bin_type=bin_type
+                )
             elif num_bins:
                 # use equal-width bins in log or linear space
-                bin_edges = FrequencyBinning.define_bins(freqs, num_bins=num_bins, bin_type=bin_type)
+                bin_edges = FrequencyBinning.define_bins(
+                    self.fmin, self.fmax, num_bins=num_bins, bin_type=bin_type
+                )
             else:
                 raise ValueError("Either num_bins or bin_edges must be provided.\n"
                                  "In other words, you must specify the number of bins or the bin edges.")
@@ -121,7 +127,7 @@ class PowerSpectrum:
 
         # Normalize power spectrum to units of variance
         if norm:
-            powers /= length * np.mean(values) ** 2 / (2 * dt)
+            powers /= length * np.mean(values) ** 2 / (2 * self.dt)
             
         return freqs, freq_widths, powers, power_sigmas
     
@@ -195,7 +201,7 @@ class PowerSpectrum:
         kwargs.setdefault('yscale', 'log')
         Plotter.plot(x=freqs, y=powers, xerr=freq_widths, yerr=power_sigmas, **kwargs)
 
-    def bin(self, num_bins=None, bin_type="log",  bin_edges=None, plot=False, save=True, verbose=True):
+    def bin(self, fmin, fmax, num_bins=None, bin_type="log",  bin_edges=None, plot=False, save=True, verbose=True):
         """
         Bins the power spectrum data, either using a specified number of bins or custom bin edges.
 
@@ -207,9 +213,14 @@ class PowerSpectrum:
         - save: If True, updates the internal attributes with binned data.
         - verbose: If True, prints information about binning.
         """
+        if fmin is None:
+            fmin = self.fmin
+        if fmax is None:
+            fmax = self.fmax
+
         if bin_edges is None:
             try:
-                bin_edges = FrequencyBinning.define_bins(self.freqs, num_bins=num_bins, bins=bin_edges, bin_type=bin_type)
+                bin_edges = FrequencyBinning.define_bins(fmin, fmax, num_bins=num_bins, bins=bin_edges, bin_type=bin_type)
             except ValueError:
                 raise ValueError("Either num_bins or bin_edges must be provided.\n"
                                  "In other words, you must specify the number of bins or the bin edges.")
@@ -222,32 +233,26 @@ class PowerSpectrum:
 
         if plot:
             self.plot(freqs=freqs, freq_widths=freq_widths, powers=powers, power_sigmas=power_sigmas)
-
         if save:
             self.freqs, self.freq_widths, self.powers, self.power_sigmas = freqs, freq_widths, powers, power_sigmas
     
-    def count_frequencies_in_bins(self, bin_edges=None, num_bins=None, bin_type="log"):
+    def count_frequencies_in_bins(self, fmin=None, fmax=None, num_bins=None, bin_type="log", bin_edges=[]):
         """
         Counts the number of frequencies in each bin for the power spectrum.
+        Wrapper method to use FrequencyBinning.count_frequencies_in_bins with class attributes.
 
-        Uses the frequency data to count the number of entries in each bin defined
-        by the provided edges or calculated based on the number of bins and bin type.
-
+        If 
         Parameters:
-        - bin_edges (array-like): Custom array of bin edges (optional).
+        - fmin (float): Minimum frequency (optional).
+        - fmax (float): Maximum frequency (optional).
+            Class attributes will be used if not specified.
         - num_bins (int): Number of bins to create (if bin_edges is not provided).
         - bin_type (str): Type of binning ("log" or "linear").
+        - bin_edges (array-like): Custom array of bin edges (optional).
 
         Returns:
         - bin_counts (list): List of counts of frequencies in each bin.
-
-        Raises:
-        - ValueError: If neither bin_edges nor num_bins is provided.
         """
-        if bin_edges is None:
-            if num_bins is None:
-                raise ValueError("Either bin_edges or num_bins must be provided to count frequencies in bins.")
-            bin_edges = FrequencyBinning.define_bins(self.freqs, num_bins=num_bins, bin_type=bin_type)
-
-        bin_counts = FrequencyBinning.count_frequencies_in_bins(self.freqs, bin_edges)
-        return bin_counts
+        return FrequencyBinning.count_frequencies_in_bins(
+            parent=self, fmin=fmin, fmax=fmax, num_bins=num_bins, bin_type=bin_type, bin_edges=bin_edges
+        )
