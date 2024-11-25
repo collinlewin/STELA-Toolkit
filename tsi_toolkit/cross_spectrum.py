@@ -14,39 +14,17 @@ class CrossSpectrum(PowerSpectrum):
                  values2=[],
                  timeseries1=None,
                  timeseries2=None,
+                 norm=True,
                  fmin='auto',
                  fmax='auto',
                  num_bins=None,
                  bin_type="log",
                  bin_edges=[],
-                 norm=True,
-                 plot_cs=False):
+                 plot_cs=False
+                 ):
         # To do: case where values1 is samples (2D), values2 is 1D
         # To do: when dim values1 != dim values2
         # To do: update main docstring
-        """
-        Initializes the CrossSpectrum object and computes the cross-spectrum.
-        Determines whether the input represents individual time series or 
-        multiple realizations and computes the corresponding cross-spectrum using FFT.
-
-        Parameters:
-        - times1 (array-like): Time values for the first time series.
-        - values1 (array-like): Measurement values for the first time series (e.g., flux, counts).
-        - times2 (array-like): Time values for the second time series.
-        - values2 (array-like): Measurement values for the second time series (e.g., flux, counts).
-        - timeseries1 (TimeSeries): First time series object (optional).
-        - timeseries2 (TimeSeries): Second time series object (optional).
-        - fmin (float or 'auto'): Minimum frequency for the cross-spectrum.
-        - fmax (float or 'auto'): Maximum frequency for the cross-spectrum.
-        - num_bins (int): Number of bins for frequency binning. 
-            - Evenly spaced bins are created in either linear or log space.
-            - Define either num_bins + bin_type, or bin_edges, not both.
-            - For unbinned data, do not provide num_bins or bin_edges.
-        - bin_type (str): Binning type ('log' or 'linear').
-        - bin_edges (array-like): Custom bin edges for frequency binning.
-        - norm (bool): Whether to normalize the spectrum.
-        - plot_cs (bool): Whether to plot the cross-spectrum after creation.
-        """
         self.times1, self.values1 = self._check_input(timeseries1, times1, values1)
         self.times2, self.values2 = self._check_input(timeseries2, times2, values2)
         _CheckInputs._check_input_bins(num_bins, bin_type, bin_edges)
@@ -81,7 +59,8 @@ class CrossSpectrum(PowerSpectrum):
         if plot_cs:
             self.plot()
 
-    def compute_cross_spectrum(self, fmin='auto', fmax='auto', num_bins=None, bin_type="log",
+    def compute_cross_spectrum(self, times1=None, values1=None, times2=None, values2=None,
+                               fmin='auto', fmax='auto', num_bins=None, bin_type="log",
                                bin_edges=[], norm=True):
         """
         Computes the cross-spectrum between two time series.
@@ -98,13 +77,18 @@ class CrossSpectrum(PowerSpectrum):
         - freq_widths (array-like): Bin widths of the frequencies.
         - cross_spectrum (array-like): Cross-spectrum values.
         """
+        times1 = self.times1 if times1 is None else times1
+        values1 = self.values1 if values1 is None else values1
+        times2 = self.times2 if times2 is None else times2
+        values2 = self.values2 if values2 is None else values2
+
         ps1 = PowerSpectrum(
-            times=self.times1, values=self.values1, fmin=fmin, fmax=fmax,
-            num_bins=num_bins, bin_type=bin_type, bin_edges=bin_edges, norm=norm
+            times=times1, values=values1, fmin=fmin, fmax=fmax, num_bins=num_bins,
+            bin_type=bin_type, bin_edges=bin_edges, norm=norm
         )
         ps2 = PowerSpectrum(
-            times=self.times2, values=self.values2, fmin=fmin, fmax=fmax,
-            num_bins=num_bins, bin_type=bin_type, bin_edges=bin_edges, norm=norm
+            times=times2, values=values2, fmin=fmin, fmax=fmax, num_bins=num_bins,
+            bin_type=bin_type, bin_edges=bin_edges, norm=norm
         )
 
         cross_spectrum = np.real(np.conj(ps1.powers) * ps2.powers)
@@ -133,17 +117,10 @@ class CrossSpectrum(PowerSpectrum):
         """
         cross_spectra = []
         for i in range(self.values1.shape[0]):
-            ps1 = PowerSpectrum(
-                times=self.times1, values=self.values1[i], fmin=fmin, fmax=fmax, 
-                num_bins=num_bins, bin_type=bin_type, bin_edges=bin_edges, norm=norm
+            cross_spectrum = self.compute_cross_spectrum(
+                times1=self.times1, values1=self.values1[i], times2=self.times2, values2=self.values2[i],
+                fmin=fmin, fmax=fmax, num_bins=num_bins, bin_type=bin_type, bin_edges=bin_edges, norm=norm
             )
-            ps2 = PowerSpectrum(
-                times=self.times2, values=self.values2[i], fmin=fmin, fmax=fmax,
-                num_bins=num_bins, bin_type=bin_type, bin_edges=bin_edges, norm=norm
-            )
-
-            # Compute cross-spectrum for each pair of realizations
-            cross_spectrum = np.real(ps1.powers * np.conj(ps2.powers))
             cross_spectra.append(cross_spectrum)
 
         cross_spectra = np.vstack(cross_spectra)

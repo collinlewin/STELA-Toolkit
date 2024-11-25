@@ -19,24 +19,6 @@ class PowerSpectrum:
                  norm=True,
                  plot_fft=False
                  ):
-        """
-        Initializes the PowerSpectrum object and computes the power spectrum.
-
-        The method processes the input time series data (either as arrays or
-        TimeSeries objects), determines whether the input represents a single
-        or multiple time series, and computes the corresponding power spectrum
-        using FFT. If requested, it plots the spectrum.
-
-        Parameters:
-        - times (array-like): Time values for the input time series.
-        - values (array-like): Measurement values for the input time series (e.g., flux, counts).
-        - timeseries (TimeSeries): TimeSeries object encapsulating time and values (optional).
-        - fmin (float or 'auto'): Minimum frequency for the power spectrum.
-        - fmax (float or 'auto'): Maximum frequency for the power spectrum.
-        - num_bins (int): Number of bins for frequency binning.
-        - norm (bool): Whether to normalize the spectrum to variance units.
-        - plot_fft (bool): Whether to plot the computed power spectrum.
-        """
         self.times, self.values = _CheckInputs._check_input_data(timeseries, times, values)
         _CheckInputs._check_input_bins(num_bins, bin_type, bin_edges)
 
