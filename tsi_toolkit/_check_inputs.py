@@ -8,7 +8,7 @@ class _CheckInputs:
     A utility class for checking and validating input data and binning.
     """
     @staticmethod
-    def _check_input_data(timeseries, times, values):
+    def _check_input_data(timeseries, times, values, sigmas=None):
         """
         Validates and extracts time and value arrays from input or TimeSeries objects.
         """
@@ -30,6 +30,10 @@ class _CheckInputs:
                     "Times and values must have the same length for each time series.\n"
                     "Check the shape of the values array: expecting (n_series, n_times)."
                 )
+            
+            if sigmas is not None: 
+                if np.min(sigmas) <= 0:
+                    raise ValueError("Uncertainties of the input data must be positive.")
         else:
             raise ValueError("Either provide a TimeSeries object or times and values arrays.")
         
