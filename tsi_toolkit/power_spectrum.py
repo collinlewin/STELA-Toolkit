@@ -15,7 +15,7 @@ class PowerSpectrum:
                  fmax='auto',
                  num_bins=None, 
                  bin_type="log",
-                 bin_edges=None,
+                 bin_edges=[],
                  norm=True,
                  plot_fft=False
                  ):

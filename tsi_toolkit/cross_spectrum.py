@@ -18,7 +18,7 @@ class CrossSpectrum(PowerSpectrum):
                  fmax='auto',
                  num_bins=None,
                  bin_type="log",
-                 bin_edges = [],
+                 bin_edges=[],
                  norm=True,
                  plot_cs=False):
         """
@@ -36,7 +36,8 @@ class CrossSpectrum(PowerSpectrum):
         - fmin (float or 'auto'): Minimum frequency for the cross-spectrum.
         - fmax (float or 'auto'): Maximum frequency for the cross-spectrum.
         - num_bins (int): Number of bins for frequency binning. 
-            Choose either `num_bins` or `bin_edges` to define the bins.
+            Evenly spaced bins are created in either linear or log space.
+            Define either num_bins + bin_type, or bin_edges, not both.
         - bin_type (str): Binning type ('log' or 'linear').
         - bin_edges (array-like): Custom bin edges for frequency binning.
         - norm (bool): Whether to normalize the spectrum.
