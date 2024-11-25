@@ -52,8 +52,8 @@ class CrossSpectrum(PowerSpectrum):
 
         # Use absolute min and max frequencies if set to 'auto'
         self.dt = np.diff(self.times)[0]
-        fmin = 1 / (self.times.max() - self.times.min()) if fmin == 'auto' else fmin
-        fmax = 1 / (2 * self.dt) if fmax == 'auto' else fmax # nyquist frequency
+        self.fmin = 1 / (self.times.max() - self.times.min()) if fmin == 'auto' else fmin
+        self.fmax = 1 / (2 * self.dt) if fmax == 'auto' else fmax # nyquist frequency
 
         self.num_bins = num_bins
         self.bin_type = bin_type
@@ -61,14 +61,17 @@ class CrossSpectrum(PowerSpectrum):
 
         # Check if the input values are for multiple realizations
         if len(self.values1.shape) == 2 and len(self.values2.shape) == 2:
-            cross_spec = self.compute_stacked_cross_spectrum(fmin=fmin, fmax=fmax, num_bins=self.num_bins,
-                                                             bin_type=self.bin_type, bin_edges=bin_edges, norm=norm
+            cross_spectrum = self.compute_stacked_cross_spectrum(fmin=self.fmin, fmax=self.fmax,
+                                                             num_bins=self.num_bins, bin_type=self.bin_type, 
+                                                             bin_edges=bin_edges, norm=norm
                                                              )
         else:
-            cross_spec = self.compute_cross_spectrum(fmin=fmin, fmax=fmax, num_bins=self.num_bins, 
-                                                     bin_type=self.bin_type, bin_edges=bin_edges, norm=norm
+            cross_spectrum = self.compute_cross_spectrum(fmin=self.fmin, fmax=self.fmax,
+                                                     num_bins=self.num_bins, bin_type=self.bin_type, 
+                                                     bin_edges=bin_edges, norm=norm
                                                      )
-        self.freqs, self.freq_widths, self.cross_powers, self.cross_power_sigmas = cross_spec
+        
+        self.freqs, self.freq_widths, self.cross_powers, self.cross_power_sigmas = cross_spectrum
 
         if plot_cs:
             self.plot()

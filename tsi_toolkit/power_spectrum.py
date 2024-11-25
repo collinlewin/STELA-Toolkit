@@ -42,8 +42,8 @@ class PowerSpectrum:
 
         # Use absolute min and max frequencies if set to 'auto'
         self.dt = np.diff(self.times)[0]
-        fmin = 1 / (self.times.max() - self.times.min()) if fmin == 'auto' else fmin
-        fmax = 1 / (2 * self.dt) if fmax == 'auto' else fmax # nyquist frequency
+        self.fmin = 1 / (self.times.max() - self.times.min()) if fmin == 'auto' else fmin
+        self.fmax = 1 / (2 * self.dt) if fmax == 'auto' else fmax # nyquist frequency
 
         self.num_bins = num_bins
         self.bin_type = bin_type
@@ -51,13 +51,17 @@ class PowerSpectrum:
 
         # if multiple time series are provided, compute the stacked power spectrum
         if len(values.shape) == 2:
-            self.freqs, self.freq_widths, self.powers, self.power_sigmas = self.compute_stacked_power_spectrum(
-                fmin=fmin, fmax=fmax, num_bins=num_bins, bin_type=bin_type, bin_edges=bin_edges, norm=norm
-            )
+            power_spectrum  = self.compute_stacked_power_spectrum(fmin=self.fmin, fmax=self.fmax, 
+                                                                  num_bins=num_bins, bin_type=bin_type, 
+                                                                  bin_edges=bin_edges, norm=norm
+                                                                  )
         else:
-            self.freqs, self.freq_widths, self.powers, self.power_sigmas = self.compute_power_spectrum(
-                fmin=fmin, fmax=fmax, num_bins=num_bins, bin_type=bin_type, bin_edges=bin_edges, norm=norm
-            )
+            power_spectrum = self.compute_power_spectrum(fmin=self.fmin, fmax=self.fmax,
+                                                         num_bins=num_bins, bin_type=bin_type, 
+                                                         bin_edges=bin_edges, norm=norm
+                                                         )
+        
+        self.freqs, self.freq_widths, self.powers, self.power_sigmas = power_spectrum
 
         if plot_fft:
             self.plot()
