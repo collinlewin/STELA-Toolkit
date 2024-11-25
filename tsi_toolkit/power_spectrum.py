@@ -1,5 +1,4 @@
 import numpy as np
-import matplotlib.pyplot as plt
 
 from .data_loader import TimeSeries
 from .frequency_binning import FrequencyBinning
@@ -13,7 +12,9 @@ class PowerSpectrum:
                  timeseries=None,
                  fmin='auto',
                  fmax='auto',
-                 num_bins=None,
+                 num_bins=None, 
+                 bin_type="log",
+                 bin_edges=None,
                  norm=True,
                  plot_fft=False
                  ):
@@ -42,18 +43,18 @@ class PowerSpectrum:
         # if multiple time series are provided, compute the stacked power spectrum
         if len(values.shape) == 2:
             self.freqs, self.freq_widths, self.powers, self.power_sigmas = self.compute_stacked_power_spectrum(
-                fmin=self.fmin, fmax=self.fmax, num_bins=num_bins, norm=norm
+                fmin=self.fmin, fmax=self.fmax, num_bins=num_bins, bin_type=bin_type, bin_edges=bin_edges, norm=norm
             )
         else:
             self.freqs, self.freq_widths, self.powers, self.power_sigmas = self.compute_power_spectrum(
-                fmin=self.fmin, fmax=self.fmax, num_bins=num_bins, norm=norm
+                fmin=self.fmin, fmax=self.fmax, num_bins=num_bins, bin_type=bin_type, bin_edges=bin_edges, norm=norm
             )
 
         if plot_fft:
             self.plot()
 
-    def compute_power_spectrum(self, times=None, values=None, fmin='auto', fmax='auto', norm=True,
-                               num_bins=None, bin_type="log", bin_edges=None):        
+    def compute_power_spectrum(self, times=None, values=None, fmin='auto', fmax='auto',
+                               num_bins=None, bin_type="log", bin_edges=None, norm=True):        
         """
         Computes the power spectrum for a single time series.
 
@@ -120,7 +121,8 @@ class PowerSpectrum:
             
         return freqs, freq_widths, powers, power_sigmas
     
-    def compute_stacked_power_spectrum(self, fmin='auto', fmax='auto', norm=True, num_bins=None, bin_type="log", bin_edges=None):
+    def compute_stacked_power_spectrum(self, fmin='auto', fmax='auto', num_bins=None, 
+                                       bin_type="log", bin_edges=None, norm=True):
         """
         Computes the power spectrum for multiple realizations of a time series.
 
