@@ -39,8 +39,9 @@ class CrossSpectrum(PowerSpectrum):
         - fmin (float or 'auto'): Minimum frequency for the cross-spectrum.
         - fmax (float or 'auto'): Maximum frequency for the cross-spectrum.
         - num_bins (int): Number of bins for frequency binning. 
-            Evenly spaced bins are created in either linear or log space.
-            Define either num_bins + bin_type, or bin_edges, not both.
+            - Evenly spaced bins are created in either linear or log space.
+            - Define either num_bins + bin_type, or bin_edges, not both.
+            - For unbinned data, do not provide num_bins or bin_edges.
         - bin_type (str): Binning type ('log' or 'linear').
         - bin_edges (array-like): Custom bin edges for frequency binning.
         - norm (bool): Whether to normalize the spectrum.
@@ -95,7 +96,7 @@ class CrossSpectrum(PowerSpectrum):
         Returns:
         - freqs (array-like): Frequencies of the cross-spectrum.
         - freq_widths (array-like): Bin widths of the frequencies.
-        - cross_power (array-like): Cross-power spectrum values.
+        - cross_spectrum (array-like): Cross-spectrum values.
         """
         ps1 = PowerSpectrum(
             times=self.times1, values=self.values1, fmin=fmin, fmax=fmax,
@@ -127,8 +128,8 @@ class CrossSpectrum(PowerSpectrum):
         Returns:
         - freqs (array-like): Frequencies of the cross-spectrum.
         - freq_widths (array-like): Bin widths of the frequencies.
-        - cross_power_mean (array-like): Mean cross-power spectrum values.
-        - cross_power_std (array-like): Standard deviation of cross-power values.
+        - cross_spectra_mean (array-like): Mean cross-spectrum values.
+        - cross_spectra-std (array-like): Standard deviation of cross-spectrum values.
         """
         cross_spectra = []
         for i in range(self.values1.shape[0]):
@@ -151,63 +152,29 @@ class CrossSpectrum(PowerSpectrum):
 
         return ps1.freqs, ps1.freq_widths, cross_spectra_mean, cross_spectra_std
 
-    def bin(self, num_bins=None, bin_type="log", bin_edges=None, plot=False, save=True, verbose=True):
-        """
-        Bins the cross-spectrum data into specified bins.
-        Optionally, saves the binned data back to the object and plots
-        the binned spectrum.
-
-        Parameters:
-        - num_bins (int): Number of bins (if `bin_edges` is not provided).
-        - bin_type (str): Type of binning ('log' or 'linear').
-        - bin_edges (array-like): Custom bin edges (optional).
-        - plot (bool): Whether to plot the binned data.
-        - save (bool): Whether to save the binned data back to the object.
-        - verbose (bool): Whether to print details about the binning process.
-        """
-        if bin_edges is None:
-            try:
-                bin_edges = FrequencyBinning.define_bins(
-                    self.freqs, num_bins=num_bins, bins=bin_edges, bin_type=bin_type
-                )
-            except ValueError:
-                raise ValueError("Either num_bins or bin_edges must be provided.")
-
-        if verbose:
-            num_freqs_in_bins = FrequencyBinning.count_frequencies_in_bins(self.freqs, bin_edges)
-            print(f"Number of frequencies in each bin: {num_freqs_in_bins}")
-
-        freqs, freq_widths, cross_powers, cross_power_sigmas = FrequencyBinning.bin_data(
-            self.freqs, self.cross_powers, bin_edges
-        )
-
-        if plot:
-            self.plot(x=freqs, y=cross_powers, xerr=freq_widths, yerr=cross_power_sigmas)
-
-        if save:
-            self.freqs = freqs
-            self.freq_widths = freq_widths
-            self.cross_powers = cross_powers
-            self.cross_power_sigmas = cross_power_sigmas
-
-    def plot(self, **kwargs):
+    def plot(self, freqs=None, freq_widths=None, cs=None, cs_sigmas=None, **kwargs):
         """
         Plots the cross-spectrum.
 
         Parameters:
         - **kwargs: Keyword arguments for customizing the plot.
         """
+        freqs = self.freqs if freqs is None else freqs
+        freq_widths = self.freq_widths if freq_widths is None else freq_widths
+        cs = self.cs if cs is None else cs
+        cs_sigmas = self.cs_sigmas if cs_sigmas is None else cs_sigmas
+
         kwargs.setdefault('xlabel', 'Frequency')
-        kwargs.setdefault('ylabel', 'Cross Power')
+        kwargs.setdefault('ylabel', 'Cross-Spectrum')
         kwargs.setdefault('xscale', 'log')
         kwargs.setdefault('yscale', 'log')
         Plotter.plot(
-            x=self.freqs, y=self.cross_powers, xerr=self.freq_widths, yerr=self.cross_power_sigmas, **kwargs
+            x=freqs, y=cs, xerr=freq_widths, yerr=cs_sigmas, **kwargs
         )
 
     def count_frequencies_in_bins(self, fmin=None, fmax=None, num_bins=None, bin_type="log", bin_edges=[]):
         """
-        Counts the number of frequencies in each bin for the power spectrum.
+        Counts the number of frequencies in each frequency bin.
         Wrapper method to use FrequencyBinning.count_frequencies_in_bins with class attributes.
 
         If 

@@ -160,24 +160,16 @@ class PowerSpectrum:
         - power_std (array-like): Standard deviation of power values across realizations.
         """
         powers = []
-        power_sigmas = []
         for i in range(self.values.shape[0]):
-            freqs_oneseries, freq_widths, powers_oneseries, power_sigmas_oneseries = self.compute_power_spectrum(
-                self.times, self.values[i], fmin=fmin, fmax=fmax, norm=norm, 
-                num_bins=num_bins, bin_type=bin_type, bin_edges=bin_edges
-            )
-            powers.append(powers_oneseries)
-            if num_bins:
-                power_sigmas.append(power_sigmas_oneseries)
+            power_spectrum = self.compute_power_spectrum(self.times, self.values[i], fmin=fmin, fmax=fmax,
+                                                         num_bins=num_bins, bin_type=bin_type, 
+                                                         bin_edges=bin_edges, norm=norm
+                                                         )
+            freqs, freq_widths, power, _ = power_spectrum
+            powers.append(power)
 
         # Stack the collected powers and sigmas
         powers = np.vstack(powers)
-
-        if num_bins:
-            power_sigmas = np.vstack(power_sigmas)
-
-        freqs = freqs_oneseries
-        freq_widths = freq_widths
         power_mean = np.mean(powers, axis=0)
         power_std = np.std(powers, axis=0)
 
@@ -205,41 +197,6 @@ class PowerSpectrum:
         kwargs.setdefault('yscale', 'log')
         Plotter.plot(x=freqs, y=powers, xerr=freq_widths, yerr=power_sigmas, **kwargs)
 
-    def bin(self, fmin, fmax, num_bins=None, bin_type="log",  bin_edges=None, plot=False, save=True, verbose=True):
-        """
-        Bins the power spectrum data, either using a specified number of bins or custom bin edges.
-
-        Parameters:
-        - num_bins: Number of bins (if `bins` is not provided).
-        - bins: Custom array of bin edges (optional).
-        - bin_type: Type of binning ("log", "linear", or custom).
-        - plot: If True, plots the binned data.
-        - save: If True, updates the internal attributes with binned data.
-        - verbose: If True, prints information about binning.
-        """
-        if fmin is None:
-            fmin = self.fmin
-        if fmax is None:
-            fmax = self.fmax
-
-        if bin_edges is None:
-            try:
-                bin_edges = FrequencyBinning.define_bins(fmin, fmax, num_bins=num_bins, bins=bin_edges, bin_type=bin_type)
-            except ValueError:
-                raise ValueError("Either num_bins or bin_edges must be provided.\n"
-                                 "In other words, you must specify the number of bins or the bin edges.")
-
-        if verbose:
-            num_freqs_in_bins = FrequencyBinning.count_frequencies_in_bins(self.freqs, bin_edges)
-            print(f"Number of frequencies in each bin: {num_freqs_in_bins}")
-
-        freqs, freq_widths, powers, power_sigmas = FrequencyBinning.bin_data(self.freqs, self.powers, bin_edges)
-
-        if plot:
-            self.plot(freqs=freqs, freq_widths=freq_widths, powers=powers, power_sigmas=power_sigmas)
-        if save:
-            self.freqs, self.freq_widths, self.powers, self.power_sigmas = freqs, freq_widths, powers, power_sigmas
-    
     def count_frequencies_in_bins(self, fmin=None, fmax=None, num_bins=None, bin_type="log", bin_edges=[]):
         """
         Counts the number of frequencies in each bin for the power spectrum.
