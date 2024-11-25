@@ -46,7 +46,7 @@ class _CheckInputs:
         """
         Validates and returns bin edges for frequency binning.
         """
-        if bin_edges is not None:
+        if len(bin_edges) > 0:
             # Use custom bins
             if np.diff(bin_edges) <= 0:
                 raise ValueError("Custom bin edges must be monotonically increasing.")
