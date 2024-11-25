@@ -8,8 +8,6 @@ from .plotter import Plotter
 
 
 class LagFrequencySpectrum():
-    """
-    """
     def __init__(self,
                  times1=[],
                  values1=[],
@@ -22,30 +20,9 @@ class LagFrequencySpectrum():
                  num_bins=None,
                  bin_type="log",
                  bin_edges=[],
-                 plot_lfs=False):
+                 plot_lfs=False
+                 ):
         # To do: update main docstring for lag interpretation
-        """
-        Initializes the CrossSpectrum object and computes the lag-frequency spectrum. It determines whether the input represents
-        individual time series or multiple realizations and computes the corresponding
-        lag-frequency spectrum using FFT.
-
-        Parameters:
-        - times1 (array-like): Time values for the first time series.
-        - values1 (array-like): Measurement values for the first time series (e.g., flux, counts).
-        - times2 (array-like): Time values for the second time series.
-        - values2 (array-like): Measurement values for the second time series (e.g., flux, counts).
-        - timeseries1 (TimeSeries): First time series object (optional).
-        - timeseries2 (TimeSeries): Second time series object (optional).
-        - fmin (float or 'auto'): Minimum frequency for the lag-frequency spectrum.
-        - fmax (float or 'auto'): Maximum frequency for the lag-frequency spectrum.
-        - num_bins (int): Number of bins for frequency binning. 
-            Evenly spaced bins are created in either linear or log space.
-            Define either num_bins + bin_type, or bin_edges, not both.
-        - bin_type (str): Binning type ('log' or 'linear').
-        - bin_edges (array-like): Custom bin edges for frequency binning.
-        - norm (bool): Whether to normalize the spectrum.
-        - plotlfs (bool): Whether to plot the lag-frequency spectrum after creation.
-        """ 
         self.times1, self.values1 = self._check_input(timeseries1, times1, values1)
         self.times2, self.values2 = self._check_input(timeseries2, times2, values2)
         _CheckInputs._check_input_bins(num_bins, bin_type, bin_edges)
@@ -146,18 +123,3 @@ class LagFrequencySpectrum():
         return FrequencyBinning.count_frequencies_in_bins(
             parent=self, fmin=fmin, fmax=fmax, num_bins=num_bins, bin_type=bin_type, bin_edges=bin_edges
         )
-                    
-
-
-            
-
-
-
-
-        
-
-
-
-
-
-
