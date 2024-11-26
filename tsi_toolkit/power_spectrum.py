@@ -1,7 +1,6 @@
 import numpy as np
 
 from ._check_inputs import _CheckInputs
-from .data_loader import TimeSeries
 from .frequency_binning import FrequencyBinning
 from .plot import Plotter
 
@@ -51,7 +50,7 @@ class PowerSpectrum:
 
         # Use absolute min and max frequencies if set to 'auto'
         self.dt = np.diff(self.times)[0]
-        self.fmin = 1 / (self.times.max() - self.times.min()) if fmin == 'auto' else fmin
+        self.fmin = 0 if fmin == 'auto' else fmin
         self.fmax = 1 / (2 * self.dt) if fmax == 'auto' else fmax # nyquist frequency
 
         self.num_bins = num_bins
@@ -60,23 +59,16 @@ class PowerSpectrum:
 
         # if multiple time series are provided, compute the stacked power spectrum
         if len(values.shape) == 2:
-            power_spectrum  = self.compute_stacked_power_spectrum(fmin=self.fmin, fmax=self.fmax, 
-                                                                  num_bins=num_bins, bin_type=bin_type, 
-                                                                  bin_edges=bin_edges, norm=norm
-                                                                  )
+            power_spectrum  = self.compute_stacked_power_spectrum(norm=norm)
         else:
-            power_spectrum = self.compute_power_spectrum(fmin=self.fmin, fmax=self.fmax,
-                                                         num_bins=num_bins, bin_type=bin_type, 
-                                                         bin_edges=bin_edges, norm=norm
-                                                         )
-        
+            power_spectrum = self.compute_power_spectrum(norm=norm)
+
         self.freqs, self.freq_widths, self.powers, self.power_sigmas = power_spectrum
 
         if plot_fft:
             self.plot()
 
-    def compute_power_spectrum(self, times=None, values=None, fmin='auto', fmax='auto',
-                               num_bins=None, bin_type="log", bin_edges=None, norm=True):        
+    def compute_power_spectrum(self, times=None, values=None, norm=True):        
         """
         Computes the power spectrum for a single time series.
 
@@ -96,12 +88,10 @@ class PowerSpectrum:
         - powers (array-like): Power spectrum values.
         - power_sigmas (array-like or None): Uncertainties in power values.
         """
-        if times is None:
-            times = self.times
-        if values is None:
-            values = self.values
+        times = self.times if times is None else times
+        values = self.values if values is None else values
 
-        time_diffs = np.round(np.diff(times),10)
+        time_diffs = np.round(np.diff(times), 10)
         if np.unique(time_diffs).size > 1:
             raise ValueError("Time series must have a uniform sampling interval.\n"
                             "Interpolate the data to a uniform grid first."
@@ -117,22 +107,24 @@ class PowerSpectrum:
         freqs = freqs[valid_mask]
         powers = powers[valid_mask]
 
-        if num_bins or bin_edges:
-            if bin_edges:
+        if self.num_bins or self.bin_edges:
+            if self.bin_edges:
                 # use custom bin edges
                 bin_edges = FrequencyBinning.define_bins(
-                    self.fmin, self.fmax, num_bins=num_bins, bins=bin_edges, bin_type=bin_type
+                    self.fmin, self.fmax, num_bins=self.num_bins, 
+                    bin_type=self.bin_type, bin_edges=self.bin_edges
                 )
-            elif num_bins:
+            elif self.num_bins:
                 # use equal-width bins in log or linear space
                 bin_edges = FrequencyBinning.define_bins(
-                    self.fmin, self.fmax, num_bins=num_bins, bin_type=bin_type
+                    self.fmin, self.fmax, num_bins=self.num_bins, bin_type=self.bin_type
                 )
             else:
                 raise ValueError("Either num_bins or bin_edges must be provided.\n"
                                  "In other words, you must specify the number of bins or the bin edges.")
             
-            freqs, freq_widths, powers, power_sigmas = FrequencyBinning.bin_data(freqs, powers, bin_edges)
+            binned_power = FrequencyBinning.bin_data(freqs, powers, bin_edges)
+            freqs, freq_widths, powers, power_sigmas = binned_power
         else:
             freq_widths, power_sigmas = None, None
 
@@ -142,8 +134,7 @@ class PowerSpectrum:
             
         return freqs, freq_widths, powers, power_sigmas
     
-    def compute_stacked_power_spectrum(self, fmin='auto', fmax='auto', num_bins=None, 
-                                       bin_type="log", bin_edges=None, norm=True):
+    def compute_stacked_power_spectrum(self, norm=True):
         """
         Computes the power spectrum for multiple realizations of a time series.
 
@@ -167,10 +158,7 @@ class PowerSpectrum:
         """
         powers = []
         for i in range(self.values.shape[0]):
-            power_spectrum = self.compute_power_spectrum(self.times, self.values[i], fmin=fmin, fmax=fmax,
-                                                         num_bins=num_bins, bin_type=bin_type, 
-                                                         bin_edges=bin_edges, norm=norm
-                                                         )
+            power_spectrum = self.compute_power_spectrum(self.times, self.values[i], norm=norm)
             freqs, freq_widths, power, _ = power_spectrum
             powers.append(power)
 
@@ -221,5 +209,6 @@ class PowerSpectrum:
         - bin_counts (list): List of counts of frequencies in each bin.
         """
         return FrequencyBinning.count_frequencies_in_bins(
-            parent=self, fmin=fmin, fmax=fmax, num_bins=num_bins, bin_type=bin_type, bin_edges=bin_edges
+            parent=self, fmin=fmin, fmax=fmax, 
+            num_bins=num_bins, bin_type=bin_type, bin_edges=bin_edges
         )

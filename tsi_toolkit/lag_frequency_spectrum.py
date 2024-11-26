@@ -1,10 +1,10 @@
 import numpy as np
 
-from .check_inputs import _CheckInputs
+from ._check_inputs import _CheckInputs
 from .coherence import Coherence
 from .cross_spectrum import CrossSpectrum
 from .frequency_binning import FrequencyBinning
-from .plotter import Plotter
+from .plot import Plotter
 
 
 class LagFrequencySpectrum():
@@ -44,7 +44,7 @@ class LagFrequencySpectrum():
                  values2=[],
                  timeseries1=None,
                  timeseries2=None,
-                 fmin='auto',
+                 fmin=0,
                  fmax='auto',
                  num_bins=None,
                  bin_type="log",
@@ -63,7 +63,7 @@ class LagFrequencySpectrum():
 
         # Use absolute min and max frequencies if set to 'auto'
         self.dt = np.diff(self.times)[0]
-        self.fmin = 1 / (self.times.max() - self.times.min()) if fmin == 'auto' else fmin
+        self.fmin = 0 if fmin == 'auto' else fmin
         self.fmax = 1 / (2 * self.dt) if fmax == 'auto' else fmax # nyquist frequency
 
         self.num_bins = num_bins
@@ -71,24 +71,18 @@ class LagFrequencySpectrum():
         self.bin_edges = bin_edges
 
         if len(self.values1.shape) == 2 and len(self.values2.shape) == 2:
-            lag_spectrum = self.compute_stacked_lag_spectrum(
-                fmin=self.fmin, fmax=self.fmax, num_bins=num_bins, bin_type=bin_type, bin_edges=bin_edges
-            )
+            lag_spectrum = self.compute_stacked_lag_spectrum()
         else:
-            lag_spectrum = self.compute_lag_spectrum(
-                fmin=self.fmin, fmax=self.fmax, num_bins=num_bins, bin_type=bin_type, bin_edges=bin_edges,
-                subtract_coherence_bias=subtract_coherence_bias, poisson_stats=poisson_stats
-            )
-
+            lag_spectrum = self.compute_lag_spectrum(subtract_coherence_bias=subtract_coherence_bias, 
+                                                     poisson_stats=poisson_stats
+                                                    )
         self.freqs, self.freq_widths, self.lags, self.lag_sigmas = lag_spectrum
 
         if plot_lfs:
             self.plot()
 
     def compute_lag_spectrum(self, times1=None, values1=None, times2=None, values2=None,
-                             fmin='auto', fmax='auto', num_bins=None, bin_type="log", 
-                             bin_edges=[], subtract_noise_bias=True, poisson_stats=False, 
-                             compute_sigmas=True):
+                             subtract_noise_bias=True, poisson_stats=False, compute_sigmas=True):
         """
         Computes the lag spectrum for the given time series.
 
@@ -116,29 +110,34 @@ class LagFrequencySpectrum():
         values2 = self.values2 if values2 is None else values2
 
         # Compute the cross spectrum
-        cross_spectrum = CrossSpectrum(
-            times1=times1, values1=values1, times2=times2, values2=values2
-        )
+        cross_spectrum = CrossSpectrum(times1=times1, values1=values1,
+                                       times2=times2, values2=values2,
+                                       fmin=self.fmin, fmax=self.fmax,
+                                       num_bins=self.num_bins, bin_type=self.bin_type,
+                                       bin_edges=self.bin_edges
+                                       )
+
         lags = cross_spectrum.cs / (2 * np.pi * cross_spectrum.freqs)
 
         if compute_sigmas:
-            coherence = Coherence(
-                times1=times1, values1=values1, times2=times2, values2=values2,
-                fmin=fmin, fmax=fmax, num_bins=num_bins, bin_type=bin_type, bin_edges=bin_edges,
-                subtract_noise_bias=subtract_noise_bias, poisson_stats=poisson_stats
-            )
+            coherence = Coherence(times1=times1, values1=values1, 
+                                  times2=times2, values2=values2,
+                                  fmin=self.fmin, fmax=self.fmax,
+                                  num_bins=self.num_bins, bin_type=self.bin_type, bin_edges=self.bin_edges, 
+                                  subtract_noise_bias=subtract_noise_bias, poisson_stats=poisson_stats
+                                  )
             
             phase_sigmas = np.sqrt(
                 (1 - coherence.cohs) / (2 * coherence.cohs)
             )
+
             lag_sigmas = phase_sigmas / (2 * np.pi * cross_spectrum.freqs)
         else:
             lag_sigmas = np.zeros_like(lags)
 
         return cross_spectrum.freqs, cross_spectrum.freq_widths, lags, lag_sigmas
 
-    def compute_stacked_lag_spectrum(self, fmin='auto', fmax='auto', num_bins=None, 
-                                     bin_type="log", bin_edges=[]):
+    def compute_stacked_lag_spectrum(self):
         """
         Computes the lag spectrum for multiple realizations.
 
@@ -162,11 +161,10 @@ class LagFrequencySpectrum():
         # Compute lag spectrum for each pair of realizations
         lag_spectra = []
         for i in range(self.values1.shape[0]):
-            lag_spectrum = self.compute_lag_spectrum(
-                times1=self.times1, values1=self.values1[i], times2=self.times2, values2=self.values2[i],
-                fmin=fmin, fmax=fmax, num_bins=num_bins, bin_type=bin_type, bin_edges=bin_edges,
-                compute_sigmas=False
-            )
+            lag_spectrum = self.compute_lag_spectrum(times1=self.times1, values1=self.values1[i],
+                                                     times2=self.times2, values2=self.values2[i], 
+                                                     compute_sigmas=False
+                                                     )
             lag_spectra.append(lag_spectrum[2])
 
         # Stack lag spectra

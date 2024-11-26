@@ -6,7 +6,7 @@ from .plot import Plotter
 from .frequency_binning import FrequencyBinning
 
 
-class CrossSpectrum(PowerSpectrum):
+class CrossSpectrum:
     """
     Computes the cross-spectrum between two time series.
 
@@ -62,7 +62,7 @@ class CrossSpectrum(PowerSpectrum):
 
         # Use absolute min and max frequencies if set to 'auto'
         self.dt = np.diff(self.times)[0]
-        self.fmin = 1 / (self.times.max() - self.times.min()) if fmin == 'auto' else fmin
+        self.fmin = 0 if fmin == 'auto' else fmin
         self.fmax = 1 / (2 * self.dt) if fmax == 'auto' else fmax # nyquist frequency
 
         self.num_bins = num_bins
@@ -72,24 +72,16 @@ class CrossSpectrum(PowerSpectrum):
         # Check if the input values are for multiple realizations
         # this needs to be corrected for handling different shapes and dim val1 != dim val2
         if len(self.values1.shape) == 2 and len(self.values2.shape) == 2:
-            cross_spectrum = self.compute_stacked_cross_spectrum(fmin=self.fmin, fmax=self.fmax,
-                                                             num_bins=self.num_bins, bin_type=self.bin_type, 
-                                                             bin_edges=bin_edges, norm=norm
-                                                             )
+            cross_spectrum = self.compute_stacked_cross_spectrum(norm=norm)
         else:
-            cross_spectrum = self.compute_cross_spectrum(fmin=self.fmin, fmax=self.fmax,
-                                                     num_bins=self.num_bins, bin_type=self.bin_type, 
-                                                     bin_edges=bin_edges, norm=norm
-                                                     )
+            cross_spectrum = self.compute_cross_spectrum(norm=norm)
         
         self.freqs, self.freq_widths, self.cs, self.cs_sigmas = cross_spectrum
 
         if plot_cs:
             self.plot()
 
-    def compute_cross_spectrum(self, times1=None, values1=None, times2=None, values2=None,
-                               fmin='auto', fmax='auto', num_bins=None, bin_type="log",
-                               bin_edges=[], norm=True):
+    def compute_cross_spectrum(self, times1=None, values1=None, times2=None, values2=None, norm=True):
         """
         Computes the cross-spectrum between two time series.
 
@@ -115,19 +107,18 @@ class CrossSpectrum(PowerSpectrum):
         values2 = self.values2 if values2 is None else values2
 
         ps1 = PowerSpectrum(
-            times=times1, values=values1, fmin=fmin, fmax=fmax, num_bins=num_bins,
-            bin_type=bin_type, bin_edges=bin_edges, norm=norm
+            times=times1, values=values1, fmin=self.fmin, fmax=self.fmax, num_bins=self.num_bins,
+            bin_type=self.bin_type, bin_edges=self.bin_edges, norm=norm
         )
         ps2 = PowerSpectrum(
-            times=times2, values=values2, fmin=fmin, fmax=fmax, num_bins=num_bins,
-            bin_type=bin_type, bin_edges=bin_edges, norm=norm
+            times=times2, values=values2, fmin=self.fmin, fmax=self.fmax, num_bins=self.num_bins,
+            bin_type=self.bin_type, bin_edges=self.bin_edges, norm=norm
         )
 
         cross_spectrum = np.real(np.conj(ps1.powers) * ps2.powers)
         return ps1.freqs, ps1.freq_widths, cross_spectrum, None 
 
-    def compute_stacked_cross_spectrum(self, fmin='auto', fmax='auto', num_bins=None, bin_type="log", 
-                                       bin_edges=[], norm=True):
+    def compute_stacked_cross_spectrum(self, norm=True):
         """
         Computes the cross-spectrum for multiple realizations.
 
@@ -152,8 +143,9 @@ class CrossSpectrum(PowerSpectrum):
         cross_spectra = []
         for i in range(self.values1.shape[0]):
             cross_spectrum = self.compute_cross_spectrum(
-                times1=self.times1, values1=self.values1[i], times2=self.times2, values2=self.values2[i],
-                fmin=fmin, fmax=fmax, num_bins=num_bins, bin_type=bin_type, bin_edges=bin_edges, norm=norm
+                times1=self.times1, values1=self.values1[i], 
+                times2=self.times2, values2=self.values2[i], 
+                norm=norm
             )
             cross_spectra.append(cross_spectrum[2])
 
