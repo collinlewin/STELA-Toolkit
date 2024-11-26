@@ -1,6 +1,6 @@
 import numpy as np
 
-from .timeseries import TimeSeries
+from .data_loader import TimeSeries
 
 
 class _CheckInputs:
@@ -57,14 +57,11 @@ class _CheckInputs:
             if num_bins is not None:
                 print("Custom bin_edges detected: num_bins is ignored when custom bins are provided.")
 
-        else:
-            if num_bins is None:
-                raise ValueError("Number of bins (num_bins) must be provided if custom bins are not used.")
-            elif not isinstance(num_bins, int) or num_bins < 1:
+        elif num_bins is not None:
+            if not isinstance(num_bins, int) or num_bins < 1:
                 raise ValueError("Number of bins (num_bins) must be a positive integer.")
-            else:
-                if bin_type is None:
-                    raise ValueError("bin_type must be provided if num_bins is used.")
+            if bin_type is None:
+                raise ValueError("bin_type must be provided if num_bins is used.")
 
         if bin_type not in ["log", "linear"]:
             raise ValueError(f"Unsupported bin_type '{bin_type}'. Choose 'log', 'linear', or provide custom bins.")  
