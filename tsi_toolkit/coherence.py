@@ -8,6 +8,38 @@ from .frequency_binning import FrequencyBinning
 
 class Coherence:
     """
+    Computes the coherence between two time series.
+
+    This class calculates the coherence spectrum, which measures the degree of linear 
+    correlation between two time series in the frequency domain. It supports stacked 
+    realizations, optional noise bias subtraction, and Poisson statistics.
+
+    Parameters:
+    - times1 (array-like, optional): Time values for the first time series.
+    - values1 (array-like, optional): Measurement values for the first time series.
+    - sigmas1 (array-like, optional): Errors for the first time series.
+    - times2 (array-like, optional): Time values for the second time series.
+    - values2 (array-like, optional): Measurement values for the second time series.
+    - sigmas2 (array-like, optional): Errors for the second time series.
+    - timeseries1 (object, optional): A time series object (overrides times1/values1/sigmas1).
+    - timeseries2 (object, optional): A time series object (overrides times2/values2/sigmas2).
+    - fmin (float or 'auto', optional): Minimum frequency for computation.
+    - fmax (float or 'auto', optional): Maximum frequency for computation.
+    - num_bins (int, optional): Number of bins for frequency binning.
+    - bin_type (str, optional): Type of binning ('log' or 'linear').
+    - bin_edges (array-like, optional): Custom bin edges for binning.
+    - subtract_noise_bias (bool, optional): Whether to subtract the noise bias from coherence.
+    - poisson_stats (bool, optional): Whether to use Poisson statistics for noise computation.
+    - plot_coh (bool, optional): Whether to automatically plot the coherence spectrum.
+
+    Raises:
+    - ValueError: If the time arrays of the two time series are not identical.
+
+    Attributes:
+    - freqs (array-like): Frequencies of the coherence spectrum.
+    - freq_widths (array-like): Bin widths of the frequencies.
+    - cohs (array-like): Coherence values for each frequency bin.
+    - coh_sigmas (array-like): Uncertainties in the coherence values.
     """
     def __init__(self,
                  times1=[],
@@ -68,6 +100,24 @@ class Coherence:
                           fmin='auto', fmax='auto', num_bins=None, bin_type="log",
                           bin_edges=[], subtract_noise_bias=True, poisson_stats=False):
         """
+        Computes the coherence between two time series.
+
+        Parameters:
+        - times1, values1, sigmas1 (array-like, optional): Data for the first time series.
+        - times2, values2, sigmas2 (array-like, optional): Data for the second time series.
+        - fmin (float or 'auto', optional): Minimum frequency for computation.
+        - fmax (float or 'auto', optional): Maximum frequency for computation.
+        - num_bins (int, optional): Number of bins for frequency binning.
+        - bin_type (str, optional): Type of binning ('log' or 'linear').
+        - bin_edges (array-like, optional): Custom bin edges for binning.
+        - subtract_noise_bias (bool, optional): Whether to subtract the noise bias.
+        - poisson_stats (bool, optional): Whether to use Poisson statistics for noise computation.
+
+        Returns:
+        - freqs (array-like): Frequencies of the coherence spectrum.
+        - freq_widths (array-like): Bin widths of the frequencies.
+        - coherence (array-like): Coherence values.
+        - None (NoneType): Placeholder for compatibility with other methods.
         """
         times1 = self.times1 if times1 is None else times1
         values1 = self.values1 if values1 is None else values1
@@ -120,6 +170,25 @@ class Coherence:
     def compute_stacked_coherence(self, fmin='auto', fmax='auto', num_bins=None, bin_type="log", 
                                        bin_edges=[], subtract_noise_bias=True, poisson_stats=False):
         """
+        Computes the coherence spectrum for stacked realizations.
+
+        This method calculates the coherence for multiple realizations of two time series 
+        and averages the results to obtain the mean and standard deviation.
+
+        Parameters:
+        - fmin (float or 'auto', optional): Minimum frequency for computation.
+        - fmax (float or 'auto', optional): Maximum frequency for computation.
+        - num_bins (int, optional): Number of bins for frequency binning.
+        - bin_type (str, optional): Type of binning ('log' or 'linear').
+        - bin_edges (array-like, optional): Custom bin edges for binning.
+        - subtract_noise_bias (bool, optional): Whether to subtract the noise bias.
+        - poisson_stats (bool, optional): Whether to use Poisson statistics for noise computation.
+
+        Returns:
+        - freqs (array-like): Frequencies of the coherence spectrum.
+        - freq_widths (array-like): Bin widths of the frequencies.
+        - coherence_mean (array-like): Mean coherence values across realizations.
+        - coherence_std (array-like): Standard deviation of coherence values.
         """
         coherences = []
         for i in range(self.values1.shape[0]):
@@ -147,6 +216,10 @@ class Coherence:
 
     def plot(self, freqs=None, freq_widths=None, cohs=None, coh_sigmas=None, **kwargs):
         """
+        Plots the coherence spectrum.
+
+        Parameters:
+        - **kwargs: Keyword arguments for customizing the plot.
         """
         freqs = self.freqs if freqs is None else freqs
         freq_widths = self.freq_widths if freq_widths is None else freq_widths
@@ -154,7 +227,7 @@ class Coherence:
         coh_sigmas = self.coh_sigmas if coh_sigmas is None else coh_sigmas
 
         kwargs.setdefault('xlabel', 'Frequency')
-        kwargs.setdefault('ylabel', 'Cross-Spectrum')
+        kwargs.setdefault('ylabel', 'Coherence')
         kwargs.setdefault('xscale', 'log')
         kwargs.setdefault('yscale', 'log')
         Plotter.plot(

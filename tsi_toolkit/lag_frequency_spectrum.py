@@ -8,6 +8,35 @@ from .plotter import Plotter
 
 
 class LagFrequencySpectrum():
+    """
+    Computes the lag-frequency spectrum for time series data.
+
+    This class calculates the lag-frequency spectrum for one or more realizations of
+    time series data. It supports single and stacked realizations, binning of 
+    frequencies, and optional plotting of results.
+
+    Parameters:
+    - times1 (array-like, optional): Time points for the first time series.
+    - values1 (array-like, optional): Values for the first time series.
+    - times2 (array-like, optional): Time points for the second time series.
+    - values2 (array-like, optional): Values for the second time series.
+    - timeseries1 (object, optional): First time series object (overrides times1/values1).
+    - timeseries2 (object, optional): Second time series object (overrides times2/values2).
+    - fmin (float or 'auto', optional): Minimum frequency for computation.
+    - fmax (float or 'auto', optional): Maximum frequency for computation.
+    - num_bins (int, optional): Number of bins for frequency binning.
+    - bin_type (str, optional): Type of binning ('log' or 'linear').
+    - bin_edges (array-like, optional): Predefined edges for frequency bins.
+    - subtract_coherence_bias (bool, optional): Whether to subtract the coherence bias.
+    - poisson_stats (bool, optional): Whether to assume Poisson noise statistics.
+    - plot_lfs (bool, optional): Whether to automatically plot the lag-frequency spectrum.
+
+    Key Attributes:
+    - freqs (array-like): Frequencies of the lag spectrum.
+    - freq_widths (array-like): Bin widths of the frequencies.
+    - lags (array-like): Computed lag values for each frequency bin.
+    - lag_sigmas (array-like): Uncertainty of the lag values.
+    """
     def __init__(self,
                  times1=[],
                  values1=[],
@@ -61,6 +90,25 @@ class LagFrequencySpectrum():
                              bin_edges=[], subtract_noise_bias=True, poisson_stats=False, 
                              compute_sigmas=True):
         """
+        Computes the lag spectrum for the given time series.
+
+        Parameters:
+        - times1, values1 (array-like, optional): Time and values for the first time series.
+        - times2, values2 (array-like, optional): Time and values for the second time series.
+        - fmin (float or 'auto', optional): Minimum frequency for computation.
+        - fmax (float or 'auto', optional): Maximum frequency for computation.
+        - num_bins (int, optional): Number of bins for frequency binning.
+        - bin_type (str, optional): Type of binning ('log' or 'linear').
+        - bin_edges (array-like, optional): Predefined edges for frequency bins.
+        - subtract_noise_bias (bool, optional): Whether to subtract noise bias.
+        - poisson_stats (bool, optional): Whether to assume Poisson noise statistics.
+        - compute_sigmas (bool, optional): Whether to compute uncertainties for lag values.
+
+        Returns:
+        - freqs (array-like): Frequencies of the lag spectrum.
+        - freq_widths (array-like): Bin widths of the frequencies.
+        - lags (array-like): Computed lag values.
+        - lag_sigmas (array-like): Uncertainty of the lag values.
         """
         times1 = self.times1 if times1 is None else times1
         values1 = self.values1 if values1 is None else values1
@@ -92,6 +140,24 @@ class LagFrequencySpectrum():
     def compute_stacked_lag_spectrum(self, fmin='auto', fmax='auto', num_bins=None, 
                                      bin_type="log", bin_edges=[]):
         """
+        Computes the lag spectrum for multiple realizations.
+
+        For multiple realizations (e.g., Gaussian process samples), this method 
+        computes the lag spectrum for each realization pair, averages the results, 
+        and calculates the standard deviation.
+
+        Parameters:
+        - fmin (float or 'auto', optional): Minimum frequency for computation.
+        - fmax (float or 'auto', optional): Maximum frequency for computation.
+        - num_bins (int, optional): Number of bins for frequency binning.
+        - bin_type (str, optional): Type of binning ('log' or 'linear').
+        - bin_edges (array-like, optional): Predefined edges for frequency bins.
+
+        Returns:
+        - freqs (array-like): Frequencies of the lag spectrum.
+        - freq_widths (array-like): Bin widths of the frequencies.
+        - lags_mean (array-like): Mean lag values for each frequency bin.
+        - lags_std (array-like): Standard deviation of lag values.
         """
         # Compute lag spectrum for each pair of realizations
         lag_spectra = []

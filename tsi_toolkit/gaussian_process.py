@@ -8,6 +8,33 @@ from .preprocessing import Preprocessing
 
 
 class GaussianProcess():
+    """
+    Models a time series using a Gaussian Process (GP).
+
+    This class fits a GP model to time series data using specified kernels and likelihoods. 
+    It supports kernel selection, training, prediction, sampling, and model evaluation using 
+    criteria such as AIC and BIC.
+
+    Parameters:
+    - timeseries (TimeSeries): A `TimeSeries` object containing the data.
+    - kernel_form (str or list, optional): Kernel type or list of types for GP. Defaults to 'auto'.
+    - white_noise (bool, optional): Whether to include a white noise component. Defaults to True.
+    - run_training (bool, optional): Whether to train the model after initialization. Defaults to True.
+    - train_iter (int, optional): Number of training iterations. Defaults to 1000.
+    - learn_rate (float, optional): Learning rate for training. Defaults to 1e-2.
+    - sample_time_grid (array-like, optional): Time grid for sampling from the GP. Defaults to [].
+    - num_samples (int, optional): Number of samples to draw from the GP posterior. Defaults to 1000.
+    - plot_gp (bool, optional): Whether to plot the GP predictions and samples. Defaults to False.
+    - verbose (bool, optional): Whether to display detailed output. Defaults to True.
+
+    Attributes:
+    - model (gpytorch.models.ExactGP): The trained GP model.
+    - likelihood (gpytorch.likelihoods.Likelihood): The likelihood associated with the GP model.
+    - train_times (torch.Tensor): Training time points.
+    - train_values (torch.Tensor): Training data values.
+    - train_errors (torch.Tensor): Errors for the training data values (if provided).
+    - samples (torch.Tensor): Samples from the GP posterior (if generated).
+    """
     def __init__(self,
                  timeseries,
                  kernel_form='auto',
@@ -21,26 +48,6 @@ class GaussianProcess():
                  verbose=True):
 
         # To Do: reconsider noise prior, add a mean function function for forecasting, more verbose options
-        """
-        Initializes the GaussianProcess object and trains the model.
-
-        The method sets up the GP model based either 1) the user-defined kernel, or
-        2) the best kernel found based on post-training AIC.
-        It optionally trains the model and generates samples
-        from the posterior if a sampling grid is provided.
-
-        Parameters:
-        - timeseries (TimeSeries): The time series data to model.
-        - kernel_form (str or list): Kernel to use ('auto' for selection or a specific kernel).
-        - white_noise (bool): Whether to include an additional learnable white noise term.
-        - run_training (bool): Whether to train the model upon initialization.
-        - train_iter (int): Number of iterations for model training.
-        - learn_rate (float): Learning rate for the optimizer.
-        - sample_time_grid (array-like): Time grid for posterior sampling (optional).
-        - num_samples (int): Number of posterior samples to generate (if sampling grid provided).
-        - plot_gp (bool): Whether to plot the GP prediction upon initialization.
-        - verbose (bool): Whether to print detailed output during operations.
-        """
         if isinstance(timeseries, TimeSeries):
             self.timeseries = timeseries
         else:
@@ -100,17 +107,14 @@ class GaussianProcess():
         """
         Creates and returns a Gaussian Process model.
 
-        Uses the specified kernel and likelihood to define the GP model.
-        The GP model is built as a subclass of gpytorch.models.ExactGP.
-
         Parameters:
         - train_times (torch.Tensor): Training time points.
         - train_values (torch.Tensor): Training data values.
-        - likelihood (gpytorch.likelihoods.Likelihood): The likelihood function for the GP.
+        - likelihood (gpytorch.likelihoods.Likelihood): Likelihood function for the GP.
         - kernel (str): Kernel type to use for the GP.
 
         Returns:
-        - GPModel: A Gaussian Process model with the specified kernel and likelihood.
+        - GPModel: A GP model with the specified kernel and likelihood.
         """
         class GPModel(gpytorch.models.ExactGP):
             def __init__(gp_self, train_times, train_values, likelihood):
@@ -127,17 +131,14 @@ class GaussianProcess():
 
     def set_likelihood(self, white_noise, train_errors=torch.tensor([])):
         """
-        Sets the likelihood for the GP model. 
-
-        If errors are provided, uses heteroscedastic noise. Otherwise, uses homoscedastic noise.
-        If white_noise is True, includes a learnable (homoscedastic) white noise term.
+        Configures the likelihood for the GP model.
 
         Parameters:
-        - white_noise (bool): Whether to include a learnable white noise term.
-        - train_errors (torch.Tensor): Errors for the training data values.
+        - white_noise (bool): Whether to include a white noise component.
+        - train_errors (torch.Tensor, optional): Errors for the training data.
 
         Returns:
-        - gpytorch.likelihoods.Likelihood: Configured likelihood for the GP model.
+        - gpytorch.likelihoods.Likelihood: The configured likelihood.
         """
         if train_errors.size(dim=0) > 0:
             likelihood = gpytorch.likelihoods.FixedNoiseGaussianLikelihood(
@@ -155,14 +156,13 @@ class GaussianProcess():
 
     def set_kernel(self, kernel_form):
         """
-        Sets the covariance kernel for the Gaussian Process model, supporting a range
-        of kernel types including Matern, Rational Quadratic, RBF, and Spectral Mixture.
+        Configures the covariance kernel for the GP model.
 
         Parameters:
-        - kernel_form (str): Type of kernel to use (e.g., 'Matern32', 'RBF', 'SpectralMixture, N').
+        - kernel_form (str): Kernel type (e.g., 'Matern32', 'RBF', 'SpectralMixture, N').
 
         Returns:
-        - gpytorch.kernels.Kernel: Configured kernel for the GP model.
+        - gpytorch.kernels.Kernel: The configured kernel.
         """
         kernel_form = kernel_form.strip()
         if 'SpectralMixture' in kernel_form:
@@ -288,9 +288,12 @@ class GaussianProcess():
 
             if verbose:
                 if self.kernel_form == 'SpectralMixture':
-                    mixture_scales = self.model.covar_module.base_kernel.mixture_scales.detach().numpy().flatten()
-                    mixture_weights = self.model.covar_module.base_kernel.mixture_weights.detach().numpy().flatten()
-                    
+                    mixture_scales = self.model.covar_module.base_kernel.mixture_scales
+                    mixture_scales = mixture_scales.detach().numpy().flatten()
+
+                    mixture_weights = self.model.covar_module.base_kernel.mixture_weights
+                    mixture_weights = mixture_weights.detach().numpy().flatten()
+
                     if self.white_noise:
                         print('Iter %d/%d - Loss: %.3f   mixture_lengthscales: %s   mixture_weights: %s   noise: %.3f' % (
                             i + 1, train_iter, loss.item(),
@@ -331,8 +334,6 @@ class GaussianProcess():
     def get_hyperparameters(self):
         """
         Retrieves the hyperparameters of the GP model.
-
-        Extracts and transforms the model's hyperparameters for reporting or debugging.
 
         Returns:
         - dict: Dictionary of hyperparameter names and their values.

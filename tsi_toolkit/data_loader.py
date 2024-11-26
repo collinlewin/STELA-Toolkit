@@ -44,7 +44,7 @@ class TimeSeries:
             self.times = np.array(times)
             self.values = np.array(values)
             self.errors = np.array(errors)
-
+            
         else:
             raise ValueError(
                 "Please provide time and value arrays or a file path."

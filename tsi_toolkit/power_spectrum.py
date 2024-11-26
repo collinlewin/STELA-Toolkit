@@ -7,6 +7,33 @@ from .plot import Plotter
 
 
 class PowerSpectrum:
+    """
+    Computes the power spectrum for time series data.
+
+    This class calculates the power spectrum for single or multiple realizations
+    of time series data. It supports frequency binning and optional normalization.
+
+    Parameters:
+    - times (array-like, optional): Time values for the time series.
+    - values (array-like, optional): Measurement values for the time series.
+    - timeseries (object, optional): A TimeSeries object (overrides times/values).
+    - fmin (float or 'auto', optional): Minimum frequency for computation.
+    - fmax (float or 'auto', optional): Maximum frequency for computation.
+    - num_bins (int, optional): Number of bins for frequency binning.
+    - bin_type (str, optional): Type of binning ('log' or 'linear').
+    - bin_edges (array-like, optional): Predefined edges for frequency bins.
+    - norm (bool, optional): Whether to normalize the spectrum to variance units.
+    - plot_fft (bool, optional): Whether to automatically plot the power spectrum.
+
+    Raises:
+    - ValueError: If the time series is not evenly sampled.
+
+    Attributes:
+    - freqs (array-like): Frequencies of the power spectrum.
+    - freq_widths (array-like): Bin widths of the frequencies.
+    - powers (array-like): Power spectrum values.
+    - power_sigmas (array-like): Uncertainty of the power spectrum values.
+    """
     def __init__(self,
                  times=[],
                  values=[],
@@ -54,22 +81,20 @@ class PowerSpectrum:
         Computes the power spectrum for a single time series.
 
         Parameters:
-        - times (array-like): Time values for the time series (optional).
-        - values (array-like): Measurement values for the time series (optional).
-        - fmin (float or 'auto'): Minimum frequency for the power spectrum.
-        - fmax (float or 'auto'): Maximum frequency for the power spectrum.
-        - norm (bool): Whether to normalize the spectrum to variance units.
-        - num_bins (int): Number of bins for frequency binning.
-            Evenly spaced bins are created in either linear or log space.
-            Define either num_bins + bin_type, or bin_edges, not both.
-        - bin_type (str): Type of binning ('log' or 'linear').
-        - bin_edges (array-like): Custom array of bin edges (optional).
+        - times (array-like, optional): Time values for the time series.
+        - values (array-like, optional): Measurement values for the time series.
+        - fmin (float or 'auto', optional): Minimum frequency for the power spectrum.
+        - fmax (float or 'auto', optional): Maximum frequency for the power spectrum.
+        - norm (bool, optional): Whether to normalize the spectrum to variance units.
+        - num_bins (int, optional): Number of bins for frequency binning.
+        - bin_type (str, optional): Type of binning ('log' or 'linear').
+        - bin_edges (array-like, optional): Custom array of bin edges.
 
         Returns:
         - freqs (array-like): Frequencies of the power spectrum.
-        - freq_widths (array-like): Bin widths of the frequencies (if binned).
+        - freq_widths (array-like or None): Bin widths of the frequencies.
         - powers (array-like): Power spectrum values.
-        - power_sigmas (array-like or None): Uncertainties in power values (if binned).
+        - power_sigmas (array-like or None): Uncertainties in power values.
         """
         if times is None:
             times = self.times
@@ -122,18 +147,17 @@ class PowerSpectrum:
         """
         Computes the power spectrum for multiple realizations of a time series.
 
-        The method iterates over multiple realizations of the input data,
-        calculates the power spectrum for each realization, and averages
-        the results to compute the mean and standard deviation of the power
-        values for each frequency bin.
+        For multiple realizations, this method calculates the power spectrum for each
+        realization and averages the results to compute the mean and standard deviation
+        for each frequency bin.
 
         Parameters:
-        - fmin (float or 'auto'): Minimum frequency for the power spectrum.
-        - fmax (float or 'auto'): Maximum frequency for the power spectrum.
-        - norm (bool): Whether to normalize the spectrum to variance units.
-        - num_bins (int): Number of bins for frequency binning.
-        - bin_type (str): Type of binning ('log' or 'linear').
-        - bin_edges (array-like): Custom array of bin edges (optional).
+        - fmin (float or 'auto', optional): Minimum frequency for the power spectrum.
+        - fmax (float or 'auto', optional): Maximum frequency for the power spectrum.
+        - num_bins (int, optional): Number of bins for frequency binning.
+        - bin_type (str, optional): Type of binning ('log' or 'linear').
+        - bin_edges (array-like, optional): Custom array of bin edges.
+        - norm (bool, optional): Whether to normalize the spectrum to variance units.
 
         Returns:
         - freqs (array-like): Frequencies of the power spectrum.

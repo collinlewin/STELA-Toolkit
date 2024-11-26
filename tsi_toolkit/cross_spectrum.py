@@ -7,6 +7,34 @@ from .frequency_binning import FrequencyBinning
 
 
 class CrossSpectrum(PowerSpectrum):
+    """
+    Computes the cross-spectrum between two time series.
+
+    This class calculates the cross-spectrum for single or multiple realizations
+    of two time series. It supports frequency binning and optional normalization
+    to be in units consistent with the power spectral density (PSD).
+
+    Parameters:
+    - times1 (array-like, optional): Time points for the first time series.
+    - values1 (array-like, optional): Values for the first time series.
+    - times2 (array-like, optional): Time points for the second time series.
+    - values2 (array-like, optional): Values for the second time series.
+    - timeseries1 (object, optional): First time series object (overrides times1/values1).
+    - timeseries2 (object, optional): Second time series object (overrides times2/values2).
+    - fmin (float or 'auto', optional): Minimum frequency for computation.
+    - fmax (float or 'auto', optional): Maximum frequency for computation.
+    - num_bins (int, optional): Number of bins for frequency binning.
+    - bin_type (str, optional): Type of binning ('log' or 'linear').
+    - bin_edges (array-like, optional): Predefined edges for frequency bins.
+    - norm (bool, optional): Whether to normalize the spectrum.
+    - plot_cs (bool, optional): Whether to automatically plot the cross-spectrum.
+
+    Key Attributes:
+    - freqs (array-like): Frequencies of the cross-spectrum.
+    - freq_widths (array-like): Bin widths of the frequencies.
+    - cs (array-like): Cross-spectrum values.
+    - cs_sigmas (array-like): Uncertainty of the cross-spectrum values.
+    """
     def __init__(self,
                  times1=[],
                  values1=[],
@@ -66,16 +94,20 @@ class CrossSpectrum(PowerSpectrum):
         Computes the cross-spectrum between two time series.
 
         Parameters:
-        - fmin (float or 'auto'): Minimum frequency for computation.
-        - fmax (float or 'auto'): Maximum frequency for computation.
-        - num_bins (int): Number of bins for frequency binning.
-        - bin_type (str): Type of binning ('log' or 'linear').
-        - norm (bool): Whether to normalize the spectrum.
+        - times1, values1 (array-like, optional): Time and values for the first time series.
+        - times2, values2 (array-like, optional): Time and values for the second time series.
+        - fmin (float or 'auto', optional): Minimum frequency for computation.
+        - fmax (float or 'auto', optional): Maximum frequency for computation.
+        - num_bins (int, optional): Number of bins for frequency binning.
+        - bin_type (str, optional): Type of binning ('log' or 'linear').
+        - bin_edges (array-like, optional): Predefined edges for frequency bins.
+        - norm (bool, optional): Whether to normalize the spectrum.
 
         Returns:
         - freqs (array-like): Frequencies of the cross-spectrum.
         - freq_widths (array-like): Bin widths of the frequencies.
         - cross_spectrum (array-like): Cross-spectrum values.
+        - None (NoneType): Placeholder for compatibility with other methods.
         """
         times1 = self.times1 if times1 is None else times1
         values1 = self.values1 if values1 is None else values1
@@ -98,22 +130,24 @@ class CrossSpectrum(PowerSpectrum):
                                        bin_edges=[], norm=True):
         """
         Computes the cross-spectrum for multiple realizations.
+
         For multiple realizations (e.g., GP samples), this method computes the
         cross-spectrum for each realization pair. The resulting cross-spectra are
         averaged to compute the mean and standard deviation for each frequency bin.
 
         Parameters:
-        - fmin (float or 'auto'): Minimum frequency for computation.
-        - fmax (float or 'auto'): Maximum frequency for computation.
-        - num_bins (int): Number of bins for frequency binning.
-        - bin_type (str): Type of binning ('log' or 'linear').
-        - norm (bool): Whether to normalize the spectrum.
+        - fmin (float or 'auto', optional): Minimum frequency for computation.
+        - fmax (float or 'auto', optional): Maximum frequency for computation.
+        - num_bins (int, optional): Number of bins for frequency binning.
+        - bin_type (str, optional): Type of binning ('log' or 'linear').
+        - bin_edges (array-like, optional): Predefined edges for frequency bins.
+        - norm (bool, optional): Whether to normalize the spectrum.
 
         Returns:
         - freqs (array-like): Frequencies of the cross-spectrum.
         - freq_widths (array-like): Bin widths of the frequencies.
         - cross_spectra_mean (array-like): Mean cross-spectrum values.
-        - cross_spectra-std (array-like): Standard deviation of cross-spectrum values.
+        - cross_spectra_std (array-like): Standard deviation of cross-spectrum values.
         """
         cross_spectra = []
         for i in range(self.values1.shape[0]):
