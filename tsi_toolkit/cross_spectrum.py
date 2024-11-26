@@ -14,12 +14,12 @@ class CrossSpectrum(PowerSpectrum):
                  values2=[],
                  timeseries1=None,
                  timeseries2=None,
-                 norm=True,
                  fmin='auto',
                  fmax='auto',
                  num_bins=None,
                  bin_type="log",
                  bin_edges=[],
+                 norm=True,
                  plot_cs=False
                  ):
         # To do: case where values1 is samples (2D), values2 is 1D
@@ -121,13 +121,15 @@ class CrossSpectrum(PowerSpectrum):
                 times1=self.times1, values1=self.values1[i], times2=self.times2, values2=self.values2[i],
                 fmin=fmin, fmax=fmax, num_bins=num_bins, bin_type=bin_type, bin_edges=bin_edges, norm=norm
             )
-            cross_spectra.append(cross_spectrum)
+            cross_spectra.append(cross_spectrum[2])
 
         cross_spectra = np.vstack(cross_spectra)
         cross_spectra_mean = np.mean(cross_spectra, axis=0)
         cross_spectra_std = np.std(cross_spectra, axis=0)
 
-        return ps1.freqs, ps1.freq_widths, cross_spectra_mean, cross_spectra_std
+        freqs, freq_widths = cross_spectrum[0], cross_spectrum[1]
+
+        return freqs, freq_widths, cross_spectra_mean, cross_spectra_std
 
     def plot(self, freqs=None, freq_widths=None, cs=None, cs_sigmas=None, **kwargs):
         """

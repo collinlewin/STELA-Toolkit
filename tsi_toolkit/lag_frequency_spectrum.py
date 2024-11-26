@@ -108,7 +108,9 @@ class LagFrequencySpectrum():
         lag_spectra_mean = np.mean(lag_spectra, axis=0)
         lag_spectra_std = np.std(lag_spectra, axis=0)
 
-        return lag_spectrum.freqs, lag_spectrum.freq_widths, lag_spectra_mean, lag_spectra_std
+        freqs, freq_widths = lag_spectrum[0], lag_spectrum[1]
+
+        return freqs, freq_widths, lag_spectra_mean, lag_spectra_std
 
     def plot(self, freqs=None, freq_widths=None, lags=None, lag_sigmas=None, **kwargs):
         """
