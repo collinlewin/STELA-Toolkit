@@ -7,7 +7,7 @@ from .data_loader import TimeSeries
 from .preprocessing import Preprocessing
 
 
-class GaussianProcess():
+class GaussianProcess:
     """
     Models a time series using a Gaussian Process (GP).
 
@@ -442,7 +442,7 @@ class GaussianProcess():
 
         # Unstandardize
         samples = samples * self.timeseries.unstandard_std + self.timeseries.unstandard_mean
-        return samples
+        return samples.numpy()
     
     def predict(self, pred_times):
         """
@@ -477,7 +477,7 @@ class GaussianProcess():
         lower = lower * self.timeseries.unstandard_std + self.timeseries.unstandard_mean
         upper = upper * self.timeseries.unstandard_std + self.timeseries.unstandard_mean
 
-        return mean, lower, upper
+        return mean.numpy(), lower.numpy(), upper.numpy()
     
     def plot(self, pred_times=None):
         """
