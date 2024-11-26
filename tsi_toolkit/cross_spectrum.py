@@ -1,9 +1,9 @@
 import numpy as np
 
 from ._check_inputs import _CheckInputs
-from .power_spectrum import PowerSpectrum
 from .plot import Plotter
 from .frequency_binning import FrequencyBinning
+from .data_loader import TimeSeries
 
 
 class CrossSpectrum:
@@ -53,15 +53,15 @@ class CrossSpectrum:
         # To do: case where values1 is samples (2D), values2 is 1D
         # To do: when dim values1 != dim values2
         # To do: update main docstring
-        self.times1, self.values1 = self._check_input(timeseries1, times1, values1)
-        self.times2, self.values2 = self._check_input(timeseries2, times2, values2)
+        self.times1, self.values1 = _CheckInputs._check_input_data(timeseries1, times1, values1)
+        self.times2, self.values2 = _CheckInputs._check_input_data(timeseries2, times2, values2)
         _CheckInputs._check_input_bins(num_bins, bin_type, bin_edges)
 
         if not np.allclose(self.times1, self.times2):
             raise ValueError("The time arrays of the two time series must be identical.")
 
         # Use absolute min and max frequencies if set to 'auto'
-        self.dt = np.diff(self.times)[0]
+        self.dt = np.diff(self.times1)[0]
         self.fmin = 0 if fmin == 'auto' else fmin
         self.fmax = 1 / (2 * self.dt) if fmax == 'auto' else fmax # nyquist frequency
 
@@ -106,17 +106,46 @@ class CrossSpectrum:
         times2 = self.times2 if times2 is None else times2
         values2 = self.values2 if values2 is None else values2
 
-        ps1 = PowerSpectrum(
-            times=times1, values=values1, fmin=self.fmin, fmax=self.fmax, num_bins=self.num_bins,
-            bin_type=self.bin_type, bin_edges=self.bin_edges, norm=norm
-        )
-        ps2 = PowerSpectrum(
-            times=times2, values=values2, fmin=self.fmin, fmax=self.fmax, num_bins=self.num_bins,
-            bin_type=self.bin_type, bin_edges=self.bin_edges, norm=norm
-        )
+        freqs, fft1 = TimeSeries(times=times1, values=values1).fft()
+        _, fft2 = TimeSeries(times=times2, values=values2).fft()
 
-        cross_spectrum = np.real(np.conj(ps1.powers) * ps2.powers)
-        return ps1.freqs, ps1.freq_widths, cross_spectrum, None 
+        cross_spectrum = np.real(np.conj(fft1) * fft2)
+
+        # Filter frequencies within [fmin, fmax]
+        valid_mask = (freqs >= self.fmin) & (freqs <= self.fmax)
+        freqs = freqs[valid_mask]
+        cross_spectrum = cross_spectrum[valid_mask]
+
+        if self.num_bins or self.bin_edges:
+            if self.bin_edges:
+                # use custom bin edges
+                bin_edges = FrequencyBinning.define_bins(
+                    self.fmin, self.fmax, num_bins=self.num_bins, 
+                    bin_type=self.bin_type, bin_edges=self.bin_edges
+                )
+            elif self.num_bins:
+                # use equal-width bins in log or linear space
+                bin_edges = FrequencyBinning.define_bins(
+                    self.fmin, self.fmax, num_bins=self.num_bins, bin_type=self.bin_type
+                )
+            else:
+                raise ValueError("Either num_bins or bin_edges must be provided.\n"
+                                 "In other words, you must specify the number of bins or the bin edges.")
+            
+            binned_cross_spectrum = FrequencyBinning.bin_data(freqs, cross_spectrum, bin_edges)
+            freqs, freq_widths, cross_spectrum, cross_spectrum_sigmas = binned_cross_spectrum
+        else:
+            freq_widths = None
+            cross_spectrum_sigmas = None
+
+        # Normalize power spectrum to units of variance
+        if norm:
+            length = len(values1)
+            cross_spectrum /= length * np.mean(values1) * np.mean(values2) / (2 * self.dt)
+            if cross_spectrum_sigmas:
+                cross_spectrum_sigmas /= length * np.mean(values1) * np.mean(values2) / (2 * self.dt)
+            
+        return freqs, freq_widths, cross_spectrum, cross_spectrum_sigmas
 
     def compute_stacked_cross_spectrum(self, norm=True):
         """
