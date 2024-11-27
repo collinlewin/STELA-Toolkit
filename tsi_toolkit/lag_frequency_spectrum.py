@@ -27,7 +27,7 @@ class LagFrequencySpectrum():
     - num_bins (int, optional): Number of bins for frequency binning.
     - bin_type (str, optional): Type of binning ('log' or 'linear').
     - bin_edges (array-like, optional): Predefined edges for frequency bins.
-    - subtract_coherence_bias (bool, optional): Whether to subtract the coherence bias.
+    - subtract_coh_bias (bool, optional): Whether to subtract the coherence bias.
     - poisson_stats (bool, optional): Whether to assume Poisson noise statistics.
     - plot_lfs (bool, optional): Whether to automatically plot the lag-frequency spectrum.
 
@@ -44,26 +44,26 @@ class LagFrequencySpectrum():
                  values2=[],
                  timeseries1=None,
                  timeseries2=None,
-                 fmin=0,
+                 fmin='auto',
                  fmax='auto',
                  num_bins=None,
                  bin_type="log",
                  bin_edges=[],
-                 subtract_coherence_bias=True,
+                 subtract_coh_bias=True,
                  poisson_stats=False,
                  plot_lfs=False
                  ):
         # To do: update main docstring for lag interpretation
-        self.times1, self.values1 = self._check_input(timeseries1, times1, values1)
-        self.times2, self.values2 = self._check_input(timeseries2, times2, values2)
+        self.times1, self.values1, _ = _CheckInputs._check_input_data(timeseries1, times1, values1)
+        self.times2, self.values2, _ = _CheckInputs._check_input_data(timeseries2, times2, values2)
         _CheckInputs._check_input_bins(num_bins, bin_type, bin_edges)
 
         if not np.allclose(self.times1, self.times2):
             raise ValueError("The time arrays of the two time series must be identical.")
 
         # Use absolute min and max frequencies if set to 'auto'
-        self.dt = np.diff(self.times)[0]
-        self.fmin = 0 if fmin == 'auto' else fmin
+        self.dt = np.diff(self.times1)[0]
+        self.fmin = 1e-8 if fmin == 'auto' else fmin
         self.fmax = 1 / (2 * self.dt) if fmax == 'auto' else fmax # nyquist frequency
 
         self.num_bins = num_bins
@@ -73,7 +73,7 @@ class LagFrequencySpectrum():
         if len(self.values1.shape) == 2 and len(self.values2.shape) == 2:
             lag_spectrum = self.compute_stacked_lag_spectrum()
         else:
-            lag_spectrum = self.compute_lag_spectrum(subtract_coherence_bias=subtract_coherence_bias, 
+            lag_spectrum = self.compute_lag_spectrum(subtract_coh_bias=subtract_coh_bias, 
                                                      poisson_stats=poisson_stats
                                                     )
         self.freqs, self.freq_widths, self.lags, self.lag_sigmas = lag_spectrum
@@ -82,7 +82,7 @@ class LagFrequencySpectrum():
             self.plot()
 
     def compute_lag_spectrum(self, times1=None, values1=None, times2=None, values2=None,
-                             subtract_noise_bias=True, poisson_stats=False, compute_sigmas=True):
+                             compute_sigmas=True, subtract_coh_bias=True, poisson_stats=False):
         """
         Computes the lag spectrum for the given time series.
 
@@ -114,17 +114,18 @@ class LagFrequencySpectrum():
                                        times2=times2, values2=values2,
                                        fmin=self.fmin, fmax=self.fmax,
                                        num_bins=self.num_bins, bin_type=self.bin_type,
-                                       bin_edges=self.bin_edges
+                                       bin_edges=self.bin_edges,
+                                       norm=False
                                        )
 
-        lags = cross_spectrum.cs / (2 * np.pi * cross_spectrum.freqs)
+        lags = np.angle(cross_spectrum.cs) / (2 * np.pi * cross_spectrum.freqs)
 
         if compute_sigmas:
             coherence = Coherence(times1=times1, values1=values1, 
                                   times2=times2, values2=values2,
                                   fmin=self.fmin, fmax=self.fmax,
                                   num_bins=self.num_bins, bin_type=self.bin_type, bin_edges=self.bin_edges, 
-                                  subtract_noise_bias=subtract_noise_bias, poisson_stats=poisson_stats
+                                  subtract_noise_bias=subtract_coh_bias, poisson_stats=poisson_stats
                                   )
             
             phase_sigmas = np.sqrt(
