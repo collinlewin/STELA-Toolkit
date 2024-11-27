@@ -31,7 +31,7 @@ class _CheckInputs:
                     "Check the shape of the values array: expecting (n_series, n_times)."
                 )
             
-            if sigmas is not None: 
+            if sigmas: 
                 if np.min(sigmas) <= 0:
                     raise ValueError("Uncertainties of the input data must be positive.")
         else:
@@ -44,7 +44,7 @@ class _CheckInputs:
                             "Interpolate the data to a uniform grid first."
                         )
         
-        return times, values
+        return times, values, sigmas
     
     def _check_input_bins(num_bins, bin_type, bin_edges):
         """
