@@ -13,10 +13,12 @@ class _CheckInputs:
         Validates and extracts time and value arrays from input or TimeSeries objects.
         """
         if timeseries:
-            if not isinstance(timeseries, TimeSeries):
+            # using methods to allow flexible import of TimeSeries objects
+            if not all(callable(getattr(timeseries, method, None)) for method in ["load_file", "load_fits"]):
                 raise TypeError("timeseries must be an instance of the TimeSeries class.")
             times = timeseries.times
             values = timeseries.values
+            sigmas = timeseries.errors
 
         # check input arrays if not timeseries object
         elif len(times) > 0 and len(values) > 0:
