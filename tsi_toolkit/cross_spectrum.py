@@ -53,8 +53,8 @@ class CrossSpectrum:
         # To do: case where values1 is samples (2D), values2 is 1D
         # To do: when dim values1 != dim values2
         # To do: update main docstring
-        self.times1, self.values1 = _CheckInputs._check_input_data(timeseries1, times1, values1)
-        self.times2, self.values2 = _CheckInputs._check_input_data(timeseries2, times2, values2)
+        self.times1, self.values1, _ = _CheckInputs._check_input_data(timeseries1, times1, values1)
+        self.times2, self.values2, _ = _CheckInputs._check_input_data(timeseries2, times2, values2)
         _CheckInputs._check_input_bins(num_bins, bin_type, bin_edges)
 
         if not np.allclose(self.times1, self.times2):
@@ -62,7 +62,7 @@ class CrossSpectrum:
 
         # Use absolute min and max frequencies if set to 'auto'
         self.dt = np.diff(self.times1)[0]
-        self.fmin = 0 if fmin == 'auto' else fmin
+        self.fmin = 1e-8 if fmin == 'auto' else fmin
         self.fmax = 1 / (2 * self.dt) if fmax == 'auto' else fmax # nyquist frequency
 
         self.num_bins = num_bins
@@ -75,7 +75,7 @@ class CrossSpectrum:
             cross_spectrum = self.compute_stacked_cross_spectrum(norm=norm)
         else:
             cross_spectrum = self.compute_cross_spectrum(norm=norm)
-        
+
         self.freqs, self.freq_widths, self.cs, self.cs_sigmas = cross_spectrum
 
         if plot_cs:
@@ -109,7 +109,7 @@ class CrossSpectrum:
         freqs, fft1 = TimeSeries(times=times1, values=values1).fft()
         _, fft2 = TimeSeries(times=times2, values=values2).fft()
 
-        cross_spectrum = np.real(np.conj(fft1) * fft2)
+        cross_spectrum = np.conj(fft1) * fft2
 
         # Filter frequencies within [fmin, fmax]
         valid_mask = (freqs >= self.fmin) & (freqs <= self.fmax)
@@ -141,7 +141,12 @@ class CrossSpectrum:
         # Normalize power spectrum to units of variance
         if norm:
             length = len(values1)
-            cross_spectrum /= length * np.mean(values1) * np.mean(values2) / (2 * self.dt)
+            norm_factor = length * np.mean(values1) * np.mean(values2) / (2 * self.dt)
+            cross_spectrum /= norm_factor
+            # negative norm factor shifts the phase by pi
+            if norm_factor < 0:
+                phase = np.angle(cross_spectrum)
+                cross_spectrum = np.abs(cross_spectrum) * np.exp(1j * phase)
             if cross_spectrum_sigmas:
                 cross_spectrum_sigmas /= length * np.mean(values1) * np.mean(values2) / (2 * self.dt)
             
