@@ -212,8 +212,8 @@ class TimeSeries:
         dt = np.diff(self.times)[0]
         length = len(self.values)
 
-        fft_values = np.fft.fft(self.values)
-        freqs = np.fft.fftfreq(length, d=dt)
+        fft_values = np.fft.rfft(self.values)
+        freqs = np.fft.rfftfreq(length, d=dt)
 
         return freqs, fft_values
     
