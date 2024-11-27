@@ -196,6 +196,27 @@ class TimeSeries:
         kwargs.setdefault('ylabel', 'Values')
         Plotter.plot(x=self.times, y=self.values, yerr=self.errors, **kwargs)
 
+    def fft(self):
+        """
+        Computes the Fast Fourier Transform (FFT) of the time series data.
+
+        Returns:
+        - freqs (array-like): Frequencies of the FFT.
+        - fft_values (array-like): FFT values.
+        """
+        time_diffs = np.round(np.diff(self.times), 10)
+        if np.unique(time_diffs).size > 1:
+            raise ValueError("Time series must have a uniform sampling interval.\n"
+                            "Interpolate the data to a uniform grid first."
+                        )
+        dt = np.diff(self.times)[0]
+        length = len(self.values)
+
+        fft_values = np.fft.fft(self.values)
+        freqs = np.fft.fftfreq(length, d=dt)
+
+        return freqs, fft_values
+    
     def __add__(self, other_timeseries):
         """
         Adds two TimeSeries objects.
