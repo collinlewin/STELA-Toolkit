@@ -14,13 +14,18 @@ class Plotter:
         - yerr: Uncertainties in the y-axis values (e.g., power uncertainties).
         - **kwargs: Additional keyword arguments for customization.
         """
+        if xerr is not None:
+            xerr = xerr if len(list(xerr)) > 0 else None
+        if yerr is not None:
+            yerr = yerr if len(list(yerr)) > 0 else None
+
         if x is None or y is None:
             raise ValueError("Both 'x' and 'y' must be provided.")
 
         title = kwargs.get('title', None)
 
         # Default plotting settings
-        if yerr or xerr:
+        if yerr is not None or xerr is not None:
             default_plot_kwargs = {'color': 'black', 'fmt': 'o', 'ms': 2, 'lw': 1, 'label': None}
         else:
             default_plot_kwargs = {'color': 'black', 's': 2, 'label': None}
@@ -33,13 +38,13 @@ class Plotter:
 
         plt.figure(**fig_kwargs)
 
-        if yerr:
-            if xerr:
+        if yerr is not None:
+            if xerr is not None:
                 plt.errorbar(x, y, yerr=yerr, **plot_kwargs)
             else:
                 plt.errorbar(x, y, xerr=xerr, yerr=yerr, **plot_kwargs)
         else:
-            if xerr:
+            if xerr is not None:
                 plt.errorbar(x, y, xerr=xerr, **plot_kwargs)
             else:
                 plt.scatter(x, y, **plot_kwargs)
