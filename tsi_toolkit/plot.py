@@ -20,10 +20,10 @@ class Plotter:
         title = kwargs.get('title', None)
 
         # Default plotting settings
-        if yerr is None:
-            default_plot_kwargs = {'color': 'black', 's': 2, 'label': None}
-        else:
+        if yerr or xerr:
             default_plot_kwargs = {'color': 'black', 'fmt': 'o', 'ms': 2, 'lw': 1, 'label': None}
+        else:
+            default_plot_kwargs = {'color': 'black', 's': 2, 'label': None}
 
         figsize = kwargs.get('figsize', (8, 5))
         fig_kwargs = {'figsize': figsize, **kwargs.pop('fig_kwargs', {})}
@@ -33,31 +33,34 @@ class Plotter:
 
         plt.figure(**fig_kwargs)
 
-        if yerr is None:
-            plt.scatter(x, y, **plot_kwargs)
-        else:
-            if xerr is None:
+        if yerr:
+            if xerr:
                 plt.errorbar(x, y, yerr=yerr, **plot_kwargs)
             else:
                 plt.errorbar(x, y, xerr=xerr, yerr=yerr, **plot_kwargs)
+        else:
+            if xerr:
+                plt.errorbar(x, y, xerr=xerr, **plot_kwargs)
+            else:
+                plt.scatter(x, y, **plot_kwargs)
 
         # Set labels if provided
         xlabel = kwargs.get('xlabel', None)
         ylabel = kwargs.get('ylabel', None)
 
-        if xlabel is not None:
+        if xlabel:
             plt.xlabel(xlabel)
-        if ylabel is not None:
+        if ylabel:
             plt.ylabel(ylabel)
 
         plt.xscale(kwargs.get('xscale', 'linear'))
         plt.yscale(kwargs.get('yscale', 'linear'))
 
         # Show legend if label is provided
-        if plot_kwargs.get('label') is not None:
+        if plot_kwargs.get('label'):
             plt.legend()
 
-        if title is not None:
+        if title:
             plt.title(title)
 
         plt.tick_params(**major_tick_kwargs)
