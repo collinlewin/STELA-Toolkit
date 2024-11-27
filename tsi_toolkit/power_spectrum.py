@@ -46,6 +46,7 @@ class PowerSpectrum:
                  norm=True,
                  plot_fft=False
                  ):
+        # To do: throw except for norm=True acting on mean=0 (standardized data)
         self.times, self.values, _ = _CheckInputs._check_input_data(timeseries, times, values)
         _CheckInputs._check_input_bins(num_bins, bin_type, bin_edges)
 

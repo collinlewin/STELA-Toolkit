@@ -13,7 +13,7 @@ class TimeSeries:
                  file_path=None,
                  file_columns=[0,1,2],
                  ):
-        # To do: Improve commenting and docstrings
+        # To do: Improve commenting and docstrings, use _check_inputs
         """
         Initializes the TimeSeries object.
 
@@ -61,7 +61,7 @@ class TimeSeries:
     def std(self):
         return np.std(self.values)
     
-    def load_file(self, file_path, file_columns=[0, 1, 2]):
+    def load_file(self, file_path, file_columns=[0,1,2]):
         """
         Loads time series data from a specified file. Supports FITS and text-based files.
 
@@ -87,7 +87,7 @@ class TimeSeries:
 
         return times, values, sigmas
 
-    def load_fits(self, file_path, file_columns=[0, 1, 2], hdu=1):
+    def load_fits(self, file_path, file_columns=[0,1,2], hdu=1):
         """
         Loads time series data from a FITS file, from a specified HDU.
 
@@ -134,7 +134,7 @@ class TimeSeries:
 
         return times, values, sigmas
 
-    def load_text_file(self, file_path, file_columns=[0, 1, 2], delimiter=None):
+    def load_text_file(self, file_path, file_columns=[0,1,2], delimiter=None):
         """
         Loads time series data from a text-based file. Assumes a delimiter based on
         file extension if none is provided.
