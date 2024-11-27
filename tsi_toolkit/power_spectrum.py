@@ -45,12 +45,12 @@ class PowerSpectrum:
                  norm=True,
                  plot_fft=False
                  ):
-        self.times, self.values = _CheckInputs._check_input_data(timeseries, times, values)
+        self.times, self.values, _ = _CheckInputs._check_input_data(timeseries, times, values)
         _CheckInputs._check_input_bins(num_bins, bin_type, bin_edges)
 
         # Use absolute min and max frequencies if set to 'auto'
         self.dt = np.diff(self.times)[0]
-        self.fmin = 0 if fmin == 'auto' else fmin
+        self.fmin = 1e-8 if fmin == 'auto' else fmin
         self.fmax = 1 / (2 * self.dt) if fmax == 'auto' else fmax # nyquist frequency
 
         self.num_bins = num_bins
@@ -90,12 +90,6 @@ class PowerSpectrum:
         """
         times = self.times if times is None else times
         values = self.values if values is None else values
-
-        time_diffs = np.round(np.diff(times), 10)
-        if np.unique(time_diffs).size > 1:
-            raise ValueError("Time series must have a uniform sampling interval.\n"
-                            "Interpolate the data to a uniform grid first."
-                        )
         length = len(values)
 
         fft = np.fft.fft(values)
@@ -131,6 +125,8 @@ class PowerSpectrum:
         # Normalize power spectrum to units of variance
         if norm:
             powers /= length * np.mean(values) ** 2 / (2 * self.dt)
+            if power_sigmas:
+                power_sigmas /= length * np.mean(values) ** 2 / (2 * self.dt)
             
         return freqs, freq_widths, powers, power_sigmas
     
