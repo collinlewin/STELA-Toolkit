@@ -19,6 +19,9 @@ class Preprocessing:
         """
         ts = timeseries
         if np.isclose(ts.mean, 0, atol=1e-10) and np.isclose(ts.std, 1, atol=1e-10):
+            if not hasattr(ts, "unstandard_mean") and not hasattr(ts, "unstandard_std"):
+                ts.unstandard_mean = 0
+                ts.unstandard_std = 1
             raise ValueError("The data is already standardized.")
         else:
             ts.unstandard_mean = ts.mean
