@@ -24,14 +24,14 @@ class Preprocessing:
             ts.unstandard_mean = ts.mean
             ts.unstandard_std = ts.std
             ts.values = (ts.values - ts.unstandard_mean) / ts.unstandard_std
-            if ts.errors.size > 0:
-                ts.errors = ts.errors / ts.unstandard_std
+            if ts.sigmas.size > 0:
+                ts.sigmas = ts.sigmas / ts.unstandard_std
 
     @staticmethod
     def unstandardize(timeseries):
         """
         Unstandardizes the time series data.
-        Restores the values and errors of the input TimeSeries object to their
+        Restores the values and sigmas of the input TimeSeries object to their
         unstandardized form using the previously stored mean and standard deviation.
         """
         ts = timeseries
@@ -42,15 +42,15 @@ class Preprocessing:
                 "The data has not been standardized yet. "
                 "Please call the 'standardize' method first."
             )
-        if ts.errors.size > 0:
-            ts.errors = ts.errors * ts.unstandard_std
+        if ts.sigmas.size > 0:
+            ts.sigmas = ts.sigmas * ts.unstandard_std
 
     @staticmethod
     def trim_time_segment(timeseries, start_time=None, end_time=None, plot=False, save=True):
         """
         Trims the time series data to a specified time range.
 
-        Filters the time, value, and error arrays based on the provided start and
+        Filters the time, value, and sigma arrays based on the provided start and
         end times. Optionally plots the data before and after trimming.
 
         Parameters:
@@ -75,9 +75,9 @@ class Preprocessing:
         # Apply mask to trim data
         mask = (ts.times >= start_time) & (ts.times <= end_time)
         if plot:
-            if ts.errors.size > 0:
-                plt.errorbar(ts.times[mask], ts.values[mask], yerr=ts.errors[mask], fmt='o', lw=1, ms=2, color='black', label='Kept Data')
-                plt.errorbar(ts.times[~mask], ts.values[~mask], yerr=ts.errors[~mask], fmt='o', lw=1, ms=2, color='red', label='Trimmed Data')
+            if ts.sigmas.size > 0:
+                plt.errorbar(ts.times[mask], ts.values[mask], yerr=ts.sigmas[mask], fmt='o', lw=1, ms=2, color='black', label='Kept Data')
+                plt.errorbar(ts.times[~mask], ts.values[~mask], yerr=ts.sigmas[~mask], fmt='o', lw=1, ms=2, color='red', label='Trimmed Data')
             else:
                 plt.scatter(ts.times[mask], ts.values[mask], s=2, color="black", label="Kept Data")
                 plt.scatter(ts.times[~mask], ts.values[~mask], s=2, color="red", label="Trimmed Data")
@@ -91,33 +91,33 @@ class Preprocessing:
         if save:
             ts.times = ts.times[mask]
             ts.values = ts.values[mask]
-            if ts.errors.size > 0:
-                ts.errors = ts.errors[mask]
+            if ts.sigmas.size > 0:
+                ts.sigmas = ts.sigmas[mask]
 
     @staticmethod
     def remove_nans(timeseries, verbose=True):
         """
-        Removes rows with NaN values in time, value, or error arrays.
+        Removes rows with NaN values in time, value, or sigma arrays.
 
         Parameters:
         - timeseries (TimeSeries): The time series object to clean.
         - verbose (bool): Whether to print the number of NaN points removed.
         """
         ts = timeseries
-        if ts.errors.size > 0:
-            nonnan_mask = ~np.isnan(ts.values) & ~np.isnan(ts.times) & ~np.isnan(ts.errors)
+        if ts.sigmas.size > 0:
+            nonnan_mask = ~np.isnan(ts.values) & ~np.isnan(ts.times) & ~np.isnan(ts.sigmas)
         else:
             nonnan_mask = ~np.isnan(ts.values) & ~np.isnan(ts.times)
 
         if verbose:
             print(f"Removed {np.sum(~nonnan_mask)} NaN points.\n"
                   f"({np.sum(np.isnan(ts.values))} NaN values, "
-                  f"{np.sum(np.isnan(ts.errors))} NaN errors)")
+                  f"{np.sum(np.isnan(ts.sigmas))} NaN sigmas)")
 
         ts.times = ts.times[nonnan_mask]
         ts.values = ts.values[nonnan_mask]
-        if ts.errors.size > 0:
-            ts.errors = ts.errors[nonnan_mask]
+        if ts.sigmas.size > 0:
+            ts.sigmas = ts.sigmas[nonnan_mask]
 
     @staticmethod
     def remove_outliers(timeseries, threshold=1.5, rolling_window=None, plot=True, save=True, verbose=True):
@@ -137,14 +137,14 @@ class Preprocessing:
         """
         def plot_outliers(outlier_mask):
             """Plots the data flagged as outliers."""
-            if errors is not None:
+            if sigmas is not None:
                 plt.errorbar(
                     times[~outlier_mask], values[~outlier_mask],
-                    yerr=errors[~outlier_mask], fmt='o', color='black', lw=1, ms=2
+                    yerr=sigmas[~outlier_mask], fmt='o', color='black', lw=1, ms=2
                 )
                 plt.errorbar(
                     times[outlier_mask], values[outlier_mask],
-                    yerr=errors[outlier_mask], fmt='o', color='red', label='Outliers', lw=1, ms=2
+                    yerr=sigmas[outlier_mask], fmt='o', color='red', label='Outliers', lw=1, ms=2
                 )
             else:
                 plt.scatter(times[~outlier_mask], values[~outlier_mask], s=2)
@@ -183,7 +183,7 @@ class Preprocessing:
         ts = timeseries
         times = ts.times
         values = ts.values
-        errors = ts.errors
+        sigmas = ts.sigmas
 
         outlier_mask = detect_outliers(values, threshold=threshold, rolling_window=rolling_window)
 
@@ -198,8 +198,8 @@ class Preprocessing:
         if save:
             ts.times = times[~outlier_mask]
             ts.values =  values[~outlier_mask]
-            if errors.size > 0:
-                ts.errors = errors[~outlier_mask]
+            if sigmas.size > 0:
+                ts.sigmas = sigmas[~outlier_mask]
 
     @staticmethod
     def polynomial_detrend(timeseries, degree=1, plot=False, save=True):
@@ -222,8 +222,8 @@ class Preprocessing:
         ts = timeseries
 
         # Fit polynomial to the data
-        if ts.errors.size > 0:
-            coefficients = np.polyfit(ts.times, ts.values, degree, w=1/ts.errors)
+        if ts.sigmas.size > 0:
+            coefficients = np.polyfit(ts.times, ts.values, degree, w=1/ts.sigmas)
         else:
             coefficients = np.polyfit(ts.times, ts.values, degree)
         polynomial = np.poly1d(coefficients)
@@ -231,9 +231,9 @@ class Preprocessing:
 
         detrended_values = ts.values - trend
         if plot:
-            if ts.errors.size > 0:
-                plt.errorbar(ts.times, ts.values, yerr=ts.errors, fmt='o', color='black', lw=1, ms=2, label='Original Data')
-                plt.errorbar(ts.times, detrended_values, yerr=ts.errors, fmt='o', color='dodgerblue', lw=1, ms=2, label='Detrended Data')
+            if ts.sigmas.size > 0:
+                plt.errorbar(ts.times, ts.values, yerr=ts.sigmas, fmt='o', color='black', lw=1, ms=2, label='Original Data')
+                plt.errorbar(ts.times, detrended_values, yerr=ts.sigmas, fmt='o', color='dodgerblue', lw=1, ms=2, label='Detrended Data')
             else:
                 plt.plot(ts.times, ts.values, label="Original Data", color="black", alpha=0.6)
                 plt.plot(ts.times, detrended_values, label="Detrended Data", color="dodgerblue")
