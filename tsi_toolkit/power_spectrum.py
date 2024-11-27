@@ -3,6 +3,7 @@ import numpy as np
 from ._check_inputs import _CheckInputs
 from .frequency_binning import FrequencyBinning
 from .plot import Plotter
+from .data_loader import TimeSeries
 
 
 class PowerSpectrum:
@@ -58,7 +59,7 @@ class PowerSpectrum:
         self.bin_edges = bin_edges
 
         # if multiple time series are provided, compute the stacked power spectrum
-        if len(values.shape) == 2:
+        if len(self.values.shape) == 2:
             power_spectrum  = self.compute_stacked_power_spectrum(norm=norm)
         else:
             power_spectrum = self.compute_power_spectrum(norm=norm)
@@ -92,8 +93,7 @@ class PowerSpectrum:
         values = self.values if values is None else values
         length = len(values)
 
-        fft = np.fft.fft(values)
-        freqs = np.fft.fftfreq(length, d=self.dt)
+        freqs, fft = TimeSeries(times=times, values=values).fft()
         powers = np.abs(fft) ** 2
 
         # Filter frequencies within [fmin, fmax]
