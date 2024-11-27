@@ -18,7 +18,7 @@ class _CheckInputs:
                 raise TypeError("timeseries must be an instance of the TimeSeries class.")
             times = timeseries.times
             values = timeseries.values
-            sigmas = timeseries.errors
+            sigmas = timeseries.sigmas
 
         # check input arrays if not timeseries object
         elif len(times) > 0 and len(values) > 0:
