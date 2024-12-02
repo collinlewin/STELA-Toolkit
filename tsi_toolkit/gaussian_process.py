@@ -296,10 +296,11 @@ class GaussianProcess:
             optimizer.step()
 
             if verbose:
-                if self.train_sigmas.size(dim=0) > 0:
-                    noise_param = self.model.likelihood.second_noise.item()
-                else:
-                    noise_param = self.model.likelihood.noise.item()
+                if self.white_noise:
+                    if self.train_sigmas.size(dim=0) > 0:
+                        noise_param = self.model.likelihood.second_noise.item()
+                    else:
+                        noise_param = self.model.likelihood.noise.item()
 
                 if self.kernel_form == 'SpectralMixture':
                     mixture_scales = self.model.covar_module.base_kernel.mixture_scales
@@ -522,11 +523,11 @@ class GaussianProcess:
 
         if self.train_sigmas.size(dim=0) > 0:
             plt.errorbar(
-            self.train_times, self.train_values,
-            yerr=self.train_sigmas, fmt='o', color='black', label='Data', lw=1, ms=2
+            self.timeseries.times, self.timeseries.values,
+            yerr=self.timeseries.sigmas, fmt='o', color='black', label='Data', lw=1, ms=2
             )
         else:
-            plt.scatter(self.train_times, self.train_values, color='black', label='Data')
+            plt.scatter(self.timeseries.times, self.timeseries.values, color='black', label='Data')
 
         plt.xlabel('Time')
         plt.ylabel('Values')
