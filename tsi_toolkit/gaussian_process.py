@@ -21,7 +21,7 @@ class GaussianProcess:
     - kernel_form (str or list, optional): Kernel type or list of types for GP. Defaults to 'auto'.
     - white_noise (bool, optional): Whether to include a white noise component. Defaults to True.
     - run_training (bool, optional): Whether to train the model after initialization. Defaults to True.
-    - train_iter (int, optional): Number of training iterations. Defaults to 1000.
+    - num_iter (int, optional): Number of training iterations. Defaults to 1000.
     - learn_rate (float, optional): Learning rate for training. Defaults to 1e-2.
     - sample_time_grid (array-like, optional): Time grid for sampling from the GP. Defaults to [].
     - num_samples (int, optional): Number of samples to draw from the GP posterior. Defaults to 1000.
@@ -42,7 +42,7 @@ class GaussianProcess:
                  white_noise=True,
                  run_training=True,
                  plot_training=False,
-                 train_iter=1000,
+                 num_iter=1000,
                  learn_rate=1e-2,
                  sample_time_grid=[],
                  num_samples=1000,
@@ -58,11 +58,7 @@ class GaussianProcess:
         self.timeseries = timeseries
 
         # Standardize the time series data to match zero mean function
-        try:
-            Preprocessing.standardize(self.timeseries)
-        except ValueError:
-            if verbose:
-                print("Data is already standardized. Skipping standardization.")
+        Preprocessing.standardize(self.timeseries)
 
         # Convert time series data to PyTorch tensors
         self.train_times = torch.tensor(self.timeseries.times).float()
@@ -72,8 +68,9 @@ class GaussianProcess:
         else:
             self.train_sigmas = torch.tensor([])
 
+        # Training
         self.white_noise = white_noise
-
+        self.plot_training = plot_training
         if kernel_form == 'auto' or isinstance(kernel_form, list):
             # Automatically select the best kernel based on AIC
             if isinstance(kernel_form, list):
@@ -82,7 +79,7 @@ class GaussianProcess:
                 kernel_list = ['Matern12', 'Matern32', 'Matern52', 'RQ', 'RBF', 'SpectralMixture, 4']
 
             best_model, best_likelihood = self.find_best_kernel(
-                kernel_list, train_iter=train_iter, learn_rate=learn_rate, verbose=verbose
+                kernel_list, num_iter=num_iter, learn_rate=learn_rate, verbose=verbose
                 )
             self.model = best_model
             self.likelihood = best_likelihood
@@ -93,7 +90,7 @@ class GaussianProcess:
             
             # Separate training needed only if kernel not automatically selected
             if run_training:
-                self.train_model(train_iter=train_iter, learn_rate=learn_rate, verbose=verbose)
+                self.train_model(num_iter=num_iter, learn_rate=learn_rate, verbose=verbose)
 
         # Generate samples if sample_time_grid is provided
         if sample_time_grid:
@@ -101,11 +98,11 @@ class GaussianProcess:
             if verbose:
                 print(f"Samples generated: {self.samples.shape}, access with 'samples' attribute.")
 
-        if plot_gp:
-            self.plot(sample_time_grid)
-
         # unstandardize the data
         Preprocessing.unstandardize(self.timeseries)
+
+        if plot_gp:
+            self.plot(sample_time_grid)
 
     def create_gp_model(self, likelihood, kernel_form):
         """
@@ -212,7 +209,7 @@ class GaussianProcess:
 
         return covar_module
 
-    def find_best_kernel(self, kernel_list, train_iter=1000, learn_rate=1e-2, verbose=False):
+    def find_best_kernel(self, kernel_list, num_iter=1000, learn_rate=1e-2, verbose=False):
         """
         Finds the best kernel based on the Akaike Information Criterion (AIC).
 
@@ -221,7 +218,7 @@ class GaussianProcess:
 
         Parameters:
         - kernel_list (list): List of kernel types to evaluate.
-        - train_iter (int): Number of training iterations for each kernel.
+        - num_iter (int): Number of training iterations for each kernel.
         - learn_rate (float): Learning rate for the optimizer.
         - verbose (bool): Whether to print details about the kernel selection process.
 
@@ -235,7 +232,7 @@ class GaussianProcess:
             self.likelihood = self.set_likelihood(self.white_noise, train_sigmas=self.train_sigmas)
             self.model = self.create_gp_model(self.likelihood, kernel_form)
             # suppress output, even for verbose=True
-            self.train_model(train_iter=train_iter, learn_rate=learn_rate, verbose=False) 
+            self.train_model(num_iter=num_iter, learn_rate=learn_rate, verbose=False) 
 
             # compute aic and store best model
             aic = self.akaike_inf_crit()
@@ -261,7 +258,7 @@ class GaussianProcess:
         self.kernel_form = best_kernel
         return best_model, best_likelihood
 
-    def train_model(self, train_iter=1000, learn_rate=1e-2, verbose=False):
+    def train_model(self, num_iter=1000, learn_rate=1e-2, verbose=False):
         """
         Trains the Gaussian Process model, hyperparameters optimized 
         using Adam optimizer given number of training iterations and 
@@ -269,11 +266,11 @@ class GaussianProcess:
 
         If verbose is True, prints the training progress and final hyperparameters.
         If hyperparameters not converged...
-            - monotonic progression? --> consider increasing train_iter.
+            - monotonic progression? --> consider increasing num_iter.
             - fluctuating around potential optimum? --> consider decreasing learn_rate.
 
         Parameters:
-        - train_iter (int): Number of training iterations.
+        - num_iter (int): Number of training iterations.
         - learn_rate (float): Learning rate for the optimizer.
         - verbose (bool): Whether to print detailed information during training.
         """
@@ -283,10 +280,10 @@ class GaussianProcess:
         optimizer = torch.optim.Adam(self.model.parameters(), lr=learn_rate)
         mll = gpytorch.mlls.ExactMarginalLogLikelihood(self.likelihood, self.model)
 
-        if plot_training:
+        if self.plot_training:
             plt.figure(figsize=(8, 5))
 
-        for i in range(train_iter):
+        for i in range(num_iter):
             # Zero gradients from previous iteration
             optimizer.zero_grad()
 
@@ -313,14 +310,14 @@ class GaussianProcess:
 
                     if self.white_noise:
                         print('Iter %d/%d - Loss: %.3f   mixture_lengthscales: %s   mixture_weights: %s   noise: %.3f' % (
-                            i + 1, train_iter, loss.item(),
+                            i + 1, num_iter, loss.item(),
                             mixture_scales.round(3),
                             mixture_weights.round(3),
                             noise_param
                         ))
                     else:
                         print('Iter %d/%d - Loss: %.3f   mixture_lengthscales: %s   mixture_weights: %s' % (
-                            i + 1, train_iter, loss.item(),
+                            i + 1, num_iter, loss.item(),
                             mixture_scales.round(3),
                             mixture_weights.round(3)
                         ))
@@ -328,19 +325,19 @@ class GaussianProcess:
                 else:
                     if self.white_noise:
                         print('Iter %d/%d - Loss: %.3f   lengthscale: %.3f   noise: %.3f' % (
-                            i + 1, train_iter, loss.item(),
+                            i + 1, num_iter, loss.item(),
                             self.model.covar_module.base_kernel.lengthscale.item(),
                             noise_param
 
                         ))
                     else:
                         print('Iter %d/%d - Loss: %.3f   lengthscale: %.3f' % (
-                            i + 1, train_iter, loss.item(),
+                            i + 1, num_iter, loss.item(),
                             self.model.covar_module.base_kernel.lengthscale.item()
                         ))
             
-            if plot_training:
-                plt.plot(i, loss.item(), 'o', color='dodgerblue')
+            if self.plot_training:
+                plt.scatter(i, loss.item(), color='black', s=2)
 
         if verbose:
             final_hypers = self.get_hyperparameters()
@@ -352,7 +349,7 @@ class GaussianProcess:
             for key, value in final_hypers.items():
                 print(f"      {key:42}: {np.round(value, 4)}")
 
-        if plot_training:
+        if self.plot_training:
             plt.xlabel('Iteration')
             plt.ylabel('Negative Marginal Log Likelihood')
             plt.title('Training Progress')

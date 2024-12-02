@@ -22,7 +22,7 @@ class Preprocessing:
             if not hasattr(ts, "unstandard_mean") and not hasattr(ts, "unstandard_std"):
                 ts.unstandard_mean = 0
                 ts.unstandard_std = 1
-            raise ValueError("The data is already standardized.")
+            print("The data is already standardized.")
         else:
             ts.unstandard_mean = ts.mean
             ts.unstandard_std = ts.std
