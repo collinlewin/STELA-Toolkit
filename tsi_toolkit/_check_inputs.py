@@ -8,7 +8,7 @@ class _CheckInputs:
     A utility class for checking and validating input data and binning.
     """
     @staticmethod
-    def _check_input_data(timeseries, times, values, sigmas=None):
+    def _check_input_data(timeseries, times, values, sigmas=None, req_reg_samp=True):
         """
         Validates and extracts time and value arrays from input or TimeSeries objects.
         """
@@ -40,11 +40,12 @@ class _CheckInputs:
             raise ValueError("Either provide a TimeSeries object or times and values arrays.")
         
         # check for regular sampling
-        time_sampling = np.round(np.diff(times),10)
-        if np.unique(time_sampling).size > 1:
-            raise ValueError("Time series must have a uniform sampling interval.\n"
-                            "Interpolate the data to a uniform grid first."
-                        )
+        if req_reg_samp:
+            time_sampling = np.round(np.diff(times),10)
+            if np.unique(time_sampling).size > 1:
+                raise ValueError("Time series must have a uniform sampling interval.\n"
+                                "Interpolate the data to a uniform grid first."
+                            )
         
         return times, values, sigmas
     
