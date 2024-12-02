@@ -35,6 +35,8 @@ class Plotter:
         plot_kwargs = {**default_plot_kwargs, **kwargs.pop('plot_kwargs', {})}
         major_tick_kwargs = {'which': 'major', **kwargs.pop('major_tick_kwargs', {})}
         minor_tick_kwargs = {'which': 'minor', **kwargs.pop('minor_tick_kwargs', {})}
+        savefig_kwargs = kwargs.pop('savefig_kwargs', {})
+        save = kwargs.pop('save', None)
 
         plt.figure(**fig_kwargs)
 
@@ -72,5 +74,8 @@ class Plotter:
         if len(minor_tick_kwargs) > 1:
             plt.minorticks_on()
             plt.tick_params(**minor_tick_kwargs)
+
+        if save:
+            plt.savefig(save, **savefig_kwargs)
 
         plt.show()
