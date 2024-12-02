@@ -41,6 +41,7 @@ class GaussianProcess:
                  kernel_form='auto',
                  white_noise=True,
                  run_training=True,
+                 plot_training=False,
                  train_iter=1000,
                  learn_rate=1e-2,
                  sample_time_grid=[],
@@ -282,6 +283,9 @@ class GaussianProcess:
         optimizer = torch.optim.Adam(self.model.parameters(), lr=learn_rate)
         mll = gpytorch.mlls.ExactMarginalLogLikelihood(self.likelihood, self.model)
 
+        if plot_training:
+            plt.figure(figsize=(8, 5))
+
         for i in range(train_iter):
             # Zero gradients from previous iteration
             optimizer.zero_grad()
@@ -334,6 +338,9 @@ class GaussianProcess:
                             i + 1, train_iter, loss.item(),
                             self.model.covar_module.base_kernel.lengthscale.item()
                         ))
+            
+            if plot_training:
+                plt.plot(i, loss.item(), 'o', color='dodgerblue')
 
         if verbose:
             final_hypers = self.get_hyperparameters()
@@ -344,6 +351,12 @@ class GaussianProcess:
             )
             for key, value in final_hypers.items():
                 print(f"      {key:42}: {np.round(value, 4)}")
+
+        if plot_training:
+            plt.xlabel('Iteration')
+            plt.ylabel('Negative Marginal Log Likelihood')
+            plt.title('Training Progress')
+            plt.show()
 
     def get_hyperparameters(self):
         """
