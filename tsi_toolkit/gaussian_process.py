@@ -50,7 +50,7 @@ class GaussianProcess:
 
         # To Do: reconsider noise prior, add a mean function function for forecasting, more verbose options
         try:
-            _CheckInputs._check_input_data(timeseries, [], [])
+            _CheckInputs._check_input_data(timeseries, [], [], req_reg_samp=False)
         except ValueError as e:
             raise ValueError(f"Invalid TimeSeries object: {e}")
         
@@ -156,7 +156,6 @@ class GaussianProcess:
                 learn_additional_noise=white_noise,
 
             )
-            print(1 / np.mean(np.abs(self.train_values[1:].numpy()) * np.diff(self.train_times.numpy())))
             counts = np.abs(self.train_values[1:].numpy()) * np.diff(self.train_times.numpy())
             norm_poisson_var = 1 / (2 * np.mean(counts)) # begin with a slight underestimation to prevent overfitting
             likelihood.noise = norm_poisson_var
