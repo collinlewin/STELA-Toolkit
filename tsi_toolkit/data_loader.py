@@ -37,22 +37,21 @@ class LightCurve:
                 )
 
             file_data = self.load_file(file_path, file_columns=file_columns)
-            self.times, self.rates, self.errors = _CheckInputs(times=file_data[0], 
-                                                               rates=file_data[1],
-                                                               errors=file_data[2]
-                                                            )
+            times, rates, errors = file_data
 
         elif times.size > 0 and rates.size > 0:
-            self.times, self.rates, self.errors = _CheckInputs(times=times, 
-                                                               rates=rates,
-                                                               errors=errors
-                                                            )
-        
+            pass
+
         else:
             raise ValueError(
                 "Please provide time and rate arrays or a file path."
             )
 
+        self.times, self.rates, self.errors = _CheckInputs._check_input_data(lightcurve=None,
+                                                                             times=times, 
+                                                                             rates=rates, 
+                                                                             errors=errors
+                                                                            )
     @property
     def mean(self):
         return np.mean(self.rates)

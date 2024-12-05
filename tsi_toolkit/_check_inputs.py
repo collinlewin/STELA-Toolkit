@@ -8,14 +8,17 @@ class _CheckInputs:
     A utility class for checking and validating input data and binning.
     """
     @staticmethod
-    def _check_input_data(lightcurve=None, times=[], rates=[], errors=[], req_reg_samp=True):
+    def _check_input_data(lightcurve, times=[], rates=[], errors=[], req_reg_samp=True):
         """
         Validates and extracts time and rate arrays from input or LightCurve objects.
         """
         if lightcurve:  
             # using methods to allow flexible import of LightCurve objects
-            if not all(callable(getattr(lightcurve, method, None)) for method in ["load_file", "load_fits"]):
+            # Compare directly to the LightCurve class, accounting for import path issues
+            if type(lightcurve).__module__ != LightCurve.__module__:
                 raise TypeError("lightcurve must be an instance of the LightCurve class.")
+            #if not all(callable(getattr(lightcurve, method, None)) for method in ["load_file", "load_fits"]):
+            #    raise TypeError("lightcurve must be an instance of the LightCurve class.")
             
             times = lightcurve.times
             rates = lightcurve.rates
@@ -25,18 +28,13 @@ class _CheckInputs:
         elif len(times) > 0 and len(rates) > 0:
             times = np.array(times)
             rates = np.array(rates)
+
             if len(rates.shape) == 1 and len(times) != len(rates):
                 raise ValueError("Times and rates must have the same length.")
             
-            elif len(rates.shape) == 2 and rates.shape[1] != len(times):
-                raise ValueError(
-                    "Times and rates must have the same length for each light curve.\n"
-                    "Check the shape of the rates array: expecting (n_series, n_times)."
-                )
-            
             if len(errors) > 0: 
                 errors = np.array(errors)
-                
+
                 if np.min(errors) <= 0:
                     raise ValueError("Uncertainties of the input data must be positive.")
         else:
@@ -52,6 +50,14 @@ class _CheckInputs:
         
         return times, rates, errors
     
+    #@staticmethod
+    #def _check_input_model(model):
+
+
+
+
+        
+    @staticmethod
     def _check_input_bins(num_bins, bin_type, bin_edges):
         """
         Validates and returns bin edges for frequency binning.
