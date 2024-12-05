@@ -1,6 +1,6 @@
 from .coherence import Coherence
 from .cross_spectrum import CrossSpectrum
-from .data_loader import TimeSeries
+from .data_loader import LightCurve
 from .frequency_binning import FrequencyBinning
 from .gaussian_process import GaussianProcess
 #from .lag_energy_spectrum import LagEnergySpectrum
