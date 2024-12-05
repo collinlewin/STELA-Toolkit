@@ -1,5 +1,6 @@
 import torch
 import gpytorch
+import pickle
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -440,7 +441,7 @@ class GaussianProcess:
         aic = -2 * log_marg_like + 2 * num_params
         return aic
 
-    def sample(self, pred_times, num_samples):
+    def sample(self, pred_times, num_samples, save_path=None):
         """
         Generates samples from the posterior predictive distribution.
 
@@ -472,7 +473,17 @@ class GaussianProcess:
 
         # Unstandardize
         samples = samples * self.lightcurve.unstandard_std + self.lightcurve.unstandard_mean
-        return samples.numpy()
+        samples = samples.numpy()
+
+        if save_path:
+            samples_with_time = np.insert(pred_times, num_samples, 0)
+            file_ext = save_path.split(".")[-1]
+            if file_ext == "npy":
+                np.save(save_path, samples_with_time)
+            else:
+                np.savetxt(save_path, samples_with_time)
+
+        return samples
     
     def predict(self, pred_times):
         """
@@ -540,18 +551,29 @@ class GaussianProcess:
         plt.legend()
         plt.show()
 
-    def save_model(self, path):
+    def save(self, file_path):
         """
-        Saves the GP model to a specified path.
-        """
-        torch.save(self.model.state_dict(), path)
-        print(f"Model saved to {path}.")
+        Saves the full GaussianProcess instance to a file.
 
-    def load_model(self, path):
+        Parameters:
+        - file_path (str): The path to save the instance.
         """
-        Loads a GP model from a specified path.
+        with open(file_path, "wb") as f:
+            pickle.dump(self, f)
+        print(f"GaussianProcess instance saved to {file_path}.")
+
+    @staticmethod
+    def load(file_path):
         """
-        self.model.load_state_dict(torch.load(path))
-        self.model.eval()
-        self.likelihood.eval()
-        print(f"Model loaded from {path}.")
+        Loads a GaussianProcess instance from a file.
+
+        Parameters:
+        - file_path (str): The path to load the instance from.
+
+        Returns:
+        - GaussianProcess: The loaded instance.
+        """
+        with open(file_path, "rb") as f:
+            instance = pickle.load(f)
+        print(f"GaussianProcess instance loaded from {file_path}.")
+        return instance
