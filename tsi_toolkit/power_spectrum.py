@@ -32,8 +32,6 @@ class PowerSpectrum:
     - power_errors (array-like): Uncertainty of the power spectrum values.
     """
     def __init__(self,
-                 times=[],
-                 rates=[],
                  lightcurve=None,
                  fmin='auto',
                  fmax='auto',
@@ -44,7 +42,7 @@ class PowerSpectrum:
                  plot_fft=False
                  ):
         # To do: throw except for norm=True acting on mean=0 (standardized data)
-        self.times, self.rates, _ = _CheckInputs._check_input_data(lightcurve, times, rates)
+        self.times, self.rates, _ = _CheckInputs._check_input_data(lightcurve)
         _CheckInputs._check_input_bins(num_bins, bin_type, bin_edges)
 
         # Use absolute min and max frequencies if set to 'auto'

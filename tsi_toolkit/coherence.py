@@ -39,12 +39,6 @@ class Coherence:
     - coh_errors (array-like): Uncertainties in the coherence values.
     """
     def __init__(self,
-                 times1=[],
-                 rates1=[],
-                 errors1=[],
-                 times2=[],
-                 rates2=[],
-                 errors2=[],
                  lightcurve1=None,
                  lightcurve2=None,
                  fmin='auto',
@@ -60,8 +54,8 @@ class Coherence:
                  ):
         # To do: determine if or if not Poisson statistics for the user
         # To do: decrease number of parameters
-        self.times1, self.rates1, self.errors1 = _CheckInputs._check_input_data(lightcurve1, times1, rates1, errors1)
-        self.times2, self.rates2, self.errors2 = _CheckInputs._check_input_data(lightcurve2, times2, rates2, errors2)
+        self.times1, self.rates1, self.errors1 = _CheckInputs._check_input_data(lightcurve1)
+        self.times2, self.rates2, self.errors2 = _CheckInputs._check_input_data(lightcurve2)
         _CheckInputs._check_input_bins(num_bins, bin_type, bin_edges)
 
         if not np.allclose(self.times1, self.times2):

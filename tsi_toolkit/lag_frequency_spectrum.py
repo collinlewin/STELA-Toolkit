@@ -38,10 +38,6 @@ class LagFrequencySpectrum():
     - lag_errors (array-like): Uncertainty of the lag values.
     """
     def __init__(self,
-                 times1=[],
-                 rates1=[],
-                 times2=[],
-                 rates2=[],
                  lightcurve1=None,
                  lightcurve2=None,
                  fmin='auto',
@@ -54,8 +50,8 @@ class LagFrequencySpectrum():
                  plot_lfs=False
                  ):
         # To do: update main docstring for lag interpretation
-        self.times1, self.rates1, _ = _CheckInputs._check_input_data(lightcurve1, times1, rates1)
-        self.times2, self.rates2, _ = _CheckInputs._check_input_data(lightcurve2, times2, rates2)
+        self.times1, self.rates1, _ = _CheckInputs._check_input_data(lightcurve1)
+        self.times2, self.rates2, _ = _CheckInputs._check_input_data(lightcurve2)
         _CheckInputs._check_input_bins(num_bins, bin_type, bin_edges)
 
         if not np.allclose(self.times1, self.times2):
