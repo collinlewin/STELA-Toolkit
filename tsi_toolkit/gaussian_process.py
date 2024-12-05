@@ -4,20 +4,20 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 from ._check_inputs import _CheckInputs
-from .data_loader import TimeSeries
+from .data_loader import LightCurve
 from .preprocessing import Preprocessing
 
 
 class GaussianProcess:
     """
-    Models a time series using a Gaussian Process (GP).
+    Models a light curve using a Gaussian Process (GP).
 
-    This class fits a GP model to time series data using specified kernels and likelihoods. 
+    This class fits a GP model to light curve data using specified kernels and likelihoods. 
     It supports kernel selection, training, prediction, sampling, and model evaluation using 
     criteria such as AIC and BIC.
 
     Parameters:
-    - timeseries (TimeSeries): A `TimeSeries` object containing the data.
+    - lightcurve (LightCurve): A `LightCurve` object containing the data.
     - kernel_form (str or list, optional): Kernel type or list of types for GP. Defaults to 'auto'.
     - white_noise (bool, optional): Whether to include a white noise component. Defaults to True.
     - run_training (bool, optional): Whether to train the model after initialization. Defaults to True.
@@ -32,12 +32,12 @@ class GaussianProcess:
     - model (gpytorch.models.ExactGP): The trained GP model.
     - likelihood (gpytorch.likelihoods.Likelihood): The likelihood associated with the GP model.
     - train_times (torch.Tensor): Training time points.
-    - train_values (torch.Tensor): Training data values.
-    - train_sigmas (torch.Tensor): Errors for the training data values (if provided).
+    - train_rates (torch.Tensor): Training data rates.
+    - train_errors (torch.Tensor): Errors for the training data rates (if provided).
     - samples (torch.Tensor): Samples from the GP posterior (if generated).
     """
     def __init__(self,
-                 timeseries,
+                 lightcurve,
                  kernel_form='auto',
                  white_noise=True,
                  run_training=True,
@@ -51,22 +51,22 @@ class GaussianProcess:
 
         # To Do: reconsider noise prior, add a mean function function for forecasting, more verbose options
         try:
-            _CheckInputs._check_input_data(timeseries, [], [], req_reg_samp=False)
+            _CheckInputs._check_input_data(lightcurve, [], [], req_reg_samp=False)
         except ValueError as e:
-            raise ValueError(f"Invalid TimeSeries object: {e}")
+            raise ValueError(f"Invalid LightCurve object: {e}")
         
-        self.timeseries = timeseries
+        self.lightcurve = lightcurve
 
-        # Standardize the time series data to match zero mean function
-        Preprocessing.standardize(self.timeseries)
+        # Standardize the light curve data to match zero mean function
+        Preprocessing.standardize(self.lightcurve)
 
-        # Convert time series data to PyTorch tensors
-        self.train_times = torch.tensor(self.timeseries.times).float()
-        self.train_values = torch.tensor(self.timeseries.values).float()
-        if self.timeseries.sigmas.size > 0:
-            self.train_sigmas = torch.tensor(self.timeseries.sigmas).float()
+        # Convert light curve data to PyTorch tensors
+        self.train_times = torch.tensor(self.lightcurve.times).float()
+        self.train_rates = torch.tensor(self.lightcurve.rates).float()
+        if self.lightcurve.errors.size > 0:
+            self.train_errors = torch.tensor(self.lightcurve.errors).float()
         else:
-            self.train_sigmas = torch.tensor([])
+            self.train_errors = torch.tensor([])
 
         # Training
         self.white_noise = white_noise
@@ -85,7 +85,7 @@ class GaussianProcess:
             self.likelihood = best_likelihood
         else:
             # Use specified kernel
-            self.likelihood = self.set_likelihood(self.white_noise, train_sigmas=self.train_sigmas)
+            self.likelihood = self.set_likelihood(self.white_noise, train_errors=self.train_errors)
             self.model = self.create_gp_model(self.likelihood, kernel_form)
             
             # Separate training needed only if kernel not automatically selected
@@ -99,7 +99,7 @@ class GaussianProcess:
                 print(f"Samples generated: {self.samples.shape}, access with 'samples' attribute.")
 
         # unstandardize the data
-        Preprocessing.unstandardize(self.timeseries)
+        Preprocessing.unstandardize(self.lightcurve)
 
         if plot_gp:
             self.plot(sample_time_grid)
@@ -110,7 +110,7 @@ class GaussianProcess:
 
         Parameters:
         - train_times (torch.Tensor): Training time points.
-        - train_values (torch.Tensor): Training data values.
+        - train_rates (torch.Tensor): Training data rates.
         - likelihood (gpytorch.likelihoods.Likelihood): Likelihood function for the GP.
         - kernel (str): Kernel type to use for the GP.
 
@@ -118,8 +118,8 @@ class GaussianProcess:
         - GPModel: A GP model with the specified kernel and likelihood.
         """
         class GPModel(gpytorch.models.ExactGP):
-            def __init__(gp_self, train_times, train_values, likelihood):
-                super(GPModel, gp_self).__init__(train_times, train_values, likelihood)
+            def __init__(gp_self, train_times, train_rates, likelihood):
+                super(GPModel, gp_self).__init__(train_times, train_rates, likelihood)
                 gp_self.mean_module = gpytorch.means.ZeroMean()
                 gp_self.covar_module = self.set_kernel(kernel_form)
 
@@ -128,22 +128,22 @@ class GaussianProcess:
                 covar_x = gp_self.covar_module(x)
                 return gpytorch.distributions.MultivariateNormal(mean_x, covar_x)
             
-        return GPModel(self.train_times, self.train_values, likelihood)
+        return GPModel(self.train_times, self.train_rates, likelihood)
 
-    def set_likelihood(self, white_noise, train_sigmas=torch.tensor([])):
+    def set_likelihood(self, white_noise, train_errors=torch.tensor([])):
         """
         Configures the likelihood for the GP model.
 
         Parameters:
         - white_noise (bool): Whether to include a white noise component.
-        - train_sigmas (torch.Tensor, optional): Errors for the training data.
+        - train_errors (torch.Tensor, optional): Errors for the training data.
 
         Returns:
         - gpytorch.likelihoods.Likelihood: The configured likelihood.
         """
-        if train_sigmas.size(dim=0) > 0:
+        if train_errors.size(dim=0) > 0:
             likelihood = gpytorch.likelihoods.FixedNoiseGaussianLikelihood(
-                noise=self.train_sigmas ** 2,
+                noise=self.train_errors ** 2,
                 learn_additional_noise=white_noise,
                 noise_constraint = gpytorch.constraints.Interval(1e-5, 1)
             )
@@ -154,7 +154,7 @@ class GaussianProcess:
                 learn_additional_noise=white_noise,
 
             )
-            counts = np.abs(self.train_values[1:].numpy()) * np.diff(self.train_times.numpy())
+            counts = np.abs(self.train_rates[1:].numpy()) * np.diff(self.train_times.numpy())
             norm_poisson_var = 1 / (2 * np.mean(counts)) # begin with a slight underestimation to prevent overfitting
             likelihood.noise = norm_poisson_var
 
@@ -182,7 +182,7 @@ class GaussianProcess:
                 kernel_form, num_mixtures_str = kernel_form.split(',')
                 num_mixtures = int(num_mixtures_str.strip())
         else:
-            num_mixtures = 4  # set value for kernel_mapping when Spectral Mixture kernel not used
+            num_mixtures = 4  # set num_mixtures for kernel_mapping when Spectral Mixture kernel not used
 
         kernel_mapping = {
             'Matern12': gpytorch.kernels.MaternKernel(nu=0.5), 
@@ -201,7 +201,7 @@ class GaussianProcess:
                 f"Invalid kernel functional form '{kernel_form}'. Choose from {list(kernel_mapping.keys())}.")
         
         if kernel_form == 'SpectralMixture':
-            kernel.initialize_from_data(self.train_times, self.train_values)
+            kernel.initialize_from_data(self.train_times, self.train_rates)
 
         # Scale the kernel by a constant factor
         covar_module = gpytorch.kernels.ScaleKernel(kernel)
@@ -229,7 +229,7 @@ class GaussianProcess:
         aics = []
         best_model = None
         for kernel_form in kernel_list:
-            self.likelihood = self.set_likelihood(self.white_noise, train_sigmas=self.train_sigmas)
+            self.likelihood = self.set_likelihood(self.white_noise, train_errors=self.train_errors)
             self.model = self.create_gp_model(self.likelihood, kernel_form)
             # suppress output, even for verbose=True
             self.train_model(num_iter=num_iter, learn_rate=learn_rate, verbose=False) 
@@ -291,13 +291,13 @@ class GaussianProcess:
             output = self.model(self.train_times)
 
             # Calc negative likelihood and backprop gradients
-            loss = -mll(output, self.train_values)
+            loss = -mll(output, self.train_rates)
             loss.backward()
             optimizer.step()
 
             if verbose:
                 if self.white_noise:
-                    if self.train_sigmas.size(dim=0) > 0:
+                    if self.train_errors.size(dim=0) > 0:
                         noise_param = self.model.likelihood.second_noise.item()
                     else:
                         noise_param = self.model.likelihood.noise.item()
@@ -409,7 +409,7 @@ class GaussianProcess:
         """
         mll = gpytorch.mlls.ExactMarginalLogLikelihood(self.likelihood, self.model)
         log_marg_like = mll(
-            self.model(self.train_times), self.train_values
+            self.model(self.train_times), self.train_rates
             ).item()
 
         num_params = sum([p.numel() for p in self.model.parameters()])
@@ -427,7 +427,7 @@ class GaussianProcess:
         """
         mll = gpytorch.mlls.ExactMarginalLogLikelihood(self.likelihood, self.model)
         log_marg_like = mll(
-            self.model(self.train_times), self.train_values
+            self.model(self.train_times), self.train_rates
             ).item()
 
         num_params = sum([p.numel() for p in self.model.parameters()])
@@ -466,7 +466,7 @@ class GaussianProcess:
             samples = pred_dist.sample(sample_shape=torch.Size([num_samples]))
 
         # Unstandardize
-        samples = samples * self.timeseries.unstandard_std + self.timeseries.unstandard_mean
+        samples = samples * self.lightcurve.unstandard_std + self.lightcurve.unstandard_mean
         return samples.numpy()
     
     def predict(self, pred_times):
@@ -498,9 +498,9 @@ class GaussianProcess:
             lower, upper = pred_dist.confidence_region()
 
         # Unstandardize
-        mean = mean * self.timeseries.unstandard_std + self.timeseries.unstandard_mean
-        lower = lower * self.timeseries.unstandard_std + self.timeseries.unstandard_mean
-        upper = upper * self.timeseries.unstandard_std + self.timeseries.unstandard_mean
+        mean = mean * self.lightcurve.unstandard_std + self.lightcurve.unstandard_mean
+        lower = lower * self.lightcurve.unstandard_std + self.lightcurve.unstandard_mean
+        upper = upper * self.lightcurve.unstandard_std + self.lightcurve.unstandard_mean
 
         return mean.numpy(), lower.numpy(), upper.numpy()
     
@@ -521,13 +521,13 @@ class GaussianProcess:
         sample = self.sample(pred_times, num_samples=1)
         plt.plot(pred_times, sample[0], color='orange', lw=1, label='Sample')
 
-        if self.train_sigmas.size(dim=0) > 0:
+        if self.train_errors.size(dim=0) > 0:
             plt.errorbar(
-            self.timeseries.times, self.timeseries.values,
-            yerr=self.timeseries.sigmas, fmt='o', color='black', label='Data', lw=1, ms=2
+            self.lightcurve.times, self.lightcurve.rates,
+            yerr=self.lightcurve.errors, fmt='o', color='black', label='Data', lw=1, ms=2
             )
         else:
-            plt.scatter(self.timeseries.times, self.timeseries.values, color='black', label='Data')
+            plt.scatter(self.lightcurve.times, self.lightcurve.rates, color='black', label='Data')
 
         plt.xlabel('Time')
         plt.ylabel('Values')

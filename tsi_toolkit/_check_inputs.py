@@ -1,6 +1,6 @@
 import numpy as np
 
-from .data_loader import TimeSeries
+from .data_loader import LightCurve
 
 
 class _CheckInputs:
@@ -8,36 +8,36 @@ class _CheckInputs:
     A utility class for checking and validating input data and binning.
     """
     @staticmethod
-    def _check_input_data(timeseries, times, values, sigmas=None, req_reg_samp=True):
+    def _check_input_data(lightcurve, times, rates, errors=None, req_reg_samp=True):
         """
-        Validates and extracts time and value arrays from input or TimeSeries objects.
+        Validates and extracts time and rate arrays from input or LightCurve objects.
         """
-        if timeseries:
-            # using methods to allow flexible import of TimeSeries objects
-            if not all(callable(getattr(timeseries, method, None)) for method in ["load_file", "load_fits"]):
-                raise TypeError("timeseries must be an instance of the TimeSeries class.")
-            times = timeseries.times
-            values = timeseries.values
-            sigmas = timeseries.sigmas
+        if lightcurve:  
+            # using methods to allow flexible import of LightCurve objects
+            if not all(callable(getattr(lightcurve, method, None)) for method in ["load_file", "load_fits"]):
+                raise TypeError("lightcurve must be an instance of the LightCurve class.")
+            times = lightcurve.times
+            rates = lightcurve.rates
+            errors = lightcurve.errors
 
-        # check input arrays if not timeseries object
-        elif len(times) > 0 and len(values) > 0:
+        # check input arrays if not lightcurve object
+        elif len(times) > 0 and len(rates) > 0:
             times = np.array(times)
-            values = np.array(values)
-            if len(values.shape) == 1 and len(times) != len(values):
-                raise ValueError("Times and values must have the same length.")
+            rates = np.array(rates)
+            if len(rates.shape) == 1 and len(times) != len(rates):
+                raise ValueError("Times and rates must have the same length.")
             
-            elif len(values.shape) == 2 and values.shape[1] != len(times):
+            elif len(rates.shape) == 2 and rates.shape[1] != len(times):
                 raise ValueError(
-                    "Times and values must have the same length for each time series.\n"
-                    "Check the shape of the values array: expecting (n_series, n_times)."
+                    "Times and rates must have the same length for each light curve.\n"
+                    "Check the shape of the rates array: expecting (n_series, n_times)."
                 )
             
-            if sigmas: 
-                if np.min(sigmas) <= 0:
+            if errors: 
+                if np.min(errors) <= 0:
                     raise ValueError("Uncertainties of the input data must be positive.")
         else:
-            raise ValueError("Either provide a TimeSeries object or times and values arrays.")
+            raise ValueError("Either provide a LightCurve object or times and rates arrays.")
         
         # check for regular sampling
         if req_reg_samp:
@@ -47,7 +47,7 @@ class _CheckInputs:
                                 "Interpolate the data to a uniform grid first."
                             )
         
-        return times, values, sigmas
+        return times, rates, errors
     
     def _check_input_bins(num_bins, bin_type, bin_edges):
         """

@@ -9,19 +9,19 @@ from .plot import Plotter
 
 class LagFrequencySpectrum():
     """
-    Computes the lag-frequency spectrum for time series data.
+    Computes the lag-frequency spectrum for light curve data.
 
     This class calculates the lag-frequency spectrum for one or more realizations of
-    time series data. It supports single and stacked realizations, binning of 
+    light curve data. It supports single and stacked realizations, binning of 
     frequencies, and optional plotting of results.
 
     Parameters:
-    - times1 (array-like, optional): Time points for the first time series.
-    - values1 (array-like, optional): Values for the first time series.
-    - times2 (array-like, optional): Time points for the second time series.
-    - values2 (array-like, optional): Values for the second time series.
-    - timeseries1 (object, optional): First time series object (overrides times1/values1).
-    - timeseries2 (object, optional): Second time series object (overrides times2/values2).
+    - times1 (array-like, optional): Time points for the first light curve.
+    - rates1 (array-like, optional): Values for the first light curve.
+    - times2 (array-like, optional): Time points for the second light curve.
+    - rates2 (array-like, optional): Values for the second light curve.
+    - lightcurve1 (object, optional): First light curve object (overrides times1/rates1).
+    - lightcurve2 (object, optional): Second light curve object (overrides times2/rates2).
     - fmin (float or 'auto', optional): Minimum frequency for computation.
     - fmax (float or 'auto', optional): Maximum frequency for computation.
     - num_bins (int, optional): Number of bins for frequency binning.
@@ -35,15 +35,15 @@ class LagFrequencySpectrum():
     - freqs (array-like): Frequencies of the lag spectrum.
     - freq_widths (array-like): Bin widths of the frequencies.
     - lags (array-like): Computed lag values for each frequency bin.
-    - lag_sigmas (array-like): Uncertainty of the lag values.
+    - lag_errors (array-like): Uncertainty of the lag values.
     """
     def __init__(self,
                  times1=[],
-                 values1=[],
+                 rates1=[],
                  times2=[],
-                 values2=[],
-                 timeseries1=None,
-                 timeseries2=None,
+                 rates2=[],
+                 lightcurve1=None,
+                 lightcurve2=None,
                  fmin='auto',
                  fmax='auto',
                  num_bins=None,
@@ -54,12 +54,12 @@ class LagFrequencySpectrum():
                  plot_lfs=False
                  ):
         # To do: update main docstring for lag interpretation
-        self.times1, self.values1, _ = _CheckInputs._check_input_data(timeseries1, times1, values1)
-        self.times2, self.values2, _ = _CheckInputs._check_input_data(timeseries2, times2, values2)
+        self.times1, self.rates1, _ = _CheckInputs._check_input_data(lightcurve1, times1, rates1)
+        self.times2, self.rates2, _ = _CheckInputs._check_input_data(lightcurve2, times2, rates2)
         _CheckInputs._check_input_bins(num_bins, bin_type, bin_edges)
 
         if not np.allclose(self.times1, self.times2):
-            raise ValueError("The time arrays of the two time series must be identical.")
+            raise ValueError("The time arrays of the two light curves must be identical.")
 
         # Use absolute min and max frequencies if set to 'auto'
         self.dt = np.diff(self.times1)[0]
@@ -70,25 +70,25 @@ class LagFrequencySpectrum():
         self.bin_type = bin_type
         self.bin_edges = bin_edges
 
-        if len(self.values1.shape) == 2 and len(self.values2.shape) == 2:
+        if len(self.rates1.shape) == 2 and len(self.rates2.shape) == 2:
             lag_spectrum = self.compute_stacked_lag_spectrum()
         else:
             lag_spectrum = self.compute_lag_spectrum(subtract_coh_bias=subtract_coh_bias, 
                                                      poisson_stats=poisson_stats
                                                     )
-        self.freqs, self.freq_widths, self.lags, self.lag_sigmas = lag_spectrum
+        self.freqs, self.freq_widths, self.lags, self.lag_errors = lag_spectrum
 
         if plot_lfs:
             self.plot()
 
-    def compute_lag_spectrum(self, times1=None, values1=None, times2=None, values2=None,
-                             compute_sigmas=True, subtract_coh_bias=True, poisson_stats=False):
+    def compute_lag_spectrum(self, times1=None, rates1=None, times2=None, rates2=None,
+                             compute_errors=True, subtract_coh_bias=True, poisson_stats=False):
         """
-        Computes the lag spectrum for the given time series.
+        Computes the lag spectrum for the given light curves.
 
         Parameters:
-        - times1, values1 (array-like, optional): Time and values for the first time series.
-        - times2, values2 (array-like, optional): Time and values for the second time series.
+        - times1, rates1 (array-like, optional): Time and rates for the first light curve.
+        - times2, rates2 (array-like, optional): Time and rates for the second light curve.
         - fmin (float or 'auto', optional): Minimum frequency for computation.
         - fmax (float or 'auto', optional): Maximum frequency for computation.
         - num_bins (int, optional): Number of bins for frequency binning.
@@ -96,22 +96,22 @@ class LagFrequencySpectrum():
         - bin_edges (array-like, optional): Predefined edges for frequency bins.
         - subtract_noise_bias (bool, optional): Whether to subtract noise bias.
         - poisson_stats (bool, optional): Whether to assume Poisson noise statistics.
-        - compute_sigmas (bool, optional): Whether to compute uncertainties for lag values.
+        - compute_errors (bool, optional): Whether to compute uncertainties for lag values.
 
         Returns:
         - freqs (array-like): Frequencies of the lag spectrum.
         - freq_widths (array-like): Bin widths of the frequencies.
         - lags (array-like): Computed lag values.
-        - lag_sigmas (array-like): Uncertainty of the lag values.
+        - lag_errors (array-like): Uncertainty of the lag values.
         """
         times1 = self.times1 if times1 is None else times1
-        values1 = self.values1 if values1 is None else values1
+        rates1 = self.rates1 if rates1 is None else rates1
         times2 = self.times2 if times2 is None else times2
-        values2 = self.values2 if values2 is None else values2
+        rates2 = self.rates2 if rates2 is None else rates2
 
         # Compute the cross spectrum
-        cross_spectrum = CrossSpectrum(times1=times1, values1=values1,
-                                       times2=times2, values2=values2,
+        cross_spectrum = CrossSpectrum(times1=times1, rates1=rates1,
+                                       times2=times2, rates2=rates2,
                                        fmin=self.fmin, fmax=self.fmax,
                                        num_bins=self.num_bins, bin_type=self.bin_type,
                                        bin_edges=self.bin_edges,
@@ -120,23 +120,23 @@ class LagFrequencySpectrum():
 
         lags = np.angle(cross_spectrum.cs) / (2 * np.pi * cross_spectrum.freqs)
 
-        if compute_sigmas:
-            coherence = Coherence(times1=times1, values1=values1, 
-                                  times2=times2, values2=values2,
+        if compute_errors:
+            coherence = Coherence(times1=times1, rates1=rates1, 
+                                  times2=times2, rates2=rates2,
                                   fmin=self.fmin, fmax=self.fmax,
                                   num_bins=self.num_bins, bin_type=self.bin_type, bin_edges=self.bin_edges, 
                                   subtract_noise_bias=subtract_coh_bias, poisson_stats=poisson_stats
                                   )
             
-            phase_sigmas = np.sqrt(
+            phase_errors = np.sqrt(
                 (1 - coherence.cohs) / (2 * coherence.cohs)
             )
 
-            lag_sigmas = phase_sigmas / (2 * np.pi * cross_spectrum.freqs)
+            lag_errors = phase_errors / (2 * np.pi * cross_spectrum.freqs)
         else:
-            lag_sigmas = np.zeros_like(lags)
+            lag_errors = np.zeros_like(lags)
 
-        return cross_spectrum.freqs, cross_spectrum.freq_widths, lags, lag_sigmas
+        return cross_spectrum.freqs, cross_spectrum.freq_widths, lags, lag_errors
 
     def compute_stacked_lag_spectrum(self):
         """
@@ -161,10 +161,10 @@ class LagFrequencySpectrum():
         """
         # Compute lag spectrum for each pair of realizations
         lag_spectra = []
-        for i in range(self.values1.shape[0]):
-            lag_spectrum = self.compute_lag_spectrum(times1=self.times1, values1=self.values1[i],
-                                                     times2=self.times2, values2=self.values2[i], 
-                                                     compute_sigmas=False
+        for i in range(self.rates1.shape[0]):
+            lag_spectrum = self.compute_lag_spectrum(times1=self.times1, rates1=self.rates1[i],
+                                                     times2=self.times2, rates2=self.rates2[i], 
+                                                     compute_errors=False
                                                      )
             lag_spectra.append(lag_spectrum[2])
 
@@ -177,7 +177,7 @@ class LagFrequencySpectrum():
 
         return freqs, freq_widths, lag_spectra_mean, lag_spectra_std
 
-    def plot(self, freqs=None, freq_widths=None, lags=None, lag_sigmas=None, **kwargs):
+    def plot(self, freqs=None, freq_widths=None, lags=None, lag_errors=None, **kwargs):
         """
         Plots the cross-spectrum.
 
@@ -187,14 +187,14 @@ class LagFrequencySpectrum():
         freqs = self.freqs if freqs is None else freqs
         freq_widths = self.freq_widths if freq_widths is None else freq_widths
         lags = self.lags if lags is None else lags
-        lag_sigmas = self.lag_sigmas if lag_sigmas is None else lag_sigmas
+        lag_errors = self.lag_errors if lag_errors is None else lag_errors
 
         kwargs.setdefault('xlabel', 'Frequency')
         kwargs.setdefault('ylabel', 'Time Lags')
         kwargs.setdefault('xscale', 'log')
         kwargs.setdefault('yscale', 'log')
         Plotter.plot(
-            x=freqs, y=lags, xerr=freq_widths, yerr=lag_sigmas, **kwargs
+            x=freqs, y=lags, xerr=freq_widths, yerr=lag_errors, **kwargs
         )
 
     def count_frequencies_in_bins(self, fmin=None, fmax=None, num_bins=None, bin_type="log", bin_edges=[]):

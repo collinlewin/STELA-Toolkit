@@ -3,24 +3,24 @@ import numpy as np
 from ._check_inputs import _CheckInputs
 from .plot import Plotter
 from .frequency_binning import FrequencyBinning
-from .data_loader import TimeSeries
+from .data_loader import LightCurve
 
 
 class CrossSpectrum:
     """
-    Computes the cross-spectrum between two time series.
+    Computes the cross-spectrum between two light curves.
 
     This class calculates the cross-spectrum for single or multiple realizations
-    of two time series. It supports frequency binning and optional normalization
+    of two light curves. It supports frequency binning and optional normalization
     to be in units consistent with the power spectral density (PSD).
 
     Parameters:
-    - times1 (array-like, optional): Time points for the first time series.
-    - values1 (array-like, optional): Values for the first time series.
-    - times2 (array-like, optional): Time points for the second time series.
-    - values2 (array-like, optional): Values for the second time series.
-    - timeseries1 (object, optional): First time series object (overrides times1/values1).
-    - timeseries2 (object, optional): Second time series object (overrides times2/values2).
+    - times1 (array-like, optional): Time points for the first light curve.
+    - rates1 (array-like, optional): Rates for the first light curve.
+    - times2 (array-like, optional): Time points for the second light curve.
+    - rates2 (array-like, optional): Rates for the second light curve.
+    - lightcurve1 (object, optional): First light curve object (overrides times1/rates1).
+    - lightcurve2 (object, optional): Second light curve object (overrides times2/rates2).
     - fmin (float or 'auto', optional): Minimum frequency for computation.
     - fmax (float or 'auto', optional): Maximum frequency for computation.
     - num_bins (int, optional): Number of bins for frequency binning.
@@ -33,15 +33,15 @@ class CrossSpectrum:
     - freqs (array-like): Frequencies of the cross-spectrum.
     - freq_widths (array-like): Bin widths of the frequencies.
     - cs (array-like): Cross-spectrum values.
-    - cs_sigmas (array-like): Uncertainty of the cross-spectrum values.
+    - cs_errors (array-like): Uncertainty of the cross-spectrum values.
     """
     def __init__(self,
                  times1=[],
-                 values1=[],
+                 rates1=[],
                  times2=[],
-                 values2=[],
-                 timeseries1=None,
-                 timeseries2=None,
+                 rates2=[],
+                 lightcurve1=None,
+                 lightcurve2=None,
                  fmin='auto',
                  fmax='auto',
                  num_bins=None,
@@ -50,15 +50,15 @@ class CrossSpectrum:
                  norm=True,
                  plot_cs=False
                  ):
-        # To do: case where values1 is samples (2D), values2 is 1D
-        # To do: when dim values1 != dim values2
+        # To do: case where rates1 is samples (2D), rates2 is 1D
+        # To do: when dim rates1 != dim rates2
         # To do: update main docstring
-        self.times1, self.values1, _ = _CheckInputs._check_input_data(timeseries1, times1, values1)
-        self.times2, self.values2, _ = _CheckInputs._check_input_data(timeseries2, times2, values2)
+        self.times1, self.rates1, _ = _CheckInputs._check_input_data(lightcurve1, times1, rates1)
+        self.times2, self.rates2, _ = _CheckInputs._check_input_data(lightcurve2, times2, rates2)
         _CheckInputs._check_input_bins(num_bins, bin_type, bin_edges)
 
         if not np.allclose(self.times1, self.times2):
-            raise ValueError("The time arrays of the two time series must be identical.")
+            raise ValueError("The time arrays of the two light curves must be identical.")
 
         # Use absolute min and max frequencies if set to 'auto'
         self.dt = np.diff(self.times1)[0]
@@ -69,25 +69,25 @@ class CrossSpectrum:
         self.bin_type = bin_type
         self.bin_edges = bin_edges
 
-        # Check if the input values are for multiple realizations
+        # Check if the input rates are for multiple realizations
         # this needs to be corrected for handling different shapes and dim val1 != dim val2
-        if len(self.values1.shape) == 2 and len(self.values2.shape) == 2:
+        if len(self.rates1.shape) == 2 and len(self.rates2.shape) == 2:
             cross_spectrum = self.compute_stacked_cross_spectrum(norm=norm)
         else:
             cross_spectrum = self.compute_cross_spectrum(norm=norm)
 
-        self.freqs, self.freq_widths, self.cs, self.cs_sigmas = cross_spectrum
+        self.freqs, self.freq_widths, self.cs, self.cs_errors = cross_spectrum
 
         if plot_cs:
             self.plot()
 
-    def compute_cross_spectrum(self, times1=None, values1=None, times2=None, values2=None, norm=True):
+    def compute_cross_spectrum(self, times1=None, rates1=None, times2=None, rates2=None, norm=True):
         """
-        Computes the cross-spectrum between two time series.
+        Computes the cross-spectrum between two light curves.
 
         Parameters:
-        - times1, values1 (array-like, optional): Time and values for the first time series.
-        - times2, values2 (array-like, optional): Time and values for the second time series.
+        - times1, rates1 (array-like, optional): Time and rates for the first light curve.
+        - times2, rates2 (array-like, optional): Time and rates for the second light curve.
         - fmin (float or 'auto', optional): Minimum frequency for computation.
         - fmax (float or 'auto', optional): Maximum frequency for computation.
         - num_bins (int, optional): Number of bins for frequency binning.
@@ -102,12 +102,12 @@ class CrossSpectrum:
         - None (NoneType): Placeholder for compatibility with other methods.
         """
         times1 = self.times1 if times1 is None else times1
-        values1 = self.values1 if values1 is None else values1
+        rates1 = self.rates1 if rates1 is None else rates1
         times2 = self.times2 if times2 is None else times2
-        values2 = self.values2 if values2 is None else values2
+        rates2 = self.rates2 if rates2 is None else rates2
 
-        freqs, fft1 = TimeSeries(times=times1, values=values1).fft()
-        _, fft2 = TimeSeries(times=times2, values=values2).fft()
+        freqs, fft1 = LightCurve(times=times1, rates=rates1).fft()
+        _, fft2 = LightCurve(times=times2, rates=rates2).fft()
 
         cross_spectrum = np.conj(fft1) * fft2
 
@@ -133,24 +133,24 @@ class CrossSpectrum:
                                  "In other words, you must specify the number of bins or the bin edges.")
             
             binned_cross_spectrum = FrequencyBinning.bin_data(freqs, cross_spectrum, bin_edges)
-            freqs, freq_widths, cross_spectrum, cross_spectrum_sigmas = binned_cross_spectrum
+            freqs, freq_widths, cross_spectrum, cross_spectrum_errors = binned_cross_spectrum
         else:
             freq_widths = None
-            cross_spectrum_sigmas = None
+            cross_spectrum_errors = None
 
         # Normalize power spectrum to units of variance
         if norm:
-            length = len(values1)
-            norm_factor = length * np.mean(values1) * np.mean(values2) / (2 * self.dt)
+            length = len(rates1)
+            norm_factor = length * np.mean(rates1) * np.mean(rates2) / (2 * self.dt)
             cross_spectrum /= norm_factor
             # negative norm factor shifts the phase by pi
             if norm_factor < 0:
                 phase = np.angle(cross_spectrum)
                 cross_spectrum = np.abs(cross_spectrum) * np.exp(1j * phase)
-            if cross_spectrum_sigmas:
-                cross_spectrum_sigmas /= length * np.mean(values1) * np.mean(values2) / (2 * self.dt)
+            if cross_spectrum_errors:
+                cross_spectrum_errors /= length * np.mean(rates1) * np.mean(rates2) / (2 * self.dt)
             
-        return freqs, freq_widths, cross_spectrum, cross_spectrum_sigmas
+        return freqs, freq_widths, cross_spectrum, cross_spectrum_errors
 
     def compute_stacked_cross_spectrum(self, norm=True):
         """
@@ -175,10 +175,10 @@ class CrossSpectrum:
         - cross_spectra_std (array-like): Standard deviation of cross-spectrum values.
         """
         cross_spectra = []
-        for i in range(self.values1.shape[0]):
+        for i in range(self.rates1.shape[0]):
             cross_spectrum = self.compute_cross_spectrum(
-                times1=self.times1, values1=self.values1[i], 
-                times2=self.times2, values2=self.values2[i], 
+                times1=self.times1, rates1=self.rates1[i], 
+                times2=self.times2, rates2=self.rates2[i], 
                 norm=norm
             )
             cross_spectra.append(cross_spectrum[2])
@@ -191,7 +191,7 @@ class CrossSpectrum:
 
         return freqs, freq_widths, cross_spectra_mean, cross_spectra_std
 
-    def plot(self, freqs=None, freq_widths=None, cs=None, cs_sigmas=None, **kwargs):
+    def plot(self, freqs=None, freq_widths=None, cs=None, cs_errors=None, **kwargs):
         """
         Plots the cross-spectrum.
 
@@ -201,14 +201,14 @@ class CrossSpectrum:
         freqs = self.freqs if freqs is None else freqs
         freq_widths = self.freq_widths if freq_widths is None else freq_widths
         cs = self.cs if cs is None else cs
-        cs_sigmas = self.cs_sigmas if cs_sigmas is None else cs_sigmas
+        cs_errors = self.cs_errors if cs_errors is None else cs_errors
 
         kwargs.setdefault('xlabel', 'Frequency')
         kwargs.setdefault('ylabel', 'Cross-Spectrum')
         kwargs.setdefault('xscale', 'log')
         kwargs.setdefault('yscale', 'log')
         Plotter.plot(
-            x=freqs, y=cs, xerr=freq_widths, yerr=cs_sigmas, **kwargs
+            x=freqs, y=cs, xerr=freq_widths, yerr=cs_errors, **kwargs
         )
 
     def count_frequencies_in_bins(self, fmin=None, fmax=None, num_bins=None, bin_type="log", bin_edges=[]):

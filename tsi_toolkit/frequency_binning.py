@@ -55,18 +55,18 @@ class FrequencyBinning:
         - binned_freqs (array-like): Mean frequency for each bin.
         - binned_freq_widths (array-like): Half-widths of the frequency bins (for error bars).
         - binned_values (array-like): Mean value for each bin.
-        - binned_value_sigmas (array-like): Standard deviation of the values in each bin.
+        - binned_value_errors (array-like): Standard deviation of the values in each bin.
         """
         binned_freqs = []
         binned_freq_widths = []
         binned_values = []
-        binned_value_sigmas = []
+        binned_value_errors = []
         for i in range(len(bin_edges) - 1):
             mask = (freqs >= bin_edges[i]) & (freqs < bin_edges[i + 1])
             if mask.any():
                 binned_freqs.append(freqs[mask].mean())
                 binned_values.append(values[mask].mean())
-                binned_value_sigmas.append(values[mask].std())
+                binned_value_errors.append(values[mask].std())
 
                 # Calculate bin half-widths for error bars
                 lower_bound = bin_edges[i]
@@ -77,7 +77,7 @@ class FrequencyBinning:
             np.array(binned_freqs),
             np.array(binned_freq_widths),
             np.array(binned_values),
-            np.array(binned_value_sigmas),
+            np.array(binned_value_errors),
         )
     
     @staticmethod
