@@ -22,7 +22,7 @@ class GaussianProcess:
     - white_noise (bool, optional): Whether to include a white noise component. Defaults to True.
     - run_training (bool, optional): Whether to train the model after initialization. Defaults to True.
     - num_iter (int, optional): Number of training iterations. Defaults to 1000.
-    - learn_rate (float, optional): Learning rate for training. Defaults to 1e-2.
+    - learn_rate (float, optional): Learning rate for training. Defaults to 1e-1.
     - sample_time_grid (array-like, optional): Time grid for sampling from the GP. Defaults to [].
     - num_samples (int, optional): Number of samples to draw from the GP posterior. Defaults to 1000.
     - plot_gp (bool, optional): Whether to plot the GP predictions and samples. Defaults to False.
@@ -43,7 +43,7 @@ class GaussianProcess:
                  run_training=True,
                  plot_training=False,
                  num_iter=1000,
-                 learn_rate=1e-2,
+                 learn_rate=1e-1,
                  sample_time_grid=[],
                  num_samples=1000,
                  plot_gp=False,
@@ -145,15 +145,15 @@ class GaussianProcess:
             likelihood = gpytorch.likelihoods.FixedNoiseGaussianLikelihood(
                 noise=self.train_errors ** 2,
                 learn_additional_noise=white_noise,
-                noise_constraint = gpytorch.constraints.Interval(1e-5, 1)
+                noise_constraint = gpytorch.constraints.Interval(1e-5, 1e2)
             )
 
         else:
             likelihood = gpytorch.likelihoods.GaussianLikelihood(
-                noise_constraint = gpytorch.constraints.Interval(1e-5, 1),
                 learn_additional_noise=white_noise,
-
+                noise_constraint = gpytorch.constraints.Interval(1e-3, 1e2),
             )
+
             counts = np.abs(self.train_rates[1:].numpy()) * np.diff(self.train_times.numpy())
             norm_poisson_var = 1 / (2 * np.mean(counts)) # begin with a slight underestimation to prevent overfitting
             likelihood.noise = norm_poisson_var
@@ -202,6 +202,10 @@ class GaussianProcess:
         
         if kernel_form == 'SpectralMixture':
             kernel.initialize_from_data(self.train_times, self.train_rates)
+        else:
+            # initialize at 1/10th of full lc length
+            init_lengthscale = (self.train_times[-1] - self.train_times[0]) / 10
+            kernel.lengthscale = init_lengthscale
 
         # Scale the kernel by a constant factor
         covar_module = gpytorch.kernels.ScaleKernel(kernel)
@@ -209,7 +213,106 @@ class GaussianProcess:
 
         return covar_module
 
-    def find_best_kernel(self, kernel_list, num_iter=1000, learn_rate=1e-2, verbose=False):
+    def train_model(self, num_iter=1000, learn_rate=1e-1, verbose=False):
+        """
+        Trains the Gaussian Process model, hyperparameters optimized 
+        using Adam optimizer given number of training iterations and 
+        learning rate.
+
+        If verbose is True, prints the training progress and final hyperparameters.
+        If hyperparameters not converged...
+            - monotonic progression? --> consider increasing num_iter.
+            - fluctuating around potential optimum? --> consider decreasing learn_rate.
+
+        Parameters:
+        - num_iter (int): Number of training iterations.
+        - learn_rate (float): Learning rate for the optimizer.
+        - verbose (bool): Whether to print detailed information during training.
+        """
+        self.model.train()
+        self.likelihood.train()
+
+        optimizer = torch.optim.Adam(self.model.parameters(), lr=learn_rate)
+        mll = gpytorch.mlls.ExactMarginalLogLikelihood(self.likelihood, self.model)
+
+        if self.plot_training:
+            plt.figure(figsize=(8, 5))
+
+        for i in range(num_iter):
+            # Zero gradients from previous iteration
+            optimizer.zero_grad()
+
+            # Model output
+            output = self.model(self.train_times)
+
+            # Calc negative likelihood and backprop gradients
+            loss = -mll(output, self.train_rates)
+            loss.backward()
+
+            if verbose:
+                if self.white_noise:
+                    if self.train_errors.size(dim=0) > 0:
+                        noise_param = self.model.likelihood.second_noise.item()
+                    else:
+                        noise_param = self.model.likelihood.noise.item()
+
+                if self.kernel_form == 'SpectralMixture':
+                    mixture_scales = self.model.covar_module.base_kernel.mixture_scales
+                    mixture_scales = mixture_scales.detach().numpy().flatten()
+
+                    mixture_weights = self.model.covar_module.base_kernel.mixture_weights
+                    mixture_weights = mixture_weights.detach().numpy().flatten()
+
+                    if self.white_noise:
+                        print('Iter %d/%d - loss: %.3f   mixture_lengthscales: %s   mixture_weights: %s   noise: %.1e' % (
+                            i + 1, num_iter, loss.item(),
+                            mixture_scales.round(3),
+                            mixture_weights.round(3),
+                            noise_param
+                        ))
+                    else:
+                        print('Iter %d/%d - loss: %.3f   mixture_lengthscales: %s   mixture_weights: %s' % (
+                            i + 1, num_iter, loss.item(),
+                            mixture_scales.round(3),
+                            mixture_weights.round(3)
+                        ))
+
+                else:
+                    if self.white_noise:
+                        print('Iter %d/%d - loss: %.3f   lengthscale: %.3f   noise: %.1e' % (
+                            i + 1, num_iter, loss.item(),
+                            self.model.covar_module.base_kernel.lengthscale.item(),
+                            noise_param
+
+                        ))
+                    else:
+                        print('Iter %d/%d - loss: %.3f   lengthscale: %.1e' % (
+                            i + 1, num_iter, loss.item(),
+                            self.model.covar_module.base_kernel.lengthscale.item()
+                        ))
+            
+            optimizer.step()
+            
+            if self.plot_training:
+                plt.scatter(i, loss.item(), color='black', s=2)
+
+        if verbose:
+            final_hypers = self.get_hyperparameters()
+            print(
+                "Training complete. \n"
+                f"   - Final loss: {loss.item():0.5}\n"
+                f"   - Final hyperparameters:"
+            )
+            for key, value in final_hypers.items():
+                print(f"      {key:42}: {np.round(value, 4)}")
+
+        if self.plot_training:
+            plt.xlabel('Iteration')
+            plt.ylabel('Negative Marginal Log Likelihood')
+            plt.title('Training Progress')
+            plt.show()
+
+    def find_best_kernel(self, kernel_list, num_iter=1000, learn_rate=1e-1, verbose=False):
         """
         Finds the best kernel based on the Akaike Information Criterion (AIC).
 
@@ -257,104 +360,6 @@ class GaussianProcess:
 
         self.kernel_form = best_kernel
         return best_model, best_likelihood
-
-    def train_model(self, num_iter=1000, learn_rate=1e-2, verbose=False):
-        """
-        Trains the Gaussian Process model, hyperparameters optimized 
-        using Adam optimizer given number of training iterations and 
-        learning rate.
-
-        If verbose is True, prints the training progress and final hyperparameters.
-        If hyperparameters not converged...
-            - monotonic progression? --> consider increasing num_iter.
-            - fluctuating around potential optimum? --> consider decreasing learn_rate.
-
-        Parameters:
-        - num_iter (int): Number of training iterations.
-        - learn_rate (float): Learning rate for the optimizer.
-        - verbose (bool): Whether to print detailed information during training.
-        """
-        self.model.train()
-        self.likelihood.train()
-
-        optimizer = torch.optim.Adam(self.model.parameters(), lr=learn_rate)
-        mll = gpytorch.mlls.ExactMarginalLogLikelihood(self.likelihood, self.model)
-
-        if self.plot_training:
-            plt.figure(figsize=(8, 5))
-
-        for i in range(num_iter):
-            # Zero gradients from previous iteration
-            optimizer.zero_grad()
-
-            # Model output
-            output = self.model(self.train_times)
-
-            # Calc negative likelihood and backprop gradients
-            loss = -mll(output, self.train_rates)
-            loss.backward()
-            optimizer.step()
-
-            if verbose:
-                if self.white_noise:
-                    if self.train_errors.size(dim=0) > 0:
-                        noise_param = self.model.likelihood.second_noise.item()
-                    else:
-                        noise_param = self.model.likelihood.noise.item()
-
-                if self.kernel_form == 'SpectralMixture':
-                    mixture_scales = self.model.covar_module.base_kernel.mixture_scales
-                    mixture_scales = mixture_scales.detach().numpy().flatten()
-
-                    mixture_weights = self.model.covar_module.base_kernel.mixture_weights
-                    mixture_weights = mixture_weights.detach().numpy().flatten()
-
-                    if self.white_noise:
-                        print('Iter %d/%d - Loss: %.3f   mixture_lengthscales: %s   mixture_weights: %s   noise: %.3f' % (
-                            i + 1, num_iter, loss.item(),
-                            mixture_scales.round(3),
-                            mixture_weights.round(3),
-                            noise_param
-                        ))
-                    else:
-                        print('Iter %d/%d - Loss: %.3f   mixture_lengthscales: %s   mixture_weights: %s' % (
-                            i + 1, num_iter, loss.item(),
-                            mixture_scales.round(3),
-                            mixture_weights.round(3)
-                        ))
-
-                else:
-                    if self.white_noise:
-                        print('Iter %d/%d - Loss: %.3f   lengthscale: %.3f   noise: %.3f' % (
-                            i + 1, num_iter, loss.item(),
-                            self.model.covar_module.base_kernel.lengthscale.item(),
-                            noise_param
-
-                        ))
-                    else:
-                        print('Iter %d/%d - Loss: %.3f   lengthscale: %.3f' % (
-                            i + 1, num_iter, loss.item(),
-                            self.model.covar_module.base_kernel.lengthscale.item()
-                        ))
-            
-            if self.plot_training:
-                plt.scatter(i, loss.item(), color='black', s=2)
-
-        if verbose:
-            final_hypers = self.get_hyperparameters()
-            print(
-                "Training complete. \n"
-                f"   - Final loss (NLML): {loss.item():0.5}\n"
-                f"   - Final hyperparameters:"
-            )
-            for key, value in final_hypers.items():
-                print(f"      {key:42}: {np.round(value, 4)}")
-
-        if self.plot_training:
-            plt.xlabel('Iteration')
-            plt.ylabel('Negative Marginal Log Likelihood')
-            plt.title('Training Progress')
-            plt.show()
 
     def get_hyperparameters(self):
         """
@@ -527,10 +532,10 @@ class GaussianProcess:
             yerr=self.lightcurve.errors, fmt='o', color='black', label='Data', lw=1, ms=2
             )
         else:
-            plt.scatter(self.lightcurve.times, self.lightcurve.rates, color='black', label='Data')
+            plt.scatter(self.lightcurve.times, self.lightcurve.rates, color='black', label='Data', s=2)
 
         plt.xlabel('Time')
-        plt.ylabel('Values')
+        plt.ylabel('Rate')
         plt.title('Gaussian Process Prediction')
         plt.legend()
         plt.show()

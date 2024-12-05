@@ -3,6 +3,7 @@ import matplotlib.pyplot as plt
 from astropy.io import fits
 
 from .plot import Plotter
+from ._check_inputs import _CheckInputs
 
 
 class LightCurve:
@@ -36,22 +37,21 @@ class LightCurve:
                 )
 
             file_data = self.load_file(file_path, file_columns=file_columns)
-            self.times = file_data[0]
-            self.rates = file_data[1]
-            self.errors = file_data[2]
+            self.times, self.rates, self.errors = _CheckInputs(times=file_data[0], 
+                                                               rates=file_data[1],
+                                                               errors=file_data[2]
+                                                            )
 
         elif times.size > 0 and rates.size > 0:
-            self.times = np.array(times)
-            self.rates = np.array(rates)
-            self.errors = np.array(errors)
-            
+            self.times, self.rates, self.errors = _CheckInputs(times=times, 
+                                                               rates=rates,
+                                                               errors=errors
+                                                            )
+        
         else:
             raise ValueError(
                 "Please provide time and rate arrays or a file path."
             )
-        
-        if len(self.times) != len(self.rates):
-            raise ValueError("Times and rates arrays must have the same length.")
 
     @property
     def mean(self):
@@ -193,7 +193,7 @@ class LightCurve:
         - **kwargs: Additional keyword arguments for plot customization (e.g., xlabel, ylabel, title).
         """
         kwargs.setdefault('xlabel', 'Time')
-        kwargs.setdefault('ylabel', 'Rates')
+        kwargs.setdefault('ylabel', 'Rate')
         Plotter.plot(x=self.times, y=self.rates, yerr=self.errors, **kwargs)
 
     def fft(self):
