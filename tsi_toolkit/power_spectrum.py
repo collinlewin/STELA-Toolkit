@@ -14,9 +14,8 @@ class PowerSpectrum:
     of light curve data. It supports frequency binning and optional normalization.
 
     Parameters:
-    - times (array-like, optional): Time values for the light curve.
-    - rates (array-like, optional): Measurement rates for the light curve.
-    - lightcurve (object, optional): A LightCurve object (overrides times/rates).
+    - lightcurve (object, optional): A LightCurve object (overrides times/rates). Must have regular sampling, otherwise use model.
+    - model (object, optional): A model-class (e.g., GaussianProcess) object. 
     - fmin (float or 'auto', optional): Minimum frequency for computation.
     - fmax (float or 'auto', optional): Maximum frequency for computation.
     - num_bins (int, optional): Number of bins for frequency binning.
@@ -33,21 +32,26 @@ class PowerSpectrum:
     """
     def __init__(self,
                  lightcurve=None,
+                 model=None,
                  fmin='auto',
                  fmax='auto',
                  num_bins=None, 
                  bin_type="log",
                  bin_edges=[],
                  norm=True,
-                 plot_fft=False
+                 plot_fft=False,
                  ):
-        # To do: throw except for norm=True acting on mean=0 (standardized data)
-        self.times, self.rates, _ = _CheckInputs._check_input_data(lightcurve)
+        # To do: ValueError for norm=True acting on mean=0 (standardized data)
+        if lightcurve:
+            self.times, self.rates, _ = _CheckInputs._check_input_data(lightcurve)
+        elif model:
+            self.times, self.rates = _CheckInputs._check_input_model(model)
+
         _CheckInputs._check_input_bins(num_bins, bin_type, bin_edges)
 
         # Use absolute min and max frequencies if set to 'auto'
         self.dt = np.diff(self.times)[0]
-        self.fmin = 1e-8 if fmin == 'auto' else fmin
+        self.fmin = 0 if fmin == 'auto' else fmin
         self.fmax = 1 / (2 * self.dt) if fmax == 'auto' else fmax # nyquist frequency
 
         self.num_bins = num_bins
@@ -55,7 +59,7 @@ class PowerSpectrum:
         self.bin_edges = bin_edges
 
         # if multiple light curve are provided, compute the stacked power spectrum
-        if len(self.rates.shape) == 2:
+        if len(self.rates.shape) > 1:
             power_spectrum  = self.compute_stacked_power_spectrum(norm=norm)
         else:
             power_spectrum = self.compute_power_spectrum(norm=norm)

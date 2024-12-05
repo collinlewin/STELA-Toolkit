@@ -52,7 +52,7 @@ class GaussianProcess:
 
         # To Do: reconsider noise prior, add a mean function function for forecasting, more verbose options
         try:
-            _CheckInputs._check_input_data(lightcurve, [], [], req_reg_samp=False)
+            _CheckInputs._check_input_data(lightcurve, req_reg_samp=False)
         except ValueError as e:
             raise ValueError(f"Invalid LightCurve object: {e}")
         
@@ -441,7 +441,7 @@ class GaussianProcess:
         aic = -2 * log_marg_like + 2 * num_params
         return aic
 
-    def sample(self, pred_times, num_samples, save_path=None):
+    def sample(self, pred_times, num_samples, save_path=None, _save_to_state=True):
         """
         Generates samples from the posterior predictive distribution.
 
@@ -483,6 +483,9 @@ class GaussianProcess:
             else:
                 np.savetxt(save_path, samples_with_time)
 
+        if _save_to_state:
+            self.pred_times = pred_times
+            self.samples = samples
         return samples
     
     def predict(self, pred_times):
@@ -528,13 +531,14 @@ class GaussianProcess:
         - pred_times (torch.Tensor or None): Time points for predictions (optional).
         """
         if pred_times is None:
-            pred_times = torch.linspace(self.train_times.min(), self.train_times.max(), 1000)
-
+            step = (self.train_times.max()-self.train_times.min())/1000
+            pred_times = np.arange(self.train_times.min(), self.train_times.max()+step, step)
+        
         predict_mean, predict_lower, predict_upper = self.predict(pred_times)
         plt.fill_between(pred_times, predict_lower, predict_upper, color='dodgerblue', alpha=0.2, label=r'Prediction 2$\sigma$ CI')
         plt.plot(pred_times, predict_mean, color='dodgerblue', label='Prediction Mean')
 
-        sample = self.sample(pred_times, num_samples=1)
+        sample = self.sample(pred_times, num_samples=1, _save_to_state=False)
         plt.plot(pred_times, sample[0], color='orange', lw=1, label='Sample')
 
         if self.train_errors.size(dim=0) > 0:

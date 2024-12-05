@@ -39,7 +39,7 @@ class LightCurve:
             file_data = self.load_file(file_path, file_columns=file_columns)
             times, rates, errors = file_data
 
-        elif times.size > 0 and rates.size > 0:
+        elif len(times) > 0 and len(rates) > 0:
             pass
 
         else:

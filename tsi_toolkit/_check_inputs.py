@@ -1,6 +1,7 @@
 import numpy as np
-
+import torch
 from .data_loader import LightCurve
+from .gaussian_process import GaussianProcess
 
 
 class _CheckInputs:
@@ -13,13 +14,10 @@ class _CheckInputs:
         Validates and extracts time and rate arrays from input or LightCurve objects.
         """
         if lightcurve:  
-            # using methods to allow flexible import of LightCurve objects
-            # Compare directly to the LightCurve class, accounting for import path issues
-            if type(lightcurve).__module__ != LightCurve.__module__:
+            # very LightCurve object
+            if type(lightcurve).__name__ != "LightCurve":
                 raise TypeError("lightcurve must be an instance of the LightCurve class.")
-            #if not all(callable(getattr(lightcurve, method, None)) for method in ["load_file", "load_fits"]):
-            #    raise TypeError("lightcurve must be an instance of the LightCurve class.")
-            
+
             times = lightcurve.times
             rates = lightcurve.rates
             errors = lightcurve.errors
@@ -28,13 +26,19 @@ class _CheckInputs:
         elif len(times) > 0 and len(rates) > 0:
             times = np.array(times)
             rates = np.array(rates)
-
+            errors = np.array(errors)
+            
             if len(rates.shape) == 1 and len(times) != len(rates):
                 raise ValueError("Times and rates must have the same length.")
             
+            elif len(rates.shape) == 2:
+                if rates.shape[1] != len(times):
+                    raise ValueError(
+                        "Times and rates must have the same length for each light curve.\n"
+                        "Check the shape of the rates array: expecting (n_series, n_times)."
+                    )
+            
             if len(errors) > 0: 
-                errors = np.array(errors)
-
                 if np.min(errors) <= 0:
                     raise ValueError("Uncertainties of the input data must be positive.")
         else:
@@ -50,13 +54,26 @@ class _CheckInputs:
         
         return times, rates, errors
     
-    #@staticmethod
-    #def _check_input_model(model):
+    @staticmethod
+    def _check_input_model(model):
+        if type(model).__name__ == GaussianProcess.__name__:
+            if hasattr(model, "samples"):
+                num_samp = model.samples.shape[0]
+                kernel_form = model.kernel_form
+                print(f"Detected {num_samp} samples generated using a {kernel_form} kernel.")
 
+                pred_times = model.pred_times
+                samples = model.samples
+            else:
+                print("No samples detected. Generating 1000 samples to use...")
+                step = (model.train_times.max()-model.train_times.min())/1000
+                pred_times = np.arange(model.train_times.min(), model.train_times.max()+step, step)
+                samples = model.sample(pred_times, 1000)
+        else:
+            raise TypeError("Model must be an instance of the Gaussian Process class.")
 
+        return pred_times, samples
 
-
-        
     @staticmethod
     def _check_input_bins(num_bins, bin_type, bin_edges):
         """

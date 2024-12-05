@@ -47,7 +47,8 @@ class LagFrequencySpectrum():
                  bin_edges=[],
                  subtract_coh_bias=True,
                  poisson_stats=False,
-                 plot_lfs=False
+                 plot_lfs=False,
+                 use_gp_samples=False
                  ):
         # To do: update main docstring for lag interpretation
         self.times1, self.rates1, _ = _CheckInputs._check_input_data(lightcurve1)
