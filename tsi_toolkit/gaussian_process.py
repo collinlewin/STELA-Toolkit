@@ -5,7 +5,6 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 from ._check_inputs import _CheckInputs
-from .data_loader import LightCurve
 from .preprocessing import Preprocessing
 
 

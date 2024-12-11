@@ -59,7 +59,7 @@ class PowerSpectrum:
         self.bin_edges = bin_edges
 
         # if multiple light curve are provided, compute the stacked power spectrum
-        if len(self.rates.shape) > 1:
+        if len(self.rates.shape) == 2:
             power_spectrum  = self.compute_stacked_power_spectrum(norm=norm)
         else:
             power_spectrum = self.compute_power_spectrum(norm=norm)

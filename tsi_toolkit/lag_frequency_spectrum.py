@@ -9,37 +9,12 @@ from .plot import Plotter
 
 class LagFrequencySpectrum():
     """
-    Computes the lag-frequency spectrum for light curve data.
-
-    This class calculates the lag-frequency spectrum for one or more realizations of
-    light curve data. It supports single and stacked realizations, binning of 
-    frequencies, and optional plotting of results.
-
-    Parameters:
-    - times1 (array-like, optional): Time points for the first light curve.
-    - rates1 (array-like, optional): Values for the first light curve.
-    - times2 (array-like, optional): Time points for the second light curve.
-    - rates2 (array-like, optional): Values for the second light curve.
-    - lightcurve1 (object, optional): First light curve object (overrides times1/rates1).
-    - lightcurve2 (object, optional): Second light curve object (overrides times2/rates2).
-    - fmin (float or 'auto', optional): Minimum frequency for computation.
-    - fmax (float or 'auto', optional): Maximum frequency for computation.
-    - num_bins (int, optional): Number of bins for frequency binning.
-    - bin_type (str, optional): Type of binning ('log' or 'linear').
-    - bin_edges (array-like, optional): Predefined edges for frequency bins.
-    - subtract_coh_bias (bool, optional): Whether to subtract the coherence bias.
-    - poisson_stats (bool, optional): Whether to assume Poisson noise statistics.
-    - plot_lfs (bool, optional): Whether to automatically plot the lag-frequency spectrum.
-
-    Key Attributes:
-    - freqs (array-like): Frequencies of the lag spectrum.
-    - freq_widths (array-like): Bin widths of the frequencies.
-    - lags (array-like): Computed lag values for each frequency bin.
-    - lag_errors (array-like): Uncertainty of the lag values.
     """
     def __init__(self,
                  lightcurve1=None,
                  lightcurve2=None,
+                 model1=None,
+                 model2=None,
                  fmin='auto',
                  fmax='auto',
                  num_bins=None,
@@ -48,11 +23,17 @@ class LagFrequencySpectrum():
                  subtract_coh_bias=True,
                  poisson_stats=False,
                  plot_lfs=False,
-                 use_gp_samples=False
                  ):
         # To do: update main docstring for lag interpretation
-        self.times1, self.rates1, _ = _CheckInputs._check_input_data(lightcurve1)
-        self.times2, self.rates2, _ = _CheckInputs._check_input_data(lightcurve2)
+        if lightcurve1:
+            self.times1, self.rates1, _ = _CheckInputs._check_input_data(lightcurve1)
+        if lightcurve2:
+            self.times2, self.rates2, _ = _CheckInputs._check_input_data(lightcurve2)
+        if model1:
+            self.times1, self.rates1, _ = _CheckInputs._check_input_model(model1)
+        if model2:
+            self.times2, self.rates2, _ = _CheckInputs._check_input_model(model2)
+        
         _CheckInputs._check_input_bins(num_bins, bin_type, bin_edges)
 
         if not np.allclose(self.times1, self.times2):
@@ -73,6 +54,7 @@ class LagFrequencySpectrum():
             lag_spectrum = self.compute_lag_spectrum(subtract_coh_bias=subtract_coh_bias, 
                                                      poisson_stats=poisson_stats
                                                     )
+            
         self.freqs, self.freq_widths, self.lags, self.lag_errors = lag_spectrum
 
         if plot_lfs:

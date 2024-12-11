@@ -38,6 +38,8 @@ class CrossSpectrum:
     def __init__(self,
                  lightcurve1=None,
                  lightcurve2=None,
+                 model1=None,
+                 model2=None,
                  fmin='auto',
                  fmax='auto',
                  num_bins=None,
@@ -49,8 +51,15 @@ class CrossSpectrum:
         # To do: case where rates1 is samples (2D), rates2 is 1D
         # To do: when dim rates1 != dim rates2
         # To do: update main docstring
-        self.times1, self.rates1, _ = _CheckInputs._check_input_data(lightcurve1)
-        self.times2, self.rates2, _ = _CheckInputs._check_input_data(lightcurve2)
+        if lightcurve1:
+            self.times1, self.rates1, _ = _CheckInputs._check_input_data(lightcurve1)
+        if lightcurve2:
+            self.times2, self.rates2, _ = _CheckInputs._check_input_data(lightcurve2)
+        if model1:
+            self.times1, self.rates1, _ = _CheckInputs._check_input_model(model1)
+        if model2:
+            self.times2, self.rates2, _ = _CheckInputs._check_input_model(model2)
+            
         _CheckInputs._check_input_bins(num_bins, bin_type, bin_edges)
 
         if not np.allclose(self.times1, self.times2):

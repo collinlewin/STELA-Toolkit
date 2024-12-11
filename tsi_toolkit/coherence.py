@@ -41,6 +41,8 @@ class Coherence:
     def __init__(self,
                  lightcurve1=None,
                  lightcurve2=None,
+                 model1=None,
+                 model2=None,
                  fmin='auto',
                  fmax='auto',
                  num_bins=None,
@@ -54,8 +56,14 @@ class Coherence:
                  ):
         # To do: determine if or if not Poisson statistics for the user
         # To do: decrease number of parameters
-        self.times1, self.rates1, self.errors1 = _CheckInputs._check_input_data(lightcurve1)
-        self.times2, self.rates2, self.errors2 = _CheckInputs._check_input_data(lightcurve2)
+        if lightcurve1:
+            self.times1, self.rates1, self.errors1 = _CheckInputs._check_input_data(lightcurve1)
+        if lightcurve2:
+            self.times2, self.rates2, self.errors2 = _CheckInputs._check_input_data(lightcurve2)
+        if model1:
+            self.times1, self.rates1, _ = _CheckInputs._check_input_model(model1)
+        if model2:
+            self.times2, self.rates2, _ = _CheckInputs._check_input_model(model2)
         _CheckInputs._check_input_bins(num_bins, bin_type, bin_edges)
 
         if not np.allclose(self.times1, self.times2):
@@ -75,6 +83,7 @@ class Coherence:
 
         # Check if the input rates are for multiple realizations
         # this needs to be corrected for handling different shapes and dim val1 != dim val2
+        # namely for multiple observations
         if len(self.rates1.shape) == 2 and len(self.rates2.shape) == 2:
             coherence_spectrum = self.compute_stacked_coherence(subtract_noise_bias=subtract_noise_bias,
                                                                 poisson_stats=poisson_stats
@@ -89,8 +98,7 @@ class Coherence:
         if plot_coh:
             self.plot()
 
-    def compute_coherence(self, times1=None, rates1=None, errors1=None,
-                          times2=None, rates2=None, errors2=None,
+    def compute_coherence(self, times1=None, rates1=None, times2=None, rates2=None,
                           subtract_noise_bias=True, poisson_stats=False):
         """
         Computes the coherence between two light curves.
@@ -114,10 +122,8 @@ class Coherence:
         """
         times1 = self.times1 if times1 is None else times1
         rates1 = self.rates1 if rates1 is None else rates1
-        errors1 = self.errors1 if errors1 is None else errors1
         times2 = self.times2 if times2 is None else times2
         rates2 = self.rates2 if rates2 is None else rates2
-        errors2 = self.errors2 if errors2 is None else errors2
         
         cross_spectrum = CrossSpectrum(
             times1=times1, rates1=rates1,
@@ -187,15 +193,16 @@ class Coherence:
         return freqs, freq_widths, coherences_mean, coherences_std
 
     def compute_bias(self, power_spectrum1, power_spectrum2, poisson_stats=False):
+        """
+        """
         mean1 = np.mean(self.rates1)
         mean2 = np.mean(self.rates2)
-
         if poisson_stats:
             pnoise1 = 2 * (mean1 + self.bkg1) / mean1 ** 2
             pnoise2 = 2 * (mean2 + self.bkg2) / mean2 ** 2
         else:
             # compute the noise bias using errors
-            if self.errors1 is None or self.errors2 is None:
+            if len(self.errors1) > 0 or len(self.errors2) > 0:
                 print("Warning: Poisson statistics are not used, but no errors are provided.")
                 print("Estimating average uncertainties as np.sqrt(mean) for noise bias.")
                 mean_error1 = np.mean(np.sqrt(self.rates1))
