@@ -1,8 +1,4 @@
 import numpy as np
-import torch
-from .data_loader import LightCurve
-from .gaussian_process import GaussianProcess
-
 
 class _CheckInputs:
     """
@@ -14,7 +10,6 @@ class _CheckInputs:
         Validates and extracts time and rate arrays from input or LightCurve objects.
         """
         if lightcurve:  
-            # very LightCurve object
             if type(lightcurve).__name__ != "LightCurve":
                 raise TypeError("lightcurve must be an instance of the LightCurve class.")
 
@@ -56,7 +51,7 @@ class _CheckInputs:
     
     @staticmethod
     def _check_input_model(model):
-        if type(model).__name__ == GaussianProcess.__name__:
+        if type(model).__name__ == "GaussianProcess":
             if hasattr(model, "samples"):
                 num_samp = model.samples.shape[0]
                 kernel_form = model.kernel_form
