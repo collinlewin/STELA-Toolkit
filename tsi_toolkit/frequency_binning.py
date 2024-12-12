@@ -37,7 +37,8 @@ class FrequencyBinning:
             # Define linear bins
             bin_edges = np.linspace(fmin, fmax, num_bins + 1)
         else:
-            raise ValueError(f"Unsupported bin_type '{bin_type}'. Choose 'log', 'linear', or provide custom bins.")
+            raise ValueError(
+                f"Unsupported bin_type '{bin_type}'. Choose 'log', 'linear', or provide custom bins.")
 
         return bin_edges
 
@@ -79,7 +80,7 @@ class FrequencyBinning:
             np.array(binned_values),
             np.array(binned_value_errors),
         )
-    
+
     @staticmethod
     def count_frequencies_in_bins(spectrum, fmin=None, fmax=None, num_bins=None, bin_type="log", bin_edges=[]):
         """
@@ -105,7 +106,7 @@ class FrequencyBinning:
         # Check if bin_edges or num_bins provided
         if len(bin_edges) == 0 and num_bins is None:
             bin_edges = FrequencyBinning.define_bins(
-                spectrum.fmin, spectrum.fmax, num_bins=spectrum.num_bins, 
+                spectrum.fmin, spectrum.fmax, num_bins=spectrum.num_bins,
                 bin_type=spectrum.bin_type, bin_edges=spectrum.bin_edges
             )
         elif num_bins is not None:

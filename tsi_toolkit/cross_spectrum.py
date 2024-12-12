@@ -35,6 +35,7 @@ class CrossSpectrum:
     - cs (array-like): Cross-spectrum values.
     - cs_errors (array-like): Uncertainty of the cross-spectrum values.
     """
+
     def __init__(self,
                  lightcurve1=None,
                  lightcurve2=None,
@@ -59,7 +60,7 @@ class CrossSpectrum:
             self.times1, self.rates1, _ = _CheckInputs._check_input_model(model1)
         if model2:
             self.times2, self.rates2, _ = _CheckInputs._check_input_model(model2)
-            
+
         _CheckInputs._check_input_bins(num_bins, bin_type, bin_edges)
 
         if not np.allclose(self.times1, self.times2):
@@ -68,7 +69,7 @@ class CrossSpectrum:
         # Use absolute min and max frequencies if set to 'auto'
         self.dt = np.diff(self.times1)[0]
         self.fmin = 1e-8 if fmin == 'auto' else fmin
-        self.fmax = 1 / (2 * self.dt) if fmax == 'auto' else fmax # nyquist frequency
+        self.fmax = 1 / (2 * self.dt) if fmax == 'auto' else fmax  # nyquist frequency
 
         self.num_bins = num_bins
         self.bin_type = bin_type
@@ -125,7 +126,7 @@ class CrossSpectrum:
             if self.bin_edges:
                 # use custom bin edges
                 bin_edges = FrequencyBinning.define_bins(
-                    self.fmin, self.fmax, num_bins=self.num_bins, 
+                    self.fmin, self.fmax, num_bins=self.num_bins,
                     bin_type=self.bin_type, bin_edges=self.bin_edges
                 )
             elif self.num_bins:
@@ -136,7 +137,7 @@ class CrossSpectrum:
             else:
                 raise ValueError("Either num_bins or bin_edges must be provided.\n"
                                  "In other words, you must specify the number of bins or the bin edges.")
-            
+
             binned_cross_spectrum = FrequencyBinning.bin_data(freqs, cross_spectrum, bin_edges)
             freqs, freq_widths, cross_spectrum, cross_spectrum_errors = binned_cross_spectrum
         else:
@@ -154,7 +155,7 @@ class CrossSpectrum:
                 cross_spectrum = np.abs(cross_spectrum) * np.exp(1j * phase)
             if cross_spectrum_errors:
                 cross_spectrum_errors /= length * np.mean(rates1) * np.mean(rates2) / (2 * self.dt)
-            
+
         return freqs, freq_widths, cross_spectrum, cross_spectrum_errors
 
     def compute_stacked_cross_spectrum(self, norm=True):
@@ -182,8 +183,8 @@ class CrossSpectrum:
         cross_spectra = []
         for i in range(self.rates1.shape[0]):
             cross_spectrum = self.compute_cross_spectrum(
-                times1=self.times1, rates1=self.rates1[i], 
-                times2=self.times2, rates2=self.rates2[i], 
+                times1=self.times1, rates1=self.rates1[i],
+                times2=self.times2, rates2=self.rates2[i],
                 norm=norm
             )
             cross_spectra.append(cross_spectrum[2])
@@ -230,7 +231,7 @@ class CrossSpectrum:
         - bin_type (str): Type of binning ("log" or "linear").
         - bin_edges (array-like): Custom array of bin edges (optional).
             *** Class attributes will be used if not specified.
-        
+
         Returns:
         - bin_counts (list): List of counts of frequencies in each bin.
         """

@@ -6,6 +6,7 @@ from .cross_spectrum import CrossSpectrum
 from .plot import Plotter
 from .frequency_binning import FrequencyBinning
 
+
 class Coherence:
     """
     Computes the coherence between two light curves.
@@ -31,13 +32,14 @@ class Coherence:
     - subtract_noise_bias (bool, optional): Whether to subtract the noise bias from coherence.
     - poisson_stats (bool, optional): Whether to use Poisson statistics for noise computation.
     - plot_coh (bool, optional): Whether to automatically plot the coherence spectrum.
-    
+
     Attributes:
     - freqs (array-like): Frequencies of the coherence spectrum.
     - freq_widths (array-like): Bin widths of the frequencies.
     - cohs (array-like): Coherence values for each frequency bin.
     - coh_errors (array-like): Uncertainties in the coherence values.
     """
+
     def __init__(self,
                  lightcurve1=None,
                  lightcurve2=None,
@@ -72,7 +74,7 @@ class Coherence:
         # Use absolute min and max frequencies if set to 'auto'
         self.dt = np.diff(self.times1)[0]
         self.fmin = 1e-8 if fmin == 'auto' else fmin
-        self.fmax = 1 / (2 * self.dt) if fmax == 'auto' else fmax # nyquist frequency
+        self.fmax = 1 / (2 * self.dt) if fmax == 'auto' else fmax  # nyquist frequency
 
         self.num_bins = num_bins
         self.bin_type = bin_type
@@ -92,7 +94,7 @@ class Coherence:
             coherence_spectrum = self.compute_coherence(subtract_noise_bias=subtract_noise_bias,
                                                         poisson_stats=poisson_stats
                                                         )
-        
+
         self.freqs, self.freq_widths, self.cohs, self.coh_errors = coherence_spectrum
 
         if plot_coh:
@@ -124,10 +126,10 @@ class Coherence:
         rates1 = self.rates1 if rates1 is None else rates1
         times2 = self.times2 if times2 is None else times2
         rates2 = self.rates2 if rates2 is None else rates2
-        
+
         cross_spectrum = CrossSpectrum(
             times1=times1, rates1=rates1,
-            times2=times2, rates2=rates2, 
+            times2=times2, rates2=rates2,
             fmin=self.fmin, fmax=self.fmax,
             num_bins=self.num_bins, bin_type=self.bin_type, bin_edges=self.bin_edges
         )
@@ -151,7 +153,7 @@ class Coherence:
         else:
             bias = 0
 
-        coherence = ( np.abs(cs) ** 2 - bias ) / ps1 * ps2
+        coherence = (np.abs(cs) ** 2 - bias) / ps1 * ps2
         return power_spectrum1.freqs, power_spectrum1.freq_widths, coherence, None
 
     def compute_stacked_coherence(self, subtract_noise_bias=True, poisson_stats=False):
@@ -211,11 +213,11 @@ class Coherence:
             mean_error1 = np.mean(self.errors1)
             mean_error2 = np.mean(self.errors2)
             nyquist_freq = 1 / (2 * self.dt)
-            pnoise1 = mean_error1 ** 2 / ( nyquist_freq * mean1 ** 2 )
-            pnoise2 = mean_error2 ** 2 / ( nyquist_freq * mean2 ** 2 )
+            pnoise1 = mean_error1 ** 2 / (nyquist_freq * mean1 ** 2)
+            pnoise2 = mean_error2 ** 2 / (nyquist_freq * mean2 ** 2)
 
         bias = (
-            pnoise2 * (power_spectrum1 - pnoise1) 
+            pnoise2 * (power_spectrum1 - pnoise1)
             + pnoise1 * (power_spectrum2 - pnoise2)
             + pnoise1 * pnoise2
         )
@@ -255,7 +257,7 @@ class Coherence:
         - bin_type (str): Type of binning ("log" or "linear").
         - bin_edges (array-like): Custom array of bin edges (optional).
             *** Class attributes will be used if not specified.
-        
+
         Returns:
         - bin_counts (list): List of counts of frequencies in each bin.
         """

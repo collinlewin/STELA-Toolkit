@@ -30,12 +30,13 @@ class PowerSpectrum:
     - powers (array-like): Power spectrum values.
     - power_errors (array-like): Uncertainty of the power spectrum values.
     """
+
     def __init__(self,
                  lightcurve=None,
                  model=None,
                  fmin='auto',
                  fmax='auto',
-                 num_bins=None, 
+                 num_bins=None,
                  bin_type="log",
                  bin_edges=[],
                  norm=True,
@@ -52,7 +53,7 @@ class PowerSpectrum:
         # Use absolute min and max frequencies if set to 'auto'
         self.dt = np.diff(self.times)[0]
         self.fmin = 0 if fmin == 'auto' else fmin
-        self.fmax = 1 / (2 * self.dt) if fmax == 'auto' else fmax # nyquist frequency
+        self.fmax = 1 / (2 * self.dt) if fmax == 'auto' else fmax  # nyquist frequency
 
         self.num_bins = num_bins
         self.bin_type = bin_type
@@ -60,7 +61,7 @@ class PowerSpectrum:
 
         # if multiple light curve are provided, compute the stacked power spectrum
         if len(self.rates.shape) == 2:
-            power_spectrum  = self.compute_stacked_power_spectrum(norm=norm)
+            power_spectrum = self.compute_stacked_power_spectrum(norm=norm)
         else:
             power_spectrum = self.compute_power_spectrum(norm=norm)
 
@@ -69,7 +70,7 @@ class PowerSpectrum:
         if plot_fft:
             self.plot()
 
-    def compute_power_spectrum(self, times=None, rates=None, norm=True):        
+    def compute_power_spectrum(self, times=None, rates=None, norm=True):
         """
         Computes the power spectrum for a single light curve.
 
@@ -105,7 +106,7 @@ class PowerSpectrum:
             if self.bin_edges:
                 # use custom bin edges
                 bin_edges = FrequencyBinning.define_bins(
-                    self.fmin, self.fmax, num_bins=self.num_bins, 
+                    self.fmin, self.fmax, num_bins=self.num_bins,
                     bin_type=self.bin_type, bin_edges=self.bin_edges
                 )
             elif self.num_bins:
@@ -116,7 +117,7 @@ class PowerSpectrum:
             else:
                 raise ValueError("Either num_bins or bin_edges must be provided.\n"
                                  "In other words, you must specify the number of bins or the bin edges.")
-            
+
             binned_power = FrequencyBinning.bin_data(freqs, powers, bin_edges)
             freqs, freq_widths, powers, power_errors = binned_power
         else:
@@ -127,9 +128,9 @@ class PowerSpectrum:
             powers /= length * np.mean(rates) ** 2 / (2 * self.dt)
             if power_errors:
                 power_errors /= length * np.mean(rates) ** 2 / (2 * self.dt)
-            
+
         return freqs, freq_widths, powers, power_errors
-    
+
     def compute_stacked_power_spectrum(self, norm=True):
         """
         Computes the power spectrum for multiple realizations of a light curve.
@@ -164,7 +165,7 @@ class PowerSpectrum:
         power_std = np.std(powers, axis=0)
 
         return freqs, freq_widths, power_mean, power_std
-    
+
     def plot(self, freqs=None, freq_widths=None, powers=None, power_errors=None, **kwargs):
         """
         Plots the power spectrum.
@@ -205,6 +206,6 @@ class PowerSpectrum:
         - bin_counts (list): List of counts of frequencies in each bin.
         """
         return FrequencyBinning.count_frequencies_in_bins(
-            parent=self, fmin=fmin, fmax=fmax, 
+            parent=self, fmin=fmin, fmax=fmax,
             num_bins=num_bins, bin_type=bin_type, bin_edges=bin_edges
         )

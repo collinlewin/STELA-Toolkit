@@ -12,7 +12,7 @@ class LightCurve:
                  rates=[],
                  errors=[],
                  file_path=None,
-                 file_columns=[0,1,2],
+                 file_columns=[0, 1, 2],
                  ):
         # To do: Improve commenting and docstrings, use _check_inputs
         """
@@ -48,19 +48,20 @@ class LightCurve:
             )
 
         self.times, self.rates, self.errors = _CheckInputs._check_input_data(lightcurve=None,
-                                                                             times=times, 
-                                                                             rates=rates, 
+                                                                             times=times,
+                                                                             rates=rates,
                                                                              errors=errors
-                                                                            )
+                                                                             )
+
     @property
     def mean(self):
         return np.mean(self.rates)
-    
+
     @property
     def std(self):
         return np.std(self.rates)
-    
-    def load_file(self, file_path, file_columns=[0,1,2]):
+
+    def load_file(self, file_path, file_columns=[0, 1, 2]):
         """
         Loads light curve data from a specified file. Supports FITS and text-based files.
 
@@ -86,7 +87,7 @@ class LightCurve:
 
         return times, rates, errors
 
-    def load_fits(self, file_path, file_columns=[0,1,2], hdu=1):
+    def load_fits(self, file_path, file_columns=[0, 1, 2], hdu=1):
         """
         Loads light curve data from a FITS file, from a specified HDU.
 
@@ -133,7 +134,7 @@ class LightCurve:
 
         return times, rates, errors
 
-    def load_text_file(self, file_path, file_columns=[0,1,2], delimiter=None):
+    def load_text_file(self, file_path, file_columns=[0, 1, 2], delimiter=None):
         """
         Loads light curve data from a text-based file. Assumes a delimiter based on
         file extension if none is provided.
@@ -206,8 +207,8 @@ class LightCurve:
         time_diffs = np.round(np.diff(self.times), 10)
         if np.unique(time_diffs).size > 1:
             raise ValueError("Light curve must have a uniform sampling interval.\n"
-                            "Interpolate the data to a uniform grid first."
-                        )
+                             "Interpolate the data to a uniform grid first."
+                             )
         dt = np.diff(self.times)[0]
         length = len(self.rates)
 
@@ -215,7 +216,7 @@ class LightCurve:
         freqs = np.fft.rfftfreq(length, d=dt)
 
         return freqs, fft_values
-    
+
     def __add__(self, other_lightcurve):
         """
         Adds two LightCurve objects.

@@ -71,23 +71,26 @@ class Preprocessing:
             end_time = lc.times[-1]
         if start_time and end_time is None:
             raise ValueError("Please specify a start and/or end time.")
-        
+
         # Apply mask to trim data
         mask = (lc.times >= start_time) & (lc.times <= end_time)
         if plot:
             if lc.errors.size > 0:
-                plt.errorbar(lc.times[mask], lc.rates[mask], yerr=lc.errors[mask], fmt='o', lw=1, ms=2, color='black', label='Kept Data')
-                plt.errorbar(lc.times[~mask], lc.rates[~mask], yerr=lc.errors[~mask], fmt='o', lw=1, ms=2, color='red', label='Trimmed Data')
+                plt.errorbar(lc.times[mask], lc.rates[mask], yerr=lc.errors[mask],
+                             fmt='o', lw=1, ms=2, color='black', label='Kept Data')
+                plt.errorbar(lc.times[~mask], lc.rates[~mask], yerr=lc.errors[~mask],
+                             fmt='o', lw=1, ms=2, color='red', label='Trimmed Data')
             else:
                 plt.scatter(lc.times[mask], lc.rates[mask], s=2, color="black", label="Kept Data")
-                plt.scatter(lc.times[~mask], lc.rates[~mask], s=2, color="red", label="Trimmed Data")
+                plt.scatter(lc.times[~mask], lc.rates[~mask], s=2,
+                            color="red", label="Trimmed Data")
 
             plt.xlabel("Time")
             plt.ylabel("Rates")
             plt.title("Trimming")
             plt.legend()
             plt.show()
-        
+
         if save:
             lc.times = lc.times[mask]
             lc.rates = lc.rates[mask]
@@ -189,7 +192,7 @@ class Preprocessing:
 
         if verbose:
             print(f"Removed {np.sum(outlier_mask)} outliers "
-                f"({np.sum(outlier_mask) / len(rates) * 100:.2f}% of data).")
+                  f"({np.sum(outlier_mask) / len(rates) * 100:.2f}% of data).")
 
         if plot:
             plot_outliers(outlier_mask)
@@ -197,7 +200,7 @@ class Preprocessing:
         # Save results back to the original lightcurve if save=True
         if save:
             lc.times = times[~outlier_mask]
-            lc.rates =  rates[~outlier_mask]
+            lc.rates = rates[~outlier_mask]
             if errors.size > 0:
                 lc.errors = errors[~outlier_mask]
 
@@ -232,13 +235,16 @@ class Preprocessing:
         detrended_rates = lc.rates - trend
         if plot:
             if lc.errors.size > 0:
-                plt.errorbar(lc.times, lc.rates, yerr=lc.errors, fmt='o', color='black', lw=1, ms=2, label='Original Data')
-                plt.errorbar(lc.times, detrended_rates, yerr=lc.errors, fmt='o', color='dodgerblue', lw=1, ms=2, label='Detrended Data')
+                plt.errorbar(lc.times, lc.rates, yerr=lc.errors, fmt='o',
+                             color='black', lw=1, ms=2, label='Original Data')
+                plt.errorbar(lc.times, detrended_rates, yerr=lc.errors, fmt='o',
+                             color='dodgerblue', lw=1, ms=2, label='Detrended Data')
             else:
                 plt.plot(lc.times, lc.rates, label="Original Data", color="black", alpha=0.6)
                 plt.plot(lc.times, detrended_rates, label="Detrended Data", color="dodgerblue")
 
-            plt.plot(lc.times, trend, color='orange', linestyle='--', label=f'Fitted Polynomial (degree={degree})')
+            plt.plot(lc.times, trend, color='orange', linestyle='--',
+                     label=f'Fitted Polynomial (degree={degree})')
 
             plt.xlabel("Time")
             plt.ylabel("Rates")

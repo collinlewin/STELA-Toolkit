@@ -10,6 +10,7 @@ from .plot import Plotter
 class LagFrequencySpectrum():
     """
     """
+
     def __init__(self,
                  lightcurve1=None,
                  lightcurve2=None,
@@ -33,7 +34,7 @@ class LagFrequencySpectrum():
             self.times1, self.rates1, _ = _CheckInputs._check_input_model(model1)
         if model2:
             self.times2, self.rates2, _ = _CheckInputs._check_input_model(model2)
-        
+
         _CheckInputs._check_input_bins(num_bins, bin_type, bin_edges)
 
         if not np.allclose(self.times1, self.times2):
@@ -42,7 +43,7 @@ class LagFrequencySpectrum():
         # Use absolute min and max frequencies if set to 'auto'
         self.dt = np.diff(self.times1)[0]
         self.fmin = 1e-8 if fmin == 'auto' else fmin
-        self.fmax = 1 / (2 * self.dt) if fmax == 'auto' else fmax # nyquist frequency
+        self.fmax = 1 / (2 * self.dt) if fmax == 'auto' else fmax  # nyquist frequency
 
         self.num_bins = num_bins
         self.bin_type = bin_type
@@ -51,10 +52,10 @@ class LagFrequencySpectrum():
         if len(self.rates1.shape) == 2 and len(self.rates2.shape) == 2:
             lag_spectrum = self.compute_stacked_lag_spectrum()
         else:
-            lag_spectrum = self.compute_lag_spectrum(subtract_coh_bias=subtract_coh_bias, 
+            lag_spectrum = self.compute_lag_spectrum(subtract_coh_bias=subtract_coh_bias,
                                                      poisson_stats=poisson_stats
-                                                    )
-            
+                                                     )
+
         self.freqs, self.freq_widths, self.lags, self.lag_errors = lag_spectrum
 
         if plot_lfs:
@@ -100,13 +101,13 @@ class LagFrequencySpectrum():
         lags = np.angle(cross_spectrum.cs) / (2 * np.pi * cross_spectrum.freqs)
 
         if compute_errors:
-            coherence = Coherence(times1=times1, rates1=rates1, 
+            coherence = Coherence(times1=times1, rates1=rates1,
                                   times2=times2, rates2=rates2,
                                   fmin=self.fmin, fmax=self.fmax,
-                                  num_bins=self.num_bins, bin_type=self.bin_type, bin_edges=self.bin_edges, 
+                                  num_bins=self.num_bins, bin_type=self.bin_type, bin_edges=self.bin_edges,
                                   subtract_noise_bias=subtract_coh_bias, poisson_stats=poisson_stats
                                   )
-            
+
             phase_errors = np.sqrt(
                 (1 - coherence.cohs) / (2 * coherence.cohs)
             )
@@ -142,7 +143,7 @@ class LagFrequencySpectrum():
         lag_spectra = []
         for i in range(self.rates1.shape[0]):
             lag_spectrum = self.compute_lag_spectrum(times1=self.times1, rates1=self.rates1[i],
-                                                     times2=self.times2, rates2=self.rates2[i], 
+                                                     times2=self.times2, rates2=self.rates2[i],
                                                      compute_errors=False
                                                      )
             lag_spectra.append(lag_spectrum[2])
@@ -190,7 +191,7 @@ class LagFrequencySpectrum():
         - bin_type (str): Type of binning ("log" or "linear").
         - bin_edges (array-like): Custom array of bin edges (optional).
             *** Class attributes will be used if not specified.
-        
+
         Returns:
         - bin_counts (list): List of counts of frequencies in each bin.
         """
