@@ -141,22 +141,27 @@ class GaussianProcess:
         Returns:
         - gpytorch.likelihoods.Likelihood: The configured likelihood.
         """
+        if white_noise:
+            noise_constraint = gpytorch.constraints.Interval(1e-3, 1e2)
+        else:
+            noise_constraint = gpytorch.constraints.Interval(1e-40, 1e-39)
+
         if train_errors.size(dim=0) > 0:
             likelihood = gpytorch.likelihoods.FixedNoiseGaussianLikelihood(
                 noise=self.train_errors ** 2,
                 learn_additional_noise=white_noise,
-                noise_constraint = gpytorch.constraints.Interval(1e-5, 1e2)
+                noise_constraint = noise_constraint
             )
 
         else:
             likelihood = gpytorch.likelihoods.GaussianLikelihood(
-                learn_additional_noise=white_noise,
-                noise_constraint = gpytorch.constraints.Interval(1e-3, 1e2),
+                noise_constraint = noise_constraint,
             )
 
-            counts = np.abs(self.train_rates[1:].numpy()) * np.diff(self.train_times.numpy())
-            norm_poisson_var = 1 / (2 * np.mean(counts)) # begin with a slight underestimation to prevent overfitting
-            likelihood.noise = norm_poisson_var
+            if white_noise:
+                counts = np.abs(self.train_rates[1:].numpy()) * np.diff(self.train_times.numpy())
+                norm_poisson_var = 1 / (2 * np.mean(counts)) # begin with a slight underestimation to prevent overfitting
+                likelihood.noise = norm_poisson_var
 
         # initialize noise parameter at the variance of the data
         return likelihood
@@ -517,7 +522,7 @@ class GaussianProcess:
 
         # Unstandardize
         mean = mean * self.lightcurve.unstandard_std + self.lightcurve.unstandard_mean
-        lower = lower * self.lightcurve.unstandard_std + self.lightcurve.unstandard_mean
+        lower = lower * self.lightcurve.unstandard_std + self.lightcurve.unstandard_mean 
         upper = upper * self.lightcurve.unstandard_std + self.lightcurve.unstandard_mean
 
         return mean.numpy(), lower.numpy(), upper.numpy()
