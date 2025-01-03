@@ -1,1 +1,1 @@
-# Time Series Interpolation Toolkit (TSI Toolkit)
+# STELA (Sampling Time for Even Lightcurve Analysis) Toolkit
