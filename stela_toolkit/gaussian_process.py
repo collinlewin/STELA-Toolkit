@@ -51,11 +51,7 @@ class GaussianProcess:
                  verbose=True):
 
         # To Do: reconsider noise prior, add a mean function function for forecasting, more verbose options
-        try:
-            _CheckInputs._check_input_data(lightcurve, req_reg_samp=False)
-        except ValueError as e:
-            raise ValueError(f"Invalid LightCurve object: {e}")
-
+        _CheckInputs._check_input_data(lightcurve, req_reg_samp=False)
         self.lightcurve = lightcurve
 
         # Standardize the light curve data to match zero mean function
