@@ -1,5 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
+from scipy.stats import boxcox, shapiro
 
 
 class Preprocessing:
@@ -47,6 +48,83 @@ class Preprocessing:
             )
         if lc.errors.size > 0:
             lc.errors = lc.errors * lc.unstandard_std
+
+    @staticmethod
+    def check_normal(lightcurve=None, rates=[], _boxcox=False):
+        """
+        Check if the given light curve data or rates are normally distributed
+        using the Shapiro-Wilk test.
+        
+        Parameters: ** ONE of the following must be provided
+        lightcurve (object): Lightcurve object.
+        rates (list or array-like): Direct input of rate values.
+        """
+        lc = lightcurve
+        
+        # Run Shapiro-wilks test
+        if lightcurve:
+            pvalue = shapiro(lc.rates).pvalue
+        elif np.array(rates).size != 0:
+            pvalue = shapiro(rates).pvalue
+        else:
+            raise ValueError("Either 'lightcurve' or 'rates' must be provided.")
+        print(f"p-value from Shapiro-Wilks test: {pvalue:.3f}")
+        
+        # Compare to alpha = 0.05
+        if pvalue <= 0.05:  # reject
+            print(f"  => can reject null hypothesis that the data is \
+                  normally distributed, assuming a 0.05 significance level.")
+            
+            if not _boxcox:
+                print("Use check_boxcox_normal to see if boxcox transformation \
+                      can sufficiently help achieve normality.")
+    
+        elif pvalue > 0.05:  # fail to reject
+            print(f"  => unable to reject null hypothesis that the data is \
+                   normally distributed, assuming a 0.05 significance level.")
+    
+    @staticmethod
+    def boxcox_transform(lightcurve, save=True):
+        """
+        Apply Box-Cox transformation and adjust uncertainties using the delta method.
+
+        y = (x**lambda - 1) / lmbda,  for lmbda != 0
+            log(x),                  for lmbda = 0
+
+        lambda optimized to minimizes negative log-likelihood function (i.e., MLE).
+        """
+        lc = lightcurve
+
+        # transform rates
+        rates_boxcox, lambda_opt = boxcox(lc.rates)
+
+        # transform errors using delta method (derivative-based propagation)
+        if lc.errors.size != 0:
+            if lambda_opt == 0:  # for log transformation (lambda = 0)
+                errors_boxcox = lc.errors / lc.rates
+            else:
+                errors_boxcox = (lc.rates ** (lambda_opt - 1)) * lc.errors
+        else:
+            errors_boxcox = None
+
+        if save:
+            lc.rates = rates_boxcox
+            lc.errors = errors_boxcox
+        else:
+            return rates_boxcox, errors_boxcox
+
+    @staticmethod
+    def check_boxcox_normal(lightcurve):
+        """
+        Checks if applying a Box-Cox transormation results in normally distributed data 
+        based on a Shapiro-Wilks test.
+        
+        Parameters: ** ONE of the following must be provided
+        lightcurve (object): Lightcurve object.
+        rates (list or array-like): Direct input of rate values.
+        """
+        rates_boxcox, _ = Preprocessing.boxcox_transform(lightcurve, save=False)
+        Preprocessing.check_normal(rates_boxcox, _boxcox=True)
 
     @staticmethod
     def trim_time_segment(lightcurve, start_time=None, end_time=None, plot=False, save=True):
