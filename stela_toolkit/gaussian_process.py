@@ -97,8 +97,12 @@ class GaussianProcess:
             if verbose:
                 print(f"Samples generated: {self.samples.shape}, access with 'samples' attribute.")
 
-        # unstandardize the data
+        # Unstandardize the data
         Preprocessing.unstandardize(self.lc)
+        
+        # Undo boxcox transformation if needed
+        if getattr(self.lc, "is_boxcox_transformed", False):
+            Preprocessing.reverse_boxcox_transform(self.lc)
 
         if plot_gp:
             self.plot(sample_time_grid)
@@ -475,9 +479,16 @@ class GaussianProcess:
             pred_dist = self.likelihood(self.model(pred_times))
             samples = pred_dist.sample(sample_shape=torch.Size([num_samples]))
 
-        # Unstandardize
+        # First unstandardize
         samples = samples * self.lc.unstandard_std + self.lc.unstandard_mean
         samples = samples.numpy()
+
+        # If needed, apply inverse Box-Cox transformation
+        if getattr(self.lc, "is_boxcox_transformed", False):
+            if self.lc.lambda_boxcox == 0:
+                samples = np.exp(samples)
+            else:
+                samples = (samples * self.lc.lambda_boxcox + 1) ** (1 / self.lc.lambda_boxcox)
 
         if save_path:
             samples_with_time = np.insert(pred_times, num_samples, 0)
@@ -520,11 +531,22 @@ class GaussianProcess:
             mean = pred_dist.mean
             lower, upper = pred_dist.confidence_region()
 
-        # Unstandardize
+        # First unstandardize
         mean = mean * self.lc.unstandard_std + self.lc.unstandard_mean
         lower = lower * self.lc.unstandard_std + self.lc.unstandard_mean
         upper = upper * self.lc.unstandard_std + self.lc.unstandard_mean
 
+        # Check if inverse boxcox required
+        if getattr(self.lc, "is_boxcox_transformed", False):
+            if self.lc.lambda_boxcox == 0:
+                mean = np.exp(mean)
+                lower = np.exp(lower)
+                upper = np.exp(upper)
+            else:
+                lambda_boxcox = self.lc.lambda_boxcox
+                mean = (mean * lambda_boxcox + 1) ** (1 / lambda_boxcox)
+                lower = (lower * lambda_boxcox + 1) ** (1 / lambda_boxcox)
+                upper = (upper * lambda_boxcox + 1) ** (1 / lambda_boxcox)
         return mean.numpy(), lower.numpy(), upper.numpy()
 
     def plot(self, pred_times=None):
