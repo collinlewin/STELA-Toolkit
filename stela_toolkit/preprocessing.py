@@ -1,6 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
-from scipy.stats import boxcox, shapiro
+from scipy.stats import boxcox, shapiro, probplot
 
 
 class Preprocessing:
@@ -50,7 +50,30 @@ class Preprocessing:
             lc.errors = lc.errors * lc.unstandard_std
 
     @staticmethod
-    def check_normal(lightcurve=None, rates=[], _boxcox=False):
+    def generate_qq_plot(lightcurve=None, rates=[]):
+        """
+        Generates a Q-Q plot to visualize the normality of the input data.
+
+        Parameters: ** ONE of the following must be provided
+        lightcurve (object): Lightcurve object.
+        rates (list or array-like): Direct input of rate values.
+        """
+        if lightcurve:
+            rates = lightcurve.rates
+        elif np.array(rates).size != 0:
+            pass
+        else: 
+            raise ValueError("Either 'lightcurve' or 'rates' must be provided.")
+        
+        probplot(rates, dist="norm", plot=plt)
+        plt.title("Q-Q Plot")
+        plt.xlabel("Theoretical Quantiles")
+        plt.ylabel("Sample Quantiles")
+        plt.grid(True)
+        plt.show()
+
+    @staticmethod
+    def check_normal(lightcurve=None, rates=[], plot=True, _boxcox=False):
         """
         Check if the given light curve data or rates are normally distributed
         using the Shapiro-Wilk test.
@@ -58,16 +81,16 @@ class Preprocessing:
         Parameters: ** ONE of the following must be provided
         lightcurve (object): Lightcurve object.
         rates (list or array-like): Direct input of rate values.
-        """
-        lc = lightcurve
-        
-        # Run Shapiro-wilks test
+        """        
         if lightcurve:
-            pvalue = shapiro(lc.rates).pvalue
+            rates = lightcurve.rates
         elif np.array(rates).size != 0:
-            pvalue = shapiro(rates).pvalue
+            pass
         else:
             raise ValueError("Either 'lightcurve' or 'rates' must be provided.")
+        
+        # Run Shapiro-wilks test
+        pvalue = shapiro(rates).pvalue
         print(f"p-value from Shapiro-Wilks test: {pvalue:.3f}")
         
         # Compare to alpha = 0.05
@@ -82,6 +105,9 @@ class Preprocessing:
         elif pvalue > 0.05:  # fail to reject
             print(f"  => unable to reject null hypothesis that the data is \
                    normally distributed, assuming a 0.05 significance level.")
+            
+        if plot:
+            Preprocessing.generate_qq_plot(rates=rates)
     
     @staticmethod
     def boxcox_transform(lightcurve, save=True):
