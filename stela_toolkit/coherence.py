@@ -1,10 +1,11 @@
 import numpy as np
 
 from ._check_inputs import _CheckInputs
-from .power_spectrum import PowerSpectrum
 from .cross_spectrum import CrossSpectrum
-from .plot import Plotter
+from .data_loader import LightCurve
 from .frequency_binning import FrequencyBinning
+from .plot import Plotter
+from .power_spectrum import PowerSpectrum
 
 
 class Coherence:
@@ -41,10 +42,8 @@ class Coherence:
     """
 
     def __init__(self,
-                 lightcurve1=None,
-                 lightcurve2=None,
-                 model1=None,
-                 model2=None,
+                 lightcurve_or_model1,
+                 lightcurve_or_model2,
                  fmin='auto',
                  fmax='auto',
                  num_bins=None,
@@ -58,14 +57,17 @@ class Coherence:
                  ):
         # To do: determine if or if not Poisson statistics for the user
         # To do: decrease number of parameters
-        if lightcurve1:
-            self.times1, self.rates1, self.errors1 = _CheckInputs._check_input_data(lightcurve1)
-        if lightcurve2:
-            self.times2, self.rates2, self.errors2 = _CheckInputs._check_input_data(lightcurve2)
-        if model1:
-            self.times1, self.rates1, _ = _CheckInputs._check_input_model(model1)
-        if model2:
-            self.times2, self.rates2, _ = _CheckInputs._check_input_model(model2)
+        input_data = _CheckInputs._check_lightcurve_or_model(lightcurve_or_model1)
+        if input_data['type'] == 'model':
+            self.times1, self.rates1 = input_data['data']
+        else:
+            self.times1, self.rates1, self.errors1 = input_data['data']
+
+        input_data = _CheckInputs._check_lightcurve_or_model(lightcurve_or_model2)
+        if input_data['type'] == 'model':
+            self.times2, self.rates2 = input_data['data']
+        else:
+            self.times2, self.rates2, self.errors2 = input_data['data']
         _CheckInputs._check_input_bins(num_bins, bin_type, bin_edges)
 
         if not np.allclose(self.times1, self.times2):
@@ -73,7 +75,8 @@ class Coherence:
 
         # Use absolute min and max frequencies if set to 'auto'
         self.dt = np.diff(self.times1)[0]
-        self.fmin = 1e-8 if fmin == 'auto' else fmin
+        # Account for floating point discrepancies
+        self.fmin = 1 / (max(self.times1) - min(self.times1)) - 1e-10 if fmin == 'auto' else fmin - 1e-10
         self.fmax = 1 / (2 * self.dt) if fmax == 'auto' else fmax  # nyquist frequency
 
         self.num_bins = num_bins
@@ -127,19 +130,20 @@ class Coherence:
         times2 = self.times2 if times2 is None else times2
         rates2 = self.rates2 if rates2 is None else rates2
 
+        lc1 = LightCurve(times=times1, rates=rates1)
+        lc2 = LightCurve(times=times2, rates=rates2)
         cross_spectrum = CrossSpectrum(
-            times1=times1, rates1=rates1,
-            times2=times2, rates2=rates2,
+            lc1, lc2,
             fmin=self.fmin, fmax=self.fmax,
             num_bins=self.num_bins, bin_type=self.bin_type, bin_edges=self.bin_edges
         )
         power_spectrum1 = PowerSpectrum(
-            times=times1, rates=rates1,
+            lc1,
             fmin=self.fmin, fmax=self.fmax,
             num_bins=self.num_bins, bin_type=self.bin_type, bin_edges=self.bin_edges
         )
         power_spectrum2 = PowerSpectrum(
-            times=times2, rates=rates2,
+            lc2,
             fmin=self.fmin, fmax=self.fmax,
             num_bins=self.num_bins, bin_type=self.bin_type, bin_edges=self.bin_edges
         )

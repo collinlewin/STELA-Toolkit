@@ -32,8 +32,7 @@ class PowerSpectrum:
     """
 
     def __init__(self,
-                 lightcurve=None,
-                 model=None,
+                 lightcurve_or_model,
                  fmin='auto',
                  fmax='auto',
                  num_bins=None,
@@ -43,16 +42,17 @@ class PowerSpectrum:
                  plot_fft=False,
                  ):
         # To do: ValueError for norm=True acting on mean=0 (standardized data)
-        if lightcurve:
-            self.times, self.rates, _ = _CheckInputs._check_input_data(lightcurve)
-        elif model:
-            self.times, self.rates = _CheckInputs._check_input_model(model)
-
+        input_data = _CheckInputs._check_lightcurve_or_model(lightcurve_or_model)
+        if input_data['type'] == 'model':
+            self.times, self.rates = input_data['data']
+        else:
+            self.times, self.rates, _ = input_data['data']
         _CheckInputs._check_input_bins(num_bins, bin_type, bin_edges)
 
         # Use absolute min and max frequencies if set to 'auto'
         self.dt = np.diff(self.times)[0]
-        self.fmin = 0 if fmin == 'auto' else fmin
+        # Account for floating point discrepancies
+        self.fmin = 1 / (max(self.times) - min(self.times)) - 1e-10 if fmin == 'auto' else fmin - 1e-10
         self.fmax = 1 / (2 * self.dt) if fmax == 'auto' else fmax  # nyquist frequency
 
         self.num_bins = num_bins
