@@ -99,7 +99,7 @@ class GaussianProcess:
 
         # Unstandardize the data
         Preprocessing.unstandardize(self.lc)
-        
+
         # Undo boxcox transformation if needed
         if getattr(self.lc, "is_boxcox_transformed", False):
             Preprocessing.reverse_boxcox_transform(self.lc)
@@ -145,7 +145,7 @@ class GaussianProcess:
         - gpytorch.likelihoods.Likelihood: The configured likelihood.
         """
         if white_noise:
-            noise_constraint = gpytorch.constraints.Interval(1e-3, 1e2)
+            noise_constraint = gpytorch.constraints.Interval(1e-5, 1)
         else:
             noise_constraint = gpytorch.constraints.Interval(1e-40, 1e-39)
 
