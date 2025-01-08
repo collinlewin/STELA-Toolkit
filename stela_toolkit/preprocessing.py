@@ -19,17 +19,23 @@ class Preprocessing:
         Stores the original mean and standard deviation for future unstandardization.
         """
         lc = lightcurve
-        if np.isclose(lc.mean, 0, atol=1e-10) and np.isclose(lc.std, 1, atol=1e-10):
+
+        # check for standardization
+        if np.isclose(lc.mean, 0, atol=1e-10) and np.isclose(lc.std, 1, atol=1e-10) or lc.is_standard:
             if not hasattr(lc, "unstandard_mean") and not hasattr(lc, "unstandard_std"):
                 lc.unstandard_mean = 0
                 lc.unstandard_std = 1
             print("The data is already standardized.")
+
+        # apply standardization
         else:
             lc.unstandard_mean = lc.mean
             lc.unstandard_std = lc.std
             lc.rates = (lc.rates - lc.unstandard_mean) / lc.unstandard_std
             if lc.errors.size > 0:
                 lc.errors = lc.errors / lc.unstandard_std
+            
+        lc.is_standard = True # flag for detecting transformation without computation
 
     @staticmethod
     def unstandardize(lightcurve):
@@ -39,15 +45,27 @@ class Preprocessing:
         unstandardized form using the previously stored mean and standard deviation.
         """
         lc = lightcurve
-        try:
+        # check that data has been standardized
+        if getattr(lc, "is_standard", False):
             lc.rates = (lc.rates * lc.unstandard_std) + lc.unstandard_mean
-        except AttributeError:
-            raise AttributeError(
-                "The data has not been standardized yet. "
-                "Please call the 'standardize' method first."
-            )
+        else:
+            if np.isclose(lc.mean, 0, atol=1e-10) and np.isclose(lc.std, 1, atol=1e-10):
+                raise AttributeError(
+                    "The data has not been standardized by STELA. "
+                    "Please call the 'standardize' method first."
+                )
+            else:
+                raise AttributeError(
+                    "The data is not standardized, and needs to be standardized first by STELA."
+                    "Please call the 'standardize' method first (e.g., Preprocessing.standardize(lightcurve))."
+                )
+        
         if lc.errors.size > 0:
             lc.errors = lc.errors * lc.unstandard_std
+
+        lc.is_standard = False  # reset the standardization flag
+        del lc.unstandard_mean  # clean up unnecessary attributes
+        del lc.unstandard_std
 
     @staticmethod
     def generate_qq_plot(lightcurve=None, rates=[]):
@@ -136,8 +154,52 @@ class Preprocessing:
         if save:
             lc.rates = rates_boxcox
             lc.errors = errors_boxcox
+            lc.lambda_boxcox = lambda_opt  # save lambda for inverse transformation
+            lc.is_boxcox_transformed = True  # flag to indicate transformation
         else:
             return rates_boxcox, errors_boxcox
+        
+    @staticmethod
+    def reverse_boxcox_transform(lightcurve):
+        """
+        Reverse the Box-Cox transformation and restore original rates and uncertainties.
+
+        Parameters:
+        lightcurve (object): Light curve object that has been transformed with Box-Cox.
+
+        Raises:
+        ValueError: If the light curve has not been transformed with Box-Cox.
+        """
+        lc = lightcurve
+
+        # Check if the lightcurve has been transformed
+        if not getattr(lc, "is_boxcox_transformed", False):
+            raise ValueError("Light curve data has not been transformed with Box-Cox.")
+
+        # Retrieve lambda used for transformation
+        lambda_opt = lc.lambda_boxcox
+
+        # Reverse rates transformation
+        if lambda_opt == 0:  # inverse log transformation
+            rates_original = np.exp(lc.rates)
+        else:
+            rates_original = (lc.rates * lambda_opt + 1) ** (1 / lambda_opt)
+
+        # Reverse errors transformation
+        if lc.errors.size != 0:
+            if lambda_opt == 0:  # inverse log transformation (lambda = 0)
+                errors_original = lc.errors * rates_original
+            else:
+                errors_original = lc.errors / (rates_original ** (lambda_opt - 1))
+        else:
+            errors_original = None
+
+        # Restore the original values
+        lc.rates = rates_original
+        lc.errors = errors_original
+        lc.is_boxcox_transformed = False  # Reset the transformation flag
+        del lc.lambda_boxcox  # Clean up lambda attribute
+
 
     @staticmethod
     def check_boxcox_normal(lightcurve):

@@ -52,16 +52,17 @@ class GaussianProcess:
 
         # To Do: reconsider noise prior, add a mean function function for forecasting, more verbose options
         _CheckInputs._check_input_data(lightcurve, req_reg_samp=False)
-        self.lightcurve = lightcurve
+        self.lc = lightcurve
 
         # Standardize the light curve data to match zero mean function
-        Preprocessing.standardize(self.lightcurve)
+        if not self.lc.is_standard:
+            Preprocessing.standardize(self.lc)
 
         # Convert light curve data to PyTorch tensors
-        self.train_times = torch.tensor(self.lightcurve.times).float()
-        self.train_rates = torch.tensor(self.lightcurve.rates).float()
-        if self.lightcurve.errors.size > 0:
-            self.train_errors = torch.tensor(self.lightcurve.errors).float()
+        self.train_times = torch.tensor(self.lc.times).float()
+        self.train_rates = torch.tensor(self.lc.rates).float()
+        if self.lc.errors.size > 0:
+            self.train_errors = torch.tensor(self.lc.errors).float()
         else:
             self.train_errors = torch.tensor([])
 
@@ -97,7 +98,7 @@ class GaussianProcess:
                 print(f"Samples generated: {self.samples.shape}, access with 'samples' attribute.")
 
         # unstandardize the data
-        Preprocessing.unstandardize(self.lightcurve)
+        Preprocessing.unstandardize(self.lc)
 
         if plot_gp:
             self.plot(sample_time_grid)
@@ -475,7 +476,7 @@ class GaussianProcess:
             samples = pred_dist.sample(sample_shape=torch.Size([num_samples]))
 
         # Unstandardize
-        samples = samples * self.lightcurve.unstandard_std + self.lightcurve.unstandard_mean
+        samples = samples * self.lc.unstandard_std + self.lc.unstandard_mean
         samples = samples.numpy()
 
         if save_path:
@@ -520,9 +521,9 @@ class GaussianProcess:
             lower, upper = pred_dist.confidence_region()
 
         # Unstandardize
-        mean = mean * self.lightcurve.unstandard_std + self.lightcurve.unstandard_mean
-        lower = lower * self.lightcurve.unstandard_std + self.lightcurve.unstandard_mean
-        upper = upper * self.lightcurve.unstandard_std + self.lightcurve.unstandard_mean
+        mean = mean * self.lc.unstandard_std + self.lc.unstandard_mean
+        lower = lower * self.lc.unstandard_std + self.lc.unstandard_mean
+        upper = upper * self.lc.unstandard_std + self.lc.unstandard_mean
 
         return mean.numpy(), lower.numpy(), upper.numpy()
 
@@ -547,11 +548,11 @@ class GaussianProcess:
 
         if self.train_errors.size(dim=0) > 0:
             plt.errorbar(
-                self.lightcurve.times, self.lightcurve.rates,
-                yerr=self.lightcurve.errors, fmt='o', color='black', label='Data', lw=1, ms=2
+                self.lc.times, self.lc.rates,
+                yerr=self.lc.errors, fmt='o', color='black', label='Data', lw=1, ms=2
             )
         else:
-            plt.scatter(self.lightcurve.times, self.lightcurve.rates,
+            plt.scatter(self.lc.times, self.lc.rates,
                         color='black', label='Data', s=2)
 
         plt.xlabel('Time')
