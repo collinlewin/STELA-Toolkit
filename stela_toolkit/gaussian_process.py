@@ -55,7 +55,7 @@ class GaussianProcess:
         self.lc = lightcurve
 
         # Standardize the light curve data to match zero mean function
-        if not self.lc.is_standard:
+        if not getattr(self.lc, "is_standard", False):
             Preprocessing.standardize(self.lc)
 
         # Convert light curve data to PyTorch tensors

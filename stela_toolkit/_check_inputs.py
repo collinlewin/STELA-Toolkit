@@ -55,7 +55,8 @@ class _CheckInputs:
 
     @staticmethod
     def _check_input_model(model):
-        if type(model).__name__ == "GaussianProcess":
+        # update the list here when adding new models!
+        if type(model).__name__ in ["GaussianProcess"]:
             if hasattr(model, "samples"):
                 num_samp = model.samples.shape[0]
                 kernel_form = model.kernel_form
@@ -75,7 +76,18 @@ class _CheckInputs:
                 "Model must be an instance of the Gaussian Process class.")
 
         return pred_times, samples
-
+    
+    @staticmethod
+    def _check_lightcurve_or_model(lightcurve_or_model):
+        # update the list here when adding new models!
+        if type(lightcurve_or_model).__name__ in ["GaussianProcess"]:
+            input_type = 'model'
+            return {'type':input_type, 'data':_CheckInputs._check_input_model(lightcurve_or_model)}
+        
+        elif type(lightcurve_or_model).__name__ == "LightCurve":
+            input_type = 'lightcurve'
+            return {'type':input_type, 'data':_CheckInputs._check_input_data(lightcurve_or_model)}
+        
     @staticmethod
     def _check_input_bins(num_bins, bin_type, bin_edges):
         """

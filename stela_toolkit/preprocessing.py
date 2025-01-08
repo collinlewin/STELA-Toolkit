@@ -21,7 +21,7 @@ class Preprocessing:
         lc = lightcurve
 
         # check for standardization
-        if np.isclose(lc.mean, 0, atol=1e-10) and np.isclose(lc.std, 1, atol=1e-10) or lc.is_standard:
+        if np.isclose(lc.mean, 0, atol=1e-10) and np.isclose(lc.std, 1, atol=1e-10) or getattr(lc, "is_standard", False):
             if not hasattr(lc, "unstandard_mean") and not hasattr(lc, "unstandard_std"):
                 lc.unstandard_mean = 0
                 lc.unstandard_std = 1
@@ -51,12 +51,12 @@ class Preprocessing:
         else:
             if np.isclose(lc.mean, 0, atol=1e-10) and np.isclose(lc.std, 1, atol=1e-10):
                 raise AttributeError(
-                    "The data has not been standardized by STELA. "
+                    "The data has not been standardized by STELA.\n"
                     "Please call the 'standardize' method first."
                 )
             else:
                 raise AttributeError(
-                    "The data is not standardized, and needs to be standardized first by STELA."
+                    "The data is not standardized, and needs to be standardized first by STELA.\n"
                     "Please call the 'standardize' method first (e.g., Preprocessing.standardize(lightcurve))."
                 )
         
@@ -64,9 +64,7 @@ class Preprocessing:
             lc.errors = lc.errors * lc.unstandard_std
 
         lc.is_standard = False  # reset the standardization flag
-        del lc.unstandard_mean  # clean up unnecessary attributes
-        del lc.unstandard_std
-
+        
     @staticmethod
     def generate_qq_plot(lightcurve=None, rates=[]):
         """
@@ -199,7 +197,6 @@ class Preprocessing:
         lc.errors = errors_original
         lc.is_boxcox_transformed = False  # Reset the transformation flag
         del lc.lambda_boxcox  # Clean up lambda attribute
-
 
     @staticmethod
     def check_boxcox_normal(lightcurve):
