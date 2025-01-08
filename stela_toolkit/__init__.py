@@ -3,7 +3,7 @@ from .cross_spectrum import CrossSpectrum
 from .data_loader import LightCurve
 from .frequency_binning import FrequencyBinning
 from .gaussian_process import GaussianProcess
-#from .lag_energy_spectrum import LagEnergySpectrum
+from .lag_energy_spectrum import LagEnergySpectrum
 from .lag_frequency_spectrum import LagFrequencySpectrum
 from .plot import Plotter
 from .power_spectrum import PowerSpectrum
