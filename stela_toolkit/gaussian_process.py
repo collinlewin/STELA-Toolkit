@@ -54,9 +54,19 @@ class GaussianProcess:
         _CheckInputs._check_input_data(lightcurve, req_reg_samp=False)
         self.lc = lightcurve
 
+        ## NEED TO ADD BOXCOXING HERE
+
         # Standardize the light curve data to match zero mean function
         if not getattr(self.lc, "is_standard", False):
             Preprocessing.standardize(self.lc)
+
+        # Need to save how data was normalized for future model use
+        # standardization
+        self.unstandard_mean = self.lc.unstandard_mean
+        self.unstandard_std = self.lc.unstandard_std
+        # boxcox transformation for normality
+        if getattr(self.lc, "is_boxcox_transformed", False):
+            self.lambda_boxcox = self.lc.lambda_boxcox
 
         # Convert light curve data to PyTorch tensors
         self.train_times = torch.tensor(self.lc.times).float()
@@ -101,7 +111,7 @@ class GaussianProcess:
         Preprocessing.unstandardize(self.lc)
 
         # Undo boxcox transformation if needed
-        if getattr(self.lc, "is_boxcox_transformed", False):
+        if getattr(self.lc, "is_boxcox_transformed"):
             Preprocessing.reverse_boxcox_transform(self.lc)
 
         if plot_gp:
@@ -480,15 +490,15 @@ class GaussianProcess:
             samples = pred_dist.sample(sample_shape=torch.Size([num_samples]))
 
         # First unstandardize
-        samples = samples * self.lc.unstandard_std + self.lc.unstandard_mean
+        samples = samples * self.unstandard_std + self.unstandard_mean
         samples = samples.numpy()
 
         # If needed, apply inverse Box-Cox transformation
-        if getattr(self.lc, "is_boxcox_transformed", False):
-            if self.lc.lambda_boxcox == 0:
+        if hasattr(self, "lambda_boxcox"):
+            if self.lambda_boxcox == 0:
                 samples = np.exp(samples)
             else:
-                samples = (samples * self.lc.lambda_boxcox + 1) ** (1 / self.lc.lambda_boxcox)
+                samples = (samples * self.lambda_boxcox + 1) ** (1 / self.lambda_boxcox)
 
         if save_path:
             samples_with_time = np.insert(pred_times, num_samples, 0)
@@ -532,21 +542,20 @@ class GaussianProcess:
             lower, upper = pred_dist.confidence_region()
 
         # First unstandardize
-        mean = mean * self.lc.unstandard_std + self.lc.unstandard_mean
-        lower = lower * self.lc.unstandard_std + self.lc.unstandard_mean
-        upper = upper * self.lc.unstandard_std + self.lc.unstandard_mean
+        mean = mean * self.unstandard_std + self.unstandard_mean
+        lower = lower * self.unstandard_std + self.unstandard_mean
+        upper = upper * self.unstandard_std + self.unstandard_mean
 
         # Check if inverse boxcox required
-        if getattr(self.lc, "is_boxcox_transformed", False):
-            if self.lc.lambda_boxcox == 0:
+        if hasattr(self, "lambda_boxcox"):
+            if self.lambda_boxcox == 0:
                 mean = np.exp(mean)
                 lower = np.exp(lower)
                 upper = np.exp(upper)
             else:
-                lambda_boxcox = self.lc.lambda_boxcox
-                mean = (mean * lambda_boxcox + 1) ** (1 / lambda_boxcox)
-                lower = (lower * lambda_boxcox + 1) ** (1 / lambda_boxcox)
-                upper = (upper * lambda_boxcox + 1) ** (1 / lambda_boxcox)
+                mean = (mean * self.lambda_boxcox + 1) ** (1 / self.lambda_boxcox)
+                lower = (lower * self.lambda_boxcox + 1) ** (1 / self.lambda_boxcox)
+                upper = (upper * self.lambda_boxcox + 1) ** (1 / self.lambda_boxcox)
         return mean.numpy(), lower.numpy(), upper.numpy()
 
     def plot(self, pred_times=None):
