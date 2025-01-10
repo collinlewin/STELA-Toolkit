@@ -56,7 +56,6 @@ class Coherence:
                  plot_coh=False
                  ):
         # To do: determine if or if not Poisson statistics for the user
-        # To do: decrease number of parameters
         input_data = _CheckInputs._check_lightcurve_or_model(lightcurve_or_model1)
         if input_data['type'] == 'model':
             self.times1, self.rates1 = input_data['data']

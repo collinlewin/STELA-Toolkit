@@ -24,15 +24,13 @@ class LagFrequencySpectrum():
                  poisson_stats=False,
                  plot_lfs=False,
                  ):
-        # To do: update main docstring for lag interpretation
-        self.lightcurve_or_model1 = lightcurve_or_model1
+        # To do: update main docstring for lag interpretation, add coherence in plotting !!
         input_data = _CheckInputs._check_lightcurve_or_model(lightcurve_or_model1)
         if input_data['type'] == 'model':
             self.times1, self.rates1 = input_data['data']
         else:
             self.times1, self.rates1, _ = input_data['data']
 
-        self.lightcurve_or_model2 = lightcurve_or_model2
         input_data = _CheckInputs._check_lightcurve_or_model(lightcurve_or_model2)
         if input_data['type'] == 'model':
             self.times2, self.rates2 = input_data['data']

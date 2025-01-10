@@ -1,9 +1,11 @@
 To do :
 
 First (essential) actions:
-- Need to make sure boxcox undoing makes sense in gaussian_process. If I undo the transformation, then how will the class know to undo the predictions? I think we need to save if the data was boxcoxed during training using an attribute.
 - create methods for both gp samples and multiple light curves
 - Create lag_energy spectrum
+- Coherence plotting
+- Add periodic kernel
+- The errors are not right in coherence, LFS, LES. Need to pass in errors properly, and figure out what to do with them.
 - All handling of noise needs to consider if the lightcurve is in counts or not, which will inform Poisson (scrap that parameter)
  - Honestly just go through noise treatment in Gaussian process in general
 - Create tutorial, which will test all of the functionalities thus far
