@@ -10,8 +10,35 @@ from .plot import Plotter
 
 class LagFrequencySpectrum():
     """
-    """
+    Computes the time lag as a function of frequency for two input light curves 
+    or trained models. If a model is provided, it will detect and use the most recently 
+    generated samples for the computation.
 
+    A positive lag indicates the variability in lightcurve/s 1 is lagging that in lightcurve/s 2.
+
+    Parameters:
+    - lightcurve_or_model1, lightcurve_or_model2 (LightCurve or model object): Input light curves or models. 
+        Models must have been trained. The most recently generated realizations/samples will be used;
+        if none have been generated, 1000 samples at 1000 time values will be generated.
+        The time arrays of the inputs must be identical.
+    - fmin, fmax (float or 'auto', optional): Minimum and maximum frequencies for 
+        the computation. Defaults to 'auto', which automatically determines these values.
+    - num_bins (int, optional): Number of bins for frequency binning. 
+    - bin_type (str, optional): Type of binning, either 'log' or 'linear'.
+    - bin_edges (array-like, optional): Custom bin edges. If provided, overrides num_bins.
+    - subtract_coh_bias (bool, optional): Whether to subtract the coherence bias. 
+        Defaults to True.
+    - poisson_stats (bool, optional): Whether to assume Poisson noise statistics. 
+        Defaults to False.
+    - plot_lfs (bool, optional): Whether to plot the resulting lag frequency spectrum.
+        Defaults to False.
+
+    Attributes:
+    - freqs (array-like): Center frequencies for each bin.
+    - freq_widths (array-like): Bin widths for the frequency bins.
+    - lags (array-like): Computed time lags for each frequency bin.
+    - lag_errors (array-like): Uncertainties in the time lag values.
+    """
     def __init__(self,
                  lightcurve_or_model1,
                  lightcurve_or_model2,
@@ -162,7 +189,7 @@ class LagFrequencySpectrum():
 
     def plot(self, freqs=None, freq_widths=None, lags=None, lag_errors=None, **kwargs):
         """
-        Plots the cross-spectrum.
+        Plots the lag-frequency spectrum.
 
         Parameters:
         - **kwargs: Keyword arguments for customizing the plot.
