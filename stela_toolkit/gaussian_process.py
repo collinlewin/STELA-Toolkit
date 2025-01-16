@@ -209,7 +209,8 @@ class GaussianProcess:
             'Matern52': gpytorch.kernels.MaternKernel(nu=2.5),
             'RQ': gpytorch.kernels.RQKernel(),
             'RBF': gpytorch.kernels.RBFKernel(),
-            'SpectralMixture': gpytorch.kernels.SpectralMixtureKernel(num_mixtures=num_mixtures)
+            'SpectralMixture': gpytorch.kernels.SpectralMixtureKernel(num_mixtures=num_mixtures),
+            'Periodic': gpytorch.kernels.PeriodicKernel()
         }
 
         # Assign kernel if type is valid
@@ -296,13 +297,26 @@ class GaussianProcess:
                             mixture_weights.round(3)
                         ))
 
+                elif self.kernel_form == 'Periodic':
+                    if self.white_noise:
+                        print('Iter %d/%d - loss: %.3f   period length: %.3f   lengthscale: %.3f   noise: %.1e' % (
+                            i + 1, num_iter, loss.item(),
+                            self.model.covar_module.base_kernel.period_length.item(),
+                            self.model.covar_module.base_kernel.lengthscale.item(),
+                            noise_param
+                        ))
+                    else:
+                        print('Iter %d/%d - loss: %.3f   lengthscale: %.1e' % (
+                            i + 1, num_iter, loss.item(),
+                            self.model.covar_module.base_kernel.lengthscale.item()
+                        ))
+
                 else:
                     if self.white_noise:
                         print('Iter %d/%d - loss: %.3f   lengthscale: %.3f   noise: %.1e' % (
                             i + 1, num_iter, loss.item(),
                             self.model.covar_module.base_kernel.lengthscale.item(),
                             noise_param
-
                         ))
                     else:
                         print('Iter %d/%d - loss: %.3f   lengthscale: %.1e' % (
