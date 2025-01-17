@@ -56,13 +56,13 @@ class LagFrequencySpectrum():
         if input_data['type'] == 'model':
             self.times1, self.rates1 = input_data['data']
         else:
-            self.times1, self.rates1, _ = input_data['data']
+            self.times1, self.rates1, self.errors1 = input_data['data']
 
         input_data = _CheckInputs._check_lightcurve_or_model(lightcurve_or_model2)
         if input_data['type'] == 'model':
             self.times2, self.rates2 = input_data['data']
         else:
-            self.times2, self.rates2, _ = input_data['data']
+            self.times2, self.rates2, self.errors2 = input_data['data']
 
         _CheckInputs._check_input_bins(num_bins, bin_type, bin_edges)
 
@@ -91,7 +91,9 @@ class LagFrequencySpectrum():
         if plot_lfs:
             self.plot()
 
-    def compute_lag_spectrum(self, times1=None, rates1=None, times2=None, rates2=None,
+    def compute_lag_spectrum(self, 
+                             times1=None, rates1=None,
+                             times2=None, rates2=None,
                              compute_errors=True, subtract_coh_bias=True, poisson_stats=False):
         """
         Computes the lag spectrum for the given light curves.
@@ -114,13 +116,15 @@ class LagFrequencySpectrum():
         - lags (array-like): Computed lag values.
         - lag_errors (array-like): Uncertainty of the lag values.
         """
-        times1 = self.times1 if times1 is None else times1
-        rates1 = self.rates1 if rates1 is None else rates1
-        times2 = self.times2 if times2 is None else times2
-        rates2 = self.rates2 if rates2 is None else rates2
+        if times1 and rates1:
+            lc1 = LightCurve(times=times1, rates=rates1)
+        else:
+            lc1 = LightCurve(times=self.times1, rates=self.rates1, errors=self.errors1)
+        if times2 and rates2:
+            lc2 = LightCurve(times=times2, rates=rates2)
+        else:
+            lc2 = LightCurve(times=self.times2, rates=self.rates2, errors=self.errors2)
 
-        lc1 = LightCurve(times=times1, rates=rates1)
-        lc2 = LightCurve(times=times2, rates=rates2)
         # Compute the cross spectrum
         cross_spectrum = CrossSpectrum(lc1, lc2,
                                        fmin=self.fmin, fmax=self.fmax,
