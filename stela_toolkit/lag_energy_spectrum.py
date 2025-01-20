@@ -61,14 +61,16 @@ class LagEnergySpectrum():
         self.energy_widths = np.diff(bin_edges) / 2
 
         self.fmin, self.fmax = fmin, fmax
-        self.lags, self.lag_errors = self.compute_lag_spectrum(subtract_coh_bias=subtract_coh_bias, 
-                                                               poisson_stats=poisson_stats)
+        lag_spectrum = self.compute_lag_spectrum(subtract_coh_bias=subtract_coh_bias, 
+                                                 poisson_stats=poisson_stats
+                                                 )
+        self.lags, self.lag_errors, self.cohs, self. coh_errors = lag_spectrum
 
         if plot_les:
             self.plot()
 
     def compute_lag_spectrum(self, subtract_coh_bias, poisson_stats):
-        lags, lag_errors = [], []
+        lags, lag_errors, cohs, coh_errors = [], [], [], []
         for i in range(len(self.data_models1)):
             lfs = LagFrequencySpectrum(self.data_models1[i],
                                        self.data_models2[i],
@@ -80,8 +82,10 @@ class LagEnergySpectrum():
                                        )
             lags.append(lfs.lags)
             lag_errors.append(lfs.lag_errors)
+            cohs.append(lfs.cohs)
+            coh_errors.append(lfs.coh_errors)
 
-        return lags, lag_errors
+        return lags, lag_errors, cohs, coh_errors
 
     def plot(self, energies=None, energy_widths=None, lags=None, lag_errors=None, **kwargs):
         """
