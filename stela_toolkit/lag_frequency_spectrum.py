@@ -86,7 +86,7 @@ class LagFrequencySpectrum():
                                                      poisson_stats=poisson_stats
                                                      )
 
-        self.freqs, self.freq_widths, self.lags, self.lag_errors = lag_spectrum
+        self.freqs, self.freq_widths, self.lags, self.lag_errors, self.cohs, self.coh_errors = lag_spectrum
 
         if plot_lfs:
             self.plot()
@@ -94,7 +94,7 @@ class LagFrequencySpectrum():
     def compute_lag_spectrum(self, 
                              times1=None, rates1=None,
                              times2=None, rates2=None,
-                             compute_errors=True, subtract_coh_bias=True, poisson_stats=False):
+                             subtract_coh_bias=True, poisson_stats=False):
         """
         Computes the lag spectrum for the given light curves.
 
@@ -135,22 +135,21 @@ class LagFrequencySpectrum():
 
         lags = np.angle(cross_spectrum.cs) / (2 * np.pi * cross_spectrum.freqs)
 
-        if compute_errors:
-            coherence = Coherence(lc1, lc2,
-                                  fmin=self.fmin, fmax=self.fmax,
-                                  num_bins=self.num_bins, bin_type=self.bin_type, bin_edges=self.bin_edges,
-                                  subtract_noise_bias=subtract_coh_bias, poisson_stats=poisson_stats
-                                  )
+        coherence = Coherence(lc1, lc2,
+                                fmin=self.fmin, fmax=self.fmax,
+                                num_bins=self.num_bins, bin_type=self.bin_type, bin_edges=self.bin_edges,
+                                subtract_noise_bias=subtract_coh_bias, poisson_stats=poisson_stats
+                                )
+        cohs = coherence.cohs
+        coh_errors = cohs.coh_errors
 
-            phase_errors = np.sqrt(
-                (1 - coherence.cohs) / (2 * coherence.cohs)
-            )
+        phase_errors = np.sqrt(
+            (1 - coherence.cohs) / (2 * coherence.cohs)
+        )
 
-            lag_errors = phase_errors / (2 * np.pi * cross_spectrum.freqs)
-        else:
-            lag_errors = np.zeros_like(lags)
+        lag_errors = phase_errors / (2 * np.pi * cross_spectrum.freqs)
 
-        return cross_spectrum.freqs, cross_spectrum.freq_widths, lags, lag_errors
+        return cross_spectrum.freqs, cross_spectrum.freq_widths, lags, lag_errors, cohs, coh_errors
 
     def compute_stacked_lag_spectrum(self):
         """
@@ -175,21 +174,25 @@ class LagFrequencySpectrum():
         """
         # Compute lag spectrum for each pair of realizations
         lag_spectra = []
+        coh_spectra = []
         for i in range(self.rates1.shape[0]):
             lag_spectrum = self.compute_lag_spectrum(times1=self.times1, rates1=self.rates1[i],
-                                                     times2=self.times2, rates2=self.rates2[i],
-                                                     compute_errors=False
+                                                     times2=self.times2, rates2=self.rates2[i]
                                                      )
             lag_spectra.append(lag_spectrum[2])
+            coh_spectra.append(lag_spectrum[4])
 
-        # Stack lag spectra
-        lag_spectra = np.mean(lag_spectra, axis=0)
+        # Average lag spectra
         lag_spectra_mean = np.mean(lag_spectra, axis=0)
         lag_spectra_std = np.std(lag_spectra, axis=0)
 
+        # Average coherence spectra
+        coh_spectra_mean = np.mean(coh_spectra, axis=0)
+        coh_spectra_std = np.std(coh_spectra, axis=0)
+
         freqs, freq_widths = lag_spectrum[0], lag_spectrum[1]
 
-        return freqs, freq_widths, lag_spectra_mean, lag_spectra_std
+        return freqs, freq_widths, lag_spectra_mean, lag_spectra_std, coh_spectra_mean, coh_spectra_std
 
     def plot(self, freqs=None, freq_widths=None, lags=None, lag_errors=None, **kwargs):
         """
