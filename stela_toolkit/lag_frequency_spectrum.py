@@ -1,11 +1,11 @@
 import numpy as np
+import matplotlib.pyplot as plt
 
 from ._check_inputs import _CheckInputs
 from .coherence import Coherence
 from .cross_spectrum import CrossSpectrum
 from .data_loader import LightCurve
 from .frequency_binning import FrequencyBinning
-from .plot import Plotter
 
 
 class LagFrequencySpectrum():
@@ -194,25 +194,46 @@ class LagFrequencySpectrum():
 
         return freqs, freq_widths, lag_spectra_mean, lag_spectra_std, coh_spectra_mean, coh_spectra_std
 
-    def plot(self, freqs=None, freq_widths=None, lags=None, lag_errors=None, **kwargs):
+    def plot(self, freqs=None, freq_widths=None, lags=None, lag_errors=None, cohs=None, coh_errors=None, **kwargs):
         """
-        Plots the lag-frequency spectrum.
-
-        Parameters:
-        - **kwargs: Keyword arguments for customizing the plot.
+        Plots the lag-frequency spectrum and coherence.
         """
         freqs = self.freqs if freqs is None else freqs
         freq_widths = self.freq_widths if freq_widths is None else freq_widths
         lags = self.lags if lags is None else lags
         lag_errors = self.lag_errors if lag_errors is None else lag_errors
+        cohs = self.cohs if cohs is None else cohs
+        coh_errors = self.coh_errors if coh_errors is None else coh_errors
 
+        fig, (ax1, ax2) = plt.subplots(2, 1, gridspec_kw={'height_ratios': [2, 1]}, figsize=(8, 6), sharex=True)
+
+        # Lag-frequency spectrum
         kwargs.setdefault('xlabel', 'Frequency')
         kwargs.setdefault('ylabel', 'Time Lags')
         kwargs.setdefault('xscale', 'log')
         kwargs.setdefault('yscale', 'log')
-        Plotter.plot(
-            x=freqs, y=lags, xerr=freq_widths, yerr=lag_errors, **kwargs
+        ax1.errorbar(
+            freqs, lags, xerr=freq_widths, yerr=lag_errors, fmt='o', label='Lag-Frequency Spectrum'
         )
+        ax1.set_xscale(kwargs['xscale'])
+        ax1.set_yscale(kwargs['yscale'])
+        ax1.set_ylabel(kwargs['ylabel'])
+        ax1.legend()
+        ax1.grid(True, which='both', linestyle='--', linewidth=0.5)
+
+        # Coherence spectrum
+        if cohs is not None and coh_errors is not None:
+            ax2.errorbar(
+                freqs, cohs, xerr=freq_widths, yerr=coh_errors, fmt='o', color='orange', label='Coherence'
+            )
+            ax2.set_xscale(kwargs['xscale'])
+            ax2.set_ylabel('Coherence')
+            ax2.legend()
+            ax2.grid(True, which='both', linestyle='--', linewidth=0.5)
+
+        fig.text(0.5, 0.04, kwargs['xlabel'], ha='center', va='center')
+        plt.tight_layout()
+        plt.show()
 
     def count_frequencies_in_bins(self, fmin=None, fmax=None, num_bins=None, bin_type="log", bin_edges=[]):
         """
