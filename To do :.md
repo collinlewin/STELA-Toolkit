@@ -1,10 +1,9 @@
 First actions:
-- create methods for multiple light curves
-- The input errors are not right in coherence, LFS, LES. Need to pass in errors properly, and figure out what to do with them.
-- All handling of noise needs to consider if the lightcurve is in counts or not, which will inform Poisson (scrap that parameter)
-    - Go through noise treatment in Gaussian process in general
-- Create tutorial, which will test all of the functionalities thus far
-- Allowing the user to make composite kernels.
+- Create methods for multiple light curves
+- Go through noise treatment in Gaussian process in general
+- Complete functionality test with known answer
+- Create tutorial
+- Allow the user to make composite kernels.
 
 Second actions:
 - Detection for training convergence, etc.
