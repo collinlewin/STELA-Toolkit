@@ -190,6 +190,16 @@ class Coherence:
 
     def compute_bias(self, power_spectrum1, power_spectrum2):
         """
+        Computes the Poisson noise bias term to correct coherence for white noise.
+        
+        Parameters:
+        - power_spectrum1 (array-like): Power spectrum of the first signal.
+        - power_spectrum2 (array-like): Power spectrum of the second signal.
+            *** Uses self.rates2 and self.bkg2 for Poisson noise calculation.
+
+        Returns:
+        - bias (array-like): Noise bias term normalized by the number of frequency bins.
+            *** Normalization uses count_frequencies_in_bins() from class attributes.
         """
         mean1 = np.mean(self.rates1)
         mean2 = np.mean(self.rates2)
