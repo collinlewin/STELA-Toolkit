@@ -67,9 +67,8 @@ class CrossSpectrum:
 
         # Use absolute min and max frequencies if set to 'auto'
         self.dt = np.diff(self.times1)[0]
-        # Account for floating point discrepancies
-        self.fmin = 1 / (max(self.times1) - min(self.times1)) - 1e-10 if fmin == 'auto' else fmin - 1e-10
-        self.fmax = 1 / (2 * self.dt) if fmax == 'auto' else fmax  # nyquist frequency
+        self.fmin = np.fft.rfftfreq(len(self.rates1), d=self.dt)[1] if fmin == 'auto' else fmin
+        self.fmax = np.fft.rfftfreq(len(self.rates1), d=self.dt)[-1] if fmax == 'auto' else fmax  # nyquist frequency
 
         self.num_bins = num_bins
         self.bin_type = bin_type
