@@ -63,3 +63,22 @@ def train_gp_model(train_x, train_y, kernel, lr = 0.01, training_iter = 2000, ve
     inf_crit = bic(-loss.item(), num_params, len(train_x))
     
     return model, likelihood, inf_crit
+
+# missing components, but here for testing if needed
+light_curve_standardized = (light_curve - np.mean(light_curve)) / np.std(light_curve)
+plt.scatter(time, light_curve_standardized, s=2)
+plt.show()
+
+train_x = torch.tensor(time).float()
+train_y = torch.tensor(light_curve_standardized).float()
+
+# kernel comparison using bayesian information criterion
+model, likelihood, inf_crit = train_gp_model(train_x, train_y, 
+                                             'Matern12', lr = 1e-1,
+                                             verbal = True)
+
+print('Model hypers: ', model.covar_module.base_kernel.lengthscale.item(), model.likelihood.noise.item())
+
+# Get into evaluation (predictive posterior) mode
+model.eval()
+likelihood.eval()
