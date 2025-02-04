@@ -188,24 +188,23 @@ class PowerSpectrum:
         kwargs.setdefault('yscale', 'log')
         Plotter.plot(x=freqs, y=powers, xerr=freq_widths, yerr=power_errors, **kwargs)
 
-    def count_frequencies_in_bins(self, fmin=None, fmax=None, num_bins=None, bin_type="log", bin_edges=[]):
+    def count_frequencies_in_bins(self, fmin=None, fmax=None, num_bins=None, bin_type=None, bin_edges=[]):
         """
-        Counts the number of frequencies in each bin for the power spectrum.
+        Counts the number of frequencies in each frequency bin.
         Wrapper method to use FrequencyBinning.count_frequencies_in_bins with class attributes.
 
-        If 
         Parameters:
         - fmin (float): Minimum frequency (optional).
         - fmax (float): Maximum frequency (optional).
-            Class attributes will be used if not specified.
+            *** Class attributes will be used if not specified.
         - num_bins (int): Number of bins to create (if bin_edges is not provided).
         - bin_type (str): Type of binning ("log" or "linear").
         - bin_edges (array-like): Custom array of bin edges (optional).
+            *** Class attributes will be used if not specified.
 
         Returns:
         - bin_counts (list): List of counts of frequencies in each bin.
         """
         return FrequencyBinning.count_frequencies_in_bins(
-            parent=self, fmin=fmin, fmax=fmax,
-            num_bins=num_bins, bin_type=bin_type, bin_edges=bin_edges
+            self, fmin=fmin, fmax=fmax, num_bins=num_bins, bin_type=bin_type, bin_edges=bin_edges
         )

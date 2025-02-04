@@ -28,8 +28,6 @@ class LagFrequencySpectrum():
     - bin_edges (array-like, optional): Custom bin edges. If provided, overrides num_bins.
     - subtract_coh_bias (bool, optional): Whether to subtract the coherence bias. 
         Defaults to True.
-    - poisson_stats (bool, optional): Whether to assume Poisson noise statistics. 
-        Defaults to False.
     - plot_lfs (bool, optional): Whether to plot the resulting lag frequency spectrum.
         Defaults to False.
 
@@ -48,7 +46,6 @@ class LagFrequencySpectrum():
                  bin_type="log",
                  bin_edges=[],
                  subtract_coh_bias=True,
-                 poisson_stats=False,
                  plot_lfs=False,
                  ):
         # To do: update main docstring for lag interpretation, add coherence in plotting !!
@@ -82,9 +79,7 @@ class LagFrequencySpectrum():
         if len(self.rates1.shape) == 2 and len(self.rates2.shape) == 2:
             lag_spectrum = self.compute_stacked_lag_spectrum()
         else:
-            lag_spectrum = self.compute_lag_spectrum(subtract_coh_bias=subtract_coh_bias,
-                                                     poisson_stats=poisson_stats
-                                                     )
+            lag_spectrum = self.compute_lag_spectrum(subtract_coh_bias=subtract_coh_bias)
 
         self.freqs, self.freq_widths, self.lags, self.lag_errors, self.cohs, self.coh_errors = lag_spectrum
 
@@ -94,7 +89,7 @@ class LagFrequencySpectrum():
     def compute_lag_spectrum(self, 
                              times1=None, rates1=None,
                              times2=None, rates2=None,
-                             subtract_coh_bias=True, poisson_stats=False):
+                             subtract_coh_bias=True):
         """
         Computes the lag spectrum for the given light curves.
 
@@ -107,7 +102,6 @@ class LagFrequencySpectrum():
         - bin_type (str, optional): Type of binning ('log' or 'linear').
         - bin_edges (array-like, optional): Predefined edges for frequency bins.
         - subtract_noise_bias (bool, optional): Whether to subtract noise bias.
-        - poisson_stats (bool, optional): Whether to assume Poisson noise statistics.
         - compute_errors (bool, optional): Whether to compute uncertainties for lag values.
 
         Returns:
@@ -138,7 +132,7 @@ class LagFrequencySpectrum():
         coherence = Coherence(lc1, lc2,
                                 fmin=self.fmin, fmax=self.fmax,
                                 num_bins=self.num_bins, bin_type=self.bin_type, bin_edges=self.bin_edges,
-                                subtract_noise_bias=subtract_coh_bias, poisson_stats=poisson_stats
+                                subtract_noise_bias=subtract_coh_bias
                                 )
         cohs = coherence.cohs
         coh_errors = cohs.coh_errors
@@ -235,12 +229,11 @@ class LagFrequencySpectrum():
         plt.tight_layout()
         plt.show()
 
-    def count_frequencies_in_bins(self, fmin=None, fmax=None, num_bins=None, bin_type="log", bin_edges=[]):
+    def count_frequencies_in_bins(self, fmin=None, fmax=None, num_bins=None, bin_type=None, bin_edges=[]):
         """
-        Counts the number of frequencies in each bin for the power spectrum.
+        Counts the number of frequencies in each frequency bin.
         Wrapper method to use FrequencyBinning.count_frequencies_in_bins with class attributes.
 
-        If 
         Parameters:
         - fmin (float): Minimum frequency (optional).
         - fmax (float): Maximum frequency (optional).
@@ -254,5 +247,5 @@ class LagFrequencySpectrum():
         - bin_counts (list): List of counts of frequencies in each bin.
         """
         return FrequencyBinning.count_frequencies_in_bins(
-            parent=self, fmin=fmin, fmax=fmax, num_bins=num_bins, bin_type=bin_type, bin_edges=bin_edges
+            self, fmin=fmin, fmax=fmax, num_bins=num_bins, bin_type=bin_type, bin_edges=bin_edges
         )

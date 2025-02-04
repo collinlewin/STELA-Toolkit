@@ -82,7 +82,7 @@ class FrequencyBinning:
         )
 
     @staticmethod
-    def count_frequencies_in_bins(spectrum, fmin=None, fmax=None, num_bins=None, bin_type="log", bin_edges=[]):
+    def count_frequencies_in_bins(spectrum, fmin=None, fmax=None, num_bins=None, bin_type=None bin_edges=[]):
         """
         Counts the number of frequencies in each bin for the power spectrum.
 

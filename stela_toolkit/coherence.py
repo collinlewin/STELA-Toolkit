@@ -31,7 +31,6 @@ class Coherence:
     - bin_type (str, optional): Type of binning ('log' or 'linear').
     - bin_edges (array-like, optional): Custom bin edges for binning.
     - subtract_noise_bias (bool, optional): Whether to subtract the noise bias from coherence.
-    - poisson_stats (bool, optional): Whether to use Poisson statistics for noise computation.
     - plot_coh (bool, optional): Whether to automatically plot the coherence spectrum.
 
     Attributes:
@@ -50,7 +49,6 @@ class Coherence:
                  bin_type="log",
                  bin_edges=[],
                  subtract_noise_bias=True,
-                 poisson_stats=False,
                  bkg1=0,
                  bkg2=0,
                  plot_coh=False
@@ -89,21 +87,16 @@ class Coherence:
         # this needs to be corrected for handling different shapes and dim val1 != dim val2
         # namely for multiple observations
         if len(self.rates1.shape) == 2 and len(self.rates2.shape) == 2:
-            coherence_spectrum = self.compute_stacked_coherence(subtract_noise_bias=subtract_noise_bias,
-                                                                poisson_stats=poisson_stats
-                                                                )
+            coherence_spectrum = self.compute_stacked_coherence(subtract_noise_bias=subtract_noise_bias)
         else:
-            coherence_spectrum = self.compute_coherence(subtract_noise_bias=subtract_noise_bias,
-                                                        poisson_stats=poisson_stats
-                                                        )
+            coherence_spectrum = self.compute_coherence(subtract_noise_bias=subtract_noise_bias)
 
         self.freqs, self.freq_widths, self.cohs, self.coh_errors = coherence_spectrum
 
         if plot_coh:
             self.plot()
 
-    def compute_coherence(self, times1=None, rates1=None, times2=None, rates2=None,
-                          subtract_noise_bias=True, poisson_stats=False):
+    def compute_coherence(self, times1=None, rates1=None, times2=None, rates2=None, subtract_noise_bias=True):
         """
         Computes the coherence between two light curves.
 
@@ -116,7 +109,6 @@ class Coherence:
         - bin_type (str, optional): Type of binning ('log' or 'linear').
         - bin_edges (array-like, optional): Custom bin edges for binning.
         - subtract_noise_bias (bool, optional): Whether to subtract the noise bias.
-        - poisson_stats (bool, optional): Whether to use Poisson statistics for noise computation.
 
         Returns:
         - freqs (array-like): Frequencies of the coherence spectrum.
@@ -152,14 +144,14 @@ class Coherence:
         cs = cross_spectrum.cs
 
         if subtract_noise_bias:
-            bias = self.compute_bias(ps1, ps2, poisson_stats=poisson_stats)
+            bias = self.compute_bias(ps1, ps2)
         else:
             bias = 0
 
         coherence = (np.abs(cs) ** 2 - bias) / ps1 * ps2
         return power_spectrum1.freqs, power_spectrum1.freq_widths, coherence, None
 
-    def compute_stacked_coherence(self, subtract_noise_bias=True, poisson_stats=False):
+    def compute_stacked_coherence(self, subtract_noise_bias=True):
         """
         Computes the coherence spectrum for stacked realizations.
 
@@ -173,7 +165,6 @@ class Coherence:
         - bin_type (str, optional): Type of binning ('log' or 'linear').
         - bin_edges (array-like, optional): Custom bin edges for binning.
         - subtract_noise_bias (bool, optional): Whether to subtract the noise bias.
-        - poisson_stats (bool, optional): Whether to use Poisson statistics for noise computation.
 
         Returns:
         - freqs (array-like): Frequencies of the coherence spectrum.
@@ -186,7 +177,7 @@ class Coherence:
             coherence_spectrum = self.compute_coherence(
                 times1=self.times1, rates1=self.rates1[i], errors1=self.errors1,
                 times2=self.times2, rates2=self.rates2[i], errors2=self.errors2,
-                subtract_noise_bias=subtract_noise_bias, poisson_stats=poisson_stats
+                subtract_noise_bias=subtract_noise_bias
             )
             freqs, freq_widths, coherence, _ = coherence_spectrum
             coherences.append(coherence)
@@ -197,33 +188,23 @@ class Coherence:
 
         return freqs, freq_widths, coherences_mean, coherences_std
 
-    def compute_bias(self, power_spectrum1, power_spectrum2, poisson_stats=False):
+    def compute_bias(self, power_spectrum1, power_spectrum2):
         """
         """
         mean1 = np.mean(self.rates1)
         mean2 = np.mean(self.rates2)
-        if poisson_stats:
-            pnoise1 = 2 * (mean1 + self.bkg1) / mean1 ** 2
-            pnoise2 = 2 * (mean2 + self.bkg2) / mean2 ** 2
-        else:
-            # compute the noise bias using errors
-            if len(self.errors1) > 0 or len(self.errors2) > 0:
-                print("Warning: Poisson statistics are not used, but no errors are provided.")
-                print("Estimating average uncertainties as np.sqrt(mean) for noise bias.")
-                mean_error1 = np.mean(np.sqrt(self.rates1))
-                mean_error2 = np.mean(np.sqrt(self.rates2))
 
-            mean_error1 = np.mean(self.errors1)
-            mean_error2 = np.mean(self.errors2)
-            nyquist_freq = 1 / (2 * self.dt)
-            pnoise1 = mean_error1 ** 2 / (nyquist_freq * mean1 ** 2)
-            pnoise2 = mean_error2 ** 2 / (nyquist_freq * mean2 ** 2)
+        pnoise1 = 2 * (mean1 + self.bkg1) / mean1 ** 2
+        pnoise2 = 2 * (mean2 + self.bkg2) / mean2 ** 2
 
         bias = (
             pnoise2 * (power_spectrum1 - pnoise1)
             + pnoise1 * (power_spectrum2 - pnoise2)
             + pnoise1 * pnoise2
         )
+
+        num_freq = self.count_frequencies_in_bins()
+        bias /= num_freq
         return bias
 
     def plot(self, freqs=None, freq_widths=None, cohs=None, coh_errors=None, **kwargs):
@@ -246,12 +227,11 @@ class Coherence:
             x=freqs, y=cohs, xerr=freq_widths, yerr=coh_errors, **kwargs
         )
 
-    def count_frequencies_in_bins(self, fmin=None, fmax=None, num_bins=None, bin_type="log", bin_edges=[]):
+    def count_frequencies_in_bins(self, fmin=None, fmax=None, num_bins=None, bin_type=None, bin_edges=[]):
         """
         Counts the number of frequencies in each frequency bin.
         Wrapper method to use FrequencyBinning.count_frequencies_in_bins with class attributes.
 
-        If 
         Parameters:
         - fmin (float): Minimum frequency (optional).
         - fmax (float): Maximum frequency (optional).
@@ -265,5 +245,5 @@ class Coherence:
         - bin_counts (list): List of counts of frequencies in each bin.
         """
         return FrequencyBinning.count_frequencies_in_bins(
-            parent=self, fmin=fmin, fmax=fmax, num_bins=num_bins, bin_type=bin_type, bin_edges=bin_edges
+            self, fmin=fmin, fmax=fmax, num_bins=num_bins, bin_type=bin_type, bin_edges=bin_edges
         )

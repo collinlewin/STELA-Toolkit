@@ -28,8 +28,6 @@ class LagEnergySpectrum():
     - bin_edges (array-like): Energy bin edges used to define the energy bands.
     - subtract_coh_bias (bool, optional): Whether to subtract the coherence bias. 
     Defaults to True.
-    - poisson_stats (bool, optional): Whether to assume Poisson noise statistics. 
-    Defaults to False.
     - plot_les (bool, optional): Whether to plot the resulting lag energy spectrum. 
     Defaults to False.
 
@@ -46,7 +44,6 @@ class LagEnergySpectrum():
                  fmax,
                  bin_edges=[],
                  subtract_coh_bias=True,
-                 poisson_stats=False,
                  plot_les=False,
                  ):
         # To do: update main docstring for lag interpretation, coherence plotting
@@ -61,15 +58,13 @@ class LagEnergySpectrum():
         self.energy_widths = np.diff(bin_edges) / 2
 
         self.fmin, self.fmax = fmin, fmax
-        lag_spectrum = self.compute_lag_spectrum(subtract_coh_bias=subtract_coh_bias, 
-                                                 poisson_stats=poisson_stats
-                                                 )
+        lag_spectrum = self.compute_lag_spectrum(subtract_coh_bias=subtract_coh_bias)
         self.lags, self.lag_errors, self.cohs, self. coh_errors = lag_spectrum
 
         if plot_les:
             self.plot()
 
-    def compute_lag_spectrum(self, subtract_coh_bias, poisson_stats):
+    def compute_lag_spectrum(self, subtract_coh_bias):
         lags, lag_errors, cohs, coh_errors = [], [], [], []
         for i in range(len(self.data_models1)):
             lfs = LagFrequencySpectrum(self.data_models1[i],
@@ -78,7 +73,6 @@ class LagEnergySpectrum():
                                        fmax=self.fmax,
                                        num_bins=1,
                                        subtract_coh_bias=subtract_coh_bias,
-                                       poisson_stats=poisson_stats
                                        )
             lags.append(lfs.lags)
             lag_errors.append(lfs.lag_errors)
@@ -131,9 +125,9 @@ class LagEnergySpectrum():
         plt.tight_layout()
         plt.show()
 
-    def count_frequencies_in_bins(self, fmin=None, fmax=None, num_bins=None, bin_type="log", bin_edges=[]):
+    def count_frequencies_in_bins(self, fmin=None, fmax=None, num_bins=None, bin_type=None, bin_edges=[]):
         """
-        Counts the number of frequencies in each bin for the power spectrum.
+        Counts the number of frequencies in each frequency bin.
         Wrapper method to use FrequencyBinning.count_frequencies_in_bins with class attributes.
 
         If 
@@ -145,10 +139,10 @@ class LagEnergySpectrum():
         - bin_type (str): Type of binning ("log" or "linear").
         - bin_edges (array-like): Custom array of bin edges (optional).
             *** Class attributes will be used if not specified.
-        
+
         Returns:
         - bin_counts (list): List of counts of frequencies in each bin.
         """
         return FrequencyBinning.count_frequencies_in_bins(
-            parent=self, fmin=fmin, fmax=fmax, num_bins=num_bins, bin_type=bin_type, bin_edges=bin_edges
+            self, fmin=fmin, fmax=fmax, num_bins=num_bins, bin_type=bin_type, bin_edges=bin_edges
         )
