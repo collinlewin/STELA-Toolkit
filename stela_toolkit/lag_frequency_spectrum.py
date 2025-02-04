@@ -113,11 +113,12 @@ class LagFrequencySpectrum():
         if times1 and rates1:
             lc1 = LightCurve(times=times1, rates=rates1)
         else:
-            lc1 = LightCurve(times=self.times1, rates=self.rates1, errors=self.errors1)
+            lc1 = LightCurve(times=self.times1, rates=self.rates1)
+            
         if times2 and rates2:
             lc2 = LightCurve(times=times2, rates=rates2)
         else:
-            lc2 = LightCurve(times=self.times2, rates=self.rates2, errors=self.errors2)
+            lc2 = LightCurve(times=self.times2, rates=self.rates2)
 
         # Compute the cross spectrum
         cross_spectrum = CrossSpectrum(lc1, lc2,

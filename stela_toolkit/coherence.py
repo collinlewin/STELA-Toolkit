@@ -58,13 +58,13 @@ class Coherence:
         if input_data['type'] == 'model':
             self.times1, self.rates1 = input_data['data']
         else:
-            self.times1, self.rates1, self.errors1 = input_data['data']
+            self.times1, self.rates1, _ = input_data['data']
 
         input_data = _CheckInputs._check_lightcurve_or_model(lightcurve_or_model2)
         if input_data['type'] == 'model':
             self.times2, self.rates2 = input_data['data']
         else:
-            self.times2, self.rates2, self.errors2 = input_data['data']
+            self.times2, self.rates2, _ = input_data['data']
         _CheckInputs._check_input_bins(num_bins, bin_type, bin_edges)
 
         if not np.allclose(self.times1, self.times2):
@@ -101,13 +101,8 @@ class Coherence:
         Computes the coherence between two light curves.
 
         Parameters:
-        - times1, rates1, errors1 (array-like, optional): Data for the first light curve.
-        - times2, rates2, errors2 (array-like, optional): Data for the second light curve.
-        - fmin (float or 'auto', optional): Minimum frequency for computation.
-        - fmax (float or 'auto', optional): Maximum frequency for computation.
-        - num_bins (int, optional): Number of bins for frequency binning.
-        - bin_type (str, optional): Type of binning ('log' or 'linear').
-        - bin_edges (array-like, optional): Custom bin edges for binning.
+        - times1, rates1 (array-like, optional): Data for the first light curve.
+        - times2, rates2 (array-like, optional): Data for the second light curve.
         - subtract_noise_bias (bool, optional): Whether to subtract the noise bias.
 
         Returns:
@@ -174,11 +169,10 @@ class Coherence:
         """
         coherences = []
         for i in range(self.rates1.shape[0]):
-            coherence_spectrum = self.compute_coherence(
-                times1=self.times1, rates1=self.rates1[i], errors1=self.errors1,
-                times2=self.times2, rates2=self.rates2[i], errors2=self.errors2,
-                subtract_noise_bias=subtract_noise_bias
-            )
+            coherence_spectrum = self.compute_coherence(times1=self.times1, rates1=self.rates1[i],
+                                                        times2=self.times2, rates2=self.rates2[i],
+                                                        subtract_noise_bias=subtract_noise_bias
+                                                    )
             freqs, freq_widths, coherence, _ = coherence_spectrum
             coherences.append(coherence)
 
@@ -191,7 +185,7 @@ class Coherence:
     def compute_bias(self, power_spectrum1, power_spectrum2):
         """
         Computes the Poisson noise bias term to correct coherence for white noise.
-        
+
         Parameters:
         - power_spectrum1 (array-like): Power spectrum of the first signal.
         - power_spectrum2 (array-like): Power spectrum of the second signal.
