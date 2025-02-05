@@ -101,18 +101,20 @@ class PowerSpectrum:
         freqs = freqs[valid_mask]
         powers = powers[valid_mask]
 
+        if norm:
+            powers /= length * np.mean(rates) ** 2 / (2 * self.dt)
+
+        # Apply binning
         if self.num_bins or self.bin_edges:
+            
             if self.bin_edges:
-                # use custom bin edges
-                bin_edges = FrequencyBinning.define_bins(
-                    self.fmin, self.fmax, num_bins=self.num_bins,
-                    bin_type=self.bin_type, bin_edges=self.bin_edges
-                )
+                bin_edges = FrequencyBinning.define_bins(self.fmin, self.fmax, num_bins=self.num_bins, 
+                                                         bin_type=self.bin_type, bin_edges=self.bin_edges
+                                                        )
+
             elif self.num_bins:
-                # use equal-width bins in log or linear space
-                bin_edges = FrequencyBinning.define_bins(
-                    self.fmin, self.fmax, num_bins=self.num_bins, bin_type=self.bin_type
-                )
+                bin_edges = FrequencyBinning.define_bins(self.fmin, self.fmax, num_bins=self.num_bins, bin_type=self.bin_type)
+
             else:
                 raise ValueError("Either num_bins or bin_edges must be provided.\n"
                                  "In other words, you must specify the number of bins or the bin edges.")
@@ -121,13 +123,6 @@ class PowerSpectrum:
             freqs, freq_widths, powers, power_errors = binned_power
         else:
             freq_widths, power_errors = None, None
-
-        # Normalize power spectrum to units of variance
-        if norm:
-            powers /= length * np.mean(rates) ** 2 / (2 * self.dt)
-
-            if power_errors is not None:
-                power_errors /= length * np.mean(rates) ** 2 / (2 * self.dt)
 
         return freqs, freq_widths, powers, power_errors
 
