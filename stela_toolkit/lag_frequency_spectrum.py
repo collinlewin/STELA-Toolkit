@@ -109,15 +109,13 @@ class LagFrequencySpectrum():
         - lags (array-like): Computed lag values.
         - lag_errors (array-like): Uncertainty of the lag values.
         """
-        if times1 and rates1:
-            lc1 = LightCurve(times=times1, rates=rates1)
-        else:
-            lc1 = LightCurve(times=self.times1, rates=self.rates1)
-            
-        if times2 and rates2:
-            lc2 = LightCurve(times=times2, rates=rates2)
-        else:
-            lc2 = LightCurve(times=self.times2, rates=self.rates2)
+        times1 = times1 if times1 is not None else self.times1
+        times2 = times2 if times2 is not None else self.times2
+        rates1 = rates1 if rates1 is not None else self.rates1
+        rates2 = rates2 if rates2 is not None else self.rates2 
+
+        lc1 = LightCurve(times=times1, rates=rates1)
+        lc2 = LightCurve(times=times2, rates=rates2)
 
         # Compute the cross spectrum
         cross_spectrum = CrossSpectrum(lc1, lc2,
@@ -137,8 +135,9 @@ class LagFrequencySpectrum():
         cohs = coherence.cohs
         coh_errors = coherence.coh_errors
 
+        num_freq = self.count_frequencies_in_bins()
         phase_errors = np.sqrt(
-            (1 - coherence.cohs) / (2 * coherence.cohs)
+            (1 - coherence.cohs) / (2 * coherence.cohs * num_freq)
         )
 
         lag_errors = phase_errors / (2 * np.pi * cross_spectrum.freqs)
