@@ -205,7 +205,6 @@ class Coherence:
             + pnoise1 * (power_spectrum2 - pnoise2)
             + pnoise1 * pnoise2
         )
-
         num_freq = self.count_frequencies_in_bins()
         bias /= num_freq
         return bias

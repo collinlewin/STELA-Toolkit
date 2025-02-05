@@ -99,23 +99,41 @@ class FrequencyBinning:
         """
         # Use spectrum's attributes if not provided
         fmin = spectrum.fmin if fmin is None else fmin
-        fmax = spectrum.fmin if fmax is None else fmax
+        fmax = spectrum.fmax if fmax is None else fmax
         num_bins = spectrum.num_bins if num_bins is None else num_bins
         bin_type = spectrum.bin_type if bin_type is None else bin_type
         bin_edges = spectrum.bin_edges if bin_edges is None else bin_edges
 
-        # Check if bin_edges or num_bins provided
-        if len(bin_edges) == 0:
-            bin_edges = FrequencyBinning.define_bins(
-                fmin, fmax, num_bins=num_bins, bin_type=bin_type, bin_edges=bin_edges
-            )
+        # Define time array from input class
+        if hasattr(spectrum, 'times'):  
+            times = spectrum.times
+        elif hasattr(spectrum, 'times1'):
+            times = spectrum.times1
         else:
-            bin_edges = np.array(bin_edges)
+            raise AttributeError('Input class object for frequency binning does not have a time array properly defined.')
 
-        # Use spectrum's times attribute
-        length = len(spectrum.times)
-        dt = np.diff(spectrum.times)[0]
-        freqs = np.fft.fftfreq(length, d=dt)
+        length = len(times) 
+        dt = np.diff(times)[0]
+        freqs = np.fft.rfftfreq(length, d=dt)
+        freq_mask = (freqs >= fmin) & (freqs <= fmax)
+        freqs = freqs[freq_mask]
+
+        # if neither num_bins nor bin_edges have been provided, no binning
+        if not any([num_bins, bin_edges]):
+            return np.ones(len(freqs))
+            
+        # Check if bin_edges or num_bins provided
+        if len(bin_edges) == 0 and fmin and fmax and num_bins:
+            bin_edges = FrequencyBinning.define_bins(fmin, fmax, num_bins=num_bins, 
+                                                     bin_type=bin_type, bin_edges=bin_edges
+                                                    )
+        elif len(bin_edges) > 0:
+            bin_edges = np.array(bin_edges)
+        else:
+            raise ValueError(
+                "Frequency binning requires either 1) defined bin edges, 2) num_bins + fmin + fmax., \
+                3) all defined as none to leave products unbinned."
+            )
 
         # Count frequencies in bins
         bin_counts = np.histogram(freqs, bins=bin_edges)[0]
