@@ -140,19 +140,20 @@ class CrossSpectrum:
             binned_cross_spectrum = FrequencyBinning.bin_data(freqs, cross_spectrum, bin_edges)
             freqs, freq_widths, cross_spectrum, cross_spectrum_errors = binned_cross_spectrum
         else:
-            freq_widths = None
-            cross_spectrum_errors = None
+            freq_widths, cross_spectrum_errors = None, None
 
         # Normalize power spectrum to units of variance
         if norm:
             length = len(rates1)
             norm_factor = length * np.mean(rates1) * np.mean(rates2) / (2 * self.dt)
             cross_spectrum /= norm_factor
+
             # negative norm factor shifts the phase by pi
             if norm_factor < 0:
                 phase = np.angle(cross_spectrum)
                 cross_spectrum = np.abs(cross_spectrum) * np.exp(1j * phase)
-            if cross_spectrum_errors:
+                
+            if cross_spectrum_errors is not None:
                 cross_spectrum_errors /= length * np.mean(rates1) * np.mean(rates2) / (2 * self.dt)
 
         return freqs, freq_widths, cross_spectrum, cross_spectrum_errors

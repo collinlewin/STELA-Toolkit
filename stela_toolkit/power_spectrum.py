@@ -125,7 +125,8 @@ class PowerSpectrum:
         # Normalize power spectrum to units of variance
         if norm:
             powers /= length * np.mean(rates) ** 2 / (2 * self.dt)
-            if power_errors:
+
+            if power_errors is not None:
                 power_errors /= length * np.mean(rates) ** 2 / (2 * self.dt)
 
         return freqs, freq_widths, powers, power_errors

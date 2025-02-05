@@ -64,6 +64,7 @@ class FrequencyBinning:
         binned_value_errors = []
         for i in range(len(bin_edges) - 1):
             mask = (freqs >= bin_edges[i]) & (freqs < bin_edges[i + 1])
+            num_freqs = np.sum(mask)
             if mask.any():
                 binned_freqs.append(freqs[mask].mean())
                 binned_values.append(values[mask].mean())
@@ -78,7 +79,7 @@ class FrequencyBinning:
             np.array(binned_freqs),
             np.array(binned_freq_widths),
             np.array(binned_values),
-            np.array(binned_value_errors),
+            np.array(binned_value_errors) / np.sqrt(num_freqs),
         )
 
     @staticmethod
