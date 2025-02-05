@@ -30,15 +30,19 @@ class FrequencyBinning:
         if len(bin_edges) > 0:
             # Use custom bins
             bin_edges = np.array(bin_edges)
-        elif bin_type == "log":
-            # Define logarithmic bins
-            bin_edges = np.logspace(np.log10(fmin), np.log10(fmax), num_bins + 1)
-        elif bin_type == "linear":
-            # Define linear bins
-            bin_edges = np.linspace(fmin, fmax, num_bins + 1)
         else:
-            raise ValueError(
-                f"Unsupported bin_type '{bin_type}'. Choose 'log', 'linear', or provide custom bins.")
+
+            if bin_type == "log":
+                # Define logarithmic bins
+                bin_edges = np.logspace(np.log10(fmin), np.log10(fmax), num_bins + 1)
+
+            elif bin_type == "linear":
+                # Define linear bins
+                bin_edges = np.linspace(fmin, fmax, num_bins + 1)
+
+            else:
+                raise ValueError(
+                    f"Unsupported bin_type '{bin_type}'. Choose 'log', 'linear', or provide custom bins.")
 
         return bin_edges
 
@@ -62,24 +66,30 @@ class FrequencyBinning:
         binned_freq_widths = []
         binned_values = []
         binned_value_errors = []
+
         for i in range(len(bin_edges) - 1):
             mask = (freqs >= bin_edges[i]) & (freqs < bin_edges[i + 1])
             num_freqs = np.sum(mask)
-            if mask.any():
-                binned_freqs.append(freqs[mask].mean())
-                binned_values.append(values[mask].mean())
-                binned_value_errors.append(values[mask].std())
 
-                # Calculate bin half-widths for error bars
+            if mask.any():
                 lower_bound = bin_edges[i]
                 upper_bound = bin_edges[i + 1]
-                binned_freq_widths.append((upper_bound - lower_bound) / 2)
+                bin_cent = (upper_bound + lower_bound) / 2
+
+                binned_freqs.append(bin_cent)
+                binned_freq_widths.append(bin_cent - lower_bound)
+                binned_values.append(
+                    np.mean(values[mask])
+                )
+                binned_value_errors.append(
+                    np.std(values[mask]) / np.sqrt(num_freqs)
+                )
 
         return (
             np.array(binned_freqs),
             np.array(binned_freq_widths),
             np.array(binned_values),
-            np.array(binned_value_errors) / np.sqrt(num_freqs),
+            np.array(binned_value_errors),
         )
 
     @staticmethod
