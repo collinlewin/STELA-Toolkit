@@ -105,19 +105,12 @@ class FrequencyBinning:
         bin_edges = spectrum.bin_edges if bin_edges is None else bin_edges
 
         # Check if bin_edges or num_bins provided
-        if len(bin_edges) == 0 and num_bins is None:
-            bin_edges = FrequencyBinning.define_bins(
-                spectrum.fmin, spectrum.fmax, num_bins=spectrum.num_bins,
-                bin_type=spectrum.bin_type, bin_edges=spectrum.bin_edges
-            )
-        elif num_bins is not None:
+        if len(bin_edges) == 0:
             bin_edges = FrequencyBinning.define_bins(
                 fmin, fmax, num_bins=num_bins, bin_type=bin_type, bin_edges=bin_edges
             )
-        elif len(bin_edges) > 0:
-            bin_edges = np.array(bin_edges)
         else:
-            raise ValueError("Either num_bins or bin_edges must be provided.")
+            bin_edges = np.array(bin_edges)
 
         # Use spectrum's times attribute
         length = len(spectrum.times)
