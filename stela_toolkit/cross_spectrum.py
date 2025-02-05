@@ -121,6 +121,17 @@ class CrossSpectrum:
         freqs = freqs[valid_mask]
         cross_spectrum = cross_spectrum[valid_mask]
 
+        # Normalize power spectrum to units of variance
+        if norm:
+            length = len(rates1)
+            norm_factor = length * np.mean(rates1) * np.mean(rates2) / (2 * self.dt)
+            cross_spectrum /= norm_factor
+
+            # negative norm factor shifts the phase by pi
+            if norm_factor < 0:
+                phase = np.angle(cross_spectrum)
+                cross_spectrum = np.abs(cross_spectrum) * np.exp(1j * phase)
+
         if self.num_bins or self.bin_edges:
             if self.bin_edges:
                 # use custom bin edges
@@ -141,20 +152,6 @@ class CrossSpectrum:
             freqs, freq_widths, cross_spectrum, cross_spectrum_errors = binned_cross_spectrum
         else:
             freq_widths, cross_spectrum_errors = None, None
-
-        # Normalize power spectrum to units of variance
-        if norm:
-            length = len(rates1)
-            norm_factor = length * np.mean(rates1) * np.mean(rates2) / (2 * self.dt)
-            cross_spectrum /= norm_factor
-
-            # negative norm factor shifts the phase by pi
-            if norm_factor < 0:
-                phase = np.angle(cross_spectrum)
-                cross_spectrum = np.abs(cross_spectrum) * np.exp(1j * phase)
-                
-            if cross_spectrum_errors is not None:
-                cross_spectrum_errors /= length * np.mean(rates1) * np.mean(rates2) / (2 * self.dt)
 
         return freqs, freq_widths, cross_spectrum, cross_spectrum_errors
 
