@@ -53,13 +53,13 @@ class LagFrequencySpectrum():
         if input_data['type'] == 'model':
             self.times1, self.rates1 = input_data['data']
         else:
-            self.times1, self.rates1, self.errors1 = input_data['data']
+            self.times1, self.rates1, _ = input_data['data']
 
         input_data = _CheckInputs._check_lightcurve_or_model(lightcurve_or_model2)
         if input_data['type'] == 'model':
             self.times2, self.rates2 = input_data['data']
         else:
-            self.times2, self.rates2, self.errors2 = input_data['data']
+            self.times2, self.rates2, _ = input_data['data']
 
         _CheckInputs._check_input_bins(num_bins, bin_type, bin_edges)
 
@@ -125,17 +125,17 @@ class LagFrequencySpectrum():
                                        num_bins=self.num_bins, bin_type=self.bin_type,
                                        bin_edges=self.bin_edges,
                                        norm=False
-                                       )
+                                    )
 
         lags = np.angle(cross_spectrum.cs) / (2 * np.pi * cross_spectrum.freqs)
 
         coherence = Coherence(lc1, lc2,
-                                fmin=self.fmin, fmax=self.fmax,
-                                num_bins=self.num_bins, bin_type=self.bin_type, bin_edges=self.bin_edges,
-                                subtract_noise_bias=subtract_coh_bias
-                                )
+                              fmin=self.fmin, fmax=self.fmax,
+                              num_bins=self.num_bins, bin_type=self.bin_type, bin_edges=self.bin_edges,
+                              subtract_noise_bias=subtract_coh_bias
+                            )    
         cohs = coherence.cohs
-        coh_errors = cohs.coh_errors
+        coh_errors = coherence.coh_errors
 
         phase_errors = np.sqrt(
             (1 - coherence.cohs) / (2 * coherence.cohs)
