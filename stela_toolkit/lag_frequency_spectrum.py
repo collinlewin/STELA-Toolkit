@@ -2,6 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 from ._check_inputs import _CheckInputs
+from ._clarify_warnings import _ClearWarnings
 from .coherence import Coherence
 from .cross_spectrum import CrossSpectrum
 from .data_loader import LightCurve
@@ -136,8 +137,11 @@ class LagFrequencySpectrum():
         coh_errors = coherence.coh_errors
 
         num_freq = self.count_frequencies_in_bins()
-        phase_errors = np.sqrt(
-            (1 - coherence.cohs) / (2 * coherence.cohs * num_freq)
+
+        phase_errors = _ClearWarnings.run(
+            lambda: np.sqrt((1 - coherence.cohs) / (2 * coherence.cohs * num_freq)),
+            explanation="Error from sqrt when computing (unbinned) phase errors here is common "
+                        "and typically due to >1 coherence at the minimum frequency."
         )
 
         lag_errors = phase_errors / (2 * np.pi * cross_spectrum.freqs)
