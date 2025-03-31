@@ -51,7 +51,7 @@ class PowerSpectrum:
 
         # Use absolute min and max frequencies if set to 'auto'
         self.dt = np.diff(self.times)[0]
-        self.fmin = np.fft.rfftfreq(len(self.rates), d=self.dt)[0] if fmin == 'auto' else fmin
+        self.fmin = np.fft.rfftfreq(len(self.rates), d=self.dt)[1] if fmin == 'auto' else fmin
         self.fmax = np.fft.rfftfreq(len(self.rates), d=self.dt)[-1] if fmax == 'auto' else fmax  # nyquist frequency
 
         self.num_bins = num_bins
