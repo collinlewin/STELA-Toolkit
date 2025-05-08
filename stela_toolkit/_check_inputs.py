@@ -36,9 +36,9 @@ class _CheckInputs:
                     )
 
             if len(errors) > 0:
-                if np.min(errors) <= 0:
+                if np.min(errors) < 0:
                     raise ValueError(
-                        "Uncertainties of the input data must be positive.")
+                        "Uncertainties of the input data must be nonnegative.")
         else:
             raise ValueError(
                 "Either provide a LightCurve object or times and rates arrays.")
