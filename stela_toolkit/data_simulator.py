@@ -1,4 +1,5 @@
 import numpy as np
+from .data_loader import LightCurve
 
 class SimulateLightCurve:
     def __init__(self, time_grid, psd_type, psd_params, mean, std, add_noise=False, bkg_rate=0.0,
@@ -78,18 +79,20 @@ class SimulateLightCurve:
                 rates, self.time_grid, bkg_rate=self.bkg_rate
             )
 
+        print(rates)
+
+        simlc = LightCurve(times=time_grid, rates=rates, errors=errors)
+
     def generate(self, time_grid):
         """
         Generate a simulated light curve matching the user-input time grid.
         """
-        time_grid = np.asarray(time_grid)
-        if len(time_grid) < 2:
-            raise ValueError("time_grid must have at least two points.")
-
+        time_grid = np.array(time_grid)
         n_target = len(time_grid)
         dt_array = np.diff(time_grid)
         is_regular = np.allclose(dt_array, dt_array[0], rtol=1e-5)
 
+        # if input is regularly sampled
         if is_regular:
             n_sim = int(self.oversample * n_target)
             t_sim = np.linspace(time_grid[0], time_grid[-1], n_sim)
@@ -102,7 +105,7 @@ class SimulateLightCurve:
             t_fine = np.linspace(time_grid.min(), time_grid.max(), n_fine)
             lc_fine = self._simulate_on_grid(t_fine)
 
-            # do a nearest-neighbor approach for matching input-time grid
+            # do a nearest-neighbor approach to match input-time grid
             indices = np.searchsorted(t_fine, time_grid, side="left")
             indices = np.clip(indices, 0, n_fine - 1)
 
@@ -174,25 +177,29 @@ class SimulateLightCurve:
         """
         freq = np.abs(freq)
         psd = np.zeros_like(freq)
+        nonzero_mask = freq > 0  # avoid division by 0
         plnorm = self.psd_params.get("plnorm", 1.0)
 
         if self.psd_type == "powerlaw":
             slope = self.psd_params.get("slope")
-            psd = plnorm * (2 * np.pi * freq) ** (-slope / 2)
+            psd[nonzero_mask] = plnorm * (2 * np.pi * freq[nonzero_mask]) ** (-slope / 2)
 
         elif self.psd_type == "broken_powerlaw":
             slope1 = self.psd_params.get("slope1")
             f_break = self.psd_params.get("f_break")
             slope2 = self.psd_params.get("slope2")
-            psd = np.where(
-                freq <= f_break,
-                plnorm * (2 * np.pi * freq) ** (-slope1 / 2),
+            psd[nonzero_mask] = np.where(
+                freq[nonzero_mask] <= f_break,
+                plnorm * (2 * np.pi * freq[nonzero_mask]) ** (-slope1 / 2),
                 plnorm * ((2 * np.pi * f_break) ** ((slope2 - slope1) / 2)) *
-                (2 * np.pi * freq) ** (-slope2 / 2)
+                (2 * np.pi * freq[nonzero_mask]) ** (-slope2 / 2)
             )
         else:
             raise ValueError(f"Unsupported PSD type: {self.psd_type}")
 
+        # set freq=0 psd to 0 to avoid infinite psd
+        # the value of this will be adjusted by the mean during rescaling
+        psd[freq==0] = 0
         return psd
     
     def _simulate_on_grid(self, t_sim):
@@ -201,7 +208,7 @@ class SimulateLightCurve:
         freqs = np.fft.fftfreq(n_sim, d=dt)
 
         psd = self.create_psd(freqs)
-        phases = np.random.uniform(0, 2 * np.pi, n_sim)
+        phases = np.random.uniform(0, 2*np.pi, n_sim)
         amplitudes = np.sqrt(psd)
 
         ft = amplitudes * np.exp(1j * phases)
@@ -213,4 +220,4 @@ class SimulateLightCurve:
             ft[int(n_sim / 2) + 1:] = np.conj(ft[1:int(n_sim / 2) + 1][::-1])
 
         lc_sim = np.fft.ifft(ft).real
-        return lc_sim
+        return lc_sim#
