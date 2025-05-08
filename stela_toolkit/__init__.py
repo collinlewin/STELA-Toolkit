@@ -1,4 +1,5 @@
 from .coherence import Coherence
+from .cross_correlation import RegularCCF
 from .cross_spectrum import CrossSpectrum
 from .data_loader import LightCurve
 from .data_simulator import SimulateLightCurve
