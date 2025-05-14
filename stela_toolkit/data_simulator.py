@@ -4,8 +4,7 @@ from .data_loader import LightCurve
 
 class SimulateLightCurve:
     def __init__(self, time_grid, psd_type, psd_params, mean, std, add_noise=False, bkg_rate=0.0,
-                 oversample=10, fine_factor=100,
-                 inject_lag=False, lag_type=None, lag_params=None, lag_duration=None):
+                 oversample=10, fine_factor=100, inject_lag=False, response_type=None, response_params=None,):
         """
         Generates light curves with a user-defined power spectral density (PSD)
         using the Timmer & Koenig (1995) method, i.e., set amplitudes according to the desired PSD and assign random
@@ -58,13 +57,7 @@ class SimulateLightCurve:
             For irregular grids: how densely to simulate the light curve before selecting
             closest points (default: 100×).
         """
-
         self.time_grid = np.asarray(time_grid)
-        if len(self.time_grid) < 2:
-            raise ValueError("time_grid must have at least two points.")
-        if not np.all(np.diff(self.time_grid) > 0):
-            raise ValueError("time_grid must be sorted in ascending order.")
-
         self.psd_type = psd_type
         self.psd_params = psd_params
         self.mean = mean
@@ -73,9 +66,8 @@ class SimulateLightCurve:
         self.fine_factor = fine_factor
         self.bkg_rate = bkg_rate
         self.inject_lag = inject_lag
-        self.lag_type = lag_type
-        self.lag_params = lag_params
-        self.lag_duration = lag_duration
+        self.response_type = response_type
+        self.response_params = response_params
 
         result = self.generate(self.time_grid)
         if isinstance(result, tuple):
@@ -108,15 +100,18 @@ class SimulateLightCurve:
             n_sim = int(self.oversample * n_target)
             t_sim = np.linspace(time_grid[0], time_grid[-1], n_sim)
             lc_sim = self._simulate_on_grid(t_sim)
+
             start = (n_sim - n_target) // 2
             end = start + n_target
             lc = lc_sim[start:end]
+
             lc -= np.mean(lc)
             lc /= np.std(lc)
             lc = lc * self.std + self.mean
 
             if self.inject_lag:
-                kernel = self._get_lag_kernel(self.lag_type, self.lag_params, self.lag_duration)
+                dt = t_sim[1] - t_sim[0]
+                kernel = self._build_impulse_response(dt)
                 convolved = fftconvolve(lc, kernel, mode="full")[:len(lc)]
                 return lc, convolved
             else:
@@ -126,12 +121,14 @@ class SimulateLightCurve:
             n_fine = int(self.fine_factor * len(time_grid))
             t_fine = np.linspace(time_grid.min(), time_grid.max(), n_fine)
             lc_fine = self._simulate_on_grid(t_fine)
+
             lc_fine -= np.mean(lc_fine)
             lc_fine /= np.std(lc_fine)
             lc_fine = lc_fine * self.std + self.mean
 
             if self.inject_lag:
-                kernel = self._get_lag_kernel(self.lag_type, self.lag_params, self.lag_duration)
+                dt = t_fine[1] - t_fine[0]
+                kernel = self._build_impulse_response(dt)
                 lc_fine_lagged = fftconvolve(lc_fine, kernel, mode="full")[:len(lc_fine)]
             else:
                 lc_fine_lagged = None
@@ -251,27 +248,22 @@ class SimulateLightCurve:
         lc_sim = np.fft.ifft(ft).real
         return lc_sim
     
-    def _build_impulse_response(self):
-        """
-        Build the impulse response function for injecting lag via
-        """
-        dt = self.time_grid[1] - self.time_grid[0]
-
-        if self.lag_type == "delta":
-            lag = self.lag_params["lag"]
-            response = np.zeros_like(self.time_grid)
-            idx = (np.abs(self.time_grid - lag)).argmin()
-            response[idx] = 1.0
+    def _build_impulse_response(self, dt):
+        if self.response_type == "delta":
+            lag = self.response_params["lag"]
+            n = int(round(lag / dt))
+            response = np.zeros(n + 1)
+            response[-1] = 1.0
             return response
 
-        elif self.lag_type == "powerlaw":
-            alpha = self.lag_params["alpha"]
-            t = np.arange(0, self.lag_duration, dt)
-            t[0] = dt
+        elif self.response_type == "powerlaw":
+            alpha = self.response_params["alpha"]
+            duration = self.response_params.get("duration", 50.0)
+            t = np.arange(dt, duration, dt)
             return t ** (-alpha)
 
-        elif self.lag_type == "manual":
-            return np.asarray(self.lag_params["response"])
+        elif self.response_type == "manual":
+            return np.asarray(self.response_params["response"])
 
         else:
-            raise ValueError(f"Unsupported lag_type: {self.lag_type}")
+            raise ValueError(f"Unsupported response_type: {self.response_type}")
