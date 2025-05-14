@@ -1,36 +1,22 @@
 import numpy as np
 import matplotlib.pyplot as plt
+from scipy.interpolate import interp1d
 from ._check_inputs import _CheckInputs
 from .data_loader import LightCurve
 
 class RegularCCF:
     def __init__(self, lc1, lc2, run_monte_carlo=False, n_trials=1000,
-                 max_lag=None, centroid_threshold=0.8):
-        """
-        Cross-correlation function (CCF) for regularly sampled LightCurve objects, i.e., 
-        after using an interpolation/regression class like GaussianProcess.
-
-        Parameters
-        ----------
-        lc1, lc2 : LightCurve
-            LightCurve objects. Must be uniformly sampled and on the same time grid.
-        run_monte_carlo : bool
-            Whether to run flux-randomized Monte Carlo to estimate lag uncertainties.
-        n_trials : int
-            Number of Monte Carlo iterations.
-        max_lag : float, optional
-            Maximum lag to consider. If None, defaults to half of total duration.
-        centroid_threshold : float
-            Threshold for centroid calculation, relative to peak CCF (default: 0.8).
-        """
+                 min_lag=None, max_lag=None, centroid_threshold=0.8,
+                 mode="regular", rmax_threshold=0.0):
+        
         if not isinstance(lc1, LightCurve) or not isinstance(lc2, LightCurve):
             raise TypeError("Both inputs must be LightCurve objects.")
 
         t1, r1, e1 = _CheckInputs._check_input_data(lc1, req_reg_samp=True)
         t2, r2, e2 = _CheckInputs._check_input_data(lc2, req_reg_samp=True)
 
-        if not np.array_equal(t1, t2):
-            raise ValueError("Time grids of both light curves must match.")
+        if mode == "regular" and not np.array_equal(t1, t2):
+            raise ValueError("Time grids of both light curves must match for regular mode.")
 
         self.times = t1
         self.dt = np.round(np.diff(self.times)[0], 10)
@@ -38,15 +24,23 @@ class RegularCCF:
         self.errors1, self.errors2 = e1, e2
         self.n_trials = n_trials
         self.centroid_threshold = centroid_threshold
+        self.mode = mode
+        self.rmax_threshold = rmax_threshold
 
-        self.max_lag = max_lag if max_lag is not None else (self.times[-1] - self.times[0]) / 2
+        duration = self.times[-1] - self.times[0]
+        self.min_lag = min_lag if min_lag is not None else -duration / 2
+        self.max_lag = max_lag if max_lag is not None else duration / 2
+        self.lags = np.arange(self.min_lag, self.max_lag + self.dt, self.dt)
 
-        # Core CCF computation
-        self.lags, self.ccf = self.compute_ccf()
+        if mode == "interp":
+            self.ccf = self.compute_ccf_interp()
+        else:
+            self.lags, self.ccf = self.compute_ccf(self.rates1, self.rates2)
+
+
         self.rmax = np.max(self.ccf)
         self.peak_lag, self.centroid_lag = self.find_peak_and_centroid(self.lags, self.ccf)
 
-        # MC results with default confidence intervals--(16, 84): 1 sigma
         self.peak_lags_mc = None
         self.centroid_lags_mc = None
         self.peak_lag_ci = None
@@ -54,26 +48,27 @@ class RegularCCF:
 
         if run_monte_carlo:
             if np.all(self.errors1 == 0) or np.all(self.errors2 == 0):
-                print("⚠️  Skipping Monte Carlo: zero errors in one or both light curves.")
+                print("Skipping Monte Carlo: zero errors for all points in one or both light curves.")
             else:
                 self.peak_lags_mc, self.centroid_lags_mc = self.run_monte_carlo()
-                self.compute_confidence_intervals()  
+                self.compute_confidence_intervals()
 
-    def compute_ccf(self):
+    def compute_ccf(self, rates1, rates2):
+        min_shift = int(self.min_lag / self.dt)
         max_shift = int(self.max_lag / self.dt)
-        lags = np.arange(-max_shift, max_shift + 1) * self.dt
+        lags = np.arange(min_shift, max_shift + 1) * self.dt
         ccf = []
 
-        for shift in range(-max_shift, max_shift + 1):
+        for shift in range(min_shift, max_shift + 1):
             if shift < 0:
-                x = self.rates1[:shift]
-                y = self.rates2[-shift:]
+                x = rates1[:shift]
+                y = rates2[-shift:]
             elif shift > 0:
-                x = self.rates1[shift:]
-                y = self.rates2[:-shift]
+                x = rates1[shift:]
+                y = rates2[:-shift]
             else:
-                x = self.rates1
-                y = self.rates2
+                x = rates1
+                y = rates2
 
             if len(x) < 2:
                 ccf.append(0.0)
@@ -82,6 +77,28 @@ class RegularCCF:
                 ccf.append(r)
 
         return lags, np.array(ccf)
+
+    def compute_ccf_interp(self):
+        interp1 = interp1d(self.times, self.rates1, bounds_error=False, fill_value=0.0)
+        interp2 = interp1d(self.times, self.rates2, bounds_error=False, fill_value=0.0)
+        ccf = []
+
+        for lag in self.lags:
+            t_shift1 = self.times + lag
+            t_shift2 = self.times - lag
+
+            mask1 = (t_shift1 >= self.times[0]) & (t_shift1 <= self.times[-1])
+            mask2 = (t_shift2 >= self.times[0]) & (t_shift2 <= self.times[-1])
+
+            if np.sum(mask1) < 2 or np.sum(mask2) < 2:
+                ccf.append(0.0)
+                continue
+
+            r1 = np.corrcoef(self.rates1[mask1], interp2(t_shift1[mask1]))[0, 1]
+            r2 = np.corrcoef(self.rates2[mask2], interp1(t_shift2[mask2]))[0, 1]
+            ccf.append((r1 + r2) / 2)
+
+        return np.array(ccf)
 
     def find_peak_and_centroid(self, lags, ccf):
         peak_idx = np.nanargmax(ccf)
@@ -104,48 +121,42 @@ class RegularCCF:
             r1_pert = np.random.normal(self.rates1, self.errors1)
             r2_pert = np.random.normal(self.rates2, self.errors2)
 
-            lags, ccf = self.compute_ccf_from(r1_pert, r2_pert)
-            peak, centroid = self.find_peak_and_centroid(lags, ccf)
+            if self.mode == "interp":
+                interp1 = interp1d(self.times, r1_pert, bounds_error=False, fill_value=0.0)
+                interp2 = interp1d(self.times, r2_pert, bounds_error=False, fill_value=0.0)
+                ccf = []
 
+                for lag in self.lags:
+                    t_shift1 = self.times + lag
+                    t_shift2 = self.times - lag
+
+                    mask1 = (t_shift1 >= self.times[0]) & (t_shift1 <= self.times[-1])
+                    mask2 = (t_shift2 >= self.times[0]) & (t_shift2 <= self.times[-1])
+
+                    if np.sum(mask1) < 2 or np.sum(mask2) < 2:
+                        ccf.append(0.0)
+                        continue
+
+                    r1 = np.corrcoef(r1_pert[mask1], interp2(t_shift1[mask1]))[0, 1]
+                    r2 = np.corrcoef(r2_pert[mask2], interp1(t_shift2[mask2]))[0, 1]
+                    ccf_val = (r1 + r2) / 2
+                    ccf.append(ccf_val)
+                ccf = np.array(ccf)
+            else:
+                _, ccf = self.compute_ccf(r1_pert, r2_pert)
+
+            if np.max(ccf) < self.rmax_threshold:
+                continue
+
+            peak, centroid = self.find_peak_and_centroid(self.lags, ccf)
             peak_lags.append(peak)
             centroid_lags.append(centroid)
 
         return np.array(peak_lags), np.array(centroid_lags)
 
-    def compute_ccf_from(self, rates1, rates2):
-        max_shift = int(self.max_lag / self.dt)
-        lags = np.arange(-max_shift, max_shift + 1) * self.dt
-
-        ccf = []
-        for shift in range(-max_shift, max_shift + 1):
-            if shift < 0:
-                x = rates1[:shift]
-                y = rates2[-shift:]
-            elif shift > 0:
-                x = rates1[shift:]
-                y = rates2[:-shift]
-            else:
-                x = rates1
-                y = rates2
-
-            if len(x) < 2:
-                ccf.append(0.0)
-            else:
-                r = np.corrcoef(x, y)[0, 1]
-                ccf.append(r)
-
-        return lags, np.array(ccf)
-
     def compute_confidence_intervals(self, lower_percentile=16, upper_percentile=84):
         """
         Compute confidence intervals for MC lag distributions.
-
-        Parameters
-        ----------
-        lower_percentile : float
-            Lower percentile for CI (default 16).
-        upper_percentile : float
-            Upper percentile for CI (default 84).
         """
         if self.peak_lags_mc is None or self.centroid_lags_mc is None:
             print("No Monte Carlo results available to compute confidence intervals.")
