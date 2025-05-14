@@ -1,4 +1,5 @@
 import numpy as np
+import matplotlib.pyplot as plt
 from scipy.signal import fftconvolve
 from .data_loader import LightCurve
 
@@ -147,9 +148,6 @@ class SimulateLightCurve:
                 return lc
 
     def add_poisson_noise(self, lc, time_grid, bkg_rate=0.0, min_error_floor=1e-10):
-        """
-        Add Poisson noise.
-        """
         lc = np.asarray(lc)
         time_grid = np.asarray(time_grid)
         if len(time_grid) < 2:
@@ -228,6 +226,21 @@ class SimulateLightCurve:
         psd[freq==0] = 0
         return psd
     
+    def plot(self):
+        plt.figure(figsize=(12, 5))
+        plt.plot(self.simlc.times, self.simlc.rates, label='Simulated', lw=1.5)
+
+        if self.simlc_lagged is not None:
+            plt.plot(self.simlc_lagged.times, self.simlc_lagged.rates,
+                     label='Lagged', lw=1.5, alpha=0.8)
+
+        plt.xlabel("Time")
+        plt.ylabel("Flux")
+        plt.grid(True)
+        plt.legend()
+        plt.tight_layout()
+        plt.show()
+    
     def _simulate_on_grid(self, t_sim):
         n_sim = len(t_sim)
         dt = t_sim[1] - t_sim[0]
@@ -253,12 +266,12 @@ class SimulateLightCurve:
             lag = self.response_params["lag"]
             n = int(round(lag / dt))
             response = np.zeros(n + 1)
-            response[-1] = 1.0
+            response[-1] = 1
             return response
 
         elif self.response_type == "powerlaw":
             alpha = self.response_params["alpha"]
-            duration = self.response_params.get("duration", 50.0)
+            duration = self.response_params.get("duration")
             t = np.arange(dt, duration, dt)
             return t ** (-alpha)
 
