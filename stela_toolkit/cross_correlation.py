@@ -8,7 +8,85 @@ class RegularCCF:
     def __init__(self, lc1, lc2, run_monte_carlo=False, n_trials=1000,
                  min_lag=None, max_lag=None, centroid_threshold=0.8,
                  mode="regular", rmax_threshold=0.0):
-        
+        """
+        Compute the cross-correlation function (CCF) between two light curves to estimate time lags.
+
+        This class supports both simple regular shifting and linear interpolation (additional method to come!) to calculate 
+        the correlation between two light curves over a range of time lags. It can also perform 
+        Monte Carlo resampling to estimate uncertainties on the lag measurements.
+
+        - The two input light curves must be regularly sampled and represented as LightCurve objects.
+        - If mode='regular', the two light curves must share the exact same time grid.
+        - All lags are computed using Pearson correlation coefficients (hence CCF).
+
+        Parameters
+        ----------
+        lc1 : LightCurve
+            The first input light curve.
+
+        lc2 : LightCurve
+            The second input light curve.
+
+        run_monte_carlo : bool, optional (default=False)
+            Whether to run a Monte Carlo simulation to estimate uncertainty on the peak and centroid lag.
+
+        n_trials : int, optional (default=1000)
+            Number of Monte Carlo realizations to run if Monte Carlo is enabled.
+
+        min_lag : float, optional
+            The minimum lag (in same units as the time axis) to consider in the CCF.
+            Default is -duration/2 of the time series.
+
+        max_lag : float, optional
+            The maximum lag (in same units as the time axis) to consider in the CCF.
+            Default is +duration/2 of the time series.
+
+        centroid_threshold : float, optional (default=0.8)
+            Fraction of the peak correlation to use when defining the centroid lag region.
+
+        mode : str, optional (default='regular')
+            Determines the method used for cross-correlation.
+            - 'regular' : Use shifting of the time series (requires identical time grid).
+            - 'interp'  : Use symmetric linear interpolation of one light curve onto the other.
+
+        rmax_threshold : float, optional (default=0.0)
+            Minimum allowed correlation coefficient in a Monte Carlo realization.
+            Trials with peak correlation below this threshold will be discarded from the statistics.
+
+        Attributes
+        ----------
+        lags : ndarray
+            Array of lag values evaluated in the CCF.
+
+        ccf : ndarray
+            The cross-correlation values corresponding to each lag.
+
+        peak_lag : float
+            The lag value corresponding to the maximum correlation.
+
+        centroid_lag : float
+            The centroid lag computed using the region where the CCF exceeds `centroid_threshold` peak.
+
+        rmax : float
+            The maximum correlation value in the computed CCF.
+
+        peak_lags_mc : ndarray or None
+            Peak lag values from the Monte Carlo trials (if run).
+
+        centroid_lags_mc : ndarray or None
+            Centroid lag values from the Monte Carlo trials (if run).
+
+        peak_lag_ci : tuple or None
+            16th and 84th percentile confidence interval on the peak lag (if MC run).
+
+        centroid_lag_ci : tuple or None
+            16th and 84th percentile confidence interval on the centroid lag (if MC run).
+
+        Methods
+        -------
+        plot(show_mc=True)
+            Plot the CCF and optionally the Monte Carlo distributions.
+        """
         if not isinstance(lc1, LightCurve) or not isinstance(lc2, LightCurve):
             raise TypeError("Both inputs must be LightCurve objects.")
 
