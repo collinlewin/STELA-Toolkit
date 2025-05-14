@@ -4,7 +4,7 @@ from scipy.interpolate import interp1d
 from ._check_inputs import _CheckInputs
 from .data_loader import LightCurve
 
-class RegularCCF:
+class CrossCorrelation:
     def __init__(self, lc1, lc2, run_monte_carlo=False, n_trials=1000,
                  min_lag=None, max_lag=None, centroid_threshold=0.8,
                  mode="regular", rmax_threshold=0.0):
