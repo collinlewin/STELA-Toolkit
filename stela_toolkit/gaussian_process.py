@@ -111,7 +111,7 @@ class GaussianProcess:
         Preprocessing.unstandardize(self.lc)
 
         # Undo boxcox transformation if needed
-        if getattr(self.lc, "is_boxcox_transformed"):
+        if getattr(self.lc, "is_boxcox_transformed", False):
             Preprocessing.reverse_boxcox_transform(self.lc)
 
         if plot_gp:
