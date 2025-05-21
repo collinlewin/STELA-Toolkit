@@ -115,6 +115,10 @@ class SimulateLightCurve:
                 kernel = self._build_impulse_response(time_grid)
                 convolved_full = fftconvolve(lc_sim, kernel, mode="full")
                 convolved = convolved_full[start:end]
+
+                convolved -= np.mean(convolved)
+                convolved /= np.std(convolved)
+                convolved = convolved * self.std + self.mean
                 return lc, convolved
             else:
                 return lc
