@@ -39,7 +39,6 @@ class PowerSpectrum:
                  bin_type="log",
                  bin_edges=[],
                  norm=True,
-                 plot_fft=False,
                  ):
         # To do: ValueError for norm=True acting on mean=0 (standardized data)
         input_data = _CheckInputs._check_lightcurve_or_model(lightcurve_or_model)
@@ -65,9 +64,6 @@ class PowerSpectrum:
             power_spectrum = self.compute_power_spectrum(norm=norm)
 
         self.freqs, self.freq_widths, self.powers, self.power_errors = power_spectrum
-
-        if plot_fft:
-            self.plot()
 
     def compute_power_spectrum(self, times=None, rates=None, norm=True):
         """

@@ -47,7 +47,6 @@ class LagFrequencySpectrum():
                  bin_type="log",
                  bin_edges=[],
                  subtract_coh_bias=True,
-                 plot_lfs=False,
                  ):
         # To do: update main docstring for lag interpretation, add coherence in plotting !!
         input_data = _CheckInputs._check_lightcurve_or_model(lightcurve_or_model1)
@@ -82,9 +81,6 @@ class LagFrequencySpectrum():
             lag_spectrum = self.compute_lag_spectrum(subtract_coh_bias=subtract_coh_bias)
 
         self.freqs, self.freq_widths, self.lags, self.lag_errors, self.cohs, self.coh_errors = lag_spectrum
-
-        if plot_lfs:
-            self.plot()
 
     def compute_lag_spectrum(self, 
                              times1=None, rates1=None,

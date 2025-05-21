@@ -47,7 +47,6 @@ class GaussianProcess:
                  learn_rate=1e-1,
                  sample_time_grid=[],
                  num_samples=1000,
-                 plot_gp=False,
                  verbose=True):
 
         # To Do: reconsider noise prior, add a mean function function for forecasting, more verbose options
@@ -113,9 +112,6 @@ class GaussianProcess:
         # Undo boxcox transformation if needed
         if getattr(self.lc, "is_boxcox_transformed", False):
             Preprocessing.reverse_boxcox_transform(self.lc)
-
-        if plot_gp:
-            self.plot(sample_time_grid)
 
     def create_gp_model(self, likelihood, kernel_form):
         """

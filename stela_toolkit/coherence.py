@@ -51,7 +51,6 @@ class Coherence:
                  subtract_noise_bias=True,
                  bkg1=0,
                  bkg2=0,
-                 plot_coh=False
                  ):
         # To do: determine if or if not Poisson statistics for the user
         input_data = _CheckInputs._check_lightcurve_or_model(lightcurve_or_model1)
@@ -91,9 +90,6 @@ class Coherence:
             coherence_spectrum = self.compute_coherence(subtract_noise_bias=subtract_noise_bias)
 
         self.freqs, self.freq_widths, self.cohs, self.coh_errors = coherence_spectrum
-
-        if plot_coh:
-            self.plot()
 
     def compute_coherence(self, times1=None, rates1=None, times2=None, rates2=None, subtract_noise_bias=True):
         """

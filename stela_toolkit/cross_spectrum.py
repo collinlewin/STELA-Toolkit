@@ -45,7 +45,6 @@ class CrossSpectrum:
                  bin_type="log",
                  bin_edges=[],
                  norm=True,
-                 plot_cs=False
                  ):
         # To do: update main docstring
         input_data = _CheckInputs._check_lightcurve_or_model(lightcurve_or_model1)
@@ -82,9 +81,6 @@ class CrossSpectrum:
             cross_spectrum = self.compute_cross_spectrum(norm=norm)
 
         self.freqs, self.freq_widths, self.cs, self.cs_errors = cross_spectrum
-
-        if plot_cs:
-            self.plot()
 
     def compute_cross_spectrum(self, times1=None, rates1=None, times2=None, rates2=None, norm=True):
         """

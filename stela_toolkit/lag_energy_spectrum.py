@@ -44,7 +44,6 @@ class LagEnergySpectrum():
                  fmax,
                  bin_edges=[],
                  subtract_coh_bias=True,
-                 plot_les=False,
                  ):
         # To do: update main docstring for lag interpretation, coherence plotting
         # leave main input check to LagFrequencySpectrum, check same input dimensions for now.
@@ -60,9 +59,6 @@ class LagEnergySpectrum():
         self.fmin, self.fmax = fmin, fmax
         lag_spectrum = self.compute_lag_spectrum(subtract_coh_bias=subtract_coh_bias)
         self.lags, self.lag_errors, self.cohs, self. coh_errors = lag_spectrum
-
-        if plot_les:
-            self.plot()
 
     def compute_lag_spectrum(self, subtract_coh_bias):
         lags, lag_errors, cohs, coh_errors = [], [], [], []
