@@ -1,6 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy.signal import fftconvolve
+from scipy.signal import unit_impulse
 from .data_loader import LightCurve
 
 class SimulateLightCurve:
@@ -111,9 +112,9 @@ class SimulateLightCurve:
             lc = lc * self.std + self.mean
 
             if self.inject_lag:
-                dt = t_sim[1] - t_sim[0]
-                kernel = self._build_impulse_response(dt)
-                convolved = fftconvolve(lc, kernel, mode="full")[:len(lc)]
+                kernel = self._build_impulse_response(time_grid)
+                convolved_full = fftconvolve(lc_sim, kernel, mode="full")
+                convolved = convolved_full[start:end]
                 return lc, convolved
             else:
                 return lc
@@ -128,9 +129,9 @@ class SimulateLightCurve:
             lc_fine = lc_fine * self.std + self.mean
 
             if self.inject_lag:
-                dt = t_fine[1] - t_fine[0]
-                kernel = self._build_impulse_response(dt)
-                lc_fine_lagged = fftconvolve(lc_fine, kernel, mode="full")[:len(lc_fine)]
+                kernel = self._build_impulse_response(t_fine)
+                lc_fine_lagged_full = fftconvolve(lc_fine, kernel, mode="full")
+                lc_fine_lagged = lc_fine_lagged_full[:len(t_fine)]
             else:
                 lc_fine_lagged = None
 
@@ -261,17 +262,17 @@ class SimulateLightCurve:
         lc_sim = np.fft.ifft(ft).real
         return lc_sim
     
-    def _build_impulse_response(self, dt):
+    def _build_impulse_response(self, times):
+        dt = times[1] - times[0]
         if self.response_type == "delta":
             lag = self.response_params["lag"]
-            n = int(round(lag / dt))
-            response = np.zeros(n + 1)
-            response[-1] = 1
+            lag_n = int(round(lag / dt))
+            response = unit_impulse(len(times), lag_n)
             return response
 
         elif self.response_type == "powerlaw":
             alpha = self.response_params["alpha"]
-            duration = self.response_params.get("duration")
+            duration = self.response_params["duration"]
             t = np.arange(dt, duration, dt)
             return t ** (-alpha)
 
