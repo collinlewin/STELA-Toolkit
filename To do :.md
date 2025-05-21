@@ -1,8 +1,14 @@
-First actions:
+Essential before release:
+- Fix coherence computation
+- Test functionalities
+- Tutorial
+- Documentation
+- CCF linear interpolation
+- Review noise treatment in GP
+- Errors in simulations
+
+Next/first actions:
 - Create methods for multiple light curves
-- Go through noise treatment in Gaussian process in general
-- Complete functionality test with known answer
-- Create tutorial
 - Allow the user to make composite kernels.
 
 Second actions:
@@ -17,4 +23,4 @@ Testing:
 - Coherences for different types of input data 
     - how does GP noise parameter contrast to noise level of PSD and to the approximations made in coherence.py?
     * the value that is fit is the variance of the white noise at each point, which we expect to be ~counts
-- Periodic kernel
+- Periodic kernel 
