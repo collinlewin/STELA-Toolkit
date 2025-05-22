@@ -25,7 +25,6 @@ class GaussianProcess:
     - learn_rate (float, optional): Learning rate for training. Defaults to 1e-1.
     - sample_time_grid (array-like, optional): Time grid for sampling from the GP. Defaults to [].
     - num_samples (int, optional): Number of samples to draw from the GP posterior. Defaults to 1000.
-    - plot_gp (bool, optional): Whether to plot the GP predictions and samples. Defaults to False.
     - verbose (bool, optional): Whether to display detailed output. Defaults to True.
 
     Attributes:
@@ -53,21 +52,19 @@ class GaussianProcess:
         _CheckInputs._check_input_data(lightcurve, req_reg_samp=False)
         self.lc = lightcurve
 
-        ## NEED TO ADD BOXCOXING HERE
-
-        # Standardize the light curve data to match zero mean function
-        if not getattr(self.lc, "is_standard", False):
+        # Standardize data
+        self.standardized = getattr(self.lc, "is_standard", False)
+        if not self.standardized:
             Preprocessing.standardize(self.lc)
+            self.standardized = True
 
-        # Need to save how data was normalized for future model use
-        # standardization
-        self.unstandard_mean = self.lc.unstandard_mean
-        self.unstandard_std = self.lc.unstandard_std
-        # boxcox transformation for normality
-        if getattr(self.lc, "is_boxcox_transformed", False):
-            self.lambda_boxcox = self.lc.lambda_boxcox
+        self.lc_mean = self.lc.unstandard_mean
+        self.lc_std = self.lc.unstandard_std
 
-        # Convert light curve data to PyTorch tensors
+        # Check if already boxcox transformed
+        self.lambda_boxcox = getattr(self.lc, "lambda_boxcox", None)
+
+        # Convert light curve data to pytorch tensors
         self.train_times = torch.tensor(self.lc.times).float()
         self.train_rates = torch.tensor(self.lc.rates).float()
         if self.lc.errors.size > 0:
@@ -396,6 +393,12 @@ class GaussianProcess:
 
         Returns:
         - dict: Dictionary of hyperparameter names and their values.
+
+        Note:
+        - All hyperparameters are in units of the standardized data, 
+        not the original flux/time units.
+        - This includes noise variance, lengthscale, and kernel scale.
+        - To convert noise variance back to flux^2 units, multiply by (original_std)^2.
         """
         raw_hypers = self.model.named_parameters()
         hypers = {}
@@ -497,18 +500,10 @@ class GaussianProcess:
         # Make predictions
         with torch.no_grad(), gpytorch.settings.fast_pred_var():
             pred_dist = self.likelihood(self.model(pred_times))
-            samples = pred_dist.sample(sample_shape=torch.Size([num_samples]))
+            post_samples = pred_dist.sample(sample_shape=torch.Size([num_samples]))
 
-        # First unstandardize
-        samples = samples * self.unstandard_std + self.unstandard_mean
-        samples = samples.numpy()
-
-        # If needed, apply inverse Box-Cox transformation
-        if hasattr(self, "lambda_boxcox"):
-            if self.lambda_boxcox == 0:
-                samples = np.exp(samples)
-            else:
-                samples = (samples * self.lambda_boxcox + 1) ** (1 / self.lambda_boxcox)
+        samples = post_samples.numpy()
+        samples = self._undo_transforms(samples)
 
         if save_path:
             samples_with_time = np.insert(pred_times, num_samples, 0)
@@ -551,21 +546,10 @@ class GaussianProcess:
             mean = pred_dist.mean
             lower, upper = pred_dist.confidence_region()
 
-        # First unstandardize
-        mean = mean * self.unstandard_std + self.unstandard_mean
-        lower = lower * self.unstandard_std + self.unstandard_mean
-        upper = upper * self.unstandard_std + self.unstandard_mean
-
-        # Check if inverse boxcox required
-        if hasattr(self, "lambda_boxcox"):
-            if self.lambda_boxcox == 0:
-                mean = np.exp(mean)
-                lower = np.exp(lower)
-                upper = np.exp(upper)
-            else:
-                mean = (mean * self.lambda_boxcox + 1) ** (1 / self.lambda_boxcox)
-                lower = (lower * self.lambda_boxcox + 1) ** (1 / self.lambda_boxcox)
-                upper = (upper * self.lambda_boxcox + 1) ** (1 / self.lambda_boxcox)
+        # Unstandardize/unboxcox
+        mean = self._undo_transforms(mean)
+        lower = self._undo_transforms(lower)
+        upper = self._undo_transforms(upper)
         return mean.numpy(), lower.numpy(), upper.numpy()
 
     def plot(self, pred_times=None):
@@ -628,3 +612,21 @@ class GaussianProcess:
             instance = pickle.load(f)
         print(f"GaussianProcess instance loaded from {file_path}.")
         return instance
+    
+    def _undo_transforms(self, array):
+        """
+        Undo any standardization or Box-Cox transformation on the array.
+        """
+        # Undo boxcox
+        if self.boxcox_lambda is not None:
+            if self.boxcox_lambda == 0:
+                array = np.exp(array)
+            else:
+                array = (array * self.boxcox_lambda + 1) ** (1 / self.boxcox_lambda)
+
+
+        # Undo standardization
+        if self.standardized:
+            array = array * self.lc_std + self.lc_mean
+
+        return array
