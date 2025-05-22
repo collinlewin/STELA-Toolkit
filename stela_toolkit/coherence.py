@@ -118,6 +118,7 @@ class Coherence:
             fmin=self.fmin, fmax=self.fmax,
             num_bins=self.num_bins, bin_type=self.bin_type, bin_edges=self.bin_edges
         )
+
         power_spectrum1 = PowerSpectrum(
             lc1,
             fmin=self.fmin, fmax=self.fmax,
@@ -138,7 +139,7 @@ class Coherence:
         else:
             bias = 0
 
-        coherence = (np.abs(cs) ** 2 - bias) / ps1 * ps2
+        coherence = (np.abs(cs) ** 2 - bias) / (ps1 * ps2)
         return power_spectrum1.freqs, power_spectrum1.freq_widths, coherence, None
 
     def compute_stacked_coherence(self, subtract_noise_bias=True):
