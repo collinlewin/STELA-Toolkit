@@ -61,8 +61,8 @@ class CrossSpectrum:
                  num_bins=None,
                  bin_type="log",
                  bin_edges=[],
-                 norm=True,
-                 ):
+                 norm=True):
+        
         # To do: update main docstring
         input_data = _CheckInputs._check_lightcurve_or_model(lc_or_model1)
         if input_data['type'] == 'model':

@@ -60,8 +60,8 @@ class PowerSpectrum:
                  num_bins=None,
                  bin_type="log",
                  bin_edges=[],
-                 norm=True,
-                 ):
+                 norm=True):
+        
         # To do: ValueError for norm=True acting on mean=0 (standardized data)
         input_data = _CheckInputs._check_lc_or_model(lc_or_model)
         if input_data['type'] == 'model':

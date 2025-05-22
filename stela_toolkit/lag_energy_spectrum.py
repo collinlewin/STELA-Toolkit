@@ -60,8 +60,8 @@ class LagEnergySpectrum:
                  fmin,
                  fmax,
                  bin_edges=[],
-                 subtract_coh_bias=True,
-                 ):
+                 subtract_coh_bias=True):
+        
         # leave main input check to LagFrequencySpectrum, check same input dimensions for now.
         if len(lcs_or_models1) != len(lcs_or_models2):
             raise ValueError("The lightcurves_or_models arrays must contain the sane number of lightcurve/model objects.")

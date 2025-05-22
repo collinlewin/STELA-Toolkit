@@ -38,13 +38,13 @@ class LightCurve:
     errors : ndarray
         Array of errors, if provided.
     """
+    
     def __init__(self,
                  times=[],
                  rates=[],
                  errors=[],
                  file_path=None,
-                 file_columns=[0, 1, 2],
-                 ):
+                 file_columns=[0, 1, 2]):
         
         if file_path:
             if not (2 <= len(file_columns) <= 3):

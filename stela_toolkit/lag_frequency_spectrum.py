@@ -71,8 +71,8 @@ class LagFrequencySpectrum:
                  num_bins=None,
                  bin_type="log",
                  bin_edges=[],
-                 subtract_coh_bias=True,
-                 ):
+                 subtract_coh_bias=True):
+        
         # To do: update main docstring for lag interpretation, add coherence in plotting !!
         input_data = _CheckInputs._check_lightcurve_or_model(lc_or_model1)
         if input_data['type'] == 'model':
@@ -202,7 +202,7 @@ class LagFrequencySpectrum:
         coh_errors : array-like
             Standard deviation of coherence values.
         """
-        
+
         # Compute lag spectrum for each pair of realizations
         lag_spectra = []
         coh_spectra = []

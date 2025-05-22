@@ -69,9 +69,16 @@ class CrossCorrelation:
         Confidence interval on centroid lag.
     """
     
-    def __init__(self, lc_or_model1, lc_or_model2, run_monte_carlo=False, n_trials=1000,
-                 min_lag=None, max_lag=None, centroid_threshold=0.8,
-                 mode="regular", rmax_threshold=0.0):
+    def __init__(self,
+                 lc_or_model1,
+                 lc_or_model2,
+                 run_monte_carlo=False,
+                 n_trials=1000,
+                 min_lag=None,
+                 max_lag=None,
+                 centroid_threshold=0.8,
+                 mode="regular",
+                 rmax_threshold=0.0):
 
         data1 = _CheckInputs._check_lightcurve_or_model(lc_or_model1)
         data2 = _CheckInputs._check_lightcurve_or_model(lc_or_model2)

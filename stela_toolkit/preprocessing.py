@@ -26,6 +26,7 @@ class Preprocessing:
 
     All methods are static and do not require instantiating this class.
     """
+    
     @staticmethod
     def standardize(lightcurve):
         """

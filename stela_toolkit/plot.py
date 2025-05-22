@@ -6,6 +6,7 @@ class Plotter:
     Flexible wrapper around matplotlib for plotting binned or unbinned spectral results.
     Handles default formatting, error bars, labels, and saving.
     """
+    
     @staticmethod
     def plot(x=None, y=None, xerr=None, yerr=None, **kwargs):
         """
@@ -18,6 +19,7 @@ class Plotter:
         - yerr: Uncertainties in the y-axis values (e.g., power uncertainties).
         - **kwargs: Additional keyword arguments for customization.
         """
+
         if xerr is not None:
             xerr = xerr if len(list(xerr)) > 0 else None
         if yerr is not None:

@@ -70,8 +70,8 @@ class Coherence:
                  bin_edges=[],
                  subtract_noise_bias=True,
                  bkg1=0,
-                 bkg2=0,
-                 ):
+                 bkg2=0):
+        
         # To do: determine if or if not Poisson statistics for the user
         input_data = _CheckInputs._check_lightcurve_or_model(lc_or_model1)
         if input_data['type'] == 'model':

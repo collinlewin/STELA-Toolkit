@@ -10,6 +10,7 @@ class FrequencyBinning:
     data and corresponding values, and calculating statistics for binned data.
     """
     # To do: Modify count_frequencies_in_bins for already binned data
+    
     @staticmethod
     def define_bins(fmin, fmax, num_bins=None, bin_type="log", bin_edges=[]):
         """
@@ -27,6 +28,7 @@ class FrequencyBinning:
         Returns:
         - bin_edges (array-like): Array of bin edges for the specified binning type.
         """
+
         if len(bin_edges) > 0:
             # Use custom bins
             bin_edges = np.array(bin_edges)

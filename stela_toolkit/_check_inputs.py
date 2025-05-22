@@ -6,6 +6,7 @@ class _CheckInputs:
     Internal utilities for validating and formatting inputs across STELA classes.
     Includes checks for regular sampling, valid model types, and binning logic.
     """
+
     @staticmethod
     def _check_input_data(lightcurve, times=[], rates=[], errors=[], req_reg_samp=True):
         """
@@ -32,6 +33,7 @@ class _CheckInputs:
         times, rates, errors : tuple of ndarray
             Validated and converted arrays.
         """
+
         if lightcurve:
             if type(lightcurve).__name__ != "LightCurve":
                 raise TypeError(
@@ -95,6 +97,7 @@ class _CheckInputs:
         samples : ndarray
             Realizations from the GP posterior.
         """
+
         # update the list here when adding new models!
         if type(model).__name__ in ["GaussianProcess"]:
             if hasattr(model, "samples"):
@@ -135,6 +138,7 @@ class _CheckInputs:
         dict
             Dictionary with keys 'type' (either 'lightcurve' or 'model') and 'data'.
         """
+
         # update the list here when adding new models!
         if type(lightcurve_or_model).__name__ in ["GaussianProcess"]:
             input_type = 'model'
@@ -161,6 +165,7 @@ class _CheckInputs:
         bin_edges : array-like
             Custom bin edges.
         """
+        
         if len(bin_edges) > 0:
             # Use custom bins
             if np.diff(bin_edges) <= 0:

@@ -57,8 +57,20 @@ class SimulateLightCurve:
         For irregular grids: how densely to simulate the light curve before selecting
         closest points (default: 100×).
     """
-    def __init__(self, time_grid, psd_type, psd_params, mean, std, add_noise=False, bkg_rate=0.0,
-                 oversample=10, fine_factor=100, inject_lag=False, response_type=None, response_params=None,):
+    
+    def __init__(self,
+                 time_grid,
+                 psd_type,
+                 psd_params,
+                 mean,
+                 std,
+                 add_noise=False,
+                 bkg_rate=0.0,
+                 oversample=10,
+                 fine_factor=100,
+                 inject_lag=False,
+                 response_type=None,
+                 response_params=None):
 
         self.time_grid = np.asarray(time_grid)
         self.psd_type = psd_type
