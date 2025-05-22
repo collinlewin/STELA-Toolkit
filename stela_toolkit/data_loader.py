@@ -1,12 +1,43 @@
 import numpy as np
-import matplotlib.pyplot as plt
 from astropy.io import fits
-
 from .plot import Plotter
 from ._check_inputs import _CheckInputs
 
 
 class LightCurve:
+    """
+    Container for light curve data, including time, rate, and optional error arrays.
+
+    This class is the standard format for handling time series in the STELA Toolkit.
+    Light curves can be initialized directly from arrays or loaded from supported file formats
+    (FITS, CSV, or plain text). Many analysis modules assume regular time sampling, which is 
+    enforced or checked as needed.
+
+    Supports basic arithmetic operations (addition, subtraction, division) with other LightCurve 
+    objects and provides utilities for plotting and computing Fourier transforms.
+
+    Parameters
+    ----------
+    times : array-like, optional
+        Array of time values.
+    rates : array-like, optional
+        Array of measured rates (e.g., flux, count rate).
+    errors : array-like, optional
+        Array of uncertainties on the rates. Optional but recommended.
+    file_path : str, optional
+        Path to a file to load light curve data from. Supports FITS and text formats.
+    file_columns : list of int or str, optional
+        List specifying the columns to read as [time, rate, error]. Column names or indices allowed.
+
+    Attributes
+    ----------
+    times : ndarray
+        Array of time values.
+    rates : ndarray
+        Array of rate values.
+    errors : ndarray
+        Array of errors, if provided.
+    """
     def __init__(self,
                  times=[],
                  rates=[],
@@ -14,21 +45,7 @@ class LightCurve:
                  file_path=None,
                  file_columns=[0, 1, 2],
                  ):
-        # To do: Improve commenting and docstrings, use _check_inputs
-        """
-        Initializes the LightCurve object.
-
-        The method initializes the time, rate, and error arrays,
-        either from provided arrays or by reading from a specified file.
-
-        Parameters:
-        - times (array-like): Array of time values.
-        - rates (array-like): Array of measured rates (e.g., flux, counts).
-        - errors (array-like): Array of uncertainties for the measured rates (optional).
-        - file_path (str): Path to a file containing the data (FITS, CSV, or text).
-        - file_columns (list): List specifying the columns for time, rate, and error
-        (e.g., [time_column, rate_column, optional_error_column]).
-        """
+        
         if file_path:
             if not (2 <= len(file_columns) <= 3):
                 raise ValueError(
@@ -55,23 +72,35 @@ class LightCurve:
 
     @property
     def mean(self):
+        """
+        Return the mean of the light curve rates.
+        """
         return np.mean(self.rates)
 
     @property
     def std(self):
+        """
+        Return the standard deviation of the light curve rates.
+        """
         return np.std(self.rates)
 
     def load_file(self, file_path, file_columns=[0, 1, 2]):
         """
-        Loads light curve data from a specified file. Supports FITS and text-based files.
+        Load light curve data from a FITS or text-based file.
 
-        Parameters:
-        - file_path (str): Path to the file to load.
-        - file_columns (list): List specifying the columns for time, rate, and error.
+        Parameters
+        ----------
+        file_path : str
+            Path to the input file.
+        file_columns : list of int or str
+            Columns to use for [time, rate, error].
 
-        Returns:
-        - tuple: Arrays of times, rates, and errors.
+        Returns
+        -------
+        times, rates, errors : tuple of ndarrays
+            Loaded arrays of time, rate, and error.
         """
+
         try:
             times, rates, errors = self.load_fits(file_path, file_columns)
 
@@ -89,16 +118,23 @@ class LightCurve:
 
     def load_fits(self, file_path, file_columns=[0, 1, 2], hdu=1):
         """
-        Loads light curve data from a FITS file, from a specified HDU.
+        Load light curve data from a specified HDU of a FITS file.
 
-        Parameters:
-        - file_path (str): Path to the FITS file to load.
-        - file_columns (list): List specifying the columns for time, rate, and error.
-        - hdu (int): The HDU index to read from (default is 1).
+        Parameters
+        ----------
+        file_path : str
+            Path to the FITS file.
+        file_columns : list
+            Columns to extract as [time, rate, error].
+        hdu : int
+            Header/Data Unit (HDU) index to read from.
 
-        Returns:
-        - tuple: Arrays of times, rates, and errors.
+        Returns
+        -------
+        times, rates, errors : tuple of ndarrays
+            Arrays of time, rate, and error values.
         """
+
         time_column, rate_column = file_columns[0], file_columns[1]
         error_column = file_columns[2] if len(file_columns) == 3 else None
 
@@ -136,17 +172,23 @@ class LightCurve:
 
     def load_text_file(self, file_path, file_columns=[0, 1, 2], delimiter=None):
         """
-        Loads light curve data from a text-based file. Assumes a delimiter based on
-        file extension if none is provided.
+        Load light curve data from a CSV or plain-text file.
 
-        Parameters:
-        - file_path (str): Path to the text file to load.
-        - file_columns (list): List specifying the columns for time, rate, and error.
-        - delimiter (str): Column delimiter (optional).
+        Parameters
+        ----------
+        file_path : str
+            Path to the input text file.
+        file_columns : list
+            Columns to extract as [time, rate, error].
+        delimiter : str, optional
+            Delimiter used in the file (guessed from extension if not provided).
 
-        Returns:
-        - tuple: Arrays of times, rates, and errors.
+        Returns
+        -------
+        times, rates, errors : tuple of ndarrays
+            Arrays of time, rate, and error values.
         """
+
         time_column, rate_column = file_columns[0], file_columns[1]
         error_column = file_columns[2] if len(file_columns) == 3 else None
 
@@ -187,23 +229,35 @@ class LightCurve:
 
     def plot(self, **kwargs):
         """
-        Plots the light curve data.
+        Plot the light curve.
 
-        Parameters:
-        - **kwargs: Additional keyword arguments for plot customization (e.g., xlabel, ylabel, title).
+        Parameters
+        ----------
+        **kwargs : dict
+            Additional keyword arguments for customizing the plot.
         """
+
         kwargs.setdefault('xlabel', 'Time')
         kwargs.setdefault('ylabel', 'Rate')
         Plotter.plot(x=self.times, y=self.rates, yerr=self.errors, **kwargs)
 
     def fft(self):
         """
-        Computes the Fast Fourier Transform (FFT) of the light curve data.
+        Compute the Fast Fourier Transform (FFT) of the light curve.
 
-        Returns:
-        - freqs (array-like): Frequencies of the FFT.
-        - fft_values (array-like): FFT values.
+        Returns
+        -------
+        freqs : ndarray
+            Frequencies of the FFT.
+        fft_values : ndarray
+            Complex FFT values.
+
+        Raises
+        ------
+        ValueError
+            If the time sampling is not uniform. Interpolation is required before applying FFT.
         """
+
         time_diffs = np.round(np.diff(self.times), 10)
         if np.unique(time_diffs).size > 1:
             raise ValueError("Light curve must have a uniform sampling interval.\n"
@@ -219,8 +273,14 @@ class LightCurve:
 
     def __add__(self, other_lightcurve):
         """
-        Adds two LightCurve objects.
+        Add two LightCurve objects element-wise.
+
+        Returns
+        -------
+        LightCurve
+            New LightCurve with summed rates and propagated uncertainties.
         """
+
         if not isinstance(other_lightcurve, LightCurve):
             raise TypeError(
                 "Both light curve must be an instance of the LightCurve class."
@@ -242,8 +302,14 @@ class LightCurve:
 
     def __sub__(self, other_lightcurve):
         """
-        Subtracts two LightCurve objects.
+        Subtract one LightCurve from another element-wise.
+
+        Returns
+        -------
+        LightCurve
+            New LightCurve with difference of rates and propagated uncertainties.
         """
+
         if not isinstance(other_lightcurve, LightCurve):
             raise TypeError(
                 "Both light curve must be an instance of the LightCurve class."
@@ -266,8 +332,14 @@ class LightCurve:
 
     def __truediv__(self, other_lightcurve):
         """
-        Divides two LightCurve objects.
+        Divide one LightCurve by another element-wise.
+
+        Returns
+        -------
+        LightCurve
+            New LightCurve with element-wise division and propagated relative uncertainties.
         """
+
         if not isinstance(other_lightcurve, LightCurve):
             raise TypeError(
                 "Both light curve must be an instance of the LightCurve class."

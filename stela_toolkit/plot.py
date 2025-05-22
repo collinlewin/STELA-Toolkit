@@ -2,6 +2,10 @@ import matplotlib.pyplot as plt
 
 
 class Plotter:
+    """
+    Flexible wrapper around matplotlib for plotting binned or unbinned spectral results.
+    Handles default formatting, error bars, labels, and saving.
+    """
     @staticmethod
     def plot(x=None, y=None, xerr=None, yerr=None, **kwargs):
         """

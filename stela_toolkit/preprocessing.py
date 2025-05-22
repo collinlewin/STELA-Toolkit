@@ -5,18 +5,33 @@ from scipy.stats import boxcox, shapiro, probplot
 
 class Preprocessing:
     """
-    Provides utility functions for preprocessing light curve data.
+    Utility functions for cleaning and transforming light curves.
 
-    This class includes methods for standardizing and unstandardizing data,
-    trimming time segments, removing NaN rates and outliers, and detrending
-    light curve using polynomial fitting. Designed to operate directly on
-    LightCurve objects.
+    The static methods in this class operate on LightCurve objects directly,
+    modifying them in place unless otherwise specified.
+
+    These methods are used throughout the STELA Toolkit to prepare light curves
+    for Gaussian process modeling and spectral analysis. This includes:
+
+    - Standardizing light curve data (zero mean, unit variance)
+    - Applying and reversing a Box-Cox transformation to normalize flux distributions
+    - Checking for Gaussianity using the Shapiro-Wilk test and Q-Q plots
+    - Trimming light curves by time range
+    - Removing outliers using global or local IQR
+    - Polynomial detrending
+    - Handling NaNs or missing data
+
+    Most methods automatically store relevant metadata (e.g., original mean, std, Box-Cox lambda)
+    on the LightCurve object for later reversal.
+
+    All methods are static and do not require instantiating this class.
     """
     @staticmethod
     def standardize(lightcurve):
         """
-        Standardizes the light curve data. 
-        Stores the original mean and standard deviation for future unstandardization.
+        Standardize the light curve by subtracting its mean and dividing by its std.
+
+        Saves the original mean and std as attributes for future unstandardization.
         """
         lc = lightcurve
 
@@ -40,9 +55,9 @@ class Preprocessing:
     @staticmethod
     def unstandardize(lightcurve):
         """
-        Unstandardizes the light curve data.
-        Restores the rates and errors of the input LightCurve object to their
-        unstandardized form using the previously stored mean and standard deviation.
+        Restore the light curve to its original units using stored mean and std.
+
+        This reverses a previous call to `standardize`.
         """
         lc = lightcurve
         # check that data has been standardized
@@ -68,11 +83,14 @@ class Preprocessing:
     @staticmethod
     def generate_qq_plot(lightcurve=None, rates=[]):
         """
-        Generates a Q-Q plot to visualize the normality of the input data.
+        Generate a Q-Q plot to visually assess normality.
 
-        Parameters: ** ONE of the following must be provided
-        lightcurve (object): Lightcurve object.
-        rates (list or array-like): Direct input of rate values.
+        Parameters
+        ----------
+        lightcurve : LightCurve, optional
+            Light curve to extract rates from.
+        rates : array-like, optional
+            Direct rate values if not using a LightCurve.
         """
         if lightcurve:
             rates = lightcurve.rates
@@ -91,13 +109,19 @@ class Preprocessing:
     @staticmethod
     def check_normal(lightcurve=None, rates=[], plot=True, _boxcox=False):
         """
-        Check if the given light curve data or rates are normally distributed
-        using the Shapiro-Wilk test.
-        
-        Parameters: ** ONE of the following must be provided
-        lightcurve (object): Lightcurve object.
-        rates (list or array-like): Direct input of rate values.
-        """        
+        Test for normality using the Shapiro-Wilk test.
+
+        Parameters
+        ----------
+        lightcurve : LightCurve, optional
+            Light curve to extract rates from.
+        rates : array-like, optional
+            Direct rate values if not using a LightCurve.
+        plot : bool
+            Whether to show a Q-Q plot.
+        _boxcox : bool
+            Whether this check is being called internally after Box-Cox.
+        """  
         if lightcurve:
             rates = lightcurve.rates
         elif np.array(rates).size != 0:
@@ -128,12 +152,17 @@ class Preprocessing:
     @staticmethod
     def boxcox_transform(lightcurve, save=True):
         """
-        Apply Box-Cox transformation and adjust uncertainties using the delta method.
+        Apply a Box-Cox transformation to normalize the flux distribution.
 
-        y = (x**lambda - 1) / lmbda,  for lmbda != 0
-            log(x),                  for lmbda = 0
+        Also adjusts errors using the delta method. Stores the transformation
+        parameter lambda and sets a flag for reversal.
 
-        lambda optimized to minimizes negative log-likelihood function (i.e., MLE).
+        Parameters
+        ----------
+        lightcurve : LightCurve
+            The input light curve.
+        save : bool
+            Whether to modify the light curve in place.
         """
         lc = lightcurve
 
@@ -160,13 +189,12 @@ class Preprocessing:
     @staticmethod
     def reverse_boxcox_transform(lightcurve):
         """
-        Reverse the Box-Cox transformation and restore original rates and uncertainties.
+        Reverse a previously applied Box-Cox transformation.
 
-        Parameters:
-        lightcurve (object): Light curve object that has been transformed with Box-Cox.
-
-        Raises:
-        ValueError: If the light curve has not been transformed with Box-Cox.
+        Parameters
+        ----------
+        lightcurve : LightCurve
+            The transformed light curve.
         """
         lc = lightcurve
 
@@ -201,12 +229,12 @@ class Preprocessing:
     @staticmethod
     def check_boxcox_normal(lightcurve):
         """
-        Checks if applying a Box-Cox transormation results in normally distributed data 
-        based on a Shapiro-Wilks test.
-        
-        Parameters: ** ONE of the following must be provided
-        lightcurve (object): Lightcurve object.
-        rates (list or array-like): Direct input of rate values.
+        Apply Box-Cox and re-test for normality using Shapiro-Wilk.
+
+        Parameters
+        ----------
+        lightcurve : LightCurve
+            The input light curve.
         """
         rates_boxcox, _ = Preprocessing.boxcox_transform(lightcurve, save=False)
         Preprocessing.check_normal(rates_boxcox, _boxcox=True)
@@ -214,17 +242,18 @@ class Preprocessing:
     @staticmethod
     def trim_time_segment(lightcurve, start_time=None, end_time=None, plot=False, save=True):
         """
-        Trims the light curve data to a specified time range.
+        Trim the light curve to a given time range.
 
-        Filters the time, rate, and error arrays based on the provided start and
-        end times. Optionally plots the data before and after trimming.
-
-        Parameters:
-        - lightcurve (LightCurve): The light curve object to trim.
-        - start_time (float): The starting time for the range (default: first time point).
-        - end_time (float): The ending time for the range (default: last time point).
-        - plot (bool): Whether to plot the data before and after trimming.
-        - save (bool): Whether to modify the original LightCurve object in place.
+        Parameters
+        ----------
+        start_time : float, optional
+            Lower time bound.
+        end_time : float, optional
+            Upper time bound.
+        plot : bool
+            Whether to plot before/after trimming.
+        save : bool
+            Whether to modify the light curve in place.
         """
         lc = lightcurve
 
@@ -263,11 +292,14 @@ class Preprocessing:
     @staticmethod
     def remove_nans(lightcurve, verbose=True):
         """
-        Removes rows with NaN values in time, rate, or error arrays.
+        Remove time, rate, or error entries that are NaN.
 
-        Parameters:
-        - lightcurve (LightCurve): The light curve object to clean.
-        - verbose (bool): Whether to print the number of NaN points removed.
+        Parameters
+        ----------
+        lightcurve : LightCurve
+            Light curve to clean.
+        verbose : bool
+            Whether to print how many NaNs were removed.
         """
         lc = lightcurve
         if lc.errors.size > 0:
@@ -288,18 +320,22 @@ class Preprocessing:
     @staticmethod
     def remove_outliers(lightcurve, threshold=1.5, rolling_window=None, plot=True, save=True, verbose=True):
         """
-        Removes outliers from the light curve data based on the Interquartile Range (IQR).
+        Remove outliers using the IQR method, globally or locally.
 
-        Detects outliers using the IQR defined either 1) globally or 2) within a rolling window
-        around each data point. Flags outliers for plotting and removes them from the data if save=True.
-
-        Parameters:
-        - lightcurve (LightCurve): The light curve object to clean.
-        - threshold (float): Multiplier for the IQR to define outlier limits (default: 1.5).
-        - rolling_window (int): If specified, applies a local IQR within the rolling window.
-        - plot (bool): Whether to visualize the detected outliers.
-        - save (bool): Whether to remove the outliers from the original data.
-        - verbose (bool): Whether to print the number of outliers removed.
+        Parameters
+        ----------
+        lightcurve : LightCurve
+            The input light curve.
+        threshold : float
+            IQR multiplier.
+        rolling_window : int, optional
+            Size of local window (if local filtering is desired).
+        plot : bool
+            Whether to visualize removed points.
+        save : bool
+            Whether to modify the light curve in place.
+        verbose : bool
+            Whether to print how many points were removed.
         """
         def plot_outliers(outlier_mask):
             """Plots the data flagged as outliers."""
@@ -370,20 +406,25 @@ class Preprocessing:
     @staticmethod
     def polynomial_detrend(lightcurve, degree=1, plot=False, save=True):
         """
-        Removes a polynomial trend from the data.
+        Remove a polynomial trend from the light curve.
 
-        Fits a polynomial of the specified degree to the data and subtracts it
-        to produce a detrended light curve. Optionally visualizes the original
-        data, fitted trend, and detrended data.
+        Fits and subtracts a polynomial. Optionally modifies in place.
 
-        Parameters:
-        - lightcurve (LightCurve): The light curve object to detrend.
-        - degree (int): Degree of the polynomial to fit (default: 1, linear).
-        - plot (bool): Whether to plot the original, trend, and detrended data.
-        - save (bool): Whether to modify the original LightCurve object or return the detrended data.
+        Parameters
+        ----------
+        lightcurve : LightCurve
+            The input light curve.
+        degree : int
+            Degree of the polynomial (default is 1).
+        plot : bool
+            Whether to show the trend removal visually.
+        save : bool
+            Whether to apply the change to the light curve.
 
-        Returns:
-        - detrended_rates (array-like): The detrended rates (if save=False).
+        Returns
+        -------
+        detrended_rates : ndarray, optional
+            Only returned if `save=False`.
         """
         lc = lightcurve
 

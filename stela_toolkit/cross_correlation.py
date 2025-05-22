@@ -2,116 +2,102 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy.interpolate import interp1d
 from ._check_inputs import _CheckInputs
-from .data_loader import LightCurve
+
 
 class CrossCorrelation:
-    def __init__(self, lc1, lc2, run_monte_carlo=False, n_trials=1000,
+    """
+    Compute the time-domain cross-correlation function (CCF) between two light curves or GP models.
+
+    This class supports three primary use cases:
+
+    1. **Regularly sampled LightCurve objects**: The CCF is computed via direct shifting
+    using Pearson correlation coefficients across lag values.
+
+    2. **Irregularly sampled LightCurve objects**: Uses the interpolated cross-correlation
+    method (ICCF), introduced by Gaskell & Peterson (1987), which linearly interpolates
+    one light curve onto the other's grid to allow for lag estimation despite gaps.
+
+    3. **GaussianProcess models**: If both inputs are trained GP models, the CCF is computed
+    across all sampled realizations and averaged. If no samples exist, 1000 will be generated
+    automatically on a 1000-point grid. Lag uncertainties are derived from the spread in
+    lag values across realizations.
+
+    Monte Carlo resampling is also available for estimating confidence intervals using observational
+    error bars.
+
+    Parameters
+    ----------
+    lc_or_model1 : LightCurve or GaussianProcess
+        First input light curve or trained GP model.
+    lc_or_model2 : LightCurve or GaussianProcess
+        Second input light curve or trained GP model.
+    run_monte_carlo : bool, optional
+        Whether to estimate lag uncertainties using Monte Carlo resampling.
+    n_trials : int, optional
+        Number of Monte Carlo trials.
+    min_lag : float, optional
+        Minimum lag (in time units) to evaluate.
+    max_lag : float, optional
+        Maximum lag to evaluate.
+    centroid_threshold : float, optional
+        Threshold (fraction of peak CCF) for defining centroid lag region.
+    mode : {'regular', 'interp'}, optional
+        CCF computation mode. Use 'regular' for direct shifting (requires aligned time grids),
+        or 'interp' for ICCF-style interpolation.
+    rmax_threshold : float, optional
+        Monte Carlo trials with maximum correlation below this value are discarded.
+
+    Attributes
+    ----------
+    lags : ndarray
+        Array of lag values evaluated.
+    ccf : ndarray
+        Cross-correlation coefficients.
+    peak_lag : float
+        Lag corresponding to the peak correlation.
+    centroid_lag : float
+        Centroid lag from the high-correlation region.
+    rmax : float
+        Maximum correlation coefficient.
+    peak_lags_mc : ndarray or None
+        Peak lags from Monte Carlo trials.
+    centroid_lags_mc : ndarray or None
+        Centroid lags from Monte Carlo trials.
+    peak_lag_ci : tuple or None
+        Confidence interval (16th–84th percentile) on peak lag.
+    centroid_lag_ci : tuple or None
+        Confidence interval on centroid lag.
+    """
+    
+    def __init__(self, lc_or_model1, lc_or_model2, run_monte_carlo=False, n_trials=1000,
                  min_lag=None, max_lag=None, centroid_threshold=0.8,
                  mode="regular", rmax_threshold=0.0):
-        """
-        Compute the cross-correlation function (CCF) between two light curves to estimate time lags.
 
-        This class supports both simple regular shifting and linear interpolation (additional method to come!) to calculate 
-        the correlation between two light curves over a range of time lags. It can also perform 
-        Monte Carlo resampling to estimate uncertainties on the lag measurements.
-
-        - The two input light curves must be regularly sampled and represented as LightCurve objects.
-        - If mode='regular', the two light curves must share the exact same time grid.
-        - All lags are computed using Pearson correlation coefficients (hence CCF).
-
-        Parameters
-        ----------
-        lc1 : LightCurve
-            The first input light curve.
-
-        lc2 : LightCurve
-            The second input light curve.
-
-        run_monte_carlo : bool, optional (default=False)
-            Whether to run a Monte Carlo simulation to estimate uncertainty on the peak and centroid lag.
-
-        n_trials : int, optional (default=1000)
-            Number of Monte Carlo realizations to run if Monte Carlo is enabled.
-
-        min_lag : float, optional
-            The minimum lag (in same units as the time axis) to consider in the CCF.
-            Default is -duration/2 of the time series.
-
-        max_lag : float, optional
-            The maximum lag (in same units as the time axis) to consider in the CCF.
-            Default is +duration/2 of the time series.
-
-        centroid_threshold : float, optional (default=0.8)
-            Fraction of the peak correlation to use when defining the centroid lag region.
-
-        mode : str, optional (default='regular')
-            Determines the method used for cross-correlation.
-            - 'regular' : Use shifting of the time series (requires identical time grid).
-            - 'interp'  : Use symmetric linear interpolation of one light curve onto the other.
-
-        rmax_threshold : float, optional (default=0.0)
-            Minimum allowed correlation coefficient in a Monte Carlo realization.
-            Trials with peak correlation below this threshold will be discarded from the statistics.
-
-        Attributes
-        ----------
-        lags : ndarray
-            Array of lag values evaluated in the CCF.
-
-        ccf : ndarray
-            The cross-correlation values corresponding to each lag.
-
-        peak_lag : float
-            The lag value corresponding to the maximum correlation.
-
-        centroid_lag : float
-            The centroid lag computed using the region where the CCF exceeds `centroid_threshold` peak.
-
-        rmax : float
-            The maximum correlation value in the computed CCF.
-
-        peak_lags_mc : ndarray or None
-            Peak lag values from the Monte Carlo trials (if run).
-
-        centroid_lags_mc : ndarray or None
-            Centroid lag values from the Monte Carlo trials (if run).
-
-        peak_lag_ci : tuple or None
-            16th and 84th percentile confidence interval on the peak lag (if MC run).
-
-        centroid_lag_ci : tuple or None
-            16th and 84th percentile confidence interval on the centroid lag (if MC run).
-
-        Methods
-        -------
-        plot(show_mc=True)
-            Plot the CCF and optionally the Monte Carlo distributions.
-        """
-        data1 = _CheckInputs._check_lightcurve_or_model(lc1)
-        data2 = _CheckInputs._check_lightcurve_or_model(lc2)
+        data1 = _CheckInputs._check_lightcurve_or_model(lc_or_model1)
+        data2 = _CheckInputs._check_lightcurve_or_model(lc_or_model2)
 
         if data1['type'] == 'model':
-            if not hasattr(lc1, 'samples'):
+            if not hasattr(lc_or_model1, 'samples'):
                 raise ValueError("Model 1 must have generated samples via GP.sample().")
-            self.times = lc1.pred_times.numpy()
-            self.rates1 = lc1.samples
+            self.times = lc_or_model1.pred_times.numpy()
+            self.rates1 = lc_or_model1.samples
             self.is_model1 = True
         else:
             self.times, self.rates1, self.errors1 = data1['data']
             self.is_model1 = False
 
         if data2['type'] == 'model':
-            if not hasattr(lc2, 'samples'):
+            if not hasattr(lc_or_model2, 'samples'):
                 raise ValueError("Model 2 must have generated samples via GP.sample().")
-            self.times = lc2.pred_times.numpy()
-            self.rates2 = lc2.samples
+            self.times = lc_or_model2.pred_times.numpy()
+            self.rates2 = lc_or_model2.samples
             self.is_model2 = True
         else:
             self.times, self.rates2, self.errors2 = data2['data']
             self.is_model2 = False
 
-        t1, r1, e1 = _CheckInputs._check_input_data(lc1, req_reg_samp=True)
-        t2, r2, e2 = _CheckInputs._check_input_data(lc2, req_reg_samp=True)
+        t1, r1, e1 = _CheckInputs._check_input_data(lc_or_model1, req_reg_samp=True)
+        t2, r2, e2 = _CheckInputs._check_input_data(lc_or_model2, req_reg_samp=True)
 
         if mode == "regular" and not np.array_equal(t1, t2):
             raise ValueError("Time grids of both light curves must match for regular mode.")
@@ -160,6 +146,24 @@ class CrossCorrelation:
                 self.compute_confidence_intervals()
 
     def compute_ccf(self, rates1, rates2):
+        """
+        Compute the cross-correlation function (CCF) via direct shifting.
+
+        Parameters
+        ----------
+        rates1 : ndarray
+            First time series.
+        rates2 : ndarray
+            Second time series.
+
+        Returns
+        -------
+        lags : ndarray
+            Lag values.
+        ccf : ndarray
+            Pearson correlation coefficients at each lag.
+        """
+
         min_shift = int(self.min_lag / self.dt)
         max_shift = int(self.max_lag / self.dt)
         lags = np.arange(min_shift, max_shift + 1) * self.dt
@@ -185,6 +189,15 @@ class CrossCorrelation:
         return lags, np.array(ccf)
 
     def compute_ccf_interp(self):
+        """
+        Compute the cross-correlation function using symmetric linear interpolation.
+
+        Returns
+        -------
+        ccf : ndarray
+            Interpolated cross-correlation values for each lag.
+        """
+
         interp1 = interp1d(self.times, self.rates1, bounds_error=False, fill_value=0.0)
         interp2 = interp1d(self.times, self.rates2, bounds_error=False, fill_value=0.0)
         ccf = []
@@ -207,6 +220,24 @@ class CrossCorrelation:
         return np.array(ccf)
 
     def find_peak_and_centroid(self, lags, ccf):
+        """
+        Identify the peak and centroid lag of the cross-correlation function.
+
+        Parameters
+        ----------
+        lags : ndarray
+            Array of lag values.
+        ccf : ndarray
+            Cross-correlation function values.
+
+        Returns
+        -------
+        peak_lag : float
+            Lag at maximum correlation.
+        centroid_lag : float
+            Centroid lag within the high-correlation region.
+        """
+        
         peak_idx = np.nanargmax(ccf)
         peak_val = ccf[peak_idx]
         peak_lag = lags[peak_idx]
@@ -220,6 +251,20 @@ class CrossCorrelation:
         return peak_lag, centroid
 
     def run_monte_carlo(self):
+        """
+        Run Monte Carlo simulations to estimate lag uncertainties.
+
+        Perturbs input light curves based on their errors and computes peak and centroid
+        lags for each realization.
+
+        Returns
+        -------
+        peak_lags : ndarray
+            Peak lag values from all trials.
+        centroid_lags : ndarray
+            Centroid lag values from all trials.
+        """
+
         peak_lags = []
         centroid_lags = []
 
@@ -262,8 +307,16 @@ class CrossCorrelation:
 
     def compute_confidence_intervals(self, lower_percentile=16, upper_percentile=84):
         """
-        Compute confidence intervals for MC lag distributions.
+        Compute percentile-based confidence intervals for Monte Carlo lag distributions.
+
+        Parameters
+        ----------
+        lower_percentile : float
+            Lower percentile bound (default is 16).
+        upper_percentile : float
+            Upper percentile bound (default is 84).
         """
+
         if self.peak_lags_mc is None or self.centroid_lags_mc is None:
             print("No Monte Carlo results available to compute confidence intervals.")
             return
@@ -279,8 +332,14 @@ class CrossCorrelation:
 
     def plot(self, show_mc=True):
         """
-        Plot the CCF and optional Monte Carlo lag distributions (if avalable).
+        Plot the cross-correlation function and optional Monte Carlo lag distributions.
+
+        Parameters
+        ----------
+        **kwargs : dict
+            Keyword arguments for customizing the plot.
         """
+
         fig, ax = plt.subplots(1, 1, figsize=(7, 4))
         ax.plot(self.lags, self.ccf, label="CCF", color='black')
         ax.axvline(self.peak_lag, color='red', linestyle='--',

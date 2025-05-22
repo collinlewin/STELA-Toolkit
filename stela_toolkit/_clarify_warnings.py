@@ -1,6 +1,10 @@
 import warnings
 
 class _ClearWarnings:
+    """
+    Runtime warning handler for wrapped numerical operations.
+    Provides user-facing context for common numerical warnings.
+    """
     @staticmethod
     def run(code_block, explanation):
         """

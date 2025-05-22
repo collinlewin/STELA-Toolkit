@@ -5,60 +5,61 @@ from scipy.signal import unit_impulse
 from .data_loader import LightCurve
 
 class SimulateLightCurve:
+    """
+    Generates light curves with a user-defined power spectral density (PSD)
+    using the Timmer & Koenig (1995) method, i.e., set amplitudes according to the desired PSD and 
+    assign random phases from a uniform distribution between 0 and 2pi. The result is then 
+    inverse-Fourier transformed back to the time domain.
+
+    The clean (noise-free) light curve is rescaled to have the desired mean and standard
+    deviation. Poisson noise can be added to the simulation, with (optional) background noise.
+
+    This class supports both regularly and irregularly sampled time grids:
+    - For regular grids, the light curve is oversampled (by default 10×) and then trimmed.
+    - For irregular grids, the light curve is simulated on a very fine regular grid, and
+    the closest simulated points are selected to match your requested times (no interpolation).
+
+    Parameters
+    ----------
+    time_grid : ndarray
+        The array of time stamps for which you want the light curve simulated. Can be
+        regular or irregular, but must be sorted and have at least two points.
+
+    psd_type : str
+        The type of power spectral density (PSD) you want to use. Options are:
+        - 'powerlaw': a simple power law PSD.
+        - 'broken_powerlaw': a PSD with two different slopes above and below a break frequency.
+
+    psd_params : dict
+        Parameters for the PSD. The required keys depend on the PSD type:
+        - For 'powerlaw': {'slope', 'plnorm'}.
+        - For 'broken_powerlaw': {'slope1', 'f_break', 'slope2', 'plnorm'}.
+        Here, 'plnorm' is the normalization, and slopes control the PSD shape.
+
+    mean : float
+        The desired mean count rate of the light curve (after rescaling).
+        
+    std : float
+        The desired standard deviation of the light curve (after rescaling).
+
+    add_noise : bool, optional
+        If True, Poisson noise is added to the light curve (default: False).
+
+    bkg_rate : float, optional
+        The background rate (in counts per unit time) to include in the Poisson noise simulation
+        (default: 0.0). Background noise is simulated by adding and subtracting Poisson samples
+        of the background counts.
+
+    oversample : int, optional
+        For regular grids: how much to oversample before trimming (default: 10×).
+
+    fine_factor : int, optional
+        For irregular grids: how densely to simulate the light curve before selecting
+        closest points (default: 100×).
+    """
     def __init__(self, time_grid, psd_type, psd_params, mean, std, add_noise=False, bkg_rate=0.0,
                  oversample=10, fine_factor=100, inject_lag=False, response_type=None, response_params=None,):
-        """
-        Generates light curves with a user-defined power spectral density (PSD)
-        using the Timmer & Koenig (1995) method, i.e., set amplitudes according to the desired PSD and assign random
-        phases from a uniform distribution between 0 and 2pi. The result is then inverse-Fourier transformed
-        back to the time domain.
 
-        The clean (noise-free) light curve is rescaled to have the desired mean and standard
-        deviation. Poisson noise can be added to the simulation, with (optional) background noise.
-
-        This class supports both regularly and irregularly sampled time grids:
-        - For regular grids, the light curve is oversampled (by default 10×) and then trimmed.
-        - For irregular grids, the light curve is simulated on a very fine regular grid, and
-        the closest simulated points are selected to match your requested times (no interpolation).
-
-        Parameters
-        ----------
-        time_grid : ndarray
-            The array of time stamps for which you want the light curve simulated. Can be
-            regular or irregular, but must be sorted and have at least two points.
-
-        psd_type : str
-            The type of power spectral density (PSD) you want to use. Options are:
-            - 'powerlaw': a simple power law PSD.
-            - 'broken_powerlaw': a PSD with two different slopes above and below a break frequency.
-
-        psd_params : dict
-            Parameters for the PSD. The required keys depend on the PSD type:
-            - For 'powerlaw': {'slope', 'plnorm'}.
-            - For 'broken_powerlaw': {'slope1', 'f_break', 'slope2', 'plnorm'}.
-            Here, 'plnorm' is the normalization, and slopes control the PSD shape.
-
-        mean : float
-            The desired mean count rate of the light curve (after rescaling).
-            
-        std : float
-            The desired standard deviation of the light curve (after rescaling).
-
-        add_noise : bool, optional
-            If True, Poisson noise is added to the light curve (default: False).
-
-        bkg_rate : float, optional
-            The background rate (in counts per unit time) to include in the Poisson noise simulation
-            (default: 0.0). Background noise is simulated by adding and subtracting Poisson samples
-            of the background counts.
-
-        oversample : int, optional
-            For regular grids: how much to oversample before trimming (default: 10×).
-
-        fine_factor : int, optional
-            For irregular grids: how densely to simulate the light curve before selecting
-            closest points (default: 100×).
-        """
         self.time_grid = np.asarray(time_grid)
         self.psd_type = psd_type
         self.psd_params = psd_params
@@ -93,6 +94,25 @@ class SimulateLightCurve:
         )
 
     def generate(self, time_grid):
+        """
+        Generate the clean (noise-free) light curve.
+
+        Handles regular vs. irregular time grids and applies normalization.
+        If lag injection is enabled, convolves with a response function.
+
+        Parameters
+        ----------
+        time_grid : array-like
+            Desired output time grid.
+
+        Returns
+        -------
+        rates : ndarray
+            Simulated light curve values.
+        rates_lagged : ndarray or None
+            Lagged version of the light curve if `inject_lag` is True.
+        """
+
         time_grid = np.array(time_grid)
         n_target = len(time_grid)
         dt_array = np.diff(time_grid)
@@ -153,6 +173,28 @@ class SimulateLightCurve:
                 return lc
 
     def add_poisson_noise(self, lc, time_grid, bkg_rate=0.0, min_error_floor=1e-10):
+        """
+        Add Poisson noise to a simulated light curve.
+
+        Parameters
+        ----------
+        lc : ndarray
+            Clean light curve values.
+        time_grid : ndarray
+            Time values.
+        bkg_rate : float, optional
+            Background count rate.
+        min_error_floor : float, optional
+            Minimum uncertainty to avoid zeros.
+
+        Returns
+        -------
+        noisy_lc : ndarray
+            Noisy light curve.
+        noise_estimate : ndarray
+            Estimated error bars.
+        """
+
         lc = np.asarray(lc)
         time_grid = np.asarray(time_grid)
         if len(time_grid) < 2:
@@ -188,8 +230,25 @@ class SimulateLightCurve:
 
     def add_regular_gaps(self, lc, time_grid, gap_period, gap_duration):
         """
-        Add regular gaps to simulation (e.g., low-Earth orbit gaps)
+        Simulate regular gaps in the light curve.
+
+        Parameters
+        ----------
+        lc : ndarray
+            Input light curve values.
+        time_grid : ndarray
+            Time values.
+        gap_period : float
+            Period between gaps.
+        gap_duration : float
+            Duration of each gap.
+
+        Returns
+        -------
+        gapped_lc : ndarray
+            Light curve with NaNs inserted for gaps.
         """
+                
         lc = np.asarray(lc)
         time_grid = np.asarray(time_grid)
         gapped_lc = lc.copy()
@@ -202,8 +261,19 @@ class SimulateLightCurve:
 
     def create_psd(self, freq):
         """
-        Create the power spectral density based on the selected type and parameters.
+        Construct the PSD array based on the selected type and parameters.
+
+        Parameters
+        ----------
+        freq : ndarray
+            Frequency array.
+
+        Returns
+        -------
+        psd : ndarray
+            Power spectral density values.
         """
+
         freq = np.abs(freq)
         psd = np.zeros_like(freq)
         nonzero_mask = freq > 0  # avoid division by 0
@@ -232,6 +302,9 @@ class SimulateLightCurve:
         return psd
     
     def plot(self):
+        """
+        Plot the simulated light curve/s. Shows both the original and lagged data (if available).
+        """
         plt.figure(figsize=(12, 5))
         plt.plot(self.simlc.times, self.simlc.rates, label='Simulated', lw=1.5)
 
@@ -247,6 +320,9 @@ class SimulateLightCurve:
         plt.show()
     
     def _simulate_on_grid(self, t_sim):
+        """
+        Generate a Fourier-based light curve realization on a time grid.
+        """
         n_sim = len(t_sim)
         dt = t_sim[1] - t_sim[0]
         freqs = np.fft.fftfreq(n_sim, d=dt)
@@ -267,6 +343,9 @@ class SimulateLightCurve:
         return lc_sim
     
     def _build_impulse_response(self, times):
+        """
+        Generate an impulse response function for lag injection.
+        """
         dt = times[1] - times[0]
         if self.response_type == "delta":
             lag = self.response_params["lag"]

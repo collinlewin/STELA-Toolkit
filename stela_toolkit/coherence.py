@@ -1,5 +1,4 @@
 import numpy as np
-
 from ._check_inputs import _CheckInputs
 from .cross_spectrum import CrossSpectrum
 from .data_loader import LightCurve
@@ -10,39 +9,60 @@ from .power_spectrum import PowerSpectrum
 
 class Coherence:
     """
-    Computes the coherence between two light curves.
+    Compute the frequency-dependent coherence between two light curves or GP models.
 
-    This class calculates the coherence spectrum, which measures the degree of linear 
-    correlation between two light curves in the frequency domain. It supports stacked 
-    realizations, optional noise bias subtraction, and Poisson statistics.
+    This class estimates the coherence spectrum, which quantifies the degree of linear correlation
+    between two time series as a function of frequency. Coherence values range from 0 to 1,
+    with values near 1 indicating a strong linear relationship at that frequency.
 
-    Parameters:
-    - times1 (array-like, optional): Time values for the first light curve.
-    - rates1 (array-like, optional): Measurement rates for the first light curve.
-    - errors1 (array-like, optional): Errors for the first light curve.
-    - times2 (array-like, optional): Time values for the second light curve.
-    - rates2 (array-like, optional): Measurement rates for the second light curve.
-    - errors2 (array-like, optional): Errors for the second light curve.
-    - lightcurve1 (object, optional): A LightCurve object (overrides times1/rates1/errors1).
-    - lightcurve2 (object, optional): A LightCurve object (overrides times2/rates2/errors2).
-    - fmin (float or 'auto', optional): Minimum frequency for computation.
-    - fmax (float or 'auto', optional): Maximum frequency for computation.
-    - num_bins (int, optional): Number of bins for frequency binning.
-    - bin_type (str, optional): Type of binning ('log' or 'linear').
-    - bin_edges (array-like, optional): Custom bin edges for binning.
-    - subtract_noise_bias (bool, optional): Whether to subtract the noise bias from coherence.
-    - plot_coh (bool, optional): Whether to automatically plot the coherence spectrum.
+    Inputs can be either LightCurve objects or trained GaussianProcess models from this package.
+    If GP models are provided and posterior samples already exist, those are used.
+    If no samples exist, 1000 GP realizations will be generated automatically on a 1000-point grid.
 
-    Attributes:
-    - freqs (array-like): Frequencies of the coherence spectrum.
-    - freq_widths (array-like): Bin widths of the frequencies.
-    - cohs (array-like): Coherence values for each frequency bin.
-    - coh_errors (array-like): Uncertainties in the coherence values.
+    If both inputs are GP models, the coherence is computed for each sample pair and the
+    mean and standard deviation across samples are returned. Otherwise, coherence is computed
+    on the raw input light curves.
+
+    Poisson noise bias correction is supported and may be enabled to correct for uncorrelated noise.
+
+    Parameters
+    ----------
+    lc_or_model1 : LightCurve or GaussianProcess
+        First input light curve or trained GP model.
+    lc_or_model2 : LightCurve or GaussianProcess
+        Second input light curve or trained GP model.
+    fmin : float or 'auto', optional
+        Minimum frequency for the coherence spectrum. If 'auto', uses the lowest nonzero FFT frequency.
+    fmax : float or 'auto', optional
+        Maximum frequency. If 'auto', uses the Nyquist frequency.
+    num_bins : int, optional
+        Number of frequency bins.
+    bin_type : str, optional
+        Type of frequency binning ('log' or 'linear').
+    bin_edges : array-like, optional
+        Custom frequency bin edges.
+    subtract_noise_bias : bool, optional
+        Whether to subtract Poisson noise bias from the coherence spectrum.
+    bkg1 : float, optional
+        Background count rate for lightcurve 1 (used in noise bias correction).
+    bkg2 : float, optional
+        Background count rate for lightcurve 2.
+
+    Attributes
+    ----------
+    freqs : array-like
+        Frequency bin centers.
+    freq_widths : array-like
+        Widths of each frequency bin.
+    cohs : array-like
+        Coherence values.
+    coh_errors : array-like
+        Uncertainties in the coherence values.
     """
 
     def __init__(self,
-                 lightcurve_or_model1,
-                 lightcurve_or_model2,
+                 lc_or_model1,
+                 lc_or_model2,
                  fmin='auto',
                  fmax='auto',
                  num_bins=None,
@@ -53,13 +73,13 @@ class Coherence:
                  bkg2=0,
                  ):
         # To do: determine if or if not Poisson statistics for the user
-        input_data = _CheckInputs._check_lightcurve_or_model(lightcurve_or_model1)
+        input_data = _CheckInputs._check_lightcurve_or_model(lc_or_model1)
         if input_data['type'] == 'model':
             self.times1, self.rates1 = input_data['data']
         else:
             self.times1, self.rates1, _ = input_data['data']
 
-        input_data = _CheckInputs._check_lightcurve_or_model(lightcurve_or_model2)
+        input_data = _CheckInputs._check_lightcurve_or_model(lc_or_model2)
         if input_data['type'] == 'model':
             self.times2, self.rates2 = input_data['data']
         else:
@@ -93,19 +113,29 @@ class Coherence:
 
     def compute_coherence(self, times1=None, rates1=None, times2=None, rates2=None, subtract_noise_bias=True):
         """
-        Computes the coherence between two light curves.
+        Compute the coherence spectrum between two light curves.
 
-        Parameters:
-        - times1, rates1 (array-like, optional): Data for the first light curve.
-        - times2, rates2 (array-like, optional): Data for the second light curve.
-        - subtract_noise_bias (bool, optional): Whether to subtract the noise bias.
+        Parameters
+        ----------
+        times1, rates1 : array-like, optional
+            Time and rate values for the first light curve. Defaults to object attributes.
+        times2, rates2 : array-like, optional
+            Time and rate values for the second light curve. Defaults to object attributes.
+        subtract_noise_bias : bool, optional
+            Whether to subtract the estimated noise bias.
 
-        Returns:
-        - freqs (array-like): Frequencies of the coherence spectrum.
-        - freq_widths (array-like): Bin widths of the frequencies.
-        - coherence (array-like): Coherence values.
-        - None (NoneType): Placeholder for compatibility with other methods.
+        Returns
+        -------
+        freqs : array-like
+            Frequency bin centers.
+        freq_widths : array-like
+            Frequency bin widths.
+        coherence : array-like
+            Coherence spectrum.
+        None
+            Reserved for compatibility (with the stacked method).
         """
+
         times1 = self.times1 if times1 is None else times1
         rates1 = self.rates1 if rates1 is None else rates1
         times2 = self.times2 if times2 is None else times2
@@ -144,25 +174,28 @@ class Coherence:
 
     def compute_stacked_coherence(self, subtract_noise_bias=True):
         """
-        Computes the coherence spectrum for stacked realizations.
+        Compute the coherence from stacked realizations of the light curves.
 
-        This method calculates the coherence for multiple realizations of two light curve 
-        and averages the results to obtain the mean and standard deviation.
+        For multiple realizations (GP samples), this method computes the
+        coherence for each pair of realizations and returns the mean and standard deviation.
 
-        Parameters:
-        - fmin (float or 'auto', optional): Minimum frequency for computation.
-        - fmax (float or 'auto', optional): Maximum frequency for computation.
-        - num_bins (int, optional): Number of bins for frequency binning.
-        - bin_type (str, optional): Type of binning ('log' or 'linear').
-        - bin_edges (array-like, optional): Custom bin edges for binning.
-        - subtract_noise_bias (bool, optional): Whether to subtract the noise bias.
+        Parameters
+        ----------
+        subtract_noise_bias : bool, optional
+            Whether to subtract noise bias from each realization.
 
-        Returns:
-        - freqs (array-like): Frequencies of the coherence spectrum.
-        - freq_widths (array-like): Bin widths of the frequencies.
-        - coherence_mean (array-like): Mean coherence values across realizations.
-        - coherence_std (array-like): Standard deviation of coherence values.
+        Returns
+        -------
+        freqs : array-like
+            Frequency bin centers.
+        freq_widths : array-like
+            Frequency bin widths.
+        coherence_mean : array-like
+            Mean coherence spectrum across realizations.
+        coherence_std : array-like
+            Standard deviation of the coherence across realizations.
         """
+
         coherences = []
         for i in range(self.rates1.shape[0]):
             coherence_spectrum = self.compute_coherence(times1=self.times1, rates1=self.rates1[i],
@@ -180,17 +213,21 @@ class Coherence:
 
     def compute_bias(self, power_spectrum1, power_spectrum2):
         """
-        Computes the Poisson noise bias term to correct coherence for white noise.
+        Estimate the Poisson noise bias for the coherence calculation. 
 
-        Parameters:
-        - power_spectrum1 (array-like): Power spectrum of the first signal.
-        - power_spectrum2 (array-like): Power spectrum of the second signal.
-            *** Uses self.rates2 and self.bkg2 for Poisson noise calculation.
+        Parameters
+        ----------
+        power_spectrum1 : array-like
+            Power spectrum of the first light curve.
+        power_spectrum2 : array-like
+            Power spectrum of the second light curve.
 
-        Returns:
-        - bias (array-like): Noise bias term normalized by the number of frequency bins.
-            *** Normalization uses count_frequencies_in_bins() from class attributes.
+        Returns
+        -------
+        bias : array-like
+            Estimated noise bias per frequency bin.
         """
+
         mean1 = np.mean(self.rates1)
         mean2 = np.mean(self.rates2)
 
@@ -208,11 +245,14 @@ class Coherence:
 
     def plot(self, freqs=None, freq_widths=None, cohs=None, coh_errors=None, **kwargs):
         """
-        Plots the coherence spectrum.
+        Plot the coherence spectrum.
 
-        Parameters:
-        - **kwargs: Keyword arguments for customizing the plot.
+        Parameters
+        ----------
+        **kwargs : dict
+            Additional keyword arguments for plot customization (e.g., xlabel, xscale).
         """
+
         freqs = self.freqs if freqs is None else freqs
         freq_widths = self.freq_widths if freq_widths is None else freq_widths
         cohs = self.cohs if cohs is None else cohs
@@ -230,19 +270,8 @@ class Coherence:
         """
         Counts the number of frequencies in each frequency bin.
         Wrapper method to use FrequencyBinning.count_frequencies_in_bins with class attributes.
-
-        Parameters:
-        - fmin (float): Minimum frequency (optional).
-        - fmax (float): Maximum frequency (optional).
-            *** Class attributes will be used if not specified.
-        - num_bins (int): Number of bins to create (if bin_edges is not provided).
-        - bin_type (str): Type of binning ("log" or "linear").
-        - bin_edges (array-like): Custom array of bin edges (optional).
-            *** Class attributes will be used if not specified.
-
-        Returns:
-        - bin_counts (list): List of counts of frequencies in each bin.
         """
+        
         return FrequencyBinning.count_frequencies_in_bins(
             self, fmin=fmin, fmax=fmax, num_bins=num_bins, bin_type=bin_type, bin_edges=bin_edges
         )

@@ -1,5 +1,4 @@
 import numpy as np
-
 from ._check_inputs import _CheckInputs
 from .frequency_binning import FrequencyBinning
 from .plot import Plotter
@@ -8,31 +7,54 @@ from .data_loader import LightCurve
 
 class PowerSpectrum:
     """
-    Computes the power spectrum for light curve data.
+    Compute the power spectrum of a light curve using the FFT.
 
-    This class calculates the power spectrum for single or multiple realizations
-    of light curve data. It supports frequency binning and optional normalization.
+    This class accepts either a STELA LightCurve object or a trained GaussianProcess model.
+    If a GaussianProcess is passed, the most recently generated samples are used. 
+    If no samples exist, the toolkit will automatically generate 1000 posterior realizations
+    on a 1000-point grid.
 
-    Parameters:
-    - lightcurve (object, optional): A LightCurve object (overrides times/rates). Must have regular sampling, otherwise use model.
-    - model (object, optional): A model-class (e.g., GaussianProcess) object. 
-    - fmin (float or 'auto', optional): Minimum frequency for computation.
-    - fmax (float or 'auto', optional): Maximum frequency for computation.
-    - num_bins (int, optional): Number of bins for frequency binning.
-    - bin_type (str, optional): Type of binning ('log' or 'linear').
-    - bin_edges (array-like, optional): Predefined edges for frequency bins.
-    - norm (bool, optional): Whether to normalize the spectrum to variance units.
-    - plot_fft (bool, optional): Whether to automatically plot the power spectrum.
+    For single light curves, the FFT is applied directly to the time series.
+    For GP models, the power spectrum is computed for each sampled realization,
+    and the mean and standard deviation across all samples are returned.
 
-    Attributes:
-    - freqs (array-like): Frequencies of the power spectrum.
-    - freq_widths (array-like): Bin widths of the frequencies.
-    - powers (array-like): Power spectrum values.
-    - power_errors (array-like): Uncertainty of the power spectrum values.
+    Power spectra are computed in variance units by default (i.e., normalized to units
+    of squared flux), allowing for direct interpretation in the context of variability
+    amplitude and fractional RMS.
+
+    Frequency binning is supported via linear, logarithmic, or user-defined bins.
+
+    Parameters
+    ----------
+    lc_or_model : LightCurve or GaussianProcess
+        Input light curve or trained GP model.
+    fmin : float or 'auto', optional
+        Minimum frequency to include. If 'auto', uses the lowest nonzero FFT frequency.
+    fmax : float or 'auto', optional
+        Maximum frequency to include. If 'auto', uses the Nyquist frequency.
+    num_bins : int, optional
+        Number of frequency bins.
+    bin_type : str, optional
+        Binning type: 'log' or 'linear'.
+    bin_edges : array-like, optional
+        Custom bin edges (overrides `num_bins` and `bin_type`).
+    norm : bool, optional
+        Whether to normalize the power spectrum to variance units (i.e., PSD units).
+
+    Attributes
+    ----------
+    freqs : array-like
+        Center frequencies of each bin.
+    freq_widths : array-like
+        Bin widths for each frequency bin.
+    powers : array-like
+        Power spectrum values (or mean if using GP samples).
+    power_errors : array-like
+        Uncertainties in the power spectrum (std across GP samples if applicable).
     """
 
     def __init__(self,
-                 lightcurve_or_model,
+                 lc_or_model,
                  fmin='auto',
                  fmax='auto',
                  num_bins=None,
@@ -41,7 +63,7 @@ class PowerSpectrum:
                  norm=True,
                  ):
         # To do: ValueError for norm=True acting on mean=0 (standardized data)
-        input_data = _CheckInputs._check_lightcurve_or_model(lightcurve_or_model)
+        input_data = _CheckInputs._check_lc_or_model(lc_or_model)
         if input_data['type'] == 'model':
             self.times, self.rates = input_data['data']
         else:
@@ -67,24 +89,32 @@ class PowerSpectrum:
 
     def compute_power_spectrum(self, times=None, rates=None, norm=True):
         """
-        Computes the power spectrum for a single light curve.
+        Compute the power spectrum for a single light curve.
 
-        Parameters:
-        - times (array-like, optional): Time values for the light curve.
-        - rates (array-like, optional): Measurement rates for the light curve.
-        - fmin (float or 'auto', optional): Minimum frequency for the power spectrum.
-        - fmax (float or 'auto', optional): Maximum frequency for the power spectrum.
-        - norm (bool, optional): Whether to normalize the spectrum to variance units.
-        - num_bins (int, optional): Number of bins for frequency binning.
-        - bin_type (str, optional): Type of binning ('log' or 'linear').
-        - bin_edges (array-like, optional): Custom array of bin edges.
+        Applies the FFT to the light curve and optionally normalizes the result
+        to variance (PSD) units. If binning is enabled, returns binned power.
 
-        Returns:
-        - freqs (array-like): Frequencies of the power spectrum.
-        - freq_widths (array-like or None): Bin widths of the frequencies.
-        - powers (array-like): Power spectrum values.
-        - power_errors (array-like or None): Uncertainties in power values.
+        Parameters
+        ----------
+        times : array-like, optional
+            Time array to use (defaults to internal value).
+        rates : array-like, optional
+            Rate array to use (defaults to internal value).
+        norm : bool, optional
+            Whether to normalize to variance units.
+
+        Returns
+        -------
+        freqs : array-like
+            Frequencies of the power spectrum.
+        freq_widths : array-like or None
+            Bin widths (if binned).
+        powers : array-like
+            Power spectrum values.
+        power_errors : array-like or None
+            Power spectrum uncertainties (if binned).
         """
+
         times = self.times if times is None else times
         rates = self.rates if rates is None else rates
         length = len(rates)
@@ -124,26 +154,26 @@ class PowerSpectrum:
 
     def compute_stacked_power_spectrum(self, norm=True):
         """
-        Computes the power spectrum for multiple realizations of a light curve.
+        Compute power spectrum for each GP sample and return the mean and std.
+        This method is used automatically when a GP model with samples is passed.
 
-        For multiple realizations, this method calculates the power spectrum for each
-        realization and averages the results to compute the mean and standard deviation
-        for each frequency bin.
+        Parameters
+        ----------
+        norm : bool, optional
+            Whether to normalize to variance units.
 
-        Parameters:
-        - fmin (float or 'auto', optional): Minimum frequency for the power spectrum.
-        - fmax (float or 'auto', optional): Maximum frequency for the power spectrum.
-        - num_bins (int, optional): Number of bins for frequency binning.
-        - bin_type (str, optional): Type of binning ('log' or 'linear').
-        - bin_edges (array-like, optional): Custom array of bin edges.
-        - norm (bool, optional): Whether to normalize the spectrum to variance units.
-
-        Returns:
-        - freqs (array-like): Frequencies of the power spectrum.
-        - freq_widths (array-like): Bin widths of the frequencies.
-        - power_mean (array-like): Mean power spectrum values across realizations.
-        - power_std (array-like): Standard deviation of power values across realizations.
+        Returns
+        -------
+        freqs : array-like
+            Frequencies of the power spectrum.
+        freq_widths : array-like
+            Widths of frequency bins.
+        power_mean : array-like
+            Mean power spectrum values.
+        power_std : array-like
+            Standard deviation of power values across realizations.
         """
+
         powers = []
         for i in range(self.rates.shape[0]):
             power_spectrum = self.compute_power_spectrum(self.times, self.rates[i], norm=norm)
@@ -159,15 +189,14 @@ class PowerSpectrum:
 
     def plot(self, freqs=None, freq_widths=None, powers=None, power_errors=None, **kwargs):
         """
-        Plots the power spectrum.
+        Plot the power spectrum.
 
-        Parameters:
-        - freqs (array-like): Frequencies to plot (optional, defaults to internal data).
-        - freq_widths (array-like): Frequency bin widths (optional, defaults to internal data).
-        - powers (array-like): Power values to plot (optional, defaults to internal data).
-        - power_errors (array-like): Uncertainties in power values (optional, defaults to internal data).
-        - **kwargs: Additional keyword arguments for plot customization.
+        Parameters
+        ----------
+        **kwargs : dict
+            Custom plotting options (xlabel, yscale, etc.).
         """
+
         freqs = self.freqs if freqs is None else freqs
         freq_widths = self.freq_widths if freq_widths is None else freq_widths
         powers = self.powers if powers is None else powers
@@ -183,19 +212,8 @@ class PowerSpectrum:
         """
         Counts the number of frequencies in each frequency bin.
         Wrapper method to use FrequencyBinning.count_frequencies_in_bins with class attributes.
-
-        Parameters:
-        - fmin (float): Minimum frequency (optional).
-        - fmax (float): Maximum frequency (optional).
-            *** Class attributes will be used if not specified.
-        - num_bins (int): Number of bins to create (if bin_edges is not provided).
-        - bin_type (str): Type of binning ("log" or "linear").
-        - bin_edges (array-like): Custom array of bin edges (optional).
-            *** Class attributes will be used if not specified.
-
-        Returns:
-        - bin_counts (list): List of counts of frequencies in each bin.
         """
+
         return FrequencyBinning.count_frequencies_in_bins(
             self, fmin=fmin, fmax=fmax, num_bins=num_bins, bin_type=bin_type, bin_edges=bin_edges
         )

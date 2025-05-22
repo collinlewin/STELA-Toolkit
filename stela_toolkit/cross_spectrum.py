@@ -1,5 +1,4 @@
 import numpy as np
-
 from ._check_inputs import _CheckInputs
 from .plot import Plotter
 from .frequency_binning import FrequencyBinning
@@ -8,37 +7,55 @@ from .data_loader import LightCurve
 
 class CrossSpectrum:
     """
-    Computes the cross-spectrum between two light curves.
+    Compute the cross-spectrum between two light curves or trained Gaussian Process models.
 
-    This class calculates the cross-spectrum for single or multiple realizations
-    of two light curves. It supports frequency binning and optional normalization
-    to be in units consistent with the power spectral density (PSD).
+    This class accepts LightCurve objects or GaussianProcess models from this package.
+    For GP models, if posterior samples have already been generated, those are used.
+    If not, the class automatically generates 1000 samples across a 1000-point grid.
 
-    Parameters:
-    - times1 (array-like, optional): Time points for the first light curve.
-    - rates1 (array-like, optional): Rates for the first light curve.
-    - times2 (array-like, optional): Time points for the second light curve.
-    - rates2 (array-like, optional): Rates for the second light curve.
-    - lightcurve1 (object, optional): First light curve object (overrides times1/rates1).
-    - lightcurve2 (object, optional): Second light curve object (overrides times2/rates2).
-    - fmin (float or 'auto', optional): Minimum frequency for computation.
-    - fmax (float or 'auto', optional): Maximum frequency for computation.
-    - num_bins (int, optional): Number of bins for frequency binning.
-    - bin_type (str, optional): Type of binning ('log' or 'linear').
-    - bin_edges (array-like, optional): Predefined edges for frequency bins.
-    - norm (bool, optional): Whether to normalize the spectrum.
-    - plot_cs (bool, optional): Whether to automatically plot the cross-spectrum.
+    The cross-spectrum is computed using the Fourier transform of one time series
+    multiplied by the complex conjugate of the other, yielding frequency-dependent phase
+    and amplitude information.
 
-    Key Attributes:
-    - freqs (array-like): Frequencies of the cross-spectrum.
-    - freq_widths (array-like): Bin widths of the frequencies.
-    - cs (array-like): Cross-spectrum values.
-    - cs_errors (array-like): Uncertainty of the cross-spectrum values.
+    If both inputs are GP models, the cross-spectrum is computed across all sample pairs,
+    and the mean and standard deviation across realizations are returned.
+
+    Frequency binning is available with options for logarithmic, linear, or custom spacing.
+
+    Parameters
+    ----------
+    lc_or_model1 : LightCurve or GaussianProcess
+        First input light curve or trained GP model.
+    lc_or_model2 : LightCurve or GaussianProcess
+        Second input light curve or trained GP model.
+    fmin : float or 'auto', optional
+        Minimum frequency to include. If 'auto', uses lowest nonzero FFT frequency.
+    fmax : float or 'auto', optional
+        Maximum frequency to include. If 'auto', uses the Nyquist frequency.
+    num_bins : int, optional
+        Number of frequency bins.
+    bin_type : str, optional
+        Binning type: 'log' or 'linear'.
+    bin_edges : array-like, optional
+        Custom frequency bin edges. Overrides `num_bins` and `bin_type` if provided.
+    norm : bool, optional
+        Whether to normalize the cross-spectrum to variance units (i.e., PSD units).
+
+    Attributes
+    ----------
+    freqs : array-like
+        Frequency bin centers.
+    freq_widths : array-like
+        Frequency bin widths.
+    cs : array-like
+        Complex cross-spectrum values.
+    cs_errors : array-like
+        Uncertainties in the binned cross-spectrum (if stacked).
     """
 
     def __init__(self,
-                 lightcurve_or_model1,
-                 lightcurve_or_model2,
+                 lc_or_model1,
+                 lc_or_model2,
                  fmin='auto',
                  fmax='auto',
                  num_bins=None,
@@ -47,13 +64,13 @@ class CrossSpectrum:
                  norm=True,
                  ):
         # To do: update main docstring
-        input_data = _CheckInputs._check_lightcurve_or_model(lightcurve_or_model1)
+        input_data = _CheckInputs._check_lightcurve_or_model(lc_or_model1)
         if input_data['type'] == 'model':
             self.times1, self.rates1 = input_data['data']
         else:
             self.times1, self.rates1, _ = input_data['data']
 
-        input_data = _CheckInputs._check_lightcurve_or_model(lightcurve_or_model2)
+        input_data = _CheckInputs._check_lightcurve_or_model(lc_or_model2)
         if input_data['type'] == 'model':
             self.times2, self.rates2 = input_data['data']
         else:
@@ -84,24 +101,29 @@ class CrossSpectrum:
 
     def compute_cross_spectrum(self, times1=None, rates1=None, times2=None, rates2=None, norm=True):
         """
-        Computes the cross-spectrum between two light curves.
+        Compute the cross-spectrum for a single pair of light curves.
 
-        Parameters:
-        - times1, rates1 (array-like, optional): Time and rates for the first light curve.
-        - times2, rates2 (array-like, optional): Time and rates for the second light curve.
-        - fmin (float or 'auto', optional): Minimum frequency for computation.
-        - fmax (float or 'auto', optional): Maximum frequency for computation.
-        - num_bins (int, optional): Number of bins for frequency binning.
-        - bin_type (str, optional): Type of binning ('log' or 'linear').
-        - bin_edges (array-like, optional): Predefined edges for frequency bins.
-        - norm (bool, optional): Whether to normalize the spectrum.
+        Parameters
+        ----------
+        times1, rates1 : array-like, optional
+            Time and rate arrays for the first light curve.
+        times2, rates2 : array-like, optional
+            Time and rate arrays for the second light curve.
+        norm : bool, optional
+            Whether to normalize the result to power spectral density units.
 
-        Returns:
-        - freqs (array-like): Frequencies of the cross-spectrum.
-        - freq_widths (array-like): Bin widths of the frequencies.
-        - cross_spectrum (array-like): Cross-spectrum values.
-        - None (NoneType): Placeholder for compatibility with other methods.
+        Returns
+        -------
+        freqs : array-like
+            Frequencies of the cross-spectrum.
+        freq_widths : array-like
+            Widths of frequency bins.
+        cross_spectrum : array-like
+            Complex cross-spectrum values.
+        cross_spectrum_errors : array-like or None
+            Uncertainties in the binned cross-spectrum (None if not binned).
         """
+
         times1 = self.times1 if times1 is None else times1
         rates1 = self.rates1 if rates1 is None else rates1
         times2 = self.times2 if times2 is None else times2
@@ -154,26 +176,28 @@ class CrossSpectrum:
 
     def compute_stacked_cross_spectrum(self, norm=True):
         """
-        Computes the cross-spectrum for multiple realizations.
+        Compute the cross-spectrum across stacked GP samples.
 
-        For multiple realizations (e.g., GP samples), this method computes the
-        cross-spectrum for each realization pair. The resulting cross-spectra are
-        averaged to compute the mean and standard deviation for each frequency bin.
+        Computes the cross-spectrum for each realization and returns the mean and
+        standard deviation across samples.
 
-        Parameters:
-        - fmin (float or 'auto', optional): Minimum frequency for computation.
-        - fmax (float or 'auto', optional): Maximum frequency for computation.
-        - num_bins (int, optional): Number of bins for frequency binning.
-        - bin_type (str, optional): Type of binning ('log' or 'linear').
-        - bin_edges (array-like, optional): Predefined edges for frequency bins.
-        - norm (bool, optional): Whether to normalize the spectrum.
+        Parameters
+        ----------
+        norm : bool, optional
+            Whether to normalize the result to power spectral density units.
 
-        Returns:
-        - freqs (array-like): Frequencies of the cross-spectrum.
-        - freq_widths (array-like): Bin widths of the frequencies.
-        - cross_spectra_mean (array-like): Mean cross-spectrum values.
-        - cross_spectra_std (array-like): Standard deviation of cross-spectrum values.
+        Returns
+        -------
+        freqs : array-like
+            Frequencies of the cross-spectrum.
+        freq_widths : array-like
+            Widths of frequency bins.
+        cross_spectra_mean : array-like
+            Mean cross-spectrum across GP samples.
+        cross_spectra_std : array-like
+            Standard deviation of the cross-spectrum across samples.
         """
+
         cross_spectra = []
         for i in range(self.rates1.shape[0]):
             cross_spectrum = self.compute_cross_spectrum(
@@ -193,11 +217,14 @@ class CrossSpectrum:
 
     def plot(self, freqs=None, freq_widths=None, cs=None, cs_errors=None, **kwargs):
         """
-        Plots the cross-spectrum.
+        Plot the cross-spectrum.
 
-        Parameters:
-        - **kwargs: Keyword arguments for customizing the plot.
+        Parameters
+        ----------
+        **kwargs : dict
+            Additional keyword arguments for plot customization.
         """
+
         freqs = self.freqs if freqs is None else freqs
         freq_widths = self.freq_widths if freq_widths is None else freq_widths
         cs = self.cs if cs is None else cs
@@ -215,19 +242,8 @@ class CrossSpectrum:
         """
         Counts the number of frequencies in each frequency bin.
         Wrapper method to use FrequencyBinning.count_frequencies_in_bins with class attributes.
-
-        Parameters:
-        - fmin (float): Minimum frequency (optional).
-        - fmax (float): Maximum frequency (optional).
-            *** Class attributes will be used if not specified.
-        - num_bins (int): Number of bins to create (if bin_edges is not provided).
-        - bin_type (str): Type of binning ("log" or "linear").
-        - bin_edges (array-like): Custom array of bin edges (optional).
-            *** Class attributes will be used if not specified.
-
-        Returns:
-        - bin_counts (list): List of counts of frequencies in each bin.
         """
+
         return FrequencyBinning.count_frequencies_in_bins(
             self, fmin=fmin, fmax=fmax, num_bins=num_bins, bin_type=bin_type, bin_edges=bin_edges
         )

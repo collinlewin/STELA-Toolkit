@@ -3,12 +3,34 @@ import numpy as np
 
 class _CheckInputs:
     """
-    A utility class for checking and validating input data and binning.
+    Internal utilities for validating and formatting inputs across STELA classes.
+    Includes checks for regular sampling, valid model types, and binning logic.
     """
     @staticmethod
     def _check_input_data(lightcurve, times=[], rates=[], errors=[], req_reg_samp=True):
         """
-        Validates and extracts time and rate arrays from input or LightCurve objects.
+        Validate and extract times, rates, and errors from a LightCurve or from arrays.
+
+        Checks input dimensions and nonnegativity of errors. If `req_reg_samp` is True,
+        confirms that time grid is evenly spaced.
+
+        Parameters
+        ----------
+        lightcurve : LightCurve or None
+            LightCurve object to extract data from.
+        times : array-like, optional
+            Time values (used if no LightCurve is given).
+        rates : array-like, optional
+            Rate values.
+        errors : array-like, optional
+            Error values.
+        req_reg_samp : bool
+            Whether to enforce regular time sampling.
+
+        Returns
+        -------
+        times, rates, errors : tuple of ndarray
+            Validated and converted arrays.
         """
         if lightcurve:
             if type(lightcurve).__name__ != "LightCurve":
@@ -55,6 +77,24 @@ class _CheckInputs:
 
     @staticmethod
     def _check_input_model(model):
+        """
+        Validate a GaussianProcess model and extract its samples.
+
+        If no samples exist yet, generates 1000 samples over 1000 evenly spaced points
+        using the model's training time range.
+
+        Parameters
+        ----------
+        model : GaussianProcess
+            Trained GP model.
+
+        Returns
+        -------
+        pred_times : ndarray
+            Time grid for the samples.
+        samples : ndarray
+            Realizations from the GP posterior.
+        """
         # update the list here when adding new models!
         if type(model).__name__ in ["GaussianProcess"]:
             if hasattr(model, "samples"):
@@ -79,6 +119,22 @@ class _CheckInputs:
     
     @staticmethod
     def _check_lightcurve_or_model(lightcurve_or_model):
+        """
+        Identify whether the input is a LightCurve or GP model and validate accordingly.
+
+        Dispatches to `_check_input_data` or `_check_input_model` and labels the result
+        with its type for downstream use.
+
+        Parameters
+        ----------
+        lightcurve_or_model : LightCurve or GaussianProcess
+            Input to classify and validate.
+
+        Returns
+        -------
+        dict
+            Dictionary with keys 'type' (either 'lightcurve' or 'model') and 'data'.
+        """
         # update the list here when adding new models!
         if type(lightcurve_or_model).__name__ in ["GaussianProcess"]:
             input_type = 'model'
@@ -91,7 +147,19 @@ class _CheckInputs:
     @staticmethod
     def _check_input_bins(num_bins, bin_type, bin_edges):
         """
-        Validates and returns bin edges for frequency binning.
+        Validate user input for frequency binning.
+
+        Ensures consistency between `num_bins`, `bin_type`, and `bin_edges`. Raises
+        errors for missing or invalid combinations.
+
+        Parameters
+        ----------
+        num_bins : int or None
+            Number of bins.
+        bin_type : str or None
+            'log' or 'linear'.
+        bin_edges : array-like
+            Custom bin edges.
         """
         if len(bin_edges) > 0:
             # Use custom bins

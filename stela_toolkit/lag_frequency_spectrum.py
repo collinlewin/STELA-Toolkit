@@ -1,6 +1,5 @@
 import numpy as np
 import matplotlib.pyplot as plt
-
 from ._check_inputs import _CheckInputs
 from ._clarify_warnings import _ClearWarnings
 from .coherence import Coherence
@@ -9,38 +8,64 @@ from .data_loader import LightCurve
 from .frequency_binning import FrequencyBinning
 
 
-class LagFrequencySpectrum():
+class LagFrequencySpectrum:
     """
-    Computes the time lag as a function of frequency for two input light curves 
-    or trained models. If a model is provided, it will detect and use the most recently 
-    generated samples for the computation.
+    Compute the time lag as a function of frequency between two time series.
 
-    A positive lag indicates the variability in lightcurve/s 1 is lagging that in lightcurve/s 2.
+    This class accepts either LightCurve objects (with regular sampling) or trained
+    GaussianProcess models from this package. If GP models are provided, the most
+    recently generated samples are used. If no samples have been created yet,
+    the toolkit will automatically generate 1000 samples on a 1000-point grid.
 
-    Parameters:
-    - lightcurve_or_model1, lightcurve_or_model2 (LightCurve or model object): Input light curves or models. 
-        Models must have been trained. The most recently generated realizations/samples will be used;
-        if none have been generated, 1000 samples at 1000 time values will be generated.
-        The time arrays of the inputs must be identical.
-    - fmin, fmax (float or 'auto', optional): Minimum and maximum frequencies for 
-        the computation. Defaults to 'auto', which automatically determines these values.
-    - num_bins (int, optional): Number of bins for frequency binning. 
-    - bin_type (str, optional): Type of binning, either 'log' or 'linear'.
-    - bin_edges (array-like, optional): Custom bin edges. If provided, overrides num_bins.
-    - subtract_coh_bias (bool, optional): Whether to subtract the coherence bias. 
-        Defaults to True.
-    - plot_lfs (bool, optional): Whether to plot the resulting lag frequency spectrum.
-        Defaults to False.
+    The sign convention is such that a **positive lag** indicates that the input provided as
+    `lc_or_model1` is **lagging behind** the input provided as `lc_or_model2`.
 
-    Attributes:
-    - freqs (array-like): Center frequencies for each bin.
-    - freq_widths (array-like): Bin widths for the frequency bins.
-    - lags (array-like): Computed time lags for each frequency bin.
-    - lag_errors (array-like): Uncertainties in the time lag values.
+    There are two modes for computing uncertainties:
+    - If the inputs are individual light curves, lag uncertainties are propagated from
+      the coherence spectrum using a theoretical error model.
+    - If the inputs are GP models, the lag spectrum is computed for each sample and
+      uncertainties are reported as the standard deviation across all samples.
+
+    Parameters
+    ----------
+    lc_or_model1 : LightCurve or GaussianProcess
+        First input time series or trained model.
+    lc_or_model2 : LightCurve or GaussianProcess
+        Second input time series or trained model.
+    fmin : float or 'auto', optional
+        Minimum frequency to include. If 'auto', uses the lowest nonzero FFT frequency.
+    fmax : float or 'auto', optional
+        Maximum frequency to include. If 'auto', uses the Nyquist frequency.
+    num_bins : int, optional
+        Number of frequency bins.
+    bin_type : str, optional
+        Type of binning: 'log' or 'linear'.
+    bin_edges : array-like, optional
+        Custom bin edges (overrides `num_bins` and `bin_type`).
+    subtract_coh_bias : bool, optional
+        Whether to subtract Poisson noise bias from the coherence.
+    plot_lfs : bool, optional
+        Whether to generate the lag-frequency plot on initialization.
+
+    Attributes
+    ----------
+    freqs : array-like
+        Frequency bin centers.
+    freq_widths : array-like
+        Bin widths for each frequency bin.
+    lags : array-like
+        Computed time lags.
+    lag_errors : array-like
+        Uncertainties in the lag estimates.
+    cohs : array-like
+        Coherence values for each frequency bin.
+    coh_errors : array-like
+        Uncertainties in the coherence values.
     """
+
     def __init__(self,
-                 lightcurve_or_model1,
-                 lightcurve_or_model2,
+                 lc_or_model1,
+                 lc_or_model2,
                  fmin='auto',
                  fmax='auto',
                  num_bins=None,
@@ -49,13 +74,13 @@ class LagFrequencySpectrum():
                  subtract_coh_bias=True,
                  ):
         # To do: update main docstring for lag interpretation, add coherence in plotting !!
-        input_data = _CheckInputs._check_lightcurve_or_model(lightcurve_or_model1)
+        input_data = _CheckInputs._check_lightcurve_or_model(lc_or_model1)
         if input_data['type'] == 'model':
             self.times1, self.rates1 = input_data['data']
         else:
             self.times1, self.rates1, _ = input_data['data']
 
-        input_data = _CheckInputs._check_lightcurve_or_model(lightcurve_or_model2)
+        input_data = _CheckInputs._check_lightcurve_or_model(lc_or_model2)
         if input_data['type'] == 'model':
             self.times2, self.rates2 = input_data['data']
         else:
@@ -87,25 +112,36 @@ class LagFrequencySpectrum():
                              times2=None, rates2=None,
                              subtract_coh_bias=True):
         """
-        Computes the lag spectrum for the given light curves.
+        Compute the lag spectrum for a single pair of light curves or model realizations.
 
-        Parameters:
-        - times1, rates1 (array-like, optional): Time and rates for the first light curve.
-        - times2, rates2 (array-like, optional): Time and rates for the second light curve.
-        - fmin (float or 'auto', optional): Minimum frequency for computation.
-        - fmax (float or 'auto', optional): Maximum frequency for computation.
-        - num_bins (int, optional): Number of bins for frequency binning.
-        - bin_type (str, optional): Type of binning ('log' or 'linear').
-        - bin_edges (array-like, optional): Predefined edges for frequency bins.
-        - subtract_noise_bias (bool, optional): Whether to subtract noise bias.
-        - compute_errors (bool, optional): Whether to compute uncertainties for lag values.
+        The phase of the cross-spectrum is converted to time lags, and uncertainties are
+        computed either from coherence (light curves) or from GP sampling (if stacked mode).
 
-        Returns:
-        - freqs (array-like): Frequencies of the lag spectrum.
-        - freq_widths (array-like): Bin widths of the frequencies.
-        - lags (array-like): Computed lag values.
-        - lag_errors (array-like): Uncertainty of the lag values.
+        Parameters
+        ----------
+        times1, rates1 : array-like, optional
+            Input time and rates for the first time series.
+        times2, rates2 : array-like, optional
+            Input time and rates for the second time series.
+        subtract_coh_bias : bool, optional
+            Whether to subtract noise bias from coherence.
+
+        Returns
+        -------
+        freqs : array-like
+            Frequency bin centers.
+        freq_widths : array-like
+            Frequency bin widths.
+        lags : array-like
+            Time lags at each frequency.
+        lag_errors : array-like
+            Uncertainty in the lag values.
+        cohs : array-like
+            Coherence values.
+        coh_errors : array-like
+            Uncertainties in the coherence values.
         """
+
         times1 = times1 if times1 is not None else self.times1
         times2 = times2 if times2 is not None else self.times2
         rates1 = rates1 if rates1 is not None else self.rates1
@@ -146,25 +182,27 @@ class LagFrequencySpectrum():
 
     def compute_stacked_lag_spectrum(self):
         """
-        Computes the lag spectrum for multiple realizations.
+        Compute lag-frequency spectrum for stacked GP samples.
 
-        For multiple realizations (e.g., Gaussian process samples), this method 
-        computes the lag spectrum for each realization pair, averages the results, 
-        and calculates the standard deviation.
+        This method assumes the input light curves are model-generated and include
+        multiple realizations. Returns mean and standard deviation of lag and coherence.
 
-        Parameters:
-        - fmin (float or 'auto', optional): Minimum frequency for computation.
-        - fmax (float or 'auto', optional): Maximum frequency for computation.
-        - num_bins (int, optional): Number of bins for frequency binning.
-        - bin_type (str, optional): Type of binning ('log' or 'linear').
-        - bin_edges (array-like, optional): Predefined edges for frequency bins.
-
-        Returns:
-        - freqs (array-like): Frequencies of the lag spectrum.
-        - freq_widths (array-like): Bin widths of the frequencies.
-        - lags_mean (array-like): Mean lag values for each frequency bin.
-        - lags_std (array-like): Standard deviation of lag values.
+        Returns
+        -------
+        freqs : array-like
+            Frequency bin centers.
+        freq_widths : array-like
+            Frequency bin widths.
+        lags : array-like
+            Mean time lags across samples.
+        lag_errors : array-like
+            Standard deviation of lags.
+        cohs : array-like
+            Mean coherence values.
+        coh_errors : array-like
+            Standard deviation of coherence values.
         """
+        
         # Compute lag spectrum for each pair of realizations
         lag_spectra = []
         coh_spectra = []
@@ -189,8 +227,14 @@ class LagFrequencySpectrum():
 
     def plot(self, freqs=None, freq_widths=None, lags=None, lag_errors=None, cohs=None, coh_errors=None, **kwargs):
         """
-        Plots the lag-frequency spectrum and coherence.
+        Plot the lag-frequency and coherence spectrum.
+
+        Parameters
+        ----------
+        **kwargs : dict
+            Custom plotting arguments (xlabel, xscale, yscale, etc.).
         """
+
         freqs = self.freqs if freqs is None else freqs
         freq_widths = self.freq_widths if freq_widths is None else freq_widths
         lags = self.lags if lags is None else lags
@@ -232,19 +276,8 @@ class LagFrequencySpectrum():
         """
         Counts the number of frequencies in each frequency bin.
         Wrapper method to use FrequencyBinning.count_frequencies_in_bins with class attributes.
-
-        Parameters:
-        - fmin (float): Minimum frequency (optional).
-        - fmax (float): Maximum frequency (optional).
-            *** Class attributes will be used if not specified.
-        - num_bins (int): Number of bins to create (if bin_edges is not provided).
-        - bin_type (str): Type of binning ("log" or "linear").
-        - bin_edges (array-like): Custom array of bin edges (optional).
-            *** Class attributes will be used if not specified.
-
-        Returns:
-        - bin_counts (list): List of counts of frequencies in each bin.
         """
+
         return FrequencyBinning.count_frequencies_in_bins(
             self, fmin=fmin, fmax=fmax, num_bins=num_bins, bin_type=bin_type, bin_edges=bin_edges
         )

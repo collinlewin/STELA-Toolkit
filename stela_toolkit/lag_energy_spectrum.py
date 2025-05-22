@@ -1,57 +1,73 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-from ._check_inputs import _CheckInputs
-from .coherence import Coherence
-from .cross_spectrum import CrossSpectrum
 from .frequency_binning import FrequencyBinning
 from .lag_frequency_spectrum import LagFrequencySpectrum
 
 
-class LagEnergySpectrum():
+class LagEnergySpectrum:
     """
-    Computes the time lag as a function of energy for multiple energy bands using 
-    light curves or trained models. If models are provided, it will detect and use 
-    the most recently generated samples for each energy band.
+    Compute the time lag as a function of energy between two sets of light curves or GP models.
 
-    A positive lag indicates that the variability in lightcurve/s 1 is lagging 
-    that in lightcurve/s 2.
+    This class accepts lists of LightCurve objects or trained GaussianProcess models, one per energy bin.
+    If the inputs are GP models, the most recently generated samples will be used automatically.
+    If no samples are found, 1000 realizations will be generated on a 1000-point grid.
 
-    Parameters:
-    - lightcurves_or_models1, lightcurves_or_models2 (list of LightCurve or model objects): 
-        Lists of input light curves or models corresponding to different energy bands. 
-        Models must have been trained. The most recently generated realizations/samples 
-        will be used; if none have been generated, 1000 samples at 1000 time values 
-        will be generated.
-    - fmin, fmax (float): Minimum and maximum frequencies to integrate over when 
-        computing the lag.
-    - bin_edges (array-like): Energy bin edges used to define the energy bands.
-    - subtract_coh_bias (bool, optional): Whether to subtract the coherence bias. 
-    Defaults to True.
-    - plot_les (bool, optional): Whether to plot the resulting lag energy spectrum. 
-    Defaults to False.
+    Each light curve pair (one per energy bin) is used to compute a single lag by integrating the
+    cross-spectrum over a specified frequency range. This yields one lag per energy bin, forming
+    the lag-energy spectrum.
 
-    Attributes:
-    - energies (array-like): Mean energies for each energy bin.
-    - energy_widths (array-like): Widths of the energy bins.
-    - lags (array-like): Computed time lags for each energy bin.
-    - lag_errors (array-like): Uncertainties in the time lag values.
+    A **positive lag** means that the time series in `lcs_or_models1` is **lagging behind**
+    the corresponding series in `lcs_or_models2`.
+
+    Coherence values are also computed for each energy bin to assess correlation strength,
+    and noise bias correction can be applied to the coherence before estimating uncertainties.
+
+    Parameters
+    ----------
+    lcs_or_models1 : list of LightCurve or GaussianProcess
+        First set of inputs, one per energy bin.
+    lcs_or_models2 : list of LightCurve or GaussianProcess
+        Second set of inputs, matched to `lcs_or_models1`.
+    fmin : float
+        Minimum frequency to include when integrating.
+    fmax : float
+        Maximum frequency to include when integrating.
+    bin_edges : array-like
+        Edges of the energy bins corresponding to the light curves.
+    subtract_coh_bias : bool, optional
+        Whether to subtract the coherence noise bias before estimating lag uncertainties.
+
+    Attributes
+    ----------
+    energies : array-like
+        Mean energy of each bin.
+    energy_widths : array-like
+        Half-width of each energy bin.
+    lags : array-like
+        Integrated time lag per energy bin.
+    lag_errors : array-like
+        Uncertainties in each lag value.
+    cohs : array-like
+        Coherence values per energy bin.
+    coh_errors : array-like
+        Uncertainties in the coherence values.
     """
+
     def __init__(self,
-                 lightcurves_or_models1,
-                 lightcurves_or_models2,
+                 lcs_or_models1,
+                 lcs_or_models2,
                  fmin,
                  fmax,
                  bin_edges=[],
                  subtract_coh_bias=True,
                  ):
-        # To do: update main docstring for lag interpretation, coherence plotting
         # leave main input check to LagFrequencySpectrum, check same input dimensions for now.
-        if len(lightcurves_or_models1) != len(lightcurves_or_models2):
+        if len(lcs_or_models1) != len(lcs_or_models2):
             raise ValueError("The lightcurves_or_models arrays must contain the sane number of lightcurve/model objects.")
 
-        self.data_models1 = lightcurves_or_models1
-        self.data_models2 = lightcurves_or_models2
+        self.data_models1 = lcs_or_models1
+        self.data_models2 = lcs_or_models2
 
         self.energies = [np.mean(bin_edges[i], bin_edges[i+1]) for i in range(len(bin_edges[:-1]))]
         self.energy_widths = np.diff(bin_edges) / 2
@@ -61,6 +77,26 @@ class LagEnergySpectrum():
         self.lags, self.lag_errors, self.cohs, self. coh_errors = lag_spectrum
 
     def compute_lag_spectrum(self, subtract_coh_bias):
+        """
+        Compute the lag and coherence for each energy bin.
+
+        Parameters
+        ----------
+        subtract_coh_bias : bool
+            Whether to subtract Poisson noise bias from the coherence.
+
+        Returns
+        -------
+        lags : list
+            List of integrated lags for each bin.
+        lag_errors : list
+            List of lag uncertainties.
+        cohs : list
+            List of mean coherence values.
+        coh_errors : list
+            List of coherence uncertainties.
+        """
+
         lags, lag_errors, cohs, coh_errors = [], [], [], []
         for i in range(len(self.data_models1)):
             lfs = LagFrequencySpectrum(self.data_models1[i],
@@ -79,11 +115,14 @@ class LagEnergySpectrum():
 
     def plot(self, energies=None, energy_widths=None, lags=None, lag_errors=None, cohs=None, coh_errors=None, **kwargs):
         """
-        Plots the lag-energy spectrum and coherence in two subplots.
+        Plot the lag-energy spectrum and associated coherence values.
 
-        Parameters:
-        - **kwargs: Keyword arguments for customizing the plots.
+        Parameters
+        ----------
+        **kwargs : dict
+            Keyword arguments for customizing the plot (e.g., xlabel, xscale, yscale).
         """
+
         energies = self.energies if energies is None else energies
         energy_widths = self.energy_widths if energy_widths is None else energy_widths
         lags = self.lags if lags is None else lags
@@ -125,20 +164,8 @@ class LagEnergySpectrum():
         """
         Counts the number of frequencies in each frequency bin.
         Wrapper method to use FrequencyBinning.count_frequencies_in_bins with class attributes.
-
-        If 
-        Parameters:
-        - fmin (float): Minimum frequency (optional).
-        - fmax (float): Maximum frequency (optional).
-            *** Class attributes will be used if not specified.
-        - num_bins (int): Number of bins to create (if bin_edges is not provided).
-        - bin_type (str): Type of binning ("log" or "linear").
-        - bin_edges (array-like): Custom array of bin edges (optional).
-            *** Class attributes will be used if not specified.
-
-        Returns:
-        - bin_counts (list): List of counts of frequencies in each bin.
         """
+
         return FrequencyBinning.count_frequencies_in_bins(
             self, fmin=fmin, fmax=fmax, num_bins=num_bins, bin_type=bin_type, bin_edges=bin_edges
         )

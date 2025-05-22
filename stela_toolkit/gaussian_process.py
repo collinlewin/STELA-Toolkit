@@ -11,30 +11,77 @@ from .preprocessing import Preprocessing
 
 class GaussianProcess:
     """
-    Models a light curve using a Gaussian Process (GP).
+    Fit and sample from a Gaussian Process (GP) model for light curve data.
 
-    This class fits a GP model to light curve data using specified kernels and likelihoods. 
-    It supports kernel selection, training, prediction, sampling, and model evaluation using 
-    criteria such as AIC and BIC.
+    This class allows you to model a light curve as a continuous, probabilistic function using a Gaussian Process.
+    You provide a LightCurve object, and the model will fit a smooth function to the observed rates,
+    incorporating measurement uncertainties and capturing the underlying variability with flexible kernel choices.
 
-    Parameters:
-    - lightcurve (LightCurve): A `LightCurve` object containing the data.
-    - kernel_form (str or list, optional): Kernel type or list of types for GP. Defaults to 'auto'.
-    - white_noise (bool, optional): Whether to include a white noise component. Defaults to True.
-    - run_training (bool, optional): Whether to train the model after initialization. Defaults to True.
-    - num_iter (int, optional): Number of training iterations. Defaults to 1000.
-    - learn_rate (float, optional): Learning rate for training. Defaults to 1e-1.
-    - sample_time_grid (array-like, optional): Time grid for sampling from the GP. Defaults to [].
-    - num_samples (int, optional): Number of samples to draw from the GP posterior. Defaults to 1000.
-    - verbose (bool, optional): Whether to display detailed output. Defaults to True.
+    By default, the model will try to make things easy for you:
+    - If the flux distribution is not normally distributed, we can apply a Box-Cox transformation to make it more Gaussian.
+    - The data is standardized (zero mean, unit variance) before training to improve numerical stability.
+    - A white noise term can be added to account for extra variance not captured by measurement errors.
+    - If you don’t specify a kernel, the model will try several standard ones and pick the best using AIC.
 
-    Attributes:
-    - model (gpytorch.models.ExactGP): The trained GP model.
-    - likelihood (gpytorch.likelihoods.Likelihood): The likelihood associated with the GP model.
-    - train_times (torch.Tensor): Training time points.
-    - train_rates (torch.Tensor): Training data rates.
-    - train_errors (torch.Tensor): Errors for the training data rates (if provided).
-    - samples (torch.Tensor): Samples from the GP posterior (if generated).
+    Once trained, the model allows you to generate samples from the posterior predictive distribution—
+    these are realizations of what the light curve *could* look like, given the data and uncertainties.
+    These samples are central to downstream STELA analyses like coherence, cross-spectrum, and lag measurements,
+    which will automatically use the most recently generated GP samples if a model is passed in.
+
+    If you haven’t generated any samples yet, don’t worry—those modules will do it for you using default settings.
+
+    Noise handling is flexible:
+    - If your light curve has error bars, they’re passed directly into the GP as a fixed noise model.
+    - If not, you can still include a learned white noise term to capture unmodeled variability.
+    - You can control whether the model uses just your errors, or also learns extra noise.
+
+    Model training uses exact inference with GPyTorch and is done via gradient descent.
+    You can control the number of iterations, the optimizer learning rate, and whether to plot the training progress.
+
+    Parameters
+    ----------
+    lightcurve : LightCurve
+        The input light curve to model.
+    kernel_form : str or list, optional
+        Kernel type to use (e.g., 'Matern32', 'RBF', 'SpectralMixture, N'), or list of types for auto-selection.
+        If 'auto', we try several and choose the best using AIC.
+    white_noise : bool, optional
+        Whether to include a white noise component in addition to measurement errors.
+    enforce_normality : bool, optional
+        Whether to apply a Box-Cox transformation to make the flux distribution more Gaussian.
+    run_training : bool, optional
+        Whether to train the GP model on initialization.
+    plot_training : bool, optional
+        Whether to plot the training loss during optimization.
+    num_iter : int, optional
+        Number of iterations for GP training.
+    learn_rate : float, optional
+        Learning rate for the optimizer.
+    sample_time_grid : array-like, optional
+        Time grid on which to draw posterior samples after training.
+    num_samples : int, optional
+        Number of GP samples to draw from the posterior.
+    verbose : bool, optional
+        Whether to print model selection, training progress, and sampling diagnostics.
+
+    Attributes
+    ----------
+    model : gpytorch.models.ExactGP
+        The trained GP model used for prediction and sampling.
+    likelihood : gpytorch.likelihoods.Likelihood
+        The likelihood model used (e.g., Gaussian with or without fixed noise).
+    train_times : torch.Tensor
+        Time points used for training the GP.
+    train_rates : torch.Tensor
+        Rate values used for training.
+    train_errors : torch.Tensor
+        Measurement uncertainties (empty if not provided).
+    samples : ndarray
+        Posterior samples drawn after training (used by downstream STELA modules).
+    pred_times : torch.Tensor
+        Time grid on which posterior samples were drawn.
+    kernel_form : str
+        Name of the kernel used in the final trained model.
     """
 
     def __init__(self,
@@ -115,14 +162,18 @@ class GaussianProcess:
 
     def enforce_normality(self, alpha=0.05):
         """
-        Check if the light curve is sufficiently normal. If not, apply a Box-Cox transformation
-        and recheck. Does not modify the original LightCurve.
+        Check normality of the input data and apply a Box-Cox transformation if needed.
+
+        Uses the Shapiro-Wilk test to assess whether the light curve fluxes are normally distributed.
+        If not, a Box-Cox transformation is applied in-place. This improves the GP's ability to
+        model the underlying structure using Gaussian assumptions.
 
         Parameters
         ----------
         alpha : float
-            Significance level for Shapiro-Wilk normality test (default 0.05)
+            Significance level for the normality test (default is 0.05).
         """
+        
         from .preprocessing import Preprocessing
 
         print("Checking normality of input light curve...")
@@ -151,17 +202,21 @@ class GaussianProcess:
 
     def create_gp_model(self, likelihood, kernel_form):
         """
-        Creates and returns a Gaussian Process model.
+        Build a GP model with the specified likelihood and kernel.
 
-        Parameters:
-        - train_times (torch.Tensor): Training time points.
-        - train_rates (torch.Tensor): Training data rates.
-        - likelihood (gpytorch.likelihoods.Likelihood): Likelihood function for the GP.
-        - kernel (str): Kernel type to use for the GP.
+        Parameters
+        ----------
+        likelihood : gpytorch.likelihoods.Likelihood
+            The likelihood model to use (e.g., Gaussian or FixedNoise).
+        kernel_form : str
+            The kernel type (e.g., 'Matern32', 'SpectralMixture, 4').
 
-        Returns:
-        - GPModel: A GP model with the specified kernel and likelihood.
+        Returns
+        -------
+        GPModel
+            A subclass of gpytorch.models.ExactGP for training.
         """
+
         class GPModel(gpytorch.models.ExactGP):
             def __init__(gp_self, train_times, train_rates, likelihood):
                 super(GPModel, gp_self).__init__(train_times, train_rates, likelihood)
@@ -177,15 +232,25 @@ class GaussianProcess:
 
     def set_likelihood(self, white_noise, train_errors=torch.tensor([])):
         """
-        Configures the likelihood for the GP model.
+        Set up the GP likelihood model based on user input and data characteristics.
 
-        Parameters:
-        - white_noise (bool): Whether to include a white noise component.
-        - train_errors (torch.Tensor, optional): Errors for the training data.
+        If error bars are available, uses a FixedNoiseGaussianLikelihood. Otherwise, defaults to a
+        GaussianLikelihood with optional white noise. If white noise is enabled, the noise level
+        is initialized based on Poisson statistics or variance in the data.
 
-        Returns:
-        - gpytorch.likelihoods.Likelihood: The configured likelihood.
+        Parameters
+        ----------
+        white_noise : bool
+            Whether to include a learnable noise term in the model.
+        train_errors : torch.Tensor, optional
+            Measurement errors from the light curve.
+
+        Returns
+        -------
+        likelihood : gpytorch.likelihoods.Likelihood
+            GPyTorch subclass, also used for training.
         """
+
         if white_noise:
             noise_constraint = gpytorch.constraints.Interval(1e-5, 1)
         else:
@@ -214,14 +279,21 @@ class GaussianProcess:
 
     def set_kernel(self, kernel_form):
         """
-        Configures the covariance kernel for the GP model.
+        Set the GP kernel (covariance function) based on user input.
 
-        Parameters:
-        - kernel_form (str): Kernel type (e.g., 'Matern32', 'RBF', 'SpectralMixture, N').
+        Handles spectral mixture, Matern, RBF, and other kernel types supported by GPyTorch.
+        Applies reasonable defaults for lengthscale initialization.
 
-        Returns:
-        - gpytorch.kernels.Kernel: The configured kernel.
+        Parameters
+        ----------
+        kernel_form : str
+            Name of the kernel, or 'SpectralMixture, N' to set the number of components.
+
+        Returns
+        -------
+        covar_module : gpytorch.kernels.Kernel
         """
+
         kernel_form = kernel_form.strip()
         if 'SpectralMixture' in kernel_form:
             if ',' not in kernel_form:
@@ -267,20 +339,19 @@ class GaussianProcess:
 
     def train_model(self, num_iter=1000, learn_rate=1e-1, verbose=False):
         """
-        Trains the Gaussian Process model, hyperparameters optimized 
-        using Adam optimizer given number of training iterations and 
-        learning rate.
+        Train the GP model using Adam optimizer and marginal log likelihood.
+        Show training progress by setting `plot_training=True` or `verbose=True`.
 
-        If verbose is True, prints the training progress and final hyperparameters.
-        If hyperparameters not converged...
-            - monotonic progression? --> consider increasing num_iter.
-            - fluctuating around potential optimum? --> consider decreasing learn_rate.
-
-        Parameters:
-        - num_iter (int): Number of training iterations.
-        - learn_rate (float): Learning rate for the optimizer.
-        - verbose (bool): Whether to print detailed information during training.
+        Parameters
+        ----------
+        num_iter : int
+            Number of optimization steps.
+        learn_rate : float
+            Learning rate for the optimizer.
+        verbose : bool
+            Whether to print detailed training progress.
         """
+
         self.model.train()
         self.likelihood.train()
 
@@ -379,21 +450,30 @@ class GaussianProcess:
 
     def find_best_kernel(self, kernel_list, num_iter=1000, learn_rate=1e-1, verbose=False):
         """
-        Finds the best kernel based on the Akaike Information Criterion (AIC).
+        Search over a list of kernels and return the best one by AIC.
 
-        Iteratively trains the GP model using different kernels from the provided list
-        and selects the kernel with the lowest AIC.
+        Trains the model separately with each kernel in the list, computes the AIC,
+        and returns the model with the lowest value.
 
-        Parameters:
-        - kernel_list (list): List of kernel types to evaluate.
-        - num_iter (int): Number of training iterations for each kernel.
-        - learn_rate (float): Learning rate for the optimizer.
-        - verbose (bool): Whether to print details about the kernel selection process.
+        Parameters
+        ----------
+        kernel_list : list of str
+            Kernel names to try.
+        num_iter : int
+            Number of iterations per training run.
+        learn_rate : float
+            Learning rate for the optimizer.
+        verbose : bool
+            Whether to print progress for each kernel.
 
-        Returns:
-        - best_model (GPModel): The trained model with the best kernel.
-        - best_likelihood (gpytorch.likelihoods.Likelihood): The likelihood associated with the best model.
+        Returns
+        -------
+        best_model : GPModel
+            The model trained with the best-performing kernel.
+        best_likelihood : gpytorch.likelihoods.Likelihood
+            Corresponding likelihood for the best model.
         """
+
         aics = []
         best_model = None
         for kernel_form in kernel_list:
@@ -428,17 +508,16 @@ class GaussianProcess:
 
     def get_hyperparameters(self):
         """
-        Retrieves the hyperparameters of the GP model.
+        Return the learned GP hyperparameters (lengthscale, noise, weights, etc.).
 
-        Returns:
-        - dict: Dictionary of hyperparameter names and their values.
-
-        Note:
-        - All hyperparameters are in units of the standardized data, 
-        not the original flux/time units.
-        - This includes noise variance, lengthscale, and kernel scale.
-        - To convert noise variance back to flux^2 units, multiply by (original_std)^2.
+        Returns
+        -------
+        hyper_dict : dict
+            Dictionary mapping parameter names to their (transformed) values.
+                Note: All rate-associated hyperparameters (e.g., not lengthscale) 
+                are in units of the standardized data, not the original flux/time units.
         """
+
         raw_hypers = self.model.named_parameters()
         hypers = {}
         for param_name, param in raw_hypers:
@@ -478,11 +557,14 @@ class GaussianProcess:
 
     def bayesian_inf_crit(self):
         """
-        Calculates the Bayesian Information Criterion (BIC) for the model.
+        Compute the Bayesian Information Criterion (BIC) for the trained model.
 
-        Returns:
-        - float: The BIC value for the trained model.
+        Returns
+        -------
+        bic : float
+            The BIC value (lower is better).
         """
+
         mll = gpytorch.mlls.ExactMarginalLogLikelihood(self.likelihood, self.model)
         log_marg_like = mll(
             self.model(self.train_times), self.train_rates
@@ -496,11 +578,14 @@ class GaussianProcess:
 
     def akaike_inf_crit(self):
         """
-        Calculates the Akaike Information Criterion (AIC) for the model.
+        Compute the Akaike Information Criterion (AIC) for the trained model.
 
-        Returns:
-        - float: The AIC value for the trained model.
+        Returns
+        -------
+        aic : float
+            The AIC value (lower is better).
         """
+
         mll = gpytorch.mlls.ExactMarginalLogLikelihood(self.likelihood, self.model)
         log_marg_like = mll(
             self.model(self.train_times), self.train_rates
@@ -513,18 +598,28 @@ class GaussianProcess:
 
     def sample(self, pred_times, num_samples, save_path=None, _save_to_state=True):
         """
-        Generates samples from the posterior predictive distribution.
+        Generate posterior samples from the trained GP model.
 
-        Uses the trained GP model to sample from the posterior at specified
-        prediction times.
+        These samples represent plausible realizations of the light curve. These are what is used
+        by the coherence, power spectrum, and lag modules when a GP model is passed in.
 
-        Parameters:
-        - pred_times (torch.Tensor): Time points for posterior sampling.
-        - num_samples (int): Number of samples to draw from the posterior.
+        Parameters
+        ----------
+        pred_times : array-like
+            Time points where samples should be drawn.
+        num_samples : int
+            Number of realizations to generate.
+        save_path : str, optional
+            File path to save the samples.
+        _save_to_state : bool, optional
+            Whether to store results in the object (used by other classes).
 
-        Returns:
-        - torch.Tensor: Samples from the posterior predictive distribution.
+        Returns
+        -------
+        samples : ndarray
+            Array of sampled light curves with shape (num_samples, len(pred_times)).
         """
+
         # Check if pred_times is a torch tensor
         if not isinstance(pred_times, torch.Tensor):
             try:
@@ -559,17 +654,19 @@ class GaussianProcess:
 
     def predict(self, pred_times):
         """
-        Predicts the posterior mean and 2-sigma confidence
-        intervals at the specified prediction times.
+        Compute the posterior mean and 2-sigma confidence intervals at specified times.
 
-        Parameters:
-        - pred_times (torch.Tensor): Time points for predictions.
+        Parameters
+        ----------
+        pred_times : array-like
+            Time values to predict.
 
-        Returns:
-        - mean (torch.Tensor): Predicted posterior mean.
-        - lower (torch.Tensor): Lower bound of the 2-sigma confidence interval.
-        - upper (torch.Tensor): Upper bound of the 2-sigma confidence interval.
+        Returns
+        -------
+        mean, lower, upper : ndarray
+            Predicted mean and lower/upper bounds of the 95 percent confidence interval.
         """
+
         # Check if pred_times is a torch tensor
         if not isinstance(pred_times, torch.Tensor):
             try:
@@ -593,11 +690,14 @@ class GaussianProcess:
 
     def plot(self, pred_times=None):
         """
-        Plots the Gaussian Process prediction and samples.
+        Plot the GP fit including mean, confidence intervals, one posterior sample, and data.
 
-        Parameters:
-        - pred_times (torch.Tensor or None): Time points for predictions (optional).
+        Parameters
+        ----------
+        **kwargs : dict
+            Additional keyword arguments for plot customization.
         """
+
         if pred_times is None:
             step = (self.train_times.max()-self.train_times.min())/1000
             pred_times = np.arange(self.train_times.min(), self.train_times.max()+step, step)
@@ -627,11 +727,14 @@ class GaussianProcess:
 
     def save(self, file_path):
         """
-        Saves the full GaussianProcess instance to a file.
+        Save the trained GP model to a file using pickle.
 
-        Parameters:
-        - file_path (str): The path to save the instance.
+        Parameters
+        ----------
+        file_path : str
+            Path to save the model.
         """
+
         with open(file_path, "wb") as f:
             pickle.dump(self, f)
         print(f"GaussianProcess instance saved to {file_path}.")
@@ -639,14 +742,19 @@ class GaussianProcess:
     @staticmethod
     def load(file_path):
         """
-        Loads a GaussianProcess instance from a file.
+        Load a saved GaussianProcess model from file.
 
-        Parameters:
-        - file_path (str): The path to load the instance from.
+        Parameters
+        ----------
+        file_path : str
+            Path to the saved file.
 
-        Returns:
-        - GaussianProcess: The loaded instance.
+        Returns
+        -------
+        GaussianProcess
+            Restored instance of the model.
         """
+
         with open(file_path, "rb") as f:
             instance = pickle.load(f)
         print(f"GaussianProcess instance loaded from {file_path}.")
@@ -654,8 +762,19 @@ class GaussianProcess:
     
     def _undo_transforms(self, array):
         """
-        Undo any standardization or Box-Cox transformation on the array.
+        Reverse Box-Cox and standardization transformations applied to GP outputs.
+
+        Parameters
+        ----------
+        array : ndarray
+            Input values in transformed space.
+
+        Returns
+        -------
+        array : ndarray
+            Values in original flux units.
         """
+
         # Undo boxcox
         if self.lambda_boxcox is not None:
             if self.lambda_boxcox == 0:
