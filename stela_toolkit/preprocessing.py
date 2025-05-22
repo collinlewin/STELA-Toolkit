@@ -94,17 +94,25 @@ class Preprocessing:
             Direct rate values if not using a LightCurve.
         """
         if lightcurve:
-            rates = lightcurve.rates
+            rates = lightcurve.rates.copy()
         elif np.array(rates).size != 0:
             pass
         else: 
             raise ValueError("Either 'lightcurve' or 'rates' must be provided.")
         
-        probplot(rates, dist="norm", plot=plt)
-        plt.title("Q-Q Plot")
-        plt.xlabel("Theoretical Quantiles")
-        plt.ylabel("Sample Quantiles")
-        plt.grid(True)
+        rates_std = (rates - np.mean(rates)) / np.std(rates)
+        (osm, osr), _ = probplot(rates_std, dist="norm")
+
+        plt.figure(figsize=(8, 5))
+        plt.plot(osm, osr, 'o', color='black', markersize=4)
+        plt.plot(osm, osm, 'g--', lw=1, label='Ideal Normal')
+
+        plt.title("Q-Q Plot", fontsize=12)
+        plt.xlabel("Theoretical Quantiles", fontsize=12)
+        plt.ylabel("Sample Quantiles", fontsize=12)
+        plt.legend(loc='upper left')
+        plt.grid(True, linestyle='--', linewidth=0.5, alpha=0.7)
+        plt.tick_params(which='both', direction='in', length=6, width=1, top=True, right=True, labelsize=12)
         plt.show()
 
     @staticmethod
@@ -124,29 +132,23 @@ class Preprocessing:
             Whether this check is being called internally after Box-Cox.
         """  
         if lightcurve:
-            rates = lightcurve.rates
+            rates = lightcurve.rates.copy()
         elif np.array(rates).size != 0:
             pass
         else:
             raise ValueError("Either 'lightcurve' or 'rates' must be provided.")
-        
-        # Run Shapiro-wilks test
+        rates = (rates - np.mean(rates)) / np.std(rates)
         pvalue = shapiro(rates).pvalue
-        print(f"p-value from Shapiro-Wilks test: {pvalue:.3f}")
-        
-        # Compare to alpha = 0.05
-        if pvalue <= 0.05:  # reject
-            print(f"  => can reject null hypothesis that the data is \
-                  normally distributed, assuming a 0.05 significance level.")
-            
+        print(f"\nShapiro-Wilk test p-value: {pvalue:.3f}")
+
+        alpha = 0.05
+        if pvalue <= alpha:
+            print(f"  -> The data is likely *not* normally distributed (p ≤ {alpha})")
             if not _boxcox:
-                print("Use check_boxcox_normal to see if boxcox transformation \
-                      can sufficiently help achieve normality.")
-    
-        elif pvalue > 0.05:  # fail to reject
-            print(f"  => unable to reject null hypothesis that the data is \
-                   normally distributed, assuming a 0.05 significance level.")
-            
+                print("    Consider running `check_boxcox_normal()` to check if a Box-Cox transformation would help.")
+        else:
+            print(f"  -> The data appears sufficiently normal (in that we can't say that it is not, p > {alpha})")
+
         if plot:
             Preprocessing.generate_qq_plot(rates=rates)
     
@@ -166,13 +168,11 @@ class Preprocessing:
             Whether to modify the light curve in place.
         """
         lc = lightcurve
-
-        # transform rates
         rates_boxcox, lambda_opt = boxcox(lc.rates)
 
         # transform errors using delta method (derivative-based propagation)
         if lc.errors.size != 0:
-            if lambda_opt == 0:  # for log transformation (lambda = 0)
+            if lambda_opt == 0:  # log transformation (lambda = 0)
                 errors_boxcox = lc.errors / lc.rates
             else:
                 errors_boxcox = (lc.rates ** (lambda_opt - 1)) * lc.errors
@@ -199,20 +199,15 @@ class Preprocessing:
         """
         lc = lightcurve
 
-        # Check if the lightcurve has been transformed
         if not getattr(lc, "is_boxcox_transformed", False):
             raise ValueError("Light curve data has not been transformed with Box-Cox.")
 
-        # Retrieve lambda used for transformation
         lambda_opt = lc.lambda_boxcox
-
-        # Reverse rates transformation
         if lambda_opt == 0:  # inverse log transformation
             rates_original = np.exp(lc.rates)
         else:
             rates_original = (lc.rates * lambda_opt + 1) ** (1 / lambda_opt)
 
-        # Reverse errors transformation
         if lc.errors.size != 0:
             if lambda_opt == 0:  # inverse log transformation (lambda = 0)
                 errors_original = lc.errors * rates_original
@@ -221,11 +216,10 @@ class Preprocessing:
         else:
             errors_original = None
 
-        # Restore the original values
         lc.rates = rates_original
         lc.errors = errors_original
-        lc.is_boxcox_transformed = False  # Reset the transformation flag
-        del lc.lambda_boxcox  # Clean up lambda attribute
+        lc.is_boxcox_transformed = False
+        del lc.lambda_boxcox
 
     @staticmethod
     def check_boxcox_normal(lightcurve):
@@ -237,8 +231,34 @@ class Preprocessing:
         lightcurve : LightCurve
             The input light curve.
         """
+        rates_original = lightcurve.rates.copy()
         rates_boxcox, _ = Preprocessing.boxcox_transform(lightcurve, save=False)
-        Preprocessing.check_normal(rates_boxcox, _boxcox=True)
+
+        print("Before Box-Cox:")
+        Preprocessing.check_normal(lightcurve=lightcurve, plot=False)
+
+        print("\nAfter Box-Cox:")
+        Preprocessing.check_normal(rates=rates_boxcox, plot=False, _boxcox=True)
+
+        # Standardize both distributions for fair Q-Q comparison
+        rates_original_std = (rates_original - np.mean(rates_original)) / np.std(rates_original)
+        rates_boxcox_std = (rates_boxcox - np.mean(rates_boxcox)) / np.std(rates_boxcox)
+
+        (osm1, osr1), _ = probplot(rates_original_std, dist="norm")
+        (osm2, osr2), _ = probplot(rates_boxcox_std, dist="norm")
+
+        plt.figure(figsize=(8, 4.5))
+        plt.plot(osm1, osr1, 'o', label='Original', color='black', alpha=0.6, markersize=4)
+        plt.plot(osm2, osr2, 'o', label='Transformed', color='dodgerblue', alpha=0.6, markersize=4)
+        plt.plot(osm1, osm1, 'g--', label='Ideal Normal', alpha=0.5, lw=1.5)
+
+        plt.xlabel("Theoretical Quantiles", fontsize=12)
+        plt.ylabel("Sample Quantiles", fontsize=12)
+        plt.title("Q-Q Plot Before and After Box-Cox", fontsize=12)
+        plt.legend(loc='upper left')
+        plt.grid(True, linestyle='--', linewidth=0.5, alpha=0.7)
+        plt.tick_params(which='both', direction='in', length=6, width=1, top=True, right=True, labelsize=12)
+        plt.show()
 
     @staticmethod
     def trim_time_segment(lightcurve, start_time=None, end_time=None, plot=False, save=True):
@@ -268,20 +288,21 @@ class Preprocessing:
         # Apply mask to trim data
         mask = (lc.times >= start_time) & (lc.times <= end_time)
         if plot:
-            if lc.errors.size > 0:
-                plt.errorbar(lc.times[mask], lc.rates[mask], yerr=lc.errors[mask],
-                             fmt='o', lw=1, ms=2, color='black', label='Kept Data')
-                plt.errorbar(lc.times[~mask], lc.rates[~mask], yerr=lc.errors[~mask],
-                             fmt='o', lw=1, ms=2, color='red', label='Trimmed Data')
+            plt.figure(figsize=(8, 4.5))
+            if lc.errors is not None and len(lc.errors) > 0:
+                plt.errorbar(lc.times[mask], lc.rates[mask], yerr=lc.errors[mask], 
+                             fmt='o', color='black', ms=3, label='Kept')
+                plt.errorbar(lc.times[~mask], lc.rates[~mask], yerr=lc.errors[~mask], 
+                             fmt='o', color='orange', ms=3, label='Trimmed')
             else:
-                plt.scatter(lc.times[mask], lc.rates[mask], s=2, color="black", label="Kept Data")
-                plt.scatter(lc.times[~mask], lc.rates[~mask], s=2,
-                            color="red", label="Trimmed Data")
-
-            plt.xlabel("Time")
-            plt.ylabel("Rates")
+                plt.scatter(lc.times[mask], lc.rates[mask], s=6, color="black", label="Kept")
+                plt.scatter(lc.times[~mask], lc.rates[~mask], s=6, color="red", label="Trimmed")
+            plt.xlabel("Time", fontsize=12)
+            plt.ylabel("Rates", fontsize=12)
             plt.title("Trimming")
             plt.legend()
+            plt.grid(True, linestyle='--', linewidth=0.5, alpha=0.7)
+            plt.tick_params(which='both', direction='in', length=6, width=1, top=True, right=True, labelsize=12)
             plt.show()
 
         if save:
@@ -340,25 +361,23 @@ class Preprocessing:
         """
         def plot_outliers(outlier_mask):
             """Plots the data flagged as outliers."""
+            plt.figure(figsize=(8, 4.5))
             if errors is not None:
-                plt.errorbar(
-                    times[~outlier_mask], rates[~outlier_mask],
-                    yerr=errors[~outlier_mask], fmt='o', color='black', lw=1, ms=2
-                )
-                plt.errorbar(
-                    times[outlier_mask], rates[outlier_mask],
-                    yerr=errors[outlier_mask], fmt='o', color='red', label='Outliers', lw=1, ms=2
-                )
+                plt.errorbar(times[~outlier_mask], rates[~outlier_mask], yerr=errors[~outlier_mask], 
+                             fmt='o', color='black', ms=3, label='Kept')
+                plt.errorbar(times[outlier_mask], rates[outlier_mask], yerr=errors[outlier_mask], 
+                             fmt='o', color='orange', ms=3, label='Outliers')
             else:
-                plt.scatter(times[~outlier_mask], rates[~outlier_mask], s=2)
-                plt.scatter(
-                    times[outlier_mask], rates[outlier_mask],
-                    color='red', label='Outliers', s=2
-                )
-            plt.xlabel('Time')
-            plt.ylabel('Rates')
-            plt.title('Outlier Detection')
+                plt.scatter(times[~outlier_mask], rates[~outlier_mask], 
+                            s=6, color='black', label='Kept')
+                plt.scatter(times[outlier_mask], rates[outlier_mask], 
+                            s=6, color='orange', label='Outliers')
+            plt.xlabel("Time", fontsize=12)
+            plt.ylabel("Rates", fontsize=12)
+            plt.title("Outlier Detection")
             plt.legend()
+            plt.grid(True, linestyle='--', linewidth=0.5, alpha=0.7)
+            plt.tick_params(which='both', direction='in', length=6, width=1, top=True, right=True, labelsize=12)
             plt.show()
 
         def detect_outliers(rates, threshold, rolling_window):
@@ -439,22 +458,22 @@ class Preprocessing:
 
         detrended_rates = lc.rates - trend
         if plot:
-            if lc.errors.size > 0:
-                plt.errorbar(lc.times, lc.rates, yerr=lc.errors, fmt='o',
-                             color='black', lw=1, ms=2, label='Original Data')
-                plt.errorbar(lc.times, detrended_rates, yerr=lc.errors, fmt='o',
-                             color='dodgerblue', lw=1, ms=2, label='Detrended Data')
+            plt.figure(figsize=(8, 4.5))
+            if lc.errors is not None and len(lc.errors) > 0:
+                plt.errorbar(lc.times, lc.rates, yerr=lc.errors, 
+                             fmt='o', color='black', label="Original", ms=3, lw=1.5, alpha=0.6)
+                plt.errorbar(lc.times, detrended_rates, yerr=lc.errors, 
+                             fmt='o', color='dodgerblue', label="Detrended", ms=3, lw=1.5)
             else:
-                plt.plot(lc.times, lc.rates, label="Original Data", color="black", alpha=0.6)
-                plt.plot(lc.times, detrended_rates, label="Detrended Data", color="dodgerblue")
-
-            plt.plot(lc.times, trend, color='orange', linestyle='--',
-                     label=f'Fitted Polynomial (degree={degree})')
-
-            plt.xlabel("Time")
-            plt.ylabel("Rates")
+                plt.plot(lc.times, lc.rates, label="Original", color="black", alpha=0.6, ms=3, lw=1.5)
+                plt.plot(lc.times, detrended_rates, label="Detrended", color="dodgerblue", ms=3, lw=1.5)
+            plt.plot(lc.times, trend, color='orange', linestyle='--', label='Fitted Trend')
+            plt.xlabel("Time", fontsize=12)
+            plt.ylabel("Rates", fontsize=12)
             plt.title("Polynomial Detrending")
             plt.legend()
+            plt.grid(True, linestyle='--', linewidth=0.5, alpha=0.7)
+            plt.tick_params(which='both', direction='in', length=6, width=1, top=True, right=True, labelsize=12)
             plt.show()
 
         if save:
