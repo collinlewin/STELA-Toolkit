@@ -1,3 +1,4 @@
+from copy import deepcopy
 import torch
 import gpytorch
 import pickle
@@ -40,6 +41,7 @@ class GaussianProcess:
                  lightcurve,
                  kernel_form='auto',
                  white_noise=True,
+                 enforce_normality=True,
                  run_training=True,
                  plot_training=False,
                  num_iter=1000,
@@ -50,19 +52,20 @@ class GaussianProcess:
 
         # To Do: reconsider noise prior, add a mean function function for forecasting, more verbose options
         _CheckInputs._check_input_data(lightcurve, req_reg_samp=False)
-        self.lc = lightcurve
-
-        # Standardize data
-        self.standardized = getattr(self.lc, "is_standard", False)
-        if not self.standardized:
-            Preprocessing.standardize(self.lc)
-            self.standardized = True
-
+        self.lc = deepcopy(lightcurve)
+        
+        # Save original mean, std, boxcox parameter for reversing standardization
         self.lc_mean = self.lc.unstandard_mean
         self.lc_std = self.lc.unstandard_std
-
-        # Check if already boxcox transformed
         self.lambda_boxcox = getattr(self.lc, "lambda_boxcox", None)
+
+        # Check normality and apply boxcox if user specifies
+        if enforce_normality:
+            self.enforce_normality()
+
+        # Standardize data
+        if not getattr(self.lc, "is_standard", False):
+            Preprocessing.standardize(self.lc)
 
         # Convert light curve data to pytorch tensors
         self.train_times = torch.tensor(self.lc.times).float()
@@ -109,6 +112,42 @@ class GaussianProcess:
         # Undo boxcox transformation if needed
         if getattr(self.lc, "is_boxcox_transformed", False):
             Preprocessing.reverse_boxcox_transform(self.lc)
+
+    def enforce_normality(self, alpha=0.05):
+        """
+        Check if the light curve is sufficiently normal. If not, apply a Box-Cox transformation
+        and recheck. Does not modify the original LightCurve.
+
+        Parameters
+        ----------
+        alpha : float
+            Significance level for Shapiro-Wilk normality test (default 0.05)
+        """
+        from .preprocessing import Preprocessing
+
+        print("Checking normality of input light curve...")
+
+        # Check normality
+        is_normal_before, pval_before = Preprocessing.check_normal(self.lc, alpha=alpha)
+        if is_normal_before:
+            print(f" - Light curve is already normal (p = {pval_before:.4f})")
+            return
+
+        print(f" - Light curve is not normal (p = {pval_before:.4f}). Applying Box-Cox transformation...")
+
+        # Apply Box-Cox transformation
+        Preprocessing.boxcox_transform(self.lc)
+        if self.lambda_boxcox is not None:
+            print (" -- The input data is already Box-Cox transformed, no change will be made.")
+        else:
+            self.lambda_boxcox = getattr(self.lc, "lambda_boxcox", None)
+
+        # Recheck normality
+        is_normal_after, pval_after = Preprocessing.check_normal(self.lc, alpha=alpha)
+        if is_normal_after:
+            print(f" - Normality improved after Box-Cox (p = {pval_after:.4f})")
+        else:
+            print(f" - Data still not normal after Box-Cox (p = {pval_after:.4f}), interpret results with caution!")
 
     def create_gp_model(self, likelihood, kernel_form):
         """
@@ -618,12 +657,11 @@ class GaussianProcess:
         Undo any standardization or Box-Cox transformation on the array.
         """
         # Undo boxcox
-        if self.boxcox_lambda is not None:
-            if self.boxcox_lambda == 0:
+        if self.lambda_boxcox is not None:
+            if self.lambda_boxcox == 0:
                 array = np.exp(array)
             else:
-                array = (array * self.boxcox_lambda + 1) ** (1 / self.boxcox_lambda)
-
+                array = (array * self.lambda_boxcox + 1) ** (1 / self.lambda_boxcox)
 
         # Undo standardization
         if self.standardized:
