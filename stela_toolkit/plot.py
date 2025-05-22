@@ -26,11 +26,11 @@ class Plotter:
 
         # Default plotting settings
         if yerr is not None or xerr is not None:
-            default_plot_kwargs = {'color': 'black', 'fmt': 'o', 'ms': 2, 'lw': 1, 'label': None}
+            default_plot_kwargs = {'color': 'black', 'fmt': 'o', 'ms': 3, 'lw': 1.5, 'label': None}
         else:
-            default_plot_kwargs = {'color': 'black', 's': 2, 'label': None}
+            default_plot_kwargs = {'color': 'black', 's': 3, 'label': None}
 
-        figsize = kwargs.get('figsize', (8, 5))
+        figsize = kwargs.get('figsize', (8, 6))
         fig_kwargs = {'figsize': figsize, **kwargs.pop('fig_kwargs', {})}
         plot_kwargs = {**default_plot_kwargs, **kwargs.pop('plot_kwargs', {})}
         major_tick_kwargs = {'which': 'major', **kwargs.pop('major_tick_kwargs', {})}
@@ -56,9 +56,9 @@ class Plotter:
         ylabel = kwargs.get('ylabel', None)
 
         if xlabel:
-            plt.xlabel(xlabel)
+            plt.xlabel(xlabel, fontsize=12)
         if ylabel:
-            plt.ylabel(ylabel)
+            plt.ylabel(ylabel, fontsize=12)
 
         plt.xscale(kwargs.get('xscale', 'linear'))
         plt.yscale(kwargs.get('yscale', 'linear'))
@@ -70,10 +70,22 @@ class Plotter:
         if title:
             plt.title(title)
 
+        # Tick kwargs
+        major_tick_kwargs.setdefault('which', 'both')
+        major_tick_kwargs.setdefault('direction', 'in')
+        major_tick_kwargs.setdefault('length', 6)
+        major_tick_kwargs.setdefault('width', 1)
+        major_tick_kwargs.setdefault('labelsize', 12)
+        major_tick_kwargs.setdefault('top', True)
+        major_tick_kwargs.setdefault('right', True)
+
         plt.tick_params(**major_tick_kwargs)
         if len(minor_tick_kwargs) > 1:
             plt.minorticks_on()
             plt.tick_params(**minor_tick_kwargs)
+
+        # Grid to both axes
+        plt.grid(True, which='both', linestyle='--', linewidth=0.5, alpha=0.7)
 
         if save:
             plt.savefig(save, **savefig_kwargs)
