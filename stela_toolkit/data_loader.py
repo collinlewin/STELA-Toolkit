@@ -67,7 +67,8 @@ class LightCurve:
         self.times, self.rates, self.errors = _CheckInputs._check_input_data(lightcurve=None,
                                                                              times=times,
                                                                              rates=rates,
-                                                                             errors=errors
+                                                                             errors=errors,
+                                                                             req_reg_samp=False
                                                                              )
 
     @property
