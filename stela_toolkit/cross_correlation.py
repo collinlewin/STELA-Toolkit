@@ -87,8 +87,28 @@ class CrossCorrelation:
         plot(show_mc=True)
             Plot the CCF and optionally the Monte Carlo distributions.
         """
-        if not isinstance(lc1, LightCurve) or not isinstance(lc2, LightCurve):
-            raise TypeError("Both inputs must be LightCurve objects.")
+        data1 = _CheckInputs._check_lightcurve_or_model(lc1)
+        data2 = _CheckInputs._check_lightcurve_or_model(lc2)
+
+        if data1['type'] == 'model':
+            if not hasattr(lc1, 'samples'):
+                raise ValueError("Model 1 must have generated samples via GP.sample().")
+            self.times = lc1.pred_times.numpy()
+            self.rates1 = lc1.samples
+            self.is_model1 = True
+        else:
+            self.times, self.rates1, self.errors1 = data1['data']
+            self.is_model1 = False
+
+        if data2['type'] == 'model':
+            if not hasattr(lc2, 'samples'):
+                raise ValueError("Model 2 must have generated samples via GP.sample().")
+            self.times = lc2.pred_times.numpy()
+            self.rates2 = lc2.samples
+            self.is_model2 = True
+        else:
+            self.times, self.rates2, self.errors2 = data2['data']
+            self.is_model2 = False
 
         t1, r1, e1 = _CheckInputs._check_input_data(lc1, req_reg_samp=True)
         t2, r2, e2 = _CheckInputs._check_input_data(lc2, req_reg_samp=True)
@@ -115,6 +135,14 @@ class CrossCorrelation:
         else:
             self.lags, self.ccf = self.compute_ccf(self.rates1, self.rates2)
 
+        if self.is_model1 and self.is_model2:
+            if self.rates1.shape[0] != self.rates2.shape[0]:
+                raise ValueError("Model sample shapes do not match.")
+            self.ccf = np.mean([
+                self.compute_ccf(self.rates1[i], self.rates2[i])[1]
+                for i in range(self.rates1.shape[0])
+            ], axis=0)
+            self.lags = np.arange(self.min_lag, self.max_lag + self.dt, self.dt)
 
         self.rmax = np.max(self.ccf)
         self.peak_lag, self.centroid_lag = self.find_peak_and_centroid(self.lags, self.ccf)
