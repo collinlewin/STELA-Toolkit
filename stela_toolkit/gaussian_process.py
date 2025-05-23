@@ -164,36 +164,36 @@ class GaussianProcess:
         """
         Check normality of the input data and apply a Box-Cox transformation if needed.
 
-        Uses the Shapiro-Wilk test to assess whether the light curve fluxes are normally distributed.
-        If not, a Box-Cox transformation is applied in-place. This improves the GP's ability to
-        model the underlying structure using Gaussian assumptions.
+        This method first checks if the light curve's flux distribution appears normal.
+        If not, a Box-Cox transformation is applied to improve it. STELA automatically
+        selects the most appropriate test (Shapiro-Wilk or Lilliefors) based on sample size.
         """
-        
-        from .preprocessing import Preprocessing
-
         print("Checking normality of input light curve...")
 
-        # Check normality
-        is_normal_before, pval_before = Preprocessing.check_normal(self.lc)
+        is_normal_before, pval_before = Preprocessing.check_normal(self.lc, plot=False, verbose=False)
+
         if is_normal_before:
-            print(f" - Light curve is already normal (p = {pval_before:.4f})")
+            print(f"\n - Light curve appears normal (p = {pval_before:.4f}). No transformation applied.")
             return
 
-        print(f" - Light curve is not normal (p = {pval_before:.4f}). Applying Box-Cox transformation...")
+        print(f"\n - Light curve is not normal (p = {pval_before:.4f}). Applying Box-Cox transformation...")
 
         # Apply Box-Cox transformation
         Preprocessing.boxcox_transform(self.lc)
+
         if self.lambda_boxcox is not None:
-            print (" -- The input data is already Box-Cox transformed, no change will be made.")
+            print(" -- Note: The input was already Box-Cox transformed. No additional transformation made.")
         else:
             self.lambda_boxcox = getattr(self.lc, "lambda_boxcox", None)
 
-        # Recheck normality
-        is_normal_after, pval_after = Preprocessing.check_normal(self.lc)
+        # Re-check normality
+        is_normal_after, pval_after = Preprocessing.check_normal(self.lc, plot=False, verbose=False)
+
         if is_normal_after:
-            print(f" - Normality improved after Box-Cox (p = {pval_after:.4f})")
+            print(f" - Normality sufficiently achieved after Box-Cox (p = {pval_after:.4f})! Proceed as normal!")
         else:
-            print(f" - Data still not normal after Box-Cox (p = {pval_after:.4f}), interpret results with caution!")
+            print(f" - Data still not normal after Box-Cox (p = {pval_after:.4f}). Proceed with caution.")
+
 
     def create_gp_model(self, likelihood, kernel_form):
         """

@@ -118,7 +118,7 @@ class Preprocessing:
         plt.show()
 
     @staticmethod
-    def check_normal(lightcurve=None, rates=[], plot=True, _boxcox=False):
+    def check_normal(lightcurve=None, rates=[], plot=True, _boxcox=False, verbose=True):
         """
         Test for normality using an appropriate statistical test based on sample size.
 
@@ -157,31 +157,33 @@ class Preprocessing:
 
         n = len(rates)
         if n < 50:
-            print("Using Shapiro-Wilk test (recommended for n < 50)")
+            if verbose:
+                print("Using Shapiro-Wilk test (recommended for n < 50)")
             test_name = "Shapiro-Wilk"
             pvalue = shapiro(rates).pvalue
         else:
-            print("Using Lilliefors test (for n >= 50)")
+            if verbose:
+                print("Using Lilliefors test (for n >= 50)")
             test_name = "Lilliefors (modified KS)"
             _, pvalue = lilliefors(rates, dist='norm')
 
-        print(f"{test_name} test p-value: {pvalue:.3g}")
+        if verbose:
+            print(f"{test_name} test p-value: {pvalue:.3g}")
+            if pvalue <= 0.001:
+                strength = "very strong"
+            elif pvalue <= 0.01:
+                strength = "strong"
+            elif pvalue <= 0.05:
+                strength = "weak"
+            else:
+                strength = "little to no"
 
-        if pvalue <= 0.001:
-            strength = "very strong"
-        elif pvalue <= 0.01:
-            strength = "strong"
-        elif pvalue <= 0.05:
-            strength = "weak"
-        else:
-            strength = "little to no"
+            print(f"  -> {strength.capitalize()} evidence against normality (p = {pvalue:.3g})")
 
-        print(f"  -> {strength.capitalize()} evidence against normality (p = {pvalue:.3g})")
-
-        if pvalue <= 0.05 and not _boxcox:
-            print("     - Consider running `check_boxcox_normal()` to see if a Box-Cox transformation can help.")
-            print("     - Often checking normality via a Q-Q plot (run `generate_qq_plot(lightcurve)`) is sufficient.")
-        print("===================")
+            if pvalue <= 0.05 and not _boxcox:
+                print("     - Consider running `check_boxcox_normal()` to see if a Box-Cox transformation can help.")
+                print("     - Often checking normality via a Q-Q plot (run `generate_qq_plot(lightcurve)`) is sufficient.")
+            print("===================")
 
         if plot:
             Preprocessing.generate_qq_plot(rates=rates)
