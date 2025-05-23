@@ -1,6 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy.stats import boxcox, shapiro, probplot
+from statsmodels.stats.diagnostic import lilliefors
 from copy import deepcopy
 
 
@@ -119,7 +120,7 @@ class Preprocessing:
     @staticmethod
     def check_normal(lightcurve=None, rates=[], plot=True, _boxcox=False):
         """
-        Test for normality using the Shapiro-Wilk test.
+        Test for normality using an appropriate test based on sample size.
 
         Parameters
         ----------
@@ -132,7 +133,6 @@ class Preprocessing:
         _boxcox : bool
             Whether this check is being called internally after Box-Cox.
         """
-
         if lightcurve:
             rates = lightcurve.rates.copy()
         elif np.array(rates).size != 0:
@@ -140,10 +140,18 @@ class Preprocessing:
         else:
             raise ValueError("Either 'lightcurve' or 'rates' must be provided.")
 
-        pvalue = shapiro(rates).pvalue
-        print(f"Shapiro-Wilk test p-value: {pvalue:.3g}")
+        n = len(rates)
+        if n < 50:
+            print("Using Shapiro-Wilk test (recommended for n < 50)")
+            test_name = "Shapiro-Wilk"
+            pvalue = shapiro(rates).pvalue
+        else:
+            print("Using Lilliefors test (for n >= 50)")
+            test_name = "Lilliefors (modified KS)"
+            _, pvalue = lilliefors(rates, dist='norm')
 
-        # Interpret evidence strength
+        print(f"{test_name} test p-value: {pvalue:.3g}")
+
         if pvalue <= 0.001:
             strength = "very strong"
         elif pvalue <= 0.01:
@@ -156,7 +164,8 @@ class Preprocessing:
         print(f"  -> {strength.capitalize()} evidence against normality (p = {pvalue:.3g})")
 
         if pvalue <= 0.05 and not _boxcox:
-            print("    Consider running `check_boxcox_normal()` to see if a Box-Cox transformation can help.")
+            print("     - Consider running `check_boxcox_normal()` to see if a Box-Cox transformation can help.")
+            print("     - Often checking normality via a Q-Q plot (run `generate_qq_plot(lightcurve)`) is sufficient.")
         print("===================")
 
         if plot:
@@ -351,7 +360,7 @@ class Preprocessing:
             print(f"Removed {np.sum(~nonnan_mask)} NaN points.\n"
                   f"({np.sum(np.isnan(lc.rates))} NaN rates, "
                   f"{np.sum(np.isnan(lc.errors))} NaN errors)")
-
+            print("===================")
         lc.times = lc.times[nonnan_mask]
         lc.rates = lc.rates[nonnan_mask]
         if lc.errors.size > 0:
@@ -431,6 +440,7 @@ class Preprocessing:
         if verbose:
             print(f"Removed {np.sum(outlier_mask)} outliers "
                   f"({np.sum(outlier_mask) / len(rates) * 100:.2f}% of data).")
+            print("===================")
 
         if plot:
             plot_outliers(outlier_mask)
