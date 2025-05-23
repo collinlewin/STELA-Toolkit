@@ -120,19 +120,34 @@ class Preprocessing:
     @staticmethod
     def check_normal(lightcurve=None, rates=[], plot=True, _boxcox=False):
         """
-        Test for normality using an appropriate test based on sample size.
+        Test for normality using an appropriate statistical test based on sample size.
+
+        For small samples (n < 50), this uses the Shapiro-Wilk test. For larger samples,
+        it uses the Lilliefors version of the Kolmogorov-Smirnov test. Results are printed
+        with an interpretation of the strength of evidence against normality.
+
+        If `plot=True`, a Q-Q plot of the distribution is shown. This function supports either
+        a full LightCurve object or a raw array of flux values.
 
         Parameters
         ----------
         lightcurve : LightCurve, optional
-            Light curve to extract rates from.
+            The light curve object containing the rates to test.
         rates : array-like, optional
             Direct rate values if not using a LightCurve.
-        plot : bool
-            Whether to show a Q-Q plot.
-        _boxcox : bool
-            Whether this check is being called internally after Box-Cox.
+        plot : bool, optional
+            Whether to display a Q-Q plot.
+        _boxcox : bool, optional
+            Whether this check is being called internally after Box-Cox (affects messaging only).
+
+        Returns
+        -------
+        is_normal : bool
+            True if the data appears normally distributed (p > 0.05).
+        pvalue : float
+            The p-value from the chosen normality test.
         """
+
         if lightcurve:
             rates = lightcurve.rates.copy()
         elif np.array(rates).size != 0:
@@ -170,8 +185,10 @@ class Preprocessing:
 
         if plot:
             Preprocessing.generate_qq_plot(rates=rates)
+        
+        return pvalue > 0.05, pvalue
 
-    
+
     @staticmethod
     def boxcox_transform(lightcurve, save=True):
         """
@@ -246,12 +263,25 @@ class Preprocessing:
     @staticmethod
     def check_boxcox_normal(lightcurve, plot=True):
         """
-        Apply Box-Cox and re-test for normality using Shapiro-Wilk.
+        Apply a Box-Cox transformation and re-test for normality using the appropriate statistical test.
+
+        This method compares the normality of the original flux distribution to its Box-Cox transformed version,
+        using either the Shapiro-Wilk or Lilliefors test depending on sample size. If `plot=True`, a Q-Q plot
+        is generated showing both the original and transformed data.
 
         Parameters
         ----------
         lightcurve : LightCurve
-            The input light curve.
+            The input light curve containing flux values.
+        plot : bool, optional
+            Whether to show a Q-Q plot comparing original and Box-Cox transformed distributions.
+
+        Returns
+        -------
+        is_normal : bool
+            True if the Box-Cox transformed data appears normally distributed (p > 0.05).
+        pvalue : float
+            The p-value from the normality test applied to the transformed data.
         """
 
         rates_original = lightcurve.rates.copy()
@@ -263,7 +293,7 @@ class Preprocessing:
 
         print("After Box-Cox:")
         print("----------------")
-        Preprocessing.check_normal(rates=rates_boxcox, plot=False, _boxcox=True)
+        is_normal, pvalue = Preprocessing.check_normal(rates=rates_boxcox, plot=False, _boxcox=True)
         
         if plot:
             rates_original_std = (rates_original - np.mean(rates_original)) / np.std(rates_original)
@@ -284,6 +314,9 @@ class Preprocessing:
             plt.grid(True, linestyle='--', linewidth=0.5, alpha=0.7)
             plt.tick_params(which='both', direction='in', length=6, width=1, top=True, right=True, labelsize=12)
             plt.show()
+        
+        return is_normal, pvalue
+
 
     @staticmethod
     def trim_time_segment(lightcurve, start_time=None, end_time=None, plot=False, save=True):
