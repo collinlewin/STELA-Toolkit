@@ -1,6 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy.stats import boxcox, shapiro, probplot
+from copy import deepcopy
 
 
 class Preprocessing:
@@ -34,7 +35,7 @@ class Preprocessing:
 
         Saves the original mean and std as attributes for future unstandardization.
         """
-        lc = lightcurve.copy()
+        lc = lightcurve
 
         # check for standardization
         if np.isclose(lc.mean, 0, atol=1e-10) and np.isclose(lc.std, 1, atol=1e-10) or getattr(lc, "is_standard", False):
@@ -60,7 +61,7 @@ class Preprocessing:
 
         This reverses a previous call to `standardize`.
         """
-        lc = lightcurve.copy()
+        lc = lightcurve
         # check that data has been standardized
         if getattr(lc, "is_standard", False):
             lc.rates = (lc.rates * lc.unstandard_std) + lc.unstandard_mean
@@ -140,7 +141,7 @@ class Preprocessing:
             raise ValueError("Either 'lightcurve' or 'rates' must be provided.")
 
         pvalue = shapiro(rates).pvalue
-        print(f"\nShapiro-Wilk test p-value: {pvalue:.3g}")
+        print(f"\nShapiro-Wilk test p-value: {pvalue}")
 
         # Interpret evidence strength
         if pvalue <= 0.001:
@@ -176,7 +177,7 @@ class Preprocessing:
             Whether to modify the light curve in place.
         """
 
-        lc = lightcurve.copy()
+        lc = lightcurve
         rates_boxcox, lambda_opt = boxcox(lc.rates)
 
         # transform errors using delta method (derivative-based propagation)
@@ -207,7 +208,7 @@ class Preprocessing:
             The transformed light curve.
         """
 
-        lc = lightcurve.copy()
+        lc = lightcurve
 
         if not getattr(lc, "is_boxcox_transformed", False):
             raise ValueError("Light curve data has not been transformed with Box-Cox.")
@@ -288,7 +289,7 @@ class Preprocessing:
             Whether to modify the light curve in place.
         """
 
-        lc = lightcurve.copy()
+        lc = lightcurve
 
         if start_time is None:
             start_time = lc.times[0]
@@ -336,7 +337,7 @@ class Preprocessing:
             Whether to print how many NaNs were removed.
         """
 
-        lc = lightcurve.copy()
+        lc = lightcurve
         if lc.errors.size > 0:
             nonnan_mask = ~np.isnan(lc.rates) & ~np.isnan(lc.times) & ~np.isnan(lc.errors)
         else:
@@ -416,7 +417,7 @@ class Preprocessing:
                 outlier_mask = (rates < lower_bound) | (rates > upper_bound)
             return outlier_mask
 
-        lc = lightcurve.copy()
+        lc = deepcopy(lightcurve)
         times = lc.times
         rates = lc.rates
         errors = lc.errors
@@ -461,7 +462,7 @@ class Preprocessing:
             Only returned if `save=False`.
         """
 
-        lc = lightcurve.copy()
+        lc = deepcopy(lightcurve)
 
         # Fit polynomial to the data
         if lc.errors.size > 0:
