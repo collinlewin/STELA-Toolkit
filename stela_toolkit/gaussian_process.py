@@ -160,18 +160,13 @@ class GaussianProcess:
         if getattr(self.lc, "is_boxcox_transformed", False):
             Preprocessing.reverse_boxcox_transform(self.lc)
 
-    def enforce_normality(self, alpha=0.05):
+    def enforce_normality(self):
         """
         Check normality of the input data and apply a Box-Cox transformation if needed.
 
         Uses the Shapiro-Wilk test to assess whether the light curve fluxes are normally distributed.
         If not, a Box-Cox transformation is applied in-place. This improves the GP's ability to
         model the underlying structure using Gaussian assumptions.
-
-        Parameters
-        ----------
-        alpha : float
-            Significance level for the normality test (default is 0.05).
         """
         
         from .preprocessing import Preprocessing
@@ -179,7 +174,7 @@ class GaussianProcess:
         print("Checking normality of input light curve...")
 
         # Check normality
-        is_normal_before, pval_before = Preprocessing.check_normal(self.lc, alpha=alpha)
+        is_normal_before, pval_before = Preprocessing.check_normal(self.lc)
         if is_normal_before:
             print(f" - Light curve is already normal (p = {pval_before:.4f})")
             return
@@ -194,7 +189,7 @@ class GaussianProcess:
             self.lambda_boxcox = getattr(self.lc, "lambda_boxcox", None)
 
         # Recheck normality
-        is_normal_after, pval_after = Preprocessing.check_normal(self.lc, alpha=alpha)
+        is_normal_after, pval_after = Preprocessing.check_normal(self.lc)
         if is_normal_after:
             print(f" - Normality improved after Box-Cox (p = {pval_after:.4f})")
         else:
