@@ -141,8 +141,7 @@ class Preprocessing:
             raise ValueError("Either 'lightcurve' or 'rates' must be provided.")
 
         pvalue = shapiro(rates).pvalue
-        print("===================")
-        print(f"\nShapiro-Wilk test p-value: {pvalue:.3g}")
+        print(f"Shapiro-Wilk test p-value: {pvalue:.3g}")
 
         # Interpret evidence strength
         if pvalue <= 0.001:
@@ -155,13 +154,14 @@ class Preprocessing:
             strength = "little to no"
 
         print(f"  -> {strength.capitalize()} evidence against normality (p = {pvalue:.3g})")
-        print("===================\n")
 
         if pvalue <= 0.05 and not _boxcox:
             print("    Consider running `check_boxcox_normal()` to see if a Box-Cox transformation can help.")
-        
+        print("===================")
+
         if plot:
             Preprocessing.generate_qq_plot(rates=rates)
+
     
     @staticmethod
     def boxcox_transform(lightcurve, save=True):
@@ -248,15 +248,13 @@ class Preprocessing:
         rates_original = lightcurve.rates.copy()
         rates_boxcox, _ = Preprocessing.boxcox_transform(lightcurve, save=False)
 
-        print("===================")
         print("Before Box-Cox:")
         print("----------------")
         Preprocessing.check_normal(lightcurve=lightcurve, plot=False)
 
-        print("\nAfter Box-Cox:")
+        print("After Box-Cox:")
         print("----------------")
         Preprocessing.check_normal(rates=rates_boxcox, plot=False, _boxcox=True)
-        print("===================\n")
         
         if plot:
             rates_original_std = (rates_original - np.mean(rates_original)) / np.std(rates_original)
