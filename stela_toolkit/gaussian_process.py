@@ -91,11 +91,11 @@ class GaussianProcess:
                  enforce_normality=True,
                  run_training=True,
                  plot_training=False,
-                 num_iter=1000,
+                 num_iter=500,
                  learn_rate=1e-1,
                  sample_time_grid=[],
                  num_samples=1000,
-                 verbose=True):
+                 verbose=False):
 
         # To Do: reconsider noise prior, add a mean function function for forecasting, more verbose options
         _CheckInputs._check_input_data(lightcurve, req_reg_samp=False)
@@ -124,7 +124,6 @@ class GaussianProcess:
 
         # Training
         self.white_noise = white_noise
-        self.plot_training = plot_training
         if kernel_form == 'auto' or isinstance(kernel_form, list):
             # Automatically select the best kernel based on AIC
             if isinstance(kernel_form, list):
@@ -145,7 +144,7 @@ class GaussianProcess:
 
             # Separate training needed only if kernel not automatically selected
             if run_training:
-                self.train_model(num_iter=num_iter, learn_rate=learn_rate, verbose=verbose)
+                self.train(num_iter=num_iter, learn_rate=learn_rate, plot=plot_training, verbose=verbose)
 
         # Generate samples if sample_time_grid is provided
         if sample_time_grid:
@@ -332,10 +331,10 @@ class GaussianProcess:
 
         return covar_module
 
-    def train_model(self, num_iter=1000, learn_rate=1e-1, verbose=False):
+    def train(self, num_iter=1000, learn_rate=1e-1, plot=False, verbose=False):
         """
         Train the GP model using Adam optimizer and marginal log likelihood.
-        Show training progress by setting `plot_training=True` or `verbose=True`.
+        Show training progress by setting `plot=True` or `verbose=True`.
 
         Parameters
         ----------
@@ -353,7 +352,7 @@ class GaussianProcess:
         optimizer = torch.optim.Adam(self.model.parameters(), lr=learn_rate)
         mll = gpytorch.mlls.ExactMarginalLogLikelihood(self.likelihood, self.model)
 
-        if self.plot_training:
+        if plot:
             plt.figure(figsize=(8, 5))
 
         for i in range(num_iter):
@@ -424,7 +423,7 @@ class GaussianProcess:
 
             optimizer.step()
 
-            if self.plot_training:
+            if plot:
                 plt.scatter(i, loss.item(), color='black', s=2)
 
         if verbose:
@@ -437,13 +436,13 @@ class GaussianProcess:
             for key, value in final_hypers.items():
                 print(f"      {key:42}: {np.round(value, 4)}")
 
-        if self.plot_training:
+        if plot:
             plt.xlabel('Iteration')
             plt.ylabel('Negative Marginal Log Likelihood')
             plt.title('Training Progress')
             plt.show()
 
-    def find_best_kernel(self, kernel_list, num_iter=1000, learn_rate=1e-1, verbose=False):
+    def find_best_kernel(self, kernel_list, num_iter=500, learn_rate=1e-1, verbose=False):
         """
         Search over a list of kernels and return the best one by AIC.
 
@@ -475,7 +474,7 @@ class GaussianProcess:
             self.likelihood = self.set_likelihood(self.white_noise, train_errors=self.train_errors)
             self.model = self.create_gp_model(self.likelihood, kernel_form)
             # suppress output, even for verbose=True
-            self.train_model(num_iter=num_iter, learn_rate=learn_rate, verbose=False)
+            self.train(num_iter=num_iter, learn_rate=learn_rate, verbose=False)
 
             # compute aic and store best model
             aic = self.akaike_inf_crit()
