@@ -34,7 +34,7 @@ class Preprocessing:
 
         Saves the original mean and std as attributes for future unstandardization.
         """
-        lc = lightcurve
+        lc = lightcurve.copy()
 
         # check for standardization
         if np.isclose(lc.mean, 0, atol=1e-10) and np.isclose(lc.std, 1, atol=1e-10) or getattr(lc, "is_standard", False):
@@ -60,7 +60,7 @@ class Preprocessing:
 
         This reverses a previous call to `standardize`.
         """
-        lc = lightcurve
+        lc = lightcurve.copy()
         # check that data has been standardized
         if getattr(lc, "is_standard", False):
             lc.rates = (lc.rates * lc.unstandard_std) + lc.unstandard_mean
@@ -130,24 +130,32 @@ class Preprocessing:
             Whether to show a Q-Q plot.
         _boxcox : bool
             Whether this check is being called internally after Box-Cox.
-        """  
+        """
+
         if lightcurve:
             rates = lightcurve.rates.copy()
         elif np.array(rates).size != 0:
-            pass
+            rates = np.array(rates)
         else:
             raise ValueError("Either 'lightcurve' or 'rates' must be provided.")
-        rates = (rates - np.mean(rates)) / np.std(rates)
-        pvalue = shapiro(rates).pvalue
-        print(f"\nShapiro-Wilk test p-value: {pvalue:.3f}")
 
-        alpha = 0.05
-        if pvalue <= alpha:
-            print(f"  -> The data is likely *not* normally distributed (p ≤ {alpha})")
-            if not _boxcox:
-                print("    Consider running `check_boxcox_normal()` to check if a Box-Cox transformation would help.")
+        pvalue = shapiro(rates).pvalue
+        print(f"\nShapiro-Wilk test p-value: {pvalue:.3g}")
+
+        # Interpret evidence strength
+        if pvalue <= 0.001:
+            strength = "very strong"
+        elif pvalue <= 0.01:
+            strength = "strong"
+        elif pvalue <= 0.05:
+            strength = "weak"
         else:
-            print(f"  -> The data appears sufficiently normal (in that we can't say that it is not, p > {alpha})")
+            strength = "little to no"
+
+        print(f"  -> {strength.capitalize()} evidence against normality (p = {pvalue:.3g})")
+
+        if pvalue <= 0.05 and not _boxcox:
+            print("    Consider running `check_boxcox_normal()` to see if a Box-Cox transformation can help.")
 
         if plot:
             Preprocessing.generate_qq_plot(rates=rates)
@@ -167,7 +175,8 @@ class Preprocessing:
         save : bool
             Whether to modify the light curve in place.
         """
-        lc = lightcurve
+
+        lc = lightcurve.copy()
         rates_boxcox, lambda_opt = boxcox(lc.rates)
 
         # transform errors using delta method (derivative-based propagation)
@@ -197,7 +206,8 @@ class Preprocessing:
         lightcurve : LightCurve
             The transformed light curve.
         """
-        lc = lightcurve
+
+        lc = lightcurve.copy()
 
         if not getattr(lc, "is_boxcox_transformed", False):
             raise ValueError("Light curve data has not been transformed with Box-Cox.")
@@ -231,6 +241,7 @@ class Preprocessing:
         lightcurve : LightCurve
             The input light curve.
         """
+
         rates_original = lightcurve.rates.copy()
         rates_boxcox, _ = Preprocessing.boxcox_transform(lightcurve, save=False)
 
@@ -276,7 +287,8 @@ class Preprocessing:
         save : bool
             Whether to modify the light curve in place.
         """
-        lc = lightcurve
+
+        lc = lightcurve.copy()
 
         if start_time is None:
             start_time = lc.times[0]
@@ -323,7 +335,8 @@ class Preprocessing:
         verbose : bool
             Whether to print how many NaNs were removed.
         """
-        lc = lightcurve
+
+        lc = lightcurve.copy()
         if lc.errors.size > 0:
             nonnan_mask = ~np.isnan(lc.rates) & ~np.isnan(lc.times) & ~np.isnan(lc.errors)
         else:
@@ -359,6 +372,7 @@ class Preprocessing:
         verbose : bool
             Whether to print how many points were removed.
         """
+
         def plot_outliers(outlier_mask):
             """Plots the data flagged as outliers."""
             plt.figure(figsize=(8, 4.5))
@@ -402,7 +416,7 @@ class Preprocessing:
                 outlier_mask = (rates < lower_bound) | (rates > upper_bound)
             return outlier_mask
 
-        lc = lightcurve
+        lc = lightcurve.copy()
         times = lc.times
         rates = lc.rates
         errors = lc.errors
@@ -446,7 +460,8 @@ class Preprocessing:
         detrended_rates : ndarray, optional
             Only returned if `save=False`.
         """
-        lc = lightcurve
+
+        lc = lightcurve.copy()
 
         # Fit polynomial to the data
         if lc.errors.size > 0:
