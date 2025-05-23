@@ -105,7 +105,7 @@ class Preprocessing:
         rates_std = (rates - np.mean(rates)) / np.std(rates)
         (osm, osr), _ = probplot(rates_std, dist="norm")
 
-        plt.figure(figsize=(8, 5))
+        plt.figure(figsize=(8, 4.5))
         plt.plot(osm, osr, 'o', color='black', markersize=4)
         plt.plot(osm, osm, 'g--', lw=1, label='Ideal Normal')
 

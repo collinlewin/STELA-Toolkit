@@ -36,7 +36,7 @@ class Plotter:
         else:
             default_plot_kwargs = {'color': 'black', 's': 3, 'label': None}
 
-        figsize = kwargs.get('figsize', (8, 6))
+        figsize = kwargs.get('figsize', (8, 4.5))
         fig_kwargs = {'figsize': figsize, **kwargs.pop('fig_kwargs', {})}
         plot_kwargs = {**default_plot_kwargs, **kwargs.pop('plot_kwargs', {})}
         major_tick_kwargs = {'which': 'major', **kwargs.pop('major_tick_kwargs', {})}
