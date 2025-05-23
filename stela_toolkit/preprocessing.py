@@ -139,6 +139,8 @@ class Preprocessing:
             Whether to display a Q-Q plot.
         _boxcox : bool, optional
             Whether this check is being called internally after Box-Cox (affects messaging only).
+        verbose : bool, optional
+            Whether to generate print statements.
 
         Returns
         -------
