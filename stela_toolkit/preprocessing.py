@@ -141,7 +141,8 @@ class Preprocessing:
             raise ValueError("Either 'lightcurve' or 'rates' must be provided.")
 
         pvalue = shapiro(rates).pvalue
-        print(f"\nShapiro-Wilk test p-value: {pvalue}")
+        print("===================")
+        print(f"\nShapiro-Wilk test p-value: {pvalue:.3g}")
 
         # Interpret evidence strength
         if pvalue <= 0.001:
@@ -154,10 +155,11 @@ class Preprocessing:
             strength = "little to no"
 
         print(f"  -> {strength.capitalize()} evidence against normality (p = {pvalue:.3g})")
+        print("===================\n")
 
         if pvalue <= 0.05 and not _boxcox:
             print("    Consider running `check_boxcox_normal()` to see if a Box-Cox transformation can help.")
-
+        
         if plot:
             Preprocessing.generate_qq_plot(rates=rates)
     
@@ -233,7 +235,7 @@ class Preprocessing:
         del lc.lambda_boxcox
 
     @staticmethod
-    def check_boxcox_normal(lightcurve):
+    def check_boxcox_normal(lightcurve, plot=True):
         """
         Apply Box-Cox and re-test for normality using Shapiro-Wilk.
 
@@ -246,31 +248,35 @@ class Preprocessing:
         rates_original = lightcurve.rates.copy()
         rates_boxcox, _ = Preprocessing.boxcox_transform(lightcurve, save=False)
 
+        print("===================")
         print("Before Box-Cox:")
+        print("----------------")
         Preprocessing.check_normal(lightcurve=lightcurve, plot=False)
 
         print("\nAfter Box-Cox:")
+        print("----------------")
         Preprocessing.check_normal(rates=rates_boxcox, plot=False, _boxcox=True)
+        print("===================\n")
+        
+        if plot:
+            rates_original_std = (rates_original - np.mean(rates_original)) / np.std(rates_original)
+            rates_boxcox_std = (rates_boxcox - np.mean(rates_boxcox)) / np.std(rates_boxcox)
 
-        # Standardize both distributions for fair Q-Q comparison
-        rates_original_std = (rates_original - np.mean(rates_original)) / np.std(rates_original)
-        rates_boxcox_std = (rates_boxcox - np.mean(rates_boxcox)) / np.std(rates_boxcox)
+            (osm1, osr1), _ = probplot(rates_original_std, dist="norm")
+            (osm2, osr2), _ = probplot(rates_boxcox_std, dist="norm")
 
-        (osm1, osr1), _ = probplot(rates_original_std, dist="norm")
-        (osm2, osr2), _ = probplot(rates_boxcox_std, dist="norm")
+            plt.figure(figsize=(8, 4.5))
+            plt.plot(osm1, osr1, 'o', label='Original', color='black', alpha=0.6, markersize=4)
+            plt.plot(osm2, osr2, 'o', label='Transformed', color='dodgerblue', alpha=0.6, markersize=4)
+            plt.plot(osm1, osm1, 'g--', label='Ideal Normal', alpha=0.5, lw=1.5)
 
-        plt.figure(figsize=(8, 4.5))
-        plt.plot(osm1, osr1, 'o', label='Original', color='black', alpha=0.6, markersize=4)
-        plt.plot(osm2, osr2, 'o', label='Transformed', color='dodgerblue', alpha=0.6, markersize=4)
-        plt.plot(osm1, osm1, 'g--', label='Ideal Normal', alpha=0.5, lw=1.5)
-
-        plt.xlabel("Theoretical Quantiles", fontsize=12)
-        plt.ylabel("Sample Quantiles", fontsize=12)
-        plt.title("Q-Q Plot Before and After Box-Cox", fontsize=12)
-        plt.legend(loc='upper left')
-        plt.grid(True, linestyle='--', linewidth=0.5, alpha=0.7)
-        plt.tick_params(which='both', direction='in', length=6, width=1, top=True, right=True, labelsize=12)
-        plt.show()
+            plt.xlabel("Theoretical Quantiles", fontsize=12)
+            plt.ylabel("Sample Quantiles", fontsize=12)
+            plt.title("Q-Q Plot Before and After Box-Cox", fontsize=12)
+            plt.legend(loc='upper left')
+            plt.grid(True, linestyle='--', linewidth=0.5, alpha=0.7)
+            plt.tick_params(which='both', direction='in', length=6, width=1, top=True, right=True, labelsize=12)
+            plt.show()
 
     @staticmethod
     def trim_time_segment(lightcurve, start_time=None, end_time=None, plot=False, save=True):
