@@ -88,7 +88,7 @@ class GaussianProcess:
                  lightcurve,
                  kernel_form='auto',
                  white_noise=True,
-                 enforce_normality=True,
+                 enforce_normality=False,
                  run_training=True,
                  plot_training=False,
                  num_iter=500,
@@ -189,9 +189,9 @@ class GaussianProcess:
         is_normal_after, pval_after = Preprocessing.check_normal(self.lc, plot=False, verbose=False)
 
         if is_normal_after:
-            print(f" - Normality sufficiently achieved after Box-Cox (p = {pval_after:.4f})! Proceed as normal!")
+            print(f" - Normality sufficiently achieved after Box-Cox (p = {pval_after:.4f})! Proceed as normal!\n")
         else:
-            print(f" - Data still not normal after Box-Cox (p = {pval_after:.4f}). Proceed with caution.")
+            print(f" - Data still not normal after Box-Cox (p = {pval_after:.4f}). Proceed with caution.\n")
 
 
     def create_gp_model(self, likelihood, kernel_form):
@@ -321,11 +321,10 @@ class GaussianProcess:
         if kernel_form == 'SpectralMixture':
             kernel.initialize_from_data(self.train_times, self.train_rates)
         else:
-            # initialize at 1/10th of full lc length
             init_lengthscale = (self.train_times[-1] - self.train_times[0]) / 10
             kernel.lengthscale = init_lengthscale
 
-        # Scale the kernel by a constant factor
+        # Scale the kernel by a constant
         covar_module = gpytorch.kernels.ScaleKernel(kernel)
         self.kernel_form = kernel_form
 
@@ -476,7 +475,7 @@ class GaussianProcess:
             self.train(num_iter=num_iter, learn_rate=learn_rate, verbose=False)
 
             # compute aic and store best model
-            aic = self.akaike_inf_crit()
+            aic = self.aic()
             aics.append(aic)
             if aic <= min(aics):
                 best_model = self.model
@@ -548,7 +547,7 @@ class GaussianProcess:
 
         return hypers
 
-    def bayesian_inf_crit(self):
+    def bic(self):
         """
         Compute the Bayesian Information Criterion (BIC) for the trained model.
 
@@ -569,7 +568,7 @@ class GaussianProcess:
         bic = -2 * log_marg_like + num_params * np.log(num_data)
         return bic
 
-    def akaike_inf_crit(self):
+    def aic(self):
         """
         Compute the Akaike Information Criterion (AIC) for the trained model.
 
@@ -768,15 +767,11 @@ class GaussianProcess:
             Values in original flux units.
         """
 
-        # Undo boxcox
         if self.lambda_boxcox is not None:
             if self.lambda_boxcox == 0:
                 array = np.exp(array)
             else:
                 array = (array * self.lambda_boxcox + 1) ** (1 / self.lambda_boxcox)
 
-        # Undo standardization
-        if self.standardized:
-            array = array * self.lc_std + self.lc_mean
-
+        array = array * self.lc_std + self.lc_mean
         return array
