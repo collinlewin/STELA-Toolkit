@@ -1,10 +1,7 @@
 Essential before release:
-- Fix coherence computation
-- Test functionalities
+- Test GP functionalities
 - Tutorial
 - Documentation
-- CCF linear interpolation
-- Review noise treatment in GP
 - Errors in simulations
 
 Next/first actions:
