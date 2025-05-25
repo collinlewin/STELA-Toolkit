@@ -331,19 +331,23 @@ class GaussianProcess:
 
         return covar_module
 
-    def train(self, num_iter=1000, learn_rate=1e-1, plot=False, verbose=False):
+    def train(self, num_iter=500, learn_rate=1e-1, plot=False, verbose=False):
         """
-        Train the GP model using Adam optimizer and marginal log likelihood.
-        Show training progress by setting `plot=True` or `verbose=True`.
+        Train the GP model using the Adam optimizer to minimize the negative log marginal likelihood (NLML).
+
+        By default, prints progress periodically and optionally plots the NLML loss curve over training iterations.
+        This function is typically called after initialization unless `run_training=True` was set earlier.
 
         Parameters
         ----------
-        num_iter : int
-            Number of optimization steps.
-        learn_rate : float
-            Learning rate for the optimizer.
-        verbose : bool
-            Whether to print detailed training progress.
+        num_iter : int, optional
+            Number of optimization steps to perform. Default is 500.
+        learn_rate : float, optional
+            Learning rate for the Adam optimizer. Default is 0.1.
+        plot : bool, optional
+            If True, display a plot of the NLML loss as training progresses.
+        verbose : bool, optional
+            If True, print progress updates at regular intervals during training.
         """
 
         self.model.train()
@@ -352,21 +356,18 @@ class GaussianProcess:
         optimizer = torch.optim.Adam(self.model.parameters(), lr=learn_rate)
         mll = gpytorch.mlls.ExactMarginalLogLikelihood(self.likelihood, self.model)
 
+        print_every = max(1, num_iter // 20)
+
         if plot:
             plt.figure(figsize=(8, 5))
 
         for i in range(num_iter):
-            # Zero gradients from previous iteration
             optimizer.zero_grad()
-
-            # Model output
             output = self.model(self.train_times)
-
-            # Calc negative likelihood and backprop gradients
             loss = -mll(output, self.train_rates)
             loss.backward()
 
-            if verbose:
+            if verbose and (i == num_iter - 1 or i % print_every == 0):
                 if self.white_noise:
                     if self.train_errors.size(dim=0) > 0:
                         noise_param = self.model.likelihood.second_noise.item()
@@ -376,7 +377,6 @@ class GaussianProcess:
                 if self.kernel_form == 'SpectralMixture':
                     mixture_scales = self.model.covar_module.base_kernel.mixture_scales
                     mixture_scales = mixture_scales.detach().numpy().flatten()
-
                     mixture_weights = self.model.covar_module.base_kernel.mixture_weights
                     mixture_weights = mixture_weights.detach().numpy().flatten()
 
@@ -431,8 +431,7 @@ class GaussianProcess:
             print(
                 "Training complete. \n"
                 f"   - Final loss: {loss.item():0.5}\n"
-                f"   - Final hyperparameters:"
-            )
+                f"   - Final hyperparameters:")
             for key, value in final_hypers.items():
                 print(f"      {key:42}: {np.round(value, 4)}")
 
