@@ -691,10 +691,13 @@ class GaussianProcess:
         """
 
         if pred_times is None:
-            step = (self.train_times.max()-self.train_times.min())/1000
-            pred_times = np.arange(self.train_times.min(), self.train_times.max()+step, step)
+            step = (self.train_times.max() - self.train_times.min()) / 1000
+            pred_times = np.arange(self.train_times.min(), self.train_times.max() + step, step)
 
         predict_mean, predict_lower, predict_upper = self.predict(pred_times)
+
+        plt.figure(figsize=(8, 4.5))
+
         plt.fill_between(pred_times, predict_lower, predict_upper,
                          color='dodgerblue', alpha=0.2, label=r'Prediction 2$\sigma$ CI')
         plt.plot(pred_times, predict_mean, color='dodgerblue', label='Prediction Mean')
@@ -703,18 +706,17 @@ class GaussianProcess:
         plt.plot(pred_times, sample[0], color='orange', lw=1, label='Sample')
 
         if self.train_errors.size(dim=0) > 0:
-            plt.errorbar(
-                self.lc.times, self.lc.rates,
-                yerr=self.lc.errors, fmt='o', color='black', label='Data', lw=1, ms=2
-            )
+            plt.errorbar(self.lc.times, self.lc.rates, yerr=self.lc.errors,
+                         fmt='o', color='black', lw=1.5, ms=3)
         else:
-            plt.scatter(self.lc.times, self.lc.rates,
-                        color='black', label='Data', s=2)
+            plt.scatter(self.lc.times, self.lc.rates, color='black', s=6)
 
-        plt.xlabel('Time')
-        plt.ylabel('Rate')
-        plt.title('Gaussian Process Prediction')
+        plt.xlabel('Time', fontsize=12)
+        plt.ylabel('Rate', fontsize=12)
         plt.legend()
+        plt.grid(True, linestyle='--', linewidth=0.5, alpha=0.7)
+        plt.tick_params(which='both', direction='in', length=6, width=1,
+                        top=True, right=True, labelsize=12)
         plt.show()
 
     def save(self, file_path):
