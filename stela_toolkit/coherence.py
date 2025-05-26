@@ -105,7 +105,7 @@ class Coherence:
         # this needs to be corrected for handling different shapes and dim val1 != dim val2
         # namely for multiple observations
         if len(self.rates1.shape) == 2 and len(self.rates2.shape) == 2:
-            coherence_spectrum = self.compute_stacked_coherence(subtract_noise_bias=subtract_noise_bias)
+            coherence_spectrum = self.compute_stacked_coherence()
         else:
             coherence_spectrum = self.compute_coherence(subtract_noise_bias=subtract_noise_bias)
 
@@ -172,7 +172,7 @@ class Coherence:
         coherence = (np.abs(cs) ** 2 - bias) / (ps1 * ps2)
         return power_spectrum1.freqs, power_spectrum1.freq_widths, coherence, None
 
-    def compute_stacked_coherence(self, subtract_noise_bias=True):
+    def compute_stacked_coherence(self):
         """
         Compute the coherence from stacked realizations of the light curves.
 
@@ -200,7 +200,7 @@ class Coherence:
         for i in range(self.rates1.shape[0]):
             coherence_spectrum = self.compute_coherence(times1=self.times1, rates1=self.rates1[i],
                                                         times2=self.times2, rates2=self.rates2[i],
-                                                        subtract_noise_bias=subtract_noise_bias
+                                                        subtract_noise_bias=False
                                                     )
             freqs, freq_widths, coherence, _ = coherence_spectrum
             coherences.append(coherence)

@@ -101,7 +101,7 @@ class LagFrequencySpectrum:
         self.bin_edges = bin_edges
 
         if len(self.rates1.shape) == 2 and len(self.rates2.shape) == 2:
-            lag_spectrum = self.compute_stacked_lag_spectrum(subtract_coh_bias=subtract_coh_bias)
+            lag_spectrum = self.compute_stacked_lag_spectrum()
         else:
             lag_spectrum = self.compute_lag_spectrum(subtract_coh_bias=subtract_coh_bias)
 
@@ -180,7 +180,7 @@ class LagFrequencySpectrum:
 
         return cross_spectrum.freqs, cross_spectrum.freq_widths, lags, lag_errors, cohs, coh_errors
 
-    def compute_stacked_lag_spectrum(self, subtract_coh_bias=True):
+    def compute_stacked_lag_spectrum(self):
         """
         Compute lag-frequency spectrum for stacked GP samples.
 
@@ -209,7 +209,7 @@ class LagFrequencySpectrum:
         for i in range(self.rates1.shape[0]):
             lag_spectrum = self.compute_lag_spectrum(times1=self.times1, rates1=self.rates1[i],
                                                      times2=self.times2, rates2=self.rates2[i],
-                                                     subtract_coh_bias=subtract_coh_bias
+                                                     subtract_coh_bias=False
                                                     )
             lag_spectra.append(lag_spectrum[2])
             coh_spectra.append(lag_spectrum[4])
@@ -268,7 +268,6 @@ class LagFrequencySpectrum:
             ax2.grid(True, which='both', linestyle='--', linewidth=0.5)
 
         fig.text(0.5, 0.04, kwargs['xlabel'], ha='center', va='center')
-        plt.tight_layout()
         plt.show()
 
     def count_frequencies_in_bins(self, fmin=None, fmax=None, num_bins=None, bin_type=None, bin_edges=[]):

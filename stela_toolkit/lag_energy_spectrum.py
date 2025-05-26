@@ -155,7 +155,6 @@ class LagEnergySpectrum:
             ax2.grid(True, which='both', linestyle='--', linewidth=0.5)
 
         fig.text(0.5, 0.04, kwargs['xlabel'], ha='center', va='center')
-        plt.tight_layout()
         plt.show()
 
     def count_frequencies_in_bins(self, fmin=None, fmax=None, num_bins=None, bin_type=None, bin_edges=[]):
