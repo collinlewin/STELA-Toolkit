@@ -63,7 +63,7 @@ class PowerSpectrum:
                  norm=True):
         
         # To do: ValueError for norm=True acting on mean=0 (standardized data)
-        input_data = _CheckInputs._check_lc_or_model(lc_or_model)
+        input_data = _CheckInputs._check_lightcurve_or_model(lc_or_model)
         if input_data['type'] == 'model':
             self.times, self.rates = input_data['data']
         else:
