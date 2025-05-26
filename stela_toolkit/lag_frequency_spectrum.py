@@ -249,23 +249,22 @@ class LagFrequencySpectrum:
         kwargs.setdefault('xlabel', 'Frequency')
         kwargs.setdefault('ylabel', 'Time Lags')
         kwargs.setdefault('xscale', 'log')
+        kwargs.setdefault('yscale', 'linear')
         ax1.errorbar(
-            freqs, lags, xerr=freq_widths, yerr=lag_errors, fmt='o', label='Lag-Frequency Spectrum'
+            freqs, lags, xerr=freq_widths, yerr=lag_errors, fmt='o',
         )
         ax1.set_xscale(kwargs['xscale'])
         ax1.set_yscale(kwargs['yscale'])
         ax1.set_ylabel(kwargs['ylabel'])
-        ax1.legend()
         ax1.grid(True, which='both', linestyle='--', linewidth=0.5)
 
         # Coherence spectrum
         if cohs is not None and coh_errors is not None:
             ax2.errorbar(
-                freqs, cohs, xerr=freq_widths, yerr=coh_errors, fmt='o', color='orange', label='Coherence'
+                freqs, cohs, xerr=freq_widths, yerr=coh_errors, fmt='o', color='orange',
             )
             ax2.set_xscale(kwargs['xscale'])
             ax2.set_ylabel('Coherence')
-            ax2.legend()
             ax2.grid(True, which='both', linestyle='--', linewidth=0.5)
 
         fig.text(0.5, 0.04, kwargs['xlabel'], ha='center', va='center')

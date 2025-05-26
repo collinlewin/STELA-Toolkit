@@ -134,25 +134,24 @@ class LagEnergySpectrum:
 
         # Lag-energy spectrum
         kwargs.setdefault('xlabel', 'Energy')
-        kwargs.setdefault('ylabel', 'Time Lags')
+        kwargs.setdefault('ylabel', 'Time Lag')
         kwargs.setdefault('xscale', 'log')
+        kwargs.setdefault('yscale', 'linear')
         ax1.errorbar(
-            energies, lags, xerr=energy_widths, yerr=lag_errors, fmt='o', label='Lag-Energy Spectrum'
+            energies, lags, xerr=energy_widths, yerr=lag_errors, fmt='o',
         )
         ax1.set_xscale(kwargs['xscale'])
         ax1.set_yscale(kwargs['yscale'])
         ax1.set_ylabel(kwargs['ylabel'])
-        ax1.legend()
         ax1.grid(True, which='both', linestyle='--', linewidth=0.5)
 
         # Coherence spectrum
         if cohs is not None and coh_errors is not None:
             ax2.errorbar(
-                energies, cohs, xerr=energy_widths, yerr=coh_errors, fmt='o', color='orange', label='Coherence'
+                energies, cohs, xerr=energy_widths, yerr=coh_errors, fmt='o', color='orange',
             )
             ax2.set_xscale(kwargs['xscale'])
             ax2.set_ylabel('Coherence')
-            ax2.legend()
             ax2.grid(True, which='both', linestyle='--', linewidth=0.5)
 
         fig.text(0.5, 0.04, kwargs['xlabel'], ha='center', va='center')
