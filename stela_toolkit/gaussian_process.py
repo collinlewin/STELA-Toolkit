@@ -102,8 +102,8 @@ class GaussianProcess:
         self.lc = deepcopy(lightcurve)
         
         # Save original mean, std, boxcox parameter for reversing standardization
-        self.lc_mean = self.lc.unstandard_mean
-        self.lc_std = self.lc.unstandard_std
+        self.lc_mean = getattr(self.lc, 'unstandard_mean', np.mean(self.lc.rates))
+        self.lc_std = getattr(self.lc, 'unstandard_std', np.std(self.lc.rates))
         self.lambda_boxcox = getattr(self.lc, "lambda_boxcox", None)
 
         # Check normality and apply boxcox if user specifies
