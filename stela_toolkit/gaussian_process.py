@@ -115,10 +115,10 @@ class GaussianProcess:
             Preprocessing.standardize(self.lc)
 
         # Convert light curve data to pytorch tensors
-        self.train_times = torch.tensor(self.lc.times, dtype=torch.float64)
-        self.train_rates = torch.tensor(self.lc.rates, dtype=torch.float64)
+        self.train_times = torch.tensor(self.lc.times, dtype=torch.float32)
+        self.train_rates = torch.tensor(self.lc.rates, dtype=torch.float32)
         if self.lc.errors.size > 0:
-            self.train_errors = torch.tensor(self.lc.errors, dtype=torch.float64)
+            self.train_errors = torch.tensor(self.lc.errors, dtype=torch.float32)
         else:
             self.train_errors = torch.tensor([])
 
@@ -612,20 +612,13 @@ class GaussianProcess:
             Array of sampled light curves with shape (num_samples, len(pred_times)).
         """
 
-        # Check if pred_times is a torch tensor
-        if not isinstance(pred_times, torch.Tensor):
-            try:
-                pred_times = torch.tensor(pred_times, dtype=torch.float64)
-            except TypeError:
-                raise TypeError("pred_times must be a torch tensor or convertible to one.")
-
-        # Predictive posterior mode
+        pred_times_tensor = torch.tensor(pred_times, dtype=torch.float32)
         self.model.eval()
         self.likelihood.eval()
 
         # Make predictions
         with torch.no_grad(), gpytorch.settings.fast_pred_var():
-            pred_dist = self.likelihood(self.model(pred_times))
+            pred_dist = self.likelihood(self.model(pred_times_tensor))
             post_samples = pred_dist.sample(sample_shape=torch.Size([num_samples]))
 
         samples = post_samples.numpy()
@@ -662,7 +655,7 @@ class GaussianProcess:
         # Check if pred_times is a torch tensor
         if not isinstance(pred_times, torch.Tensor):
             try:
-                pred_times = torch.tensor(pred_times, dtype=torch.float64)
+                pred_times = torch.tensor(pred_times, dtype=torch.float32)
             except TypeError:
                 raise TypeError("pred_times must be a torch tensor or convertible to one.")
 
