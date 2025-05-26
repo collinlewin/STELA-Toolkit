@@ -615,7 +615,7 @@ class GaussianProcess:
         # Check if pred_times is a torch tensor
         if not isinstance(pred_times, torch.Tensor):
             try:
-                pred_times = torch.tensor(pred_times, dtype=torch.float32)
+                pred_times = torch.tensor(pred_times, dtype=torch.float64)
             except TypeError:
                 raise TypeError("pred_times must be a torch tensor or convertible to one.")
 
@@ -662,7 +662,7 @@ class GaussianProcess:
         # Check if pred_times is a torch tensor
         if not isinstance(pred_times, torch.Tensor):
             try:
-                pred_times = torch.tensor(pred_times, dtype=torch.float32)
+                pred_times = torch.tensor(pred_times, dtype=torch.float64)
             except TypeError:
                 raise TypeError("pred_times must be a torch tensor or convertible to one.")
 
