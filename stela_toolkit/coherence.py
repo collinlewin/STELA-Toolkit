@@ -261,7 +261,6 @@ class Coherence:
         kwargs.setdefault('xlabel', 'Frequency')
         kwargs.setdefault('ylabel', 'Coherence')
         kwargs.setdefault('xscale', 'log')
-        kwargs.setdefault('yscale', 'log')
         Plotter.plot(
             x=freqs, y=cohs, xerr=freq_widths, yerr=coh_errors, **kwargs
         )

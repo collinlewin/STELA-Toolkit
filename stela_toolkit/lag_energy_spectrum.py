@@ -138,7 +138,7 @@ class LagEnergySpectrum:
         kwargs.setdefault('xscale', 'log')
         kwargs.setdefault('yscale', 'linear')
         ax1.errorbar(
-            energies, lags, xerr=energy_widths, yerr=lag_errors, fmt='o',
+            energies, lags, xerr=energy_widths, yerr=lag_errors, fmt='o', color='black'
         )
         ax1.set_xscale(kwargs['xscale'])
         ax1.set_yscale(kwargs['yscale'])
@@ -148,7 +148,7 @@ class LagEnergySpectrum:
         # Coherence spectrum
         if cohs is not None and coh_errors is not None:
             ax2.errorbar(
-                energies, cohs, xerr=energy_widths, yerr=coh_errors, fmt='o', color='orange',
+                energies, cohs, xerr=energy_widths, yerr=coh_errors, fmt='o', color='black'
             )
             ax2.set_xscale(kwargs['xscale'])
             ax2.set_ylabel('Coherence')
