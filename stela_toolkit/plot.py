@@ -48,9 +48,9 @@ class Plotter:
 
         if yerr is not None:
             if xerr is not None:
-                plt.errorbar(x, y, yerr=yerr, **plot_kwargs)
+                plt.errorbar(x, y, xerr=xerr,yerr=yerr, **plot_kwargs)
             else:
-                plt.errorbar(x, y, xerr=xerr, yerr=yerr, **plot_kwargs)
+                plt.errorbar(x, y, yerr=yerr, **plot_kwargs)
         else:
             if xerr is not None:
                 plt.errorbar(x, y, xerr=xerr, **plot_kwargs)
