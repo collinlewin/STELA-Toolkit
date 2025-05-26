@@ -115,10 +115,10 @@ class GaussianProcess:
             Preprocessing.standardize(self.lc)
 
         # Convert light curve data to pytorch tensors
-        self.train_times = torch.tensor(self.lc.times).float()
-        self.train_rates = torch.tensor(self.lc.rates).float()
+        self.train_times = torch.tensor(self.lc.times, dtype=torch.float64)
+        self.train_rates = torch.tensor(self.lc.rates, dtype=torch.float64)
         if self.lc.errors.size > 0:
-            self.train_errors = torch.tensor(self.lc.errors).float()
+            self.train_errors = torch.tensor(self.lc.errors, dtype=torch.float64)
         else:
             self.train_errors = torch.tensor([])
 
