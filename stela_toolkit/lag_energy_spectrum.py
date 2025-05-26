@@ -136,7 +136,6 @@ class LagEnergySpectrum:
         kwargs.setdefault('xlabel', 'Energy')
         kwargs.setdefault('ylabel', 'Time Lags')
         kwargs.setdefault('xscale', 'log')
-        kwargs.setdefault('yscale', 'log')
         ax1.errorbar(
             energies, lags, xerr=energy_widths, yerr=lag_errors, fmt='o', label='Lag-Energy Spectrum'
         )

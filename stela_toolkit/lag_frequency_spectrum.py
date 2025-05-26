@@ -180,7 +180,7 @@ class LagFrequencySpectrum:
 
         return cross_spectrum.freqs, cross_spectrum.freq_widths, lags, lag_errors, cohs, coh_errors
 
-    def compute_stacked_lag_spectrum(self):
+    def compute_stacked_lag_spectrum(self, subtract_coh_bias=True):
         """
         Compute lag-frequency spectrum for stacked GP samples.
 
@@ -208,8 +208,9 @@ class LagFrequencySpectrum:
         coh_spectra = []
         for i in range(self.rates1.shape[0]):
             lag_spectrum = self.compute_lag_spectrum(times1=self.times1, rates1=self.rates1[i],
-                                                     times2=self.times2, rates2=self.rates2[i]
-                                                     )
+                                                     times2=self.times2, rates2=self.rates2[i],
+                                                     subtract_coh_bias=subtract_coh_bias
+                                                    )
             lag_spectra.append(lag_spectrum[2])
             coh_spectra.append(lag_spectrum[4])
 
@@ -248,7 +249,6 @@ class LagFrequencySpectrum:
         kwargs.setdefault('xlabel', 'Frequency')
         kwargs.setdefault('ylabel', 'Time Lags')
         kwargs.setdefault('xscale', 'log')
-        kwargs.setdefault('yscale', 'log')
         ax1.errorbar(
             freqs, lags, xerr=freq_widths, yerr=lag_errors, fmt='o', label='Lag-Frequency Spectrum'
         )
