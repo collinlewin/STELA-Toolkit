@@ -115,25 +115,29 @@ class CrossCorrelation:
         self.rmax_threshold = rmax_threshold
 
         duration = self.times[-1] - self.times[0]
-        self.min_lag = -duration / 2 if max_lag=="auto" else min_lag
+        self.min_lag = -duration / 2 if min_lag=="auto" else min_lag
         self.max_lag = duration / 2 if max_lag=="auto" else max_lag
-        self.dt = np.mean(np.diff(self.times)[0]) / 5 if dt=="auto" else dt
-        self.lags = np.arange(self.min_lag, self.max_lag + self.dt, self.dt)
 
-        if mode == "interp":
-            self.ccf = self.compute_ccf_interp()
-        else:
-            self.lags, self.ccf = self.compute_ccf(self.rates1, self.rates2)
-
-        if self.is_model1 and self.is_model2:
-            if self.rates1.shape[0] != self.rates2.shape[0]:
-                raise ValueError("Model sample shapes do not match.")
-            self.ccf = np.mean([
-                self.compute_ccf(self.rates1[i], self.rates2[i])[1]
-                for i in range(self.rates1.shape[0])
-            ], axis=0)
+        if mode == "regular":
+            self.dt = np.diff(self.times)[0]
             self.lags = np.arange(self.min_lag, self.max_lag + self.dt, self.dt)
 
+            if self.is_model1 and self.is_model2:
+                if self.rates1.shape[0] != self.rates2.shape[0]:
+                    raise ValueError("Model sample shapes do not match.")
+                self.ccf = np.mean([
+                    self.compute_ccf(self.rates1[i], self.rates2[i])[1]
+                    for i in range(self.rates1.shape[0])
+                ], axis=0)
+
+            else:
+                self.ccf = self.compute_ccf(self.rates1, self.rates2)
+
+        else:
+            self.dt = np.mean(np.diff(self.times)) / 5 if dt=="auto" else dt
+            self.lags = np.arange(self.min_lag, self.max_lag + self.dt, self.dt)
+            self.ccf = self.compute_ccf_interp()
+        
         self.rmax = np.max(self.ccf)
         self.peak_lag, self.centroid_lag = self.find_peak_and_centroid(self.lags, self.ccf)
 
@@ -168,12 +172,11 @@ class CrossCorrelation:
             Pearson correlation coefficients at each lag.
         """
 
-        min_shift = int(self.min_lag / self.dt)
-        max_shift = int(self.max_lag / self.dt)
-        lags = np.arange(min_shift, max_shift + 1) * self.dt
         ccf = []
 
-        for shift in range(min_shift, max_shift + 1):
+        for lag in self.lags:
+            shift = int(round(lag / self.dt))
+
             if shift < 0:
                 x = rates1[:shift]
                 y = rates2[-shift:]
@@ -190,7 +193,7 @@ class CrossCorrelation:
                 r = np.corrcoef(x, y)[0, 1]
                 ccf.append(r)
 
-        return lags, np.array(ccf)
+        return np.array(ccf)
 
     def compute_ccf_interp(self):
         """
@@ -225,34 +228,64 @@ class CrossCorrelation:
 
     def find_peak_and_centroid(self, lags, ccf):
         """
-        Identify the peak and centroid lag of the cross-correlation function.
+        Compute the peak and centroid lag of a cross-correlation function.
+
+        The peak lag corresponds to the lag with the maximum correlation value.
+        The centroid lag is computed using a weighted average of lag values
+        in a contiguous region around the peak where the correlation exceeds
+        a fraction of the peak value.
 
         Parameters
         ----------
         lags : ndarray
-            Array of lag values.
+            Array of lag values (assumed sorted).
         ccf : ndarray
-            Cross-correlation function values.
+            Cross-correlation values at each lag.
 
         Returns
         -------
         peak_lag : float
-            Lag at maximum correlation.
-        centroid_lag : float
-            Centroid lag within the high-correlation region.
+            Lag corresponding to the maximum correlation.
+        centroid_lag : float or np.nan
+            Correlation-weighted centroid lag near the peak.
+            Returns NaN if a valid centroid region cannot be identified.
         """
-        
+        if len(lags) != len(ccf) or len(ccf) == 0:
+            raise ValueError("lags and ccf must be the same nonzero length")
+
+        # Locate the peak correlation and corresponding lag
         peak_idx = np.nanargmax(ccf)
-        peak_val = ccf[peak_idx]
         peak_lag = lags[peak_idx]
+        peak_val = ccf[peak_idx]
 
-        mask = ccf >= (self.centroid_threshold * peak_val)
-        if np.any(mask):
-            centroid = np.sum(lags[mask] * ccf[mask]) / np.sum(ccf[mask])
+        # Define a local region around the peak above a fractional threshold
+        threshold = self.centroid_threshold
+        cutoff = threshold * peak_val
+
+        # Expand to left of peak
+        i_left = peak_idx
+        while i_left > 0 and ccf[i_left - 1] >= cutoff:
+            i_left -= 1
+
+        # Expand to right of peak
+        i_right = peak_idx
+        while i_right < len(ccf) - 1 and ccf[i_right + 1] >= cutoff:
+            i_right += 1
+
+        # Compute centroid if region is valid
+        if i_right >= i_left:
+            lags_subset = lags[i_left:i_right + 1]
+            ccf_subset = ccf[i_left:i_right + 1]
+            weight_sum = np.sum(ccf_subset)
+            if weight_sum > 0:
+                centroid_lag = np.sum(lags_subset * ccf_subset) / weight_sum
+            else:
+                centroid_lag = np.nan
         else:
-            centroid = np.nan
+            centroid_lag = np.nan
 
-        return peak_lag, centroid
+        return peak_lag, centroid_lag
+    
 
     def run_monte_carlo(self):
         """
@@ -298,7 +331,7 @@ class CrossCorrelation:
                     ccf.append(ccf_val)
                 ccf = np.array(ccf)
             else:
-                _, ccf = self.compute_ccf(r1_pert, r2_pert)
+                ccf = self.compute_ccf(r1_pert, r2_pert)
 
             if np.max(ccf) < self.rmax_threshold:
                 continue
