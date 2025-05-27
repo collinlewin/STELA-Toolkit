@@ -80,8 +80,9 @@ class CrossCorrelation:
                  mode="regular",
                  rmax_threshold=0.0):
 
-        data1 = _CheckInputs._check_lightcurve_or_model(lc_or_model1)
-        data2 = _CheckInputs._check_lightcurve_or_model(lc_or_model2)
+        req_reg_samp = True if mode=="regular" else False
+        data1 = _CheckInputs._check_lightcurve_or_model(lc_or_model1, req_reg_samp=req_reg_samp)
+        data2 = _CheckInputs._check_lightcurve_or_model(lc_or_model2, req_reg_samp=req_reg_samp)
 
         if data1['type'] == 'model':
             if not hasattr(lc_or_model1, 'samples'):
@@ -103,16 +104,7 @@ class CrossCorrelation:
             self.times, self.rates2, self.errors2 = data2['data']
             self.is_model2 = False
 
-        t1, r1, e1 = _CheckInputs._check_input_data(lc_or_model1, req_reg_samp=True)
-        t2, r2, e2 = _CheckInputs._check_input_data(lc_or_model2, req_reg_samp=True)
-
-        if mode == "regular" and not np.array_equal(t1, t2):
-            raise ValueError("Time grids of both light curves must match for regular mode.")
-
-        self.times = t1
         self.dt = np.round(np.diff(self.times)[0], 10)
-        self.rates1, self.rates2 = r1, r2
-        self.errors1, self.errors2 = e1, e2
         self.n_trials = n_trials
         self.centroid_threshold = centroid_threshold
         self.mode = mode
