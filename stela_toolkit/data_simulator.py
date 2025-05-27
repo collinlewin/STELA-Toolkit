@@ -1,7 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
-from scipy.signal import fftconvolve
-from scipy.signal import unit_impulse
+from scipy.signal import fftconvolve, unit_impulse
+from scipy.stats import norm, lognorm
 from .data_loader import LightCurve
 
 class SimulateLightCurve:
