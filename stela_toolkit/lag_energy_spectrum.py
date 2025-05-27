@@ -122,7 +122,6 @@ class LagEnergySpectrum:
         **kwargs : dict
             Keyword arguments for customizing the plot (e.g., xlabel, xscale, yscale).
         """
-
         energies = self.energies if energies is None else energies
         energy_widths = self.energy_widths if energy_widths is None else energy_widths
         lags = self.lags if lags is None else lags
@@ -130,33 +129,35 @@ class LagEnergySpectrum:
         cohs = self.cohs if cohs is None else cohs
         coh_errors = self.coh_errors if coh_errors is None else coh_errors
 
-        fig, (ax1, ax2) = plt.subplots(2, 1, gridspec_kw={'height_ratios': [2, 1]}, figsize=(8, 6), sharex=True)
+        figsize = kwargs.get('figsize', (8, 6))
+        xlabel = kwargs.get('xlabel', 'Energy')
+        ylabel = kwargs.get('ylabel', 'Time Lag')
+        xscale = kwargs.get('xscale', 'log')
+        yscale = kwargs.get('yscale', 'linear')
+
+        fig, (ax1, ax2) = plt.subplots(2, 1, gridspec_kw={'height_ratios': [2, 1]}, figsize=figsize, sharex=True)
+        plt.subplots_adjust(hspace=0.05)
 
         # Lag-energy spectrum
-        kwargs.setdefault('xlabel', 'Energy')
-        kwargs.setdefault('ylabel', 'Time Lag')
-        kwargs.setdefault('xscale', 'log')
-        kwargs.setdefault('yscale', 'linear')
-        ax1.errorbar(
-            energies, lags, xerr=energy_widths, yerr=lag_errors, fmt='o', color='black'
-        )
-        ax1.set_xscale(kwargs['xscale'])
-        ax1.set_yscale(kwargs['yscale'])
-        ax1.set_ylabel(kwargs['ylabel'])
-        ax1.grid(True, which='both', linestyle='--', linewidth=0.5)
+        ax1.errorbar(energies, lags, xerr=energy_widths, yerr=lag_errors, fmt='o', color='black', ms=3, lw=1.5)
+        ax1.set_xscale(xscale)
+        ax1.set_yscale(yscale)
+        ax1.set_ylabel(ylabel, fontsize=12)
+        ax1.grid(True, linestyle='--', linewidth=0.5, alpha=0.7)
+        ax1.tick_params(which='both', direction='in', length=6, width=1, top=True, right=True, labelsize=12)
 
         # Coherence spectrum
         if cohs is not None and coh_errors is not None:
-            ax2.errorbar(
-                energies, cohs, xerr=energy_widths, yerr=coh_errors, fmt='o', color='black'
-            )
-            ax2.set_xscale(kwargs['xscale'])
-            ax2.set_ylabel('Coherence')
-            ax2.grid(True, which='both', linestyle='--', linewidth=0.5)
+            ax2.errorbar(energies, cohs, xerr=energy_widths, yerr=coh_errors, fmt='o', color='black', ms=3, lw=1.5)
+            ax2.set_xscale(xscale)
+            ax2.set_ylabel('Coherence', fontsize=12)
+            ax2.grid(True, linestyle='--', linewidth=0.5, alpha=0.7)
+            ax2.tick_params(which='both', direction='in', length=6, width=1, top=True, right=True, labelsize=12)
 
-        fig.text(0.5, 0.04, kwargs['xlabel'], ha='center', va='center')
+        fig.text(0.5, 0.04, xlabel, ha='center', va='center', fontsize=12)
+        plt.tight_layout()
         plt.show()
-
+        
     def count_frequencies_in_bins(self, fmin=None, fmax=None, num_bins=None, bin_type=None, bin_edges=[]):
         """
         Counts the number of frequencies in each frequency bin.

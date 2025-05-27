@@ -235,7 +235,6 @@ class LagFrequencySpectrum:
         **kwargs : dict
             Custom plotting arguments (xlabel, xscale, yscale, etc.).
         """
-
         freqs = self.freqs if freqs is None else freqs
         freq_widths = self.freq_widths if freq_widths is None else freq_widths
         lags = self.lags if lags is None else lags
@@ -243,31 +242,32 @@ class LagFrequencySpectrum:
         cohs = self.cohs if cohs is None else cohs
         coh_errors = self.coh_errors if coh_errors is None else coh_errors
 
-        fig, (ax1, ax2) = plt.subplots(2, 1, gridspec_kw={'height_ratios': [2, 1]}, figsize=(8, 6), sharex=True)
+        figsize = kwargs.get('figsize', (8, 6))
+        xlabel = kwargs.get('xlabel', 'Frequency')
+        ylabel = kwargs.get('ylabel', 'Time Lag')
+        xscale = kwargs.get('xscale', 'log')
+        yscale = kwargs.get('yscale', 'linear')
+
+        fig, (ax1, ax2) = plt.subplots(2, 1, gridspec_kw={'height_ratios': [2, 1]}, figsize=figsize, sharex=True)
+        plt.subplots_adjust(hspace=0.05)
 
         # Lag-frequency spectrum
-        kwargs.setdefault('xlabel', 'Frequency')
-        kwargs.setdefault('ylabel', 'Time Lags')
-        kwargs.setdefault('xscale', 'log')
-        kwargs.setdefault('yscale', 'linear')
-        ax1.errorbar(
-            freqs, lags, xerr=freq_widths, yerr=lag_errors, fmt='o', color='black'
-        )
-        ax1.set_xscale(kwargs['xscale'])
-        ax1.set_yscale(kwargs['yscale'])
-        ax1.set_ylabel(kwargs['ylabel'])
-        ax1.grid(True, which='both', linestyle='--', linewidth=0.5)
+        ax1.errorbar(freqs, lags, xerr=freq_widths, yerr=lag_errors, fmt='o', color='black', ms=3, lw=1.5)
+        ax1.set_xscale(xscale)
+        ax1.set_yscale(yscale)
+        ax1.set_ylabel(ylabel, fontsize=12)
+        ax1.grid(True, linestyle='--', linewidth=0.5, alpha=0.7)
+        ax1.tick_params(which='both', direction='in', length=6, width=1, top=True, right=True, labelsize=12)
 
         # Coherence spectrum
         if cohs is not None and coh_errors is not None:
-            ax2.errorbar(
-                freqs, cohs, xerr=freq_widths, yerr=coh_errors, fmt='o', color='black'
-            )
-            ax2.set_xscale(kwargs['xscale'])
-            ax2.set_ylabel('Coherence')
-            ax2.grid(True, which='both', linestyle='--', linewidth=0.5)
+            ax2.errorbar(freqs, cohs, xerr=freq_widths, yerr=coh_errors, fmt='o', color='black', ms=3, lw=1.5)
+            ax2.set_xscale(xscale)
+            ax2.set_ylabel('Coherence', fontsize=12)
+            ax2.grid(True, linestyle='--', linewidth=0.5, alpha=0.7)
+            ax2.tick_params(which='both', direction='in', length=6, width=1, top=True, right=True, labelsize=12)
 
-        fig.text(0.5, 0.04, kwargs['xlabel'], ha='center', va='center')
+        fig.text(0.5, 0.04, xlabel, ha='center', va='center', fontsize=12)
         plt.show()
 
     def count_frequencies_in_bins(self, fmin=None, fmax=None, num_bins=None, bin_type=None, bin_edges=[]):

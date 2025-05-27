@@ -208,35 +208,73 @@ class CrossSpectrum:
             cross_spectra.append(cross_spectrum[2])
 
         cross_spectra = np.vstack(cross_spectra)
-        cross_spectra_mean = np.mean(cross_spectra, axis=0)
-        cross_spectra_std = np.std(cross_spectra, axis=0)
+        # Real and imaginary std devs
+        cs_real_mean = np.mean(cross_spectra.real, axis=0)
+        cs_imag_mean = np.mean(cross_spectra.imag, axis=0)
+        cs_real_std = np.std(cross_spectra.real, axis=0)
+        cs_imag_std = np.std(cross_spectra.imag, axis=0)
 
+        cross_spectra_mean = cs_real_mean + 1j * cs_imag_mean
+        cross_spectra_std = cs_real_std + 1j * cs_imag_std
         freqs, freq_widths = cross_spectrum[0], cross_spectrum[1]
 
         return freqs, freq_widths, cross_spectra_mean, cross_spectra_std
 
     def plot(self, freqs=None, freq_widths=None, cs=None, cs_errors=None, **kwargs):
         """
-        Plot the cross-spectrum.
+        Plot the real and imaginary parts of the cross-spectrum.
 
         Parameters
         ----------
+        freqs : array-like, optional
+            Frequencies at which the cross-spectrum is evaluated.
+        freq_widths : array-like, optional
+            Widths of the frequency bins.
+        cs : array-like, optional
+            Cross-spectrum values.
+        cs_errors : array-like, optional
+            Uncertainties in the cross-spectrum.
         **kwargs : dict
             Additional keyword arguments for plot customization.
         """
+        import matplotlib.pyplot as plt
 
         freqs = self.freqs if freqs is None else freqs
         freq_widths = self.freq_widths if freq_widths is None else freq_widths
         cs = self.cs if cs is None else cs
         cs_errors = self.cs_errors if cs_errors is None else cs_errors
 
-        kwargs.setdefault('xlabel', 'Frequency')
-        kwargs.setdefault('ylabel', 'Cross-Spectrum')
-        kwargs.setdefault('xscale', 'log')
-        kwargs.setdefault('yscale', 'log')
-        Plotter.plot(
-            x=freqs, y=cs, xerr=freq_widths, yerr=cs_errors, **kwargs
-        )
+        figsize = kwargs.get('figsize', (8, 4.5))
+        xlabel = kwargs.get('xlabel', 'Frequency')
+        ylabel = kwargs.get('ylabel', 'Cross-Spectrum')
+        xscale = kwargs.get('xscale', 'log')
+        yscale = kwargs.get('yscale', 'log')
+
+        plt.figure(figsize=figsize)
+
+        # Real part
+        if cs_errors is not None:
+            plt.errorbar(freqs, cs.real, xerr=freq_widths, yerr=cs_errors.real,
+                         fmt='o', color='black', ms=3, lw=1.5, label='Real')
+        else:
+            plt.plot(freqs, cs.real, 'o-', color='black', ms=3, lw=1.5, label='Real')
+
+        # Imaginary part
+        if cs_errors is not None:
+            plt.errorbar(freqs, cs.imag, xerr=freq_widths, yerr=cs_errors.imag,
+                         fmt='o', color='red', ms=3, lw=1.5, label='Imag')
+        else:
+            plt.plot(freqs, cs.imag, 'o-', color='red', ms=3, lw=1.5, label='Imag')
+
+        plt.xlabel(xlabel, fontsize=12)
+        plt.ylabel(ylabel, fontsize=12)
+        plt.xscale(xscale)
+        plt.yscale(yscale)
+        plt.legend(loc='best')
+        plt.grid(True, linestyle='--', linewidth=0.5, alpha=0.7)
+        plt.tick_params(which='both', direction='in', length=6, width=1,
+                        top=True, right=True, labelsize=12)
+        plt.show()
 
     def count_frequencies_in_bins(self, fmin=None, fmax=None, num_bins=None, bin_type=None, bin_edges=[]):
         """

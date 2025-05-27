@@ -90,9 +90,8 @@ class Plotter:
             plt.minorticks_on()
             plt.tick_params(**minor_tick_kwargs)
 
-        # Grid to both axes
-        plt.grid(True, which='both', linestyle='--', linewidth=0.5, alpha=0.7)
-
+        plt.grid(True, linestyle='--', linewidth=0.5, alpha=0.7)
+        
         if save:
             plt.savefig(save, **savefig_kwargs)
 
