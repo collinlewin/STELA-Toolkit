@@ -36,12 +36,12 @@ class CrossCorrelation:
     n_trials : int, optional
         Number of Monte Carlo trials.
     min_lag : float, optional
-        Minimum lag to evaluate, default of None results in min_lag = - duration / 2
+        Minimum lag to evaluate, default "auto" results in min_lag = - duration / 2
     max_lag : float, optional
-        Maximum lag to evaluate, default of None results in max_lag = duration / 2
+        Maximum lag to evaluate, default "auto" results in max_lag = duration / 2
     dt : float, optional
         Time step to use for interpolation, less than sampling rate of the data, default of 
-        None results in dt = average sampling rate / 5.
+        "auto" results in dt = average sampling rate / 5.
 
     centroid_threshold : float, optional
         Threshold (fraction of peak CCF) for defining centroid lag region.
@@ -115,9 +115,9 @@ class CrossCorrelation:
         self.rmax_threshold = rmax_threshold
 
         duration = self.times[-1] - self.times[0]
-        self.min_lag = min_lag if min_lag is not None else -duration / 2
-        self.max_lag = max_lag if max_lag is not None else duration / 2
-        self.dt = dt if dt is not None else np.mean(np.diff(self.times)[0]) / 5
+        self.min_lag = -duration / 2 if max_lag=="auto" else min_lag
+        self.max_lag = duration / 2 if max_lag=="auto" else max_lag
+        self.dt = np.mean(np.diff(self.times)[0]) / 5 if dt=="auto" else dt
         self.lags = np.arange(self.min_lag, self.max_lag + self.dt, self.dt)
 
         if mode == "interp":
