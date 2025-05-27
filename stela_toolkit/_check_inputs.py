@@ -121,7 +121,7 @@ class _CheckInputs:
         return pred_times, samples
     
     @staticmethod
-    def _check_lightcurve_or_model(lightcurve_or_model):
+    def _check_lightcurve_or_model(lightcurve_or_model, req_reg_samp=False):
         """
         Identify whether the input is a LightCurve or GP model and validate accordingly.
 
@@ -146,7 +146,7 @@ class _CheckInputs:
         
         elif type(lightcurve_or_model).__name__ == "LightCurve":
             input_type = 'lightcurve'
-            return {'type':input_type, 'data':_CheckInputs._check_input_data(lightcurve_or_model)}
+            return {'type':input_type, 'data':_CheckInputs._check_input_data(lightcurve_or_model, req_reg_samp=req_reg_samp)}
         
     @staticmethod
     def _check_input_bins(num_bins, bin_type, bin_edges):
