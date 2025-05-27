@@ -78,9 +78,9 @@ class CrossCorrelation:
                  lc_or_model2,
                  run_monte_carlo=False,
                  n_trials=1000,
-                 min_lag=None,
-                 max_lag=None,
-                 dt=None,
+                 min_lag="auto",
+                 max_lag="auto",
+                 dt="auto",
                  centroid_threshold=0.8,
                  mode="regular",
                  rmax_threshold=0.0):
