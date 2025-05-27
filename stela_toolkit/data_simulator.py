@@ -6,56 +6,74 @@ from .data_loader import LightCurve
 
 class SimulateLightCurve:
     """
-    Generates light curves with a user-defined power spectral density (PSD)
-    using the Timmer & Koenig (1995) method, i.e., set amplitudes according to the desired PSD and 
-    assign random phases from a uniform distribution between 0 and 2pi. The result is then 
-    inverse-Fourier transformed back to the time domain.
+    Simulates light curves with a specified power spectral density (PSD) and optional lag injection
+    via an impulse response function (IRF). The light curve is generated using the Timmer & Koenig
+    (1995) method: amplitudes in Fourier space are set by the PSD, and phases are randomized
+    uniformly. The signal is then inverse-Fourier transformed to obtain the time-domain light curve.
 
-    The clean (noise-free) light curve is rescaled to have the desired mean and standard
-    deviation. Poisson noise can be added to the simulation, with (optional) background noise.
+    The clean light curve is rescaled to have the desired mean and standard deviation. Poisson noise
+    may be added to simulate counting statistics, including optional background noise.
 
-    This class supports both regularly and irregularly sampled time grids:
-    - For regular grids, the light curve is oversampled (by default 10×) and then trimmed.
-    - For irregular grids, the light curve is simulated on a very fine regular grid, and
-    the closest simulated points are selected to match your requested times (no interpolation).
+    Supports both regularly and irregularly sampled time grids:
+    - For regular grids: the light curve is oversampled (by default 10×) and then trimmed.
+    - For irregular grids: the light curve is generated on a fine grid and sampled at the closest
+      points (no interpolation).
+
+    Optional lag injection is supported by convolving the light curve with an IRF.
 
     Parameters
     ----------
     time_grid : ndarray
-        The array of time stamps for which you want the light curve simulated. Can be
-        regular or irregular, but must be sorted and have at least two points.
+        The array of time stamps for which to simulate the light curve. Can be regular or irregular,
+        but must be sorted and contain at least two points.
 
     psd_type : str
-        The type of power spectral density (PSD) you want to use. Options are:
+        Type of power spectral density (PSD) to use. Options are:
         - 'powerlaw': a simple power law PSD.
-        - 'broken_powerlaw': a PSD with two different slopes above and below a break frequency.
+        - 'broken_powerlaw': a PSD with two slopes joined at a break frequency.
 
     psd_params : dict
-        Parameters for the PSD. The required keys depend on the PSD type:
-        - For 'powerlaw': {'slope', 'plnorm'}.
-        - For 'broken_powerlaw': {'slope1', 'f_break', 'slope2', 'plnorm'}.
-        Here, 'plnorm' is the normalization, and slopes control the PSD shape.
+        Parameters for the PSD. Required keys depend on the PSD type:
+        - For 'powerlaw': {'slope', 'plnorm'}
+        - For 'broken_powerlaw': {'slope1', 'f_break', 'slope2', 'plnorm'}
 
     mean : float
-        The desired mean count rate of the light curve (after rescaling).
-        
+        Desired mean count rate of the simulated light curve (after rescaling).
+
     std : float
-        The desired standard deviation of the light curve (after rescaling).
+        Desired standard deviation of the simulated light curve (after rescaling).
 
     add_noise : bool, optional
         If True, Poisson noise is added to the light curve (default: False).
 
     bkg_rate : float, optional
-        The background rate (in counts per unit time) to include in the Poisson noise simulation
-        (default: 0.0). Background noise is simulated by adding and subtracting Poisson samples
-        of the background counts.
+        Background rate in counts per unit time to include in the noise simulation (default: 0.0).
+        If set, Poisson noise from two background realizations is added and subtracted.
 
     oversample : int, optional
-        For regular grids: how much to oversample before trimming (default: 10×).
+        For regular grids: how much to oversample before trimming to the target grid (default: 10).
 
     fine_factor : int, optional
-        For irregular grids: how densely to simulate the light curve before selecting
-        closest points (default: 100×).
+        For irregular grids: how densely to simulate the light curve before selecting closest points
+        (default: 100).
+
+    inject_lag : bool, optional
+        If True, applies lag injection by convolving with an IRF (default: False).
+
+    response_type : str or None, optional
+        Type of impulse response function to use. Options are:
+        - 'delta': a single delay spike at a fixed lag
+        - 'normal': Gaussian-shaped IRF
+        - 'lognormal': log-normal IRF with skewed tail
+        - 'manual': user-supplied kernel
+        If None, no lag is injected (default: None).
+
+    response_params : dict or None, optional
+        Parameters for the selected response_type:
+        - For 'delta': {'lag': float}
+        - For 'normal': {'mean': float, 'sigma': float, 'duration': float (optional)}
+        - For 'lognormal': {'median': float, 'sigma': float, 'duration': float (optional)}
+        - For 'manual': {'response': array_like}
     """
     
     def __init__(self,
@@ -357,19 +375,36 @@ class SimulateLightCurve:
     def _build_impulse_response(self, times):
         """
         Generate an impulse response function for lag injection.
+        Supported types: 'delta', 'normal', 'lognormal', 'manual'.
         """
         dt = times[1] - times[0]
+
         if self.response_type == "delta":
             lag = self.response_params["lag"]
             lag_n = int(round(lag / dt))
             response = unit_impulse(len(times), lag_n)
             return response
 
-        elif self.response_type == "powerlaw":
-            alpha = self.response_params["alpha"]
-            duration = self.response_params["duration"]
-            t = np.arange(dt, duration, dt)
-            return t ** (-alpha)
+        elif self.response_type == "normal":
+            mu = self.response_params["mean"]
+            sigma = self.response_params["sigma"]
+            duration = self.response_params.get("duration", 5 * sigma)
+            t = np.arange(0, duration, dt)
+            kernel = norm.pdf(t, loc=mu, scale=sigma)
+            return kernel / np.sum(kernel)
+
+        elif self.response_type == "lognormal":
+            median = self.response_params["median"]
+            sigma = self.response_params["sigma"]
+            duration = self.response_params.get("duration", 5 * median)
+            t = np.arange(dt, duration, dt)  # starts at dt to avoid log(0)
+
+            # Convert median + sigma to shape and scale for lognorm
+            # lognorm.pdf(x, s, loc=0, scale=median)
+            s = sigma
+            scale = median
+            kernel = lognorm.pdf(t, s=s, scale=scale)
+            return kernel / np.sum(kernel)
 
         elif self.response_type == "manual":
             return np.asarray(self.response_params["response"])
