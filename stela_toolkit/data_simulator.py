@@ -43,8 +43,11 @@ class SimulateLightCurve:
     std : float
         Desired standard deviation of the simulated light curve (after rescaling).
 
-    add_noise : bool, optional
-        If True, Poisson noise is added to the light curve (default: False).
+    add_noise : str, optional
+        Must define add noise to have uncertainties on the final data.
+        If "Poisson": Poisson noise is added to the light curve, used to compute uncertainties.
+        If "Gaussian": Gaussian noise is added to the light curve, using the uncertainties specified by frac_error.
+            - Use gaussian_frac_error to define the errors in this case.
 
     exposure_times : ndarray or None, optional
         Exposure durations to use for adding the Poisson noise. If None,
@@ -86,8 +89,8 @@ class SimulateLightCurve:
                  psd_params,
                  mean,
                  std,
-                 add_noise=False,
-                 exposure_times=None,
+                 add_noise=None,
+                 gaussian_frac_err=None,
                  bkg_rate=0.0,
                  oversample=10,
                  fine_factor=100,
@@ -106,7 +109,6 @@ class SimulateLightCurve:
         self.inject_lag = inject_lag
         self.response_type = response_type
         self.response_params = response_params
-        self.exposure_times = np.asarray(exposure_times) if exposure_times is not None else None
 
         result = self.generate(self.time_grid)
         if isinstance(result, tuple):
@@ -116,10 +118,17 @@ class SimulateLightCurve:
             rates_lagged = None
 
         errors = np.zeros(len(rates))
-        if add_noise:
-            rates, errors = self.add_poisson_noise(rates, self.time_grid, bkg_rate=self.bkg_rate, exposure_times=self.exposure_times)
+        if add_noise.lower() == "poisson":
+            rates, errors = self.add_poisson_noise(rates, self.time_grid, bkg_rate=self.bkg_rate)
+                                                
             if rates_lagged is not None:
-                rates_lagged, _ = self.add_poisson_noise(rates_lagged, self.time_grid, bkg_rate=self.bkg_rate, exposure_times=self.exposure_times)
+                rates_lagged, _ = self.add_poisson_noise(rates_lagged, self.time_grid,
+                                                        bkg_rate=self.bkg_rate)
+
+        elif add_noise.lower() == "gaussian":
+            rates, errors = self.add_gaussian_noise(rates, frac_err=gaussian_frac_err)
+            if rates_lagged is not None:
+                rates_lagged, _ = self.add_gaussian_noise(rates_lagged, frac_err=gaussian_frac_err)
 
         self.rates = rates
         self.errors = errors
@@ -270,6 +279,36 @@ class SimulateLightCurve:
             noise_estimate = np.where(noise_estimate == 0, min_error_floor, noise_estimate)
 
         return noisy_lc, noise_estimate
+    
+    def add_gaussian_noise(self, lc, frac_err=0.05, min_error_floor=1e-10):
+        """
+        Add Gaussian noise to a simulated light curve in flux units.
+
+        Parameters
+        ----------
+        lc : ndarray
+            Simulated light curve values (flux units).
+
+        frac_err : float
+            Fractional error (e.g., 0.05 = 5%).
+
+        min_error_floor : float
+            Minimum allowed error value to prevent zeros.
+
+        Returns
+        -------
+        noisy_lc : ndarray
+            Light curve with added Gaussian noise.
+
+        errors : ndarray
+            Standard deviation of the Gaussian noise at each point.
+        """
+
+        lc = np.asarray(lc)
+        errors = np.clip(np.abs(lc) * frac_err, min_error_floor, None)
+        noisy_lc = lc + np.random.normal(0, errors)
+        return noisy_lc, errors
+
 
     def add_regular_gaps(self, lc, time_grid, gap_period, gap_duration):
         """
