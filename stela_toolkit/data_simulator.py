@@ -46,6 +46,10 @@ class SimulateLightCurve:
     add_noise : bool, optional
         If True, Poisson noise is added to the light curve (default: False).
 
+    exposure_times : ndarray or None, optional
+        Exposure durations to use for adding the Poisson noise. If None,
+        the time spacing is used to approximate exposure times.
+
     bkg_rate : float, optional
         Background rate in counts per unit time to include in the noise simulation (default: 0.0).
         If set, Poisson noise from two background realizations is added and subtracted.
@@ -83,6 +87,7 @@ class SimulateLightCurve:
                  mean,
                  std,
                  add_noise=False,
+                 exposure_times=None,
                  bkg_rate=0.0,
                  oversample=10,
                  fine_factor=100,
@@ -101,6 +106,7 @@ class SimulateLightCurve:
         self.inject_lag = inject_lag
         self.response_type = response_type
         self.response_params = response_params
+        self.exposure_times = np.asarray(exposure_times) if exposure_times is not None else None
 
         result = self.generate(self.time_grid)
         if isinstance(result, tuple):
@@ -111,9 +117,9 @@ class SimulateLightCurve:
 
         errors = np.zeros(len(rates))
         if add_noise:
-            rates, errors = self.add_poisson_noise(rates, self.time_grid, bkg_rate=self.bkg_rate)
+            rates, errors = self.add_poisson_noise(rates, self.time_grid, bkg_rate=self.bkg_rate, exposure_times=self.exposure_times)
             if rates_lagged is not None:
-                rates_lagged, _ = self.add_poisson_noise(rates_lagged, self.time_grid, bkg_rate=self.bkg_rate)
+                rates_lagged, _ = self.add_poisson_noise(rates_lagged, self.time_grid, bkg_rate=self.bkg_rate, exposure_times=self.exposure_times)
 
         self.rates = rates
         self.errors = errors
@@ -202,7 +208,7 @@ class SimulateLightCurve:
             else:
                 return lc
 
-    def add_poisson_noise(self, lc, time_grid, bkg_rate=0.0, min_error_floor=1e-10):
+    def add_poisson_noise(self, lc, time_grid, bkg_rate=0.0, exposure_times=None, min_error_floor=1e-10):
         """
         Add Poisson noise to a simulated light curve.
 
@@ -214,6 +220,9 @@ class SimulateLightCurve:
             Time values.
         bkg_rate : float, optional
             Background count rate.
+        exposure_times : ndarray or None, optional
+            Exposure duration for each point. If None, use time spacing
+            to approximate integration time per bin.
         min_error_floor : float, optional
             Minimum uncertainty to avoid zeros.
 
@@ -227,17 +236,21 @@ class SimulateLightCurve:
 
         lc = np.asarray(lc)
         time_grid = np.asarray(time_grid)
+
         if len(time_grid) < 2:
             raise ValueError("time_grid must have at least two points.")
 
-        dt_array = np.diff(time_grid)
-        if np.allclose(dt_array, dt_array[0], rtol=1e-5):
-            dt = dt_array[0]
+        if exposure_times is not None:
+            dt = np.asarray(exposure_times)
         else:
-            dt = np.zeros_like(time_grid)
-            dt[1:-1] = (time_grid[2:] - time_grid[:-2]) / 2
-            dt[0] = time_grid[1] - time_grid[0]
-            dt[-1] = time_grid[-1] - time_grid[-2]
+            dt_array = np.diff(time_grid)
+            if np.allclose(dt_array, dt_array[0], rtol=1e-5):
+                dt = dt_array[0]
+            else:
+                dt = np.zeros_like(time_grid)
+                dt[1:-1] = (time_grid[2:] - time_grid[:-2]) / 2
+                dt[0] = time_grid[1] - time_grid[0]
+                dt[-1] = time_grid[-1] - time_grid[-2]
 
         counts = lc * dt
         counts = np.clip(counts, 0, None)
