@@ -348,18 +348,29 @@ class SimulateLightCurve:
         """
         Plot the simulated light curve/s. Shows both the original and lagged data (if available).
         """
-        plt.figure(figsize=(12, 5))
-        plt.plot(self.simlc.times, self.simlc.rates, label='Simulated', lw=1.5)
+        plt.figure(figsize=(8, 4.5))
 
+        # Main simlc
+        if hasattr(self.simlc, "errors") and np.any(self.simlc.errors > 0):
+            plt.errorbar(self.simlc.times, self.simlc.rates, yerr=self.simlc.errors,
+                        fmt='o', label='Simulated', lw=1.5, capsize=1)
+        else:
+            plt.plot(self.simlc.times, self.simlc.rates, label='Simulated', lw=1.5)
+
+        # Lagged simlc
         if self.simlc_lagged is not None:
-            plt.plot(self.simlc_lagged.times, self.simlc_lagged.rates,
-                     label='Lagged', lw=1.5, alpha=0.8)
+            if hasattr(self.simlc_lagged, "errors") and np.any(self.simlc_lagged.errors > 0):
+                plt.errorbar(self.simlc_lagged.times, self.simlc_lagged.rates,
+                            yerr=self.simlc_lagged.errors,
+                            fmt='o', label='Lagged', lw=1.5, capsize=1, alpha=0.8)
+            else:
+                plt.plot(self.simlc_lagged.times, self.simlc_lagged.rates,
+                        label='Lagged', lw=1.5, alpha=0.8)
 
         plt.xlabel("Time")
         plt.ylabel("Flux")
         plt.grid(True)
         plt.legend()
-        plt.tight_layout()
         plt.show()
     
     def _simulate_on_grid(self, t_sim):
