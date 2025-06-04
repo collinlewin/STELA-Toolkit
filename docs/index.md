@@ -1,5 +1,9 @@
 ![STELA Toolkit Banner](assets/stela_logo.png)
 
+<p align="right" style="font-size: 0.9em;">
+  <em>Logo design by Elizabeth Jarboe</em>
+</p>
+
 # Welcome to the STELA Toolkit 
 
 The **STELA Toolkit** is a Python package for interpolating astrophysical light curves using Gaussian Processes in order to compute frequency-domain and standard time domain data products.
