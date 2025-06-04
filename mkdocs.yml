@@ -1,0 +1,65 @@
+site_name: STELA Toolkit
+site_description: Tools for interpolating astrophysical light curves using Gaussian Processes in order to compute frequency-domain and standard time domain data products
+theme:
+  name: material
+  logo: assets/stela_logo_sq.png
+  favicon: assets/stela_logo_sq.png
+  palette:
+    scheme: slate
+
+
+plugins:
+  - search
+  - mkdocstrings:
+      handlers:
+        python:
+          paths: [stela_toolkit]
+  - mkdocs-jupyter:
+      execute: True
+
+nav:
+  - Home: index.md
+  - Overview: overview.md
+  - Gaussian Processes: gaussian_process_intro.md
+  - Installation: installation.md
+  - Tutorial: tutorial.ipynb
+  - Module Reference:
+      - Coherence: reference/coherence.md
+      - Cross Correlation: reference/cross_correlation.md
+      - Cross Spectrum: reference/cross_spectrum.md
+      - Data Loader: reference/data_loader.md
+      - Data Simulator: reference/data_simulator.md
+      - Frequency Binning: reference/frequency_binning.md
+      - Gaussian Process: reference/gaussian_process.md
+      - Lag Energy Spectrum: reference/lag_energy_spectrum.md
+      - Lag Frequency Spectrum: reference/lag_frequency_spectrum.md
+      - Plotting: reference/plot.md
+      - Power Spectrum: reference/power_spectrum.md
+      - Preprocessing: reference/preprocessing.md
+      - Internal:
+          - _CheckInputs: reference/check_inputs.md
+          - _ClearWarnings: reference/clarify_warnings.md
+
+markdown_extensions:
+  - admonition
+  - toc:
+      permalink: true
+  - pymdownx.arithmatex:
+      generic: true
+  - pymdownx.superfences
+  - pymdownx.betterem
+  - pymdownx.tilde
+  - pymdownx.tasklist
+  - pymdownx.tabbed
+  - pymdownx.smartsymbols
+  - pymdownx.snippets
+  - pymdownx.highlight
+  - pymdownx.inlinehilite
+  - pymdownx.extra
+  - pymdownx.critic
+  - pymdownx.magiclink
+  - pymdownx.details
+
+extra_javascript:
+  - https://polyfill.io/v3/polyfill.min.js?features=es6
+  - https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js
