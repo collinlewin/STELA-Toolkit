@@ -1125,9 +1125,7 @@ K_* &amp; K_{**}
 </ul>
 <h3 id="posterior-prediction-vs-samples">Posterior Prediction vs. Samples<a class="headerlink" href="#posterior-prediction-vs-samples" title="Permanent link">&para;</a></h3>
 <p>In our GP framework, we distinguish between the <strong>posterior prediction</strong> (via <code>.predict</code>) and <strong>posterior samples</strong> (via <code>.sample</code>). Both are derived from the GP posterior but serve different purposes:</p>
-<ul>
-<li><strong>Prediction (<code>predict</code>)</strong> computes the <em>posterior mean</em> and <em>covariance</em> of the function at new time points:</li>
-</ul>
+<p><strong>Prediction (<code>predict</code>)</strong> computes the <em>posterior mean</em> and <em>covariance</em> of the function at new time points:</p>
 <p>$$
   \mathbb{E}[f_<em>] = K_</em>^\top (K + \sigma_n^2 I)^{-1} \mathbf{y}
   $$</p>
@@ -1135,9 +1133,7 @@ K_* &amp; K_{**}
   \text{Cov}[f_<em>] = K_{**} - K_</em>^\top (K + \sigma_n^2 I)^{-1} K_*
   $$</p>
 <p>This provides a Gaussian distribution over function values at the desired points, with uncertainty encoded in the posterior covariance.</p>
-<ul>
-<li><strong>Samples (<code>sample</code>)</strong> draw individual function realizations from this posterior distribution. These are full, self-consistent samples of the latent function, incorporating both the posterior mean and covariance structure.</li>
-</ul>
+<p><strong>Samples (<code>sample</code>)</strong> draw individual function realizations from this posterior distribution. These are full, self-consistent samples of the latent function, incorporating both the posterior mean and covariance structure.</p>
 <p>In our use case, we use samples to compute the Fourier-domain products such as power spectra, cross-spectra, and frequency-resolved time lags. This allows for propagating the uncertainty in the modeling through to the downstream quantities of interest in a fully Bayesian manner.</p>
 
 
