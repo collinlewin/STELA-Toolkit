@@ -7,87 +7,90 @@ from .data_loader import LightCurve
 class SimulateLightCurve:
     """
     Simulates light curves with a specified power spectral density (PSD) and optional lag injection
-    via an impulse response function (IRF). The light curve is generated using the Timmer & Koenig
-    (1995) method: amplitudes in Fourier space are set by the PSD, and phases are randomized
-    uniformly. The signal is then inverse-Fourier transformed to obtain the time-domain light curve.
+    via an impulse response function (IRF), using the Timmer & Koenig (1995) method.
 
-    The clean light curve is rescaled to have the desired mean and standard deviation. Poisson noise
-    may be added to simulate counting statistics, including optional background noise.
+    The light curve is generated in Fourier space, with random phases and amplitudes
+    shaped by the PSD. It is then inverse-Fourier transformed to the time domain,
+    rescaled to the desired mean and standard deviation, and optionally passed through
+    Poisson or Gaussian noise models.
 
     Supports both regularly and irregularly sampled time grids:
-    
-    - For regular grids: the light curve is oversampled (by default 10×) and then trimmed.
-    - For irregular grids: the light curve is generated on a fine grid and sampled at the closest
-      points (no interpolation).
+    - For regular grids: oversamples the light curve before trimming to the desired grid.
+    - For irregular grids: simulates on a fine grid and selects nearest times (no interpolation).
 
-    Optional lag injection is supported by convolving the light curve with an IRF.
+    Optional lag injection is applied via convolution with an impulse response kernel.
 
     Parameters
     ----------
     time_grid : ndarray
-        The array of time stamps for which to simulate the light curve. Can be regular or irregular,
-        but must be sorted and contain at least two points.
+        Target time grid for the simulated light curve (must be sorted).
 
     psd_type : str
-        Type of power spectral density (PSD) to use. Options are:
+        Type of PSD to simulate. Options are:
         
-        - 'powerlaw': a simple power law PSD.
-        - 'broken_powerlaw': a PSD with two slopes joined at a break frequency.
+        - 'powerlaw'
+        - 'broken_powerlaw'
 
     psd_params : dict
-        Parameters for the PSD. Required keys depend on the PSD type:
-        
-        - For 'powerlaw': {'slope', 'plnorm'}
-        - For 'broken_powerlaw': {'slope1', 'f_break', 'slope2', 'plnorm'}
+        Parameters for the PSD model. Depends on `psd_type`:
+       
+         - 'powerlaw': {'slope', 'plnorm'}
+        - 'broken_powerlaw': {'slope1', 'f_break', 'slope2', 'plnorm'}
 
     mean : float
-        Desired mean count rate of the simulated light curve (after rescaling).
+        Desired mean of the light curve after rescaling.
 
     std : float
-        Desired standard deviation of the simulated light curve (after rescaling).
+        Desired standard deviation of the light curve after rescaling.
 
-    add_noise : str, optional
-        Must define add noise to have uncertainties on the final data.
-        If "Poisson": Poisson noise is added to the light curve, used to compute uncertainties.
-        If "Gaussian": Gaussian noise is added to the light curve, using the uncertainties specified by frac_error.
+    add_noise : str or None, optional
+        Type of noise to add. Options are:
         
-            - Use gaussian_frac_error to define the errors in this case.
+        - "Poisson": adds Poisson-distributed noise with optional background
+        - "Gaussian": adds Gaussian noise using `gaussian_frac_err`
+        - None: no noise is added
 
-    exposure_times : ndarray or None, optional
-        Exposure durations to use for adding the Poisson noise. If None,
-        the time spacing is used to approximate exposure times.
+    gaussian_frac_err : float or None, optional
+        Fractional error to use when `add_noise="Gaussian"`.
 
     bkg_rate : float, optional
-        Background rate in counts per unit time to include in the noise simulation (default: 0.0).
-        If set, Poisson noise from two background realizations is added and subtracted.
+        Background count rate (used in Poisson noise simulation). Default is 0.
 
     oversample : int, optional
-        For regular grids: how much to oversample before trimming to the target grid (default: 10).
+        Oversampling factor for regularly spaced grids. Default is 10.
 
     fine_factor : int, optional
-        For irregular grids: how densely to simulate the light curve before selecting closest points
-        (default: 100).
+        Factor controlling the resolution of simulation for irregular grids. Default is 100.
 
     inject_lag : bool, optional
-        If True, applies lag injection by convolving with an IRF (default: False).
+        Whether to apply a lag by convolving with an impulse response function. Default is False.
 
     response_type : str or None, optional
-        Type of impulse response function to use. Options are:
+        Type of IRF for lag injection. Options are:
         
-        - 'delta': a single delay spike at a fixed lag
-        - 'normal': Gaussian-shaped IRF
-        - 'lognormal': log-normal IRF with skewed tail
-        - 'manual': user-supplied kernel
-        
-        If None, no lag is injected (default: None).
+        - 'delta', 'normal', 'lognormal', 'manual', or None
 
     response_params : dict or None, optional
-        Parameters for the selected response_type:
+        Parameters for the IRF. Depends on `response_type`:
         
-        - For 'delta': {'lag': float}
-        - For 'normal': {'mean': float, 'sigma': float, 'duration': float (optional)}
-        - For 'lognormal': {'median': float, 'sigma': float, 'duration': float (optional)}
-        - For 'manual': {'response': array_like}
+        - 'delta': {'lag'}
+        - 'normal': {'mean', 'sigma', 'duration' (optional)}
+        - 'lognormal': {'median', 'sigma', 'duration' (optional)}
+        - 'manual': {'response': array_like}
+
+    Attributes
+    ----------
+    rates : ndarray
+        Simulated light curve values after noise is added.
+
+    errors : ndarray
+        Estimated uncertainties for each time point.
+
+    simlc : LightCurve
+        The simulated light curve object (with noise).
+
+    simlc_lagged : LightCurve or None
+        Lagged version of the light curve, if `inject_lag=True`. Otherwise, None.
     """
     
     def __init__(self,

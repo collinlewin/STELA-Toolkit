@@ -190,11 +190,6 @@ class Coherence:
         For multiple realizations (GP samples), this method computes the
         coherence for each pair of realizations and returns the mean and standard deviation.
 
-        Parameters
-        ----------
-        subtract_noise_bias : bool, optional
-            Whether to subtract noise bias from each realization.
-
         Returns
         -------
         freqs : array-like

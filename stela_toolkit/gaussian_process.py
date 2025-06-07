@@ -710,8 +710,8 @@ class GaussianProcess:
 
         Parameters
         ----------
-        **kwargs : dict
-            Additional keyword arguments for plot customization.
+        pred_times : array_like, optional
+            Time grid to show prediction, samples. If not specificed, a grid of 1000 points will be automatically used.
         """
 
         if pred_times is None:

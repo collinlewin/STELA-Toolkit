@@ -405,10 +405,10 @@ class CrossCorrelation:
         """
         Plot the cross-correlation function and optional Monte Carlo lag distributions.
 
-        Parameters
+        Arguments
         ----------
-        **kwargs : dict
-            Keyword arguments for customizing the plot.
+        show_mc : bool
+            Plots results of Monte Carlo peak and centroid lag distributions.
         """
 
         fig, ax = plt.subplots(1, 1, figsize=(7, 4))

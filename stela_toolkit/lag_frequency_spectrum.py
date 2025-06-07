@@ -129,31 +129,45 @@ class LagFrequencySpectrum:
         Compute the lag spectrum for a single pair of light curves or model realizations.
 
         The phase of the cross-spectrum is converted to time lags, and uncertainties are
-        computed either from coherence (light curves) or from GP sampling (if stacked mode).
+        computed either from coherence (for raw light curves) or from GP sampling (if using
+        stacked realizations).
 
         Parameters
         ----------
-        times1, rates1 : array-like, optional
-            Input time and rates for the first time series.
-        times2, rates2 : array-like, optional
-            Input time and rates for the second time series.
+        times1 : array-like, optional
+            Time values for the first time series.
+
+        rates1 : array-like, optional
+            Rate or flux values for the first time series.
+
+        times2 : array-like, optional
+            Time values for the second time series.
+
+        rates2 : array-like, optional
+            Rate or flux values for the second time series.
+
         subtract_coh_bias : bool, optional
-            Whether to subtract noise bias from coherence.
+            Whether to subtract noise bias from the coherence estimate.
 
         Returns
         -------
         freqs : array-like
-            Frequency bin centers.
+            Center of each frequency bin.
+
         freq_widths : array-like
-            Frequency bin widths.
+            Width of each frequency bin.
+
         lags : array-like
-            Time lags at each frequency.
+            Time lag values at each frequency.
+
         lag_errors : array-like
-            Uncertainty in the lag values.
+            Uncertainties on the lag values.
+
         cohs : array-like
-            Coherence values.
+            Coherence values at each frequency.
+
         coh_errors : array-like
-            Uncertainties in the coherence values.
+            Uncertainties on the coherence values.
         """
 
         times1 = times1 if times1 is not None else self.times1
@@ -205,14 +219,19 @@ class LagFrequencySpectrum:
         -------
         freqs : array-like
             Frequency bin centers.
+        
         freq_widths : array-like
             Frequency bin widths.
+        
         lags : array-like
             Mean time lags across samples.
+        
         lag_errors : array-like
             Standard deviation of lags.
+        
         cohs : array-like
             Mean coherence values.
+        
         coh_errors : array-like
             Standard deviation of coherence values.
         """
@@ -240,22 +259,22 @@ class LagFrequencySpectrum:
 
         return freqs, freq_widths, lag_spectra_mean, lag_spectra_std, coh_spectra_mean, coh_spectra_std
 
-    def plot(self, freqs=None, freq_widths=None, lags=None, lag_errors=None, cohs=None, coh_errors=None, **kwargs):
+    def plot(self, **kwargs):
         """
         Plot the lag-frequency and coherence spectrum.
-
-        Parameters
-        ----------
-        **kwargs : dict
-            Custom plotting arguments (xlabel, xscale, yscale, etc.).
+        Plot appearance can be customized using keyword arguments:
+        
+        - figsize : tuple, optional
+            Size of the figure (default: (8, 6)).
+        - xlabel : str, optional
+            Label for the x-axis (default: "Frequency").
+        - ylabel : str, optional
+            Label for the y-axis of the lag panel (default: "Time Lag").
+        - xscale : str, optional
+            Scale for the x-axis ("log" or "linear", default: "log").
+        - yscale : str, optional
+            Scale for the y-axis of the lag panel ("linear" or "log", default: "linear").
         """
-        freqs = self.freqs if freqs is None else freqs
-        freq_widths = self.freq_widths if freq_widths is None else freq_widths
-        lags = self.lags if lags is None else lags
-        lag_errors = self.lag_errors if lag_errors is None else lag_errors
-        cohs = self.cohs if cohs is None else cohs
-        coh_errors = self.coh_errors if coh_errors is None else coh_errors
-
         figsize = kwargs.get('figsize', (8, 6))
         xlabel = kwargs.get('xlabel', 'Frequency')
         ylabel = kwargs.get('ylabel', 'Time Lag')
@@ -266,7 +285,8 @@ class LagFrequencySpectrum:
         plt.subplots_adjust(hspace=0.05)
 
         # Lag-frequency spectrum
-        ax1.errorbar(freqs, lags, xerr=freq_widths, yerr=lag_errors, fmt='o', color='black', ms=3, lw=1.5)
+        ax1.errorbar(self.freqs, self.lags, xerr=self.freq_widths, yerr=self.lag_errors,
+                    fmt='o', color='black', ms=3, lw=1.5)
         ax1.set_xscale(xscale)
         ax1.set_yscale(yscale)
         ax1.set_ylabel(ylabel, fontsize=12)
@@ -274,8 +294,9 @@ class LagFrequencySpectrum:
         ax1.tick_params(which='both', direction='in', length=6, width=1, top=True, right=True, labelsize=12)
 
         # Coherence spectrum
-        if cohs is not None and coh_errors is not None:
-            ax2.errorbar(freqs, cohs, xerr=freq_widths, yerr=coh_errors, fmt='o', color='black', ms=3, lw=1.5)
+        if self.cohs is not None and self.coh_errors is not None:
+            ax2.errorbar(self.freqs, self.cohs, xerr=self.freq_widths, yerr=self.coh_errors,
+                        fmt='o', color='black', ms=3, lw=1.5)
             ax2.set_xscale(xscale)
             ax2.set_ylabel('Coherence', fontsize=12)
             ax2.grid(True, linestyle='--', linewidth=0.5, alpha=0.7)
