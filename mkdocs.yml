@@ -2,11 +2,25 @@ site_name: STELA Toolkit
 site_description: Tools for interpolating astrophysical light curves using Gaussian Processes in order to compute frequency-domain and standard time domain data products
 theme:
   name: material
+  extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/collinlewin/STELA-Toolkit
+  favicon: assets/favicon.ico
+
   logo: assets/stela_logo_sq.png
   favicon: assets/stela_logo_sq.png
+  features:
+    - navigation.tabs
+    - navigation.top
+    - content.code.copy
+    - navigation.sections
+    - navigation.expand
   palette:
-    scheme: slate
-
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: blue
+      accent: yellow
 
 plugins:
   - search
@@ -25,20 +39,20 @@ nav:
   - Gaussian Processes: gaussian_process_intro.md
   - Installation: installation.md
   - Tutorial: tutorial.ipynb
-  - Module Reference:
+  - Class Reference:
       - Coherence: reference/coherence.md
       - Cross Correlation: reference/cross_correlation.md
       - Cross Spectrum: reference/cross_spectrum.md
       - Data Loader: reference/data_loader.md
       - Data Simulator: reference/data_simulator.md
-      - Frequency Binning: reference/frequency_binning.md
       - Gaussian Process: reference/gaussian_process.md
       - Lag Energy Spectrum: reference/lag_energy_spectrum.md
       - Lag Frequency Spectrum: reference/lag_frequency_spectrum.md
-      - Plotting: reference/plot.md
       - Power Spectrum: reference/power_spectrum.md
       - Preprocessing: reference/preprocessing.md
       - Internal:
+          - Frequency Binning: reference/frequency_binning.md
+          - Plotting: reference/plot.md
           - _CheckInputs: reference/check_inputs.md
           - _ClearWarnings: reference/clarify_warnings.md
 
@@ -65,3 +79,6 @@ markdown_extensions:
 extra_javascript:
   - https://polyfill.io/v3/polyfill.min.js?features=es6
   - https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js
+
+extra_css:
+  - styles/custom.css
