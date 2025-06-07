@@ -34,7 +34,7 @@ class SimulateLightCurve:
     psd_params : dict
         Parameters for the PSD model. Depends on `psd_type`:
        
-         - 'powerlaw': {'slope', 'plnorm'}
+        - 'powerlaw': {'slope', 'plnorm'}
         - 'broken_powerlaw': {'slope1', 'f_break', 'slope2', 'plnorm'}
 
     mean : float
