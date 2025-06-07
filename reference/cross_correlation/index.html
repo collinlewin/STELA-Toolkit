@@ -1259,23 +1259,23 @@
 <p>This class supports three primary use cases:</p>
 <ol>
 <li>
-<p><strong>Regularly sampled LightCurve objects</strong>: The CCF is computed via direct shifting
-using Pearson correlation coefficients across lag values.</p>
+<p><strong>Regularly sampled <code>LightCurve</code> objects</strong><br />
+   Computes the CCF directly using Pearson correlation across lag values. Requires aligned time grids.</p>
 </li>
 <li>
-<p><strong>Irregularly sampled LightCurve objects</strong>: Uses the interpolated cross-correlation
-method (ICCF), introduced by Gaskell &amp; Peterson (1987), which linearly interpolates
-one light curve onto the other's grid to allow for lag estimation despite gaps.</p>
+<p><strong>Irregularly sampled <code>LightCurve</code> objects</strong><br />
+   Uses the interpolated cross-correlation method (ICCF; Gaskell &amp; Peterson 1987), which linearly interpolates
+   one light curve onto the other’s grid to estimate correlations across lags despite uneven sampling.</p>
 </li>
 <li>
-<p><strong>GaussianProcess models</strong>: If both inputs are trained GP models, the CCF is computed
-across all sampled realizations and averaged. If no samples exist, 1000 will be generated
-automatically on a 1000-point grid. Lag uncertainties are derived from the spread in
-lag values across realizations.</p>
+<p><strong><code>GaussianProcess</code> models</strong><br />
+   If both inputs are trained GP models with sampled realizations (via <code>.sample()</code>), STELA computes the CCF for each
+   realization pair, then averages the resulting peak and centroid lags. The final outputs are returned as tuples:
+   <code>(mean, standard deviation)</code> for peak lag, centroid lag, and maximum correlation (rmax).</p>
 </li>
 </ol>
-<p>Monte Carlo resampling is also available for estimating confidence intervals using observational
-error bars.</p>
+<p>If samples have not yet been generated, 1000 realizations will be drawn automatically on a 1000-point time grid.</p>
+<p>Additionally, optional Monte Carlo resampling is available to assess lag uncertainties from observational errors.</p>
 <h4 id="stela_toolkit.cross_correlation.CrossCorrelation--parameters">Parameters<a class="headerlink" href="#stela_toolkit.cross_correlation.CrossCorrelation--parameters" title="Permanent link">&para;</a></h4>
 <p>lc_or_model1 : LightCurve or GaussianProcess
     First input light curve or trained GP model.
@@ -1285,42 +1285,37 @@ run_monte_carlo : bool, optional
     Whether to estimate lag uncertainties using Monte Carlo resampling.
 n_trials : int, optional
     Number of Monte Carlo trials.
-min_lag : float, optional
-    Minimum lag to evaluate, default "auto" results in min_lag = - duration / 2
-max_lag : float, optional
-    Maximum lag to evaluate, default "auto" results in max_lag = duration / 2
-dt : float, optional
-    Time step to use for interpolation, less than sampling rate of the data, default of 
-    "auto" results in dt = average sampling rate / 5.</p>
-
-
-<details class="centroid_threshold-" open>
-  <summary>float, optional</summary>
-  <p>Threshold (fraction of peak CCF) for defining centroid lag region.</p>
-</details>        <p>mode : {'regular', 'interp'}, optional
-    CCF computation mode. Use 'regular' for direct shifting (requires aligned time grids),
-    or 'interp' for ICCF-style interpolation.
+min_lag : float or "auto", optional
+    Minimum lag to evaluate. If "auto", set to <code>-duration / 2</code>.
+max_lag : float or "auto", optional
+    Maximum lag to evaluate. If "auto", set to <code>+duration / 2</code>.
+dt : float or "auto", optional
+    Time step for lag evaluation. If "auto", set to &#8533; of the mean sampling interval.
+centroid_threshold : float, optional
+    Threshold (as a fraction of peak correlation) for defining the centroid lag region.
+mode : {"regular", "interp"}, optional
+    CCF computation mode. Use "regular" for direct shifting, or "interp" for ICCF-based interpolation.
 rmax_threshold : float, optional
-    Monte Carlo trials with maximum correlation below this value are discarded.</p>
+    Trials with a maximum correlation (rmax) below this threshold are discarded when using Monte Carlo.</p>
 <h4 id="stela_toolkit.cross_correlation.CrossCorrelation--attributes">Attributes<a class="headerlink" href="#stela_toolkit.cross_correlation.CrossCorrelation--attributes" title="Permanent link">&para;</a></h4>
 <p>lags : ndarray
     Array of lag values evaluated.
-ccf : ndarray
-    Cross-correlation coefficients.
-peak_lag : float
-    Lag corresponding to the peak correlation.
-centroid_lag : float
-    Centroid lag from the high-correlation region.
-rmax : float
-    Maximum correlation coefficient.
+ccf : ndarray or None
+    Cross-correlation coefficients. Not set when both inputs are GP models.
+peak_lag : float or tuple
+    Peak lag of the CCF. If using GPs, returns (mean, std) across realizations.
+centroid_lag : float or tuple
+    Centroid lag of the high-correlation region. If using GPs, returns (mean, std).
+rmax : float or tuple
+    Maximum correlation value. If using GPs, returns (mean, std).
 peak_lags_mc : ndarray or None
-    Peak lags from Monte Carlo trials.
+    Peak lags from Monte Carlo trials, if enabled.
 centroid_lags_mc : ndarray or None
     Centroid lags from Monte Carlo trials.
 peak_lag_ci : tuple or None
-    Confidence interval (16<sup>th</sup>–84<sup>th</sup> percentile) on peak lag.
+    68% confidence interval (16<sup>th</sup>–84<sup>th</sup> percentile) on peak lag from MC trials.
 centroid_lag_ci : tuple or None
-    Confidence interval on centroid lag.</p>
+    68% confidence interval on centroid lag from MC trials.</p>
 
 
 
@@ -1729,26 +1724,38 @@ centroid_lag_ci : tuple or None
 <span class="normal">403</span>
 <span class="normal">404</span>
 <span class="normal">405</span>
-<span class="normal">406</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">CrossCorrelation</span><span class="p">:</span>
+<span class="normal">406</span>
+<span class="normal">407</span>
+<span class="normal">408</span>
+<span class="normal">409</span>
+<span class="normal">410</span>
+<span class="normal">411</span>
+<span class="normal">412</span>
+<span class="normal">413</span>
+<span class="normal">414</span>
+<span class="normal">415</span>
+<span class="normal">416</span>
+<span class="normal">417</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">CrossCorrelation</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compute the time-domain cross-correlation function (CCF) between two light curves or GP models.</span>
 
 <span class="sd">    This class supports three primary use cases:</span>
 
-<span class="sd">    1. **Regularly sampled LightCurve objects**: The CCF is computed via direct shifting</span>
-<span class="sd">    using Pearson correlation coefficients across lag values.</span>
+<span class="sd">    1. **Regularly sampled `LightCurve` objects**  </span>
+<span class="sd">       Computes the CCF directly using Pearson correlation across lag values. Requires aligned time grids.</span>
 
-<span class="sd">    2. **Irregularly sampled LightCurve objects**: Uses the interpolated cross-correlation</span>
-<span class="sd">    method (ICCF), introduced by Gaskell &amp; Peterson (1987), which linearly interpolates</span>
-<span class="sd">    one light curve onto the other&#39;s grid to allow for lag estimation despite gaps.</span>
+<span class="sd">    2. **Irregularly sampled `LightCurve` objects**  </span>
+<span class="sd">       Uses the interpolated cross-correlation method (ICCF; Gaskell &amp; Peterson 1987), which linearly interpolates</span>
+<span class="sd">       one light curve onto the other’s grid to estimate correlations across lags despite uneven sampling.</span>
 
-<span class="sd">    3. **GaussianProcess models**: If both inputs are trained GP models, the CCF is computed</span>
-<span class="sd">    across all sampled realizations and averaged. If no samples exist, 1000 will be generated</span>
-<span class="sd">    automatically on a 1000-point grid. Lag uncertainties are derived from the spread in</span>
-<span class="sd">    lag values across realizations.</span>
+<span class="sd">    3. **`GaussianProcess` models**  </span>
+<span class="sd">       If both inputs are trained GP models with sampled realizations (via `.sample()`), STELA computes the CCF for each</span>
+<span class="sd">       realization pair, then averages the resulting peak and centroid lags. The final outputs are returned as tuples:</span>
+<span class="sd">       `(mean, standard deviation)` for peak lag, centroid lag, and maximum correlation (rmax).</span>
 
-<span class="sd">    Monte Carlo resampling is also available for estimating confidence intervals using observational</span>
-<span class="sd">    error bars.</span>
+<span class="sd">       If samples have not yet been generated, 1000 realizations will be drawn automatically on a 1000-point time grid.</span>
+
+<span class="sd">    Additionally, optional Monte Carlo resampling is available to assess lag uncertainties from observational errors.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -1760,43 +1767,41 @@ centroid_lag_ci : tuple or None
 <span class="sd">        Whether to estimate lag uncertainties using Monte Carlo resampling.</span>
 <span class="sd">    n_trials : int, optional</span>
 <span class="sd">        Number of Monte Carlo trials.</span>
-<span class="sd">    min_lag : float, optional</span>
-<span class="sd">        Minimum lag to evaluate, default &quot;auto&quot; results in min_lag = - duration / 2</span>
-<span class="sd">    max_lag : float, optional</span>
-<span class="sd">        Maximum lag to evaluate, default &quot;auto&quot; results in max_lag = duration / 2</span>
-<span class="sd">    dt : float, optional</span>
-<span class="sd">        Time step to use for interpolation, less than sampling rate of the data, default of </span>
-<span class="sd">        &quot;auto&quot; results in dt = average sampling rate / 5.</span>
-
+<span class="sd">    min_lag : float or &quot;auto&quot;, optional</span>
+<span class="sd">        Minimum lag to evaluate. If &quot;auto&quot;, set to `-duration / 2`.</span>
+<span class="sd">    max_lag : float or &quot;auto&quot;, optional</span>
+<span class="sd">        Maximum lag to evaluate. If &quot;auto&quot;, set to `+duration / 2`.</span>
+<span class="sd">    dt : float or &quot;auto&quot;, optional</span>
+<span class="sd">        Time step for lag evaluation. If &quot;auto&quot;, set to 1/5 of the mean sampling interval.</span>
 <span class="sd">    centroid_threshold : float, optional</span>
-<span class="sd">        Threshold (fraction of peak CCF) for defining centroid lag region.</span>
-<span class="sd">    mode : {&#39;regular&#39;, &#39;interp&#39;}, optional</span>
-<span class="sd">        CCF computation mode. Use &#39;regular&#39; for direct shifting (requires aligned time grids),</span>
-<span class="sd">        or &#39;interp&#39; for ICCF-style interpolation.</span>
+<span class="sd">        Threshold (as a fraction of peak correlation) for defining the centroid lag region.</span>
+<span class="sd">    mode : {&quot;regular&quot;, &quot;interp&quot;}, optional</span>
+<span class="sd">        CCF computation mode. Use &quot;regular&quot; for direct shifting, or &quot;interp&quot; for ICCF-based interpolation.</span>
 <span class="sd">    rmax_threshold : float, optional</span>
-<span class="sd">        Monte Carlo trials with maximum correlation below this value are discarded.</span>
+<span class="sd">        Trials with a maximum correlation (rmax) below this threshold are discarded when using Monte Carlo.</span>
 
 <span class="sd">    Attributes</span>
 <span class="sd">    ----------</span>
 <span class="sd">    lags : ndarray</span>
 <span class="sd">        Array of lag values evaluated.</span>
-<span class="sd">    ccf : ndarray</span>
-<span class="sd">        Cross-correlation coefficients.</span>
-<span class="sd">    peak_lag : float</span>
-<span class="sd">        Lag corresponding to the peak correlation.</span>
-<span class="sd">    centroid_lag : float</span>
-<span class="sd">        Centroid lag from the high-correlation region.</span>
-<span class="sd">    rmax : float</span>
-<span class="sd">        Maximum correlation coefficient.</span>
+<span class="sd">    ccf : ndarray or None</span>
+<span class="sd">        Cross-correlation coefficients. Not set when both inputs are GP models.</span>
+<span class="sd">    peak_lag : float or tuple</span>
+<span class="sd">        Peak lag of the CCF. If using GPs, returns (mean, std) across realizations.</span>
+<span class="sd">    centroid_lag : float or tuple</span>
+<span class="sd">        Centroid lag of the high-correlation region. If using GPs, returns (mean, std).</span>
+<span class="sd">    rmax : float or tuple</span>
+<span class="sd">        Maximum correlation value. If using GPs, returns (mean, std).</span>
 <span class="sd">    peak_lags_mc : ndarray or None</span>
-<span class="sd">        Peak lags from Monte Carlo trials.</span>
+<span class="sd">        Peak lags from Monte Carlo trials, if enabled.</span>
 <span class="sd">    centroid_lags_mc : ndarray or None</span>
 <span class="sd">        Centroid lags from Monte Carlo trials.</span>
 <span class="sd">    peak_lag_ci : tuple or None</span>
-<span class="sd">        Confidence interval (16th–84th percentile) on peak lag.</span>
+<span class="sd">        68% confidence interval (16th–84th percentile) on peak lag from MC trials.</span>
 <span class="sd">    centroid_lag_ci : tuple or None</span>
-<span class="sd">        Confidence interval on centroid lag.</span>
+<span class="sd">        68% confidence interval on centroid lag from MC trials.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
                  <span class="n">lc_or_model1</span><span class="p">,</span>
@@ -1850,10 +1855,22 @@ centroid_lag_ci : tuple or None
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_model1</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_model2</span><span class="p">:</span>
                 <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">rates1</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rates2</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
                     <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Model sample shapes do not match.&quot;</span><span class="p">)</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">ccf</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">([</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">compute_ccf</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rates1</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">rates2</span><span class="p">[</span><span class="n">i</span><span class="p">])[</span><span class="mi">1</span><span class="p">]</span>
-                    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rates1</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
-                <span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+                <span class="n">peak_lags</span><span class="p">,</span> <span class="n">centroid_lags</span><span class="p">,</span> <span class="n">rmaxs</span> <span class="o">=</span> <span class="p">[],</span> <span class="p">[],</span> <span class="p">[]</span>
+
+                <span class="c1"># Compute ccf and lags for each pair of realizations</span>
+                <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rates1</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+                    <span class="n">ccf</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">compute_ccf</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rates1</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">rates2</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+                    <span class="n">peak_lag</span><span class="p">,</span> <span class="n">centroid_lag</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">find_peak_and_centroid</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lags</span><span class="p">,</span> <span class="n">ccf</span><span class="p">)</span>
+                    <span class="n">rmax</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">ccf</span><span class="p">)</span>
+
+                    <span class="n">peak_lags</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">peak_lag</span><span class="p">)</span>
+                    <span class="n">centroid_lags</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">centroid_lag</span><span class="p">)</span>
+                    <span class="n">rmaxs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">rmax</span><span class="p">)</span>
+
+                <span class="bp">self</span><span class="o">.</span><span class="n">peak_lag</span> <span class="o">=</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">peak_lags</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">peak_lags</span><span class="p">))</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">centroid_lag</span> <span class="o">=</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">centroid_lags</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">centroid_lags</span><span class="p">))</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">rmax</span> <span class="o">=</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">rmaxs</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">rmaxs</span><span class="p">))</span>
 
             <span class="k">else</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">ccf</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">compute_ccf</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rates1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">rates2</span><span class="p">)</span>
@@ -1863,8 +1880,8 @@ centroid_lag_ci : tuple or None
             <span class="bp">self</span><span class="o">.</span><span class="n">lags</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">min_lag</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_lag</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">dt</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dt</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">ccf</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">compute_ccf_interp</span><span class="p">()</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">rmax</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ccf</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">peak_lag</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">centroid_lag</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">find_peak_and_centroid</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lags</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ccf</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">rmax</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ccf</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">peak_lag</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">centroid_lag</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">find_peak_and_centroid</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lags</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ccf</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">peak_lags_mc</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">centroid_lags_mc</span> <span class="o">=</span> <span class="kc">None</span>
@@ -2170,18 +2187,7 @@ ccf : ndarray
 
             <details class="quote">
               <summary>Source code in <code>stela_toolkit/cross_correlation.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">156</span>
-<span class="normal">157</span>
-<span class="normal">158</span>
-<span class="normal">159</span>
-<span class="normal">160</span>
-<span class="normal">161</span>
-<span class="normal">162</span>
-<span class="normal">163</span>
-<span class="normal">164</span>
-<span class="normal">165</span>
-<span class="normal">166</span>
-<span class="normal">167</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">167</span>
 <span class="normal">168</span>
 <span class="normal">169</span>
 <span class="normal">170</span>
@@ -2210,7 +2216,18 @@ ccf : ndarray
 <span class="normal">193</span>
 <span class="normal">194</span>
 <span class="normal">195</span>
-<span class="normal">196</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">compute_ccf</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rates1</span><span class="p">,</span> <span class="n">rates2</span><span class="p">):</span>
+<span class="normal">196</span>
+<span class="normal">197</span>
+<span class="normal">198</span>
+<span class="normal">199</span>
+<span class="normal">200</span>
+<span class="normal">201</span>
+<span class="normal">202</span>
+<span class="normal">203</span>
+<span class="normal">204</span>
+<span class="normal">205</span>
+<span class="normal">206</span>
+<span class="normal">207</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">compute_ccf</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rates1</span><span class="p">,</span> <span class="n">rates2</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compute the cross-correlation function (CCF) via direct shifting.</span>
 
@@ -2276,18 +2293,7 @@ ccf : ndarray
 
             <details class="quote">
               <summary>Source code in <code>stela_toolkit/cross_correlation.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">198</span>
-<span class="normal">199</span>
-<span class="normal">200</span>
-<span class="normal">201</span>
-<span class="normal">202</span>
-<span class="normal">203</span>
-<span class="normal">204</span>
-<span class="normal">205</span>
-<span class="normal">206</span>
-<span class="normal">207</span>
-<span class="normal">208</span>
-<span class="normal">209</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">209</span>
 <span class="normal">210</span>
 <span class="normal">211</span>
 <span class="normal">212</span>
@@ -2305,7 +2311,18 @@ ccf : ndarray
 <span class="normal">224</span>
 <span class="normal">225</span>
 <span class="normal">226</span>
-<span class="normal">227</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">compute_ccf_interp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="normal">227</span>
+<span class="normal">228</span>
+<span class="normal">229</span>
+<span class="normal">230</span>
+<span class="normal">231</span>
+<span class="normal">232</span>
+<span class="normal">233</span>
+<span class="normal">234</span>
+<span class="normal">235</span>
+<span class="normal">236</span>
+<span class="normal">237</span>
+<span class="normal">238</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">compute_ccf_interp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compute the cross-correlation function using symmetric linear interpolation.</span>
 
@@ -2362,18 +2379,7 @@ upper_percentile : float
 
             <details class="quote">
               <summary>Source code in <code>stela_toolkit/cross_correlation.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">345</span>
-<span class="normal">346</span>
-<span class="normal">347</span>
-<span class="normal">348</span>
-<span class="normal">349</span>
-<span class="normal">350</span>
-<span class="normal">351</span>
-<span class="normal">352</span>
-<span class="normal">353</span>
-<span class="normal">354</span>
-<span class="normal">355</span>
-<span class="normal">356</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">356</span>
 <span class="normal">357</span>
 <span class="normal">358</span>
 <span class="normal">359</span>
@@ -2385,7 +2391,18 @@ upper_percentile : float
 <span class="normal">365</span>
 <span class="normal">366</span>
 <span class="normal">367</span>
-<span class="normal">368</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">compute_confidence_intervals</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lower_percentile</span><span class="o">=</span><span class="mi">16</span><span class="p">,</span> <span class="n">upper_percentile</span><span class="o">=</span><span class="mi">84</span><span class="p">):</span>
+<span class="normal">368</span>
+<span class="normal">369</span>
+<span class="normal">370</span>
+<span class="normal">371</span>
+<span class="normal">372</span>
+<span class="normal">373</span>
+<span class="normal">374</span>
+<span class="normal">375</span>
+<span class="normal">376</span>
+<span class="normal">377</span>
+<span class="normal">378</span>
+<span class="normal">379</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">compute_confidence_intervals</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lower_percentile</span><span class="o">=</span><span class="mi">16</span><span class="p">,</span> <span class="n">upper_percentile</span><span class="o">=</span><span class="mi">84</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compute percentile-based confidence intervals for Monte Carlo lag distributions.</span>
 
@@ -2446,18 +2463,7 @@ centroid_lag : float or np.nan
 
             <details class="quote">
               <summary>Source code in <code>stela_toolkit/cross_correlation.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">229</span>
-<span class="normal">230</span>
-<span class="normal">231</span>
-<span class="normal">232</span>
-<span class="normal">233</span>
-<span class="normal">234</span>
-<span class="normal">235</span>
-<span class="normal">236</span>
-<span class="normal">237</span>
-<span class="normal">238</span>
-<span class="normal">239</span>
-<span class="normal">240</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">240</span>
 <span class="normal">241</span>
 <span class="normal">242</span>
 <span class="normal">243</span>
@@ -2504,7 +2510,18 @@ centroid_lag : float or np.nan
 <span class="normal">284</span>
 <span class="normal">285</span>
 <span class="normal">286</span>
-<span class="normal">287</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">find_peak_and_centroid</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lags</span><span class="p">,</span> <span class="n">ccf</span><span class="p">):</span>
+<span class="normal">287</span>
+<span class="normal">288</span>
+<span class="normal">289</span>
+<span class="normal">290</span>
+<span class="normal">291</span>
+<span class="normal">292</span>
+<span class="normal">293</span>
+<span class="normal">294</span>
+<span class="normal">295</span>
+<span class="normal">296</span>
+<span class="normal">297</span>
+<span class="normal">298</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">find_peak_and_centroid</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lags</span><span class="p">,</span> <span class="n">ccf</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compute the peak and centroid lag of a cross-correlation function.</span>
 
@@ -2588,18 +2605,7 @@ centroid_lag : float or np.nan
 
             <details class="quote">
               <summary>Source code in <code>stela_toolkit/cross_correlation.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">370</span>
-<span class="normal">371</span>
-<span class="normal">372</span>
-<span class="normal">373</span>
-<span class="normal">374</span>
-<span class="normal">375</span>
-<span class="normal">376</span>
-<span class="normal">377</span>
-<span class="normal">378</span>
-<span class="normal">379</span>
-<span class="normal">380</span>
-<span class="normal">381</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">381</span>
 <span class="normal">382</span>
 <span class="normal">383</span>
 <span class="normal">384</span>
@@ -2624,7 +2630,18 @@ centroid_lag : float or np.nan
 <span class="normal">403</span>
 <span class="normal">404</span>
 <span class="normal">405</span>
-<span class="normal">406</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">show_mc</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<span class="normal">406</span>
+<span class="normal">407</span>
+<span class="normal">408</span>
+<span class="normal">409</span>
+<span class="normal">410</span>
+<span class="normal">411</span>
+<span class="normal">412</span>
+<span class="normal">413</span>
+<span class="normal">414</span>
+<span class="normal">415</span>
+<span class="normal">416</span>
+<span class="normal">417</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">show_mc</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Plot the cross-correlation function and optional Monte Carlo lag distributions.</span>
 
@@ -2690,18 +2707,7 @@ centroid_lags : ndarray
 
             <details class="quote">
               <summary>Source code in <code>stela_toolkit/cross_correlation.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">290</span>
-<span class="normal">291</span>
-<span class="normal">292</span>
-<span class="normal">293</span>
-<span class="normal">294</span>
-<span class="normal">295</span>
-<span class="normal">296</span>
-<span class="normal">297</span>
-<span class="normal">298</span>
-<span class="normal">299</span>
-<span class="normal">300</span>
-<span class="normal">301</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">301</span>
 <span class="normal">302</span>
 <span class="normal">303</span>
 <span class="normal">304</span>
@@ -2743,7 +2749,18 @@ centroid_lags : ndarray
 <span class="normal">340</span>
 <span class="normal">341</span>
 <span class="normal">342</span>
-<span class="normal">343</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">run_monte_carlo</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="normal">343</span>
+<span class="normal">344</span>
+<span class="normal">345</span>
+<span class="normal">346</span>
+<span class="normal">347</span>
+<span class="normal">348</span>
+<span class="normal">349</span>
+<span class="normal">350</span>
+<span class="normal">351</span>
+<span class="normal">352</span>
+<span class="normal">353</span>
+<span class="normal">354</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">run_monte_carlo</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Run Monte Carlo simulations to estimate lag uncertainties.</span>
 

@@ -276,19 +276,46 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#core-capabilities" class="md-nav__link">
+  <a href="#stela-sampling-time-for-even-lightcurve-analysis-is-a-python-package-for-interpolating-astrophysical-light-curves-using-gaussian-processes-more-ml-models-to-come-in-order-to-compute-frequency-domain-and-standard-time-domain-data-products" class="md-nav__link">
     <span class="md-ellipsis">
-      Core Capabilities
+      STELA (Sampling Time for Even Lightcurve Analysis) is a Python package for interpolating astrophysical light curves using Gaussian Processes (more ML models to come!) in order to compute frequency-domain and standard time domain data products.
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Core Capabilities">
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#core-workflow" class="md-nav__link">
+    <span class="md-ellipsis">
+      Core Workflow
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Core Workflow">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#1-gaussian-process-gp-modeling" class="md-nav__link">
+  <a href="#1-load-and-inspect-your-light-curve" class="md-nav__link">
     <span class="md-ellipsis">
-      1. Gaussian Process (GP) Modeling
+      1. Load and Inspect Your Light Curve
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-preprocess-and-clean-the-data" class="md-nav__link">
+    <span class="md-ellipsis">
+      2. Preprocess and Clean the Data
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-gaussian-process-gp-modeling" class="md-nav__link">
+    <span class="md-ellipsis">
+      3. Gaussian Process (GP) Modeling
     </span>
   </a>
   
@@ -304,18 +331,18 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#3-time-domain-lag-analysis" class="md-nav__link">
+  <a href="#5-time-domain-lag-analysis" class="md-nav__link">
     <span class="md-ellipsis">
-      3. Time-Domain Lag Analysis
+      5. Time-Domain Lag Analysis
     </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#4-data-simulation-and-preprocessing" class="md-nav__link">
+  <a href="#6-light-curve-simulation" class="md-nav__link">
     <span class="md-ellipsis">
-      4. Data Simulation and Preprocessing
+      6. Light Curve Simulation
     </span>
   </a>
   
@@ -858,19 +885,46 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#core-capabilities" class="md-nav__link">
+  <a href="#stela-sampling-time-for-even-lightcurve-analysis-is-a-python-package-for-interpolating-astrophysical-light-curves-using-gaussian-processes-more-ml-models-to-come-in-order-to-compute-frequency-domain-and-standard-time-domain-data-products" class="md-nav__link">
     <span class="md-ellipsis">
-      Core Capabilities
+      STELA (Sampling Time for Even Lightcurve Analysis) is a Python package for interpolating astrophysical light curves using Gaussian Processes (more ML models to come!) in order to compute frequency-domain and standard time domain data products.
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Core Capabilities">
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#core-workflow" class="md-nav__link">
+    <span class="md-ellipsis">
+      Core Workflow
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Core Workflow">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#1-gaussian-process-gp-modeling" class="md-nav__link">
+  <a href="#1-load-and-inspect-your-light-curve" class="md-nav__link">
     <span class="md-ellipsis">
-      1. Gaussian Process (GP) Modeling
+      1. Load and Inspect Your Light Curve
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-preprocess-and-clean-the-data" class="md-nav__link">
+    <span class="md-ellipsis">
+      2. Preprocess and Clean the Data
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-gaussian-process-gp-modeling" class="md-nav__link">
+    <span class="md-ellipsis">
+      3. Gaussian Process (GP) Modeling
     </span>
   </a>
   
@@ -886,18 +940,18 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#3-time-domain-lag-analysis" class="md-nav__link">
+  <a href="#5-time-domain-lag-analysis" class="md-nav__link">
     <span class="md-ellipsis">
-      3. Time-Domain Lag Analysis
+      5. Time-Domain Lag Analysis
     </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#4-data-simulation-and-preprocessing" class="md-nav__link">
+  <a href="#6-light-curve-simulation" class="md-nav__link">
     <span class="md-ellipsis">
-      4. Data Simulation and Preprocessing
+      6. Light Curve Simulation
     </span>
   </a>
   
@@ -943,34 +997,37 @@
 
 
 <h1 id="stela-toolkit-overview">STELA Toolkit Overview<a class="headerlink" href="#stela-toolkit-overview" title="Permanent link">&para;</a></h1>
-<p>STELA (Sampling Time for Even Lightcurve Analysis) is a Python package for interpolating astrophysical light curves using Gaussian Processes in order to compute frequency-domain and standard time domain data products.</p>
-<p>This package was designed for researchers who need to:</p>
-<ul>
-<li>Interpolate irregular, noisy light curves</li>
-<li>Quantify variability in the time and frequency domains</li>
-<li>Model lag phenomena using cross-correlations and GP-informed analysis</li>
-<li>Simulate synthetic light curves with physically motivated structure</li>
-</ul>
+<h2 id="stela-sampling-time-for-even-lightcurve-analysis-is-a-python-package-for-interpolating-astrophysical-light-curves-using-gaussian-processes-more-ml-models-to-come-in-order-to-compute-frequency-domain-and-standard-time-domain-data-products">STELA (Sampling Time for Even Lightcurve Analysis) is a Python package for interpolating astrophysical light curves using Gaussian Processes (more ML models to come!) in order to compute frequency-domain and standard time domain data products.<a class="headerlink" href="#stela-sampling-time-for-even-lightcurve-analysis-is-a-python-package-for-interpolating-astrophysical-light-curves-using-gaussian-processes-more-ml-models-to-come-in-order-to-compute-frequency-domain-and-standard-time-domain-data-products" title="Permanent link">&para;</a></h2>
+<h2 id="core-workflow">Core Workflow<a class="headerlink" href="#core-workflow" title="Permanent link">&para;</a></h2>
+<h3 id="1-load-and-inspect-your-light-curve">1. Load and Inspect Your Light Curve<a class="headerlink" href="#1-load-and-inspect-your-light-curve" title="Permanent link">&para;</a></h3>
+<p>STELA begins with the <code>LightCurve</code> class, which allows users to load irregularly or regularly sampled light curves from formats including FITS, CSV, and plain text. These objects are used directly in downstream analyses or as input to Gaussian Process models.</p>
 <hr />
-<h2 id="core-capabilities">Core Capabilities<a class="headerlink" href="#core-capabilities" title="Permanent link">&para;</a></h2>
-<h3 id="1-gaussian-process-gp-modeling">1. Gaussian Process (GP) Modeling<a class="headerlink" href="#1-gaussian-process-gp-modeling" title="Permanent link">&para;</a></h3>
+<h3 id="2-preprocess-and-clean-the-data">2. Preprocess and Clean the Data<a class="headerlink" href="#2-preprocess-and-clean-the-data" title="Permanent link">&para;</a></h3>
+<p>STELA includes robust preprocessing tools that:</p>
+<ul>
+<li>Check for normality using Shapiro-Wilk or Lilliefors tests, chosen automatically based on sample size</li>
+<li>Apply Box-Cox transformations to approximate Gaussianity</li>
+<li>Standardize the light curve to zero mean and unit variance</li>
+<li>Remove NaNs and outliers</li>
+<li>Detrend via polynomial fitting and trimming</li>
+<li>Visualize Gaussianity using Q-Q plots</li>
+</ul>
+<p>All transformations can either overwrite the original light curve (<code>save=True</code>).</p>
+<hr />
+<h3 id="3-gaussian-process-gp-modeling">3. Gaussian Process (GP) Modeling<a class="headerlink" href="#3-gaussian-process-gp-modeling" title="Permanent link">&para;</a></h3>
 <p>STELA uses Gaussian Processes to model AGN light curves in a Bayesian framework:</p>
 <ul>
 <li>
-<p>Standardizes input data and removes trends</p>
-</li>
-<li>
-<p>Applies optional:</p>
+<p>Functions for testing normality assumption via Shapiro-Wilk or Lilliefors tests, which is chosen automatically based on sample size</p>
 <ul>
-<li><strong>Box-Cox transformations</strong> to improve normality</li>
-<li><strong>Standardization/unstandardization</strong> for numerical stability</li>
+<li><strong>Box-Cox transformation</strong> transforms the data to reach normality by optimizing a parameter from the data</li>
 </ul>
 </li>
 <li>
 <p>Fits kernel hyperparameters by minimizing the <strong>negative log marginal likelihood (NLML)</strong></p>
 </li>
 <li>
-<p>Allows easy selection among multiple kernel types:</p>
+<p>Allows easy selection among multiple kernel types, including automatic kernel selection by comparing post-trained kernel Akaike information criterion (AIC):</p>
 <ul>
 <li>Radial Basis Function (RBF)</li>
 <li>Rational Quadratic (RQ)</li>
@@ -982,70 +1039,55 @@
 <p>Supports <strong>white noise fitting</strong> alongside observational error</p>
 </li>
 </ul>
-<p>After training, you can generate posterior samples or predictions at arbitrary times — enabling accurate interpolation and uncertainty propagation.</p>
+<p>After training, you can generate posterior samples or predictions at any times of interest, enabling accurate interpolation as well as uncertainty propagation by drawing more and more evenly sampled realizations/samples to compute the data product of interest.</p>
 <hr />
 <h3 id="2-frequency-domain-tools">2. Frequency-Domain Tools<a class="headerlink" href="#2-frequency-domain-tools" title="Permanent link">&para;</a></h3>
-<p>Using GP-modeled light curves or evenly-sampled data, STELA enables:</p>
+<p>Taking inputs of either a trained GP model, or evenly-sampled data defined using the <code>LightCurve</code> class, STELA can compute:</p>
 <ul>
-<li><strong>Power Spectrum</strong> — Measures variability power at different frequencies</li>
-<li><strong>Cross Spectrum</strong> — Frequency-domain relationship between two light curves</li>
-<li><strong>Coherence</strong> — Quantifies signal correlation at each frequency</li>
-<li><strong>Lag-Frequency Spectrum</strong> — Time delay as a function of frequency</li>
-<li><strong>Lag-Energy Spectrum</strong> — Time lag across energy bands</li>
+<li><strong>Power Spectrum</strong>: Measures the amount of variability/power at different frequencies (normalized periodogram).</li>
+<li><strong>Cross Spectrum</strong>: Measures the relationship between two light curves via both real and imaginary parts</li>
+<li><strong>Lag-Frequency Spectrum</strong>: Time delay as a function of frequency, from the phase of the cross spectrum</li>
+<li><strong>Lag-Energy Spectrum</strong>: Time lag across energy bands</li>
+<li><strong>Coherence Spectrum</strong>: Quantifies how correlated the signal is at each frequency. Bias due to noise can be optionally accounted for.</li>
 </ul>
-<p>All tools propagate uncertainty using GP samples or Monte Carlo simulations.</p>
+<p>When Gaussian Process realizations are used, STELA performs Monte Carlo sampling to derive uncertainties: Uncertainty is propagated by computing the data product of interest for each pair of realizations, resulting in a distribution of the final quantity in each frequency bin.</p>
 <hr />
-<h3 id="3-time-domain-lag-analysis">3. Time-Domain Lag Analysis<a class="headerlink" href="#3-time-domain-lag-analysis" title="Permanent link">&para;</a></h3>
-<p>STELA supports two methods for measuring time-domain lags:</p>
+<h3 id="5-time-domain-lag-analysis">5. Time-Domain Lag Analysis<a class="headerlink" href="#5-time-domain-lag-analysis" title="Permanent link">&para;</a></h3>
+<p>STELA provides two approaches for time-domain lag estimation:</p>
 <ul>
+<li><strong>Interpolated Cross-Correlation (ICCF)</strong>: </li>
+<li>Linearly interpolates one light curve onto another</li>
+<li>Computes peak and centroid lag</li>
 <li>
-<p><strong>Interpolated Cross-Correlation Function (ICCF)</strong></p>
-<ul>
-<li>Interpolates one light curve onto the other's grid</li>
-<li>Estimates peak or centroid of the correlation curve</li>
-</ul>
+<p>Uses Monte Carlo simulations for uncertainty estimation via redrawing flux values</p>
 </li>
 <li>
-<p><strong>GP-Based Cross-Correlation</strong></p>
-<ul>
-<li>Uses GP realizations to compute posterior-distributed lags</li>
-<li>Reflects realistic uncertainty and sampling effects</li>
-</ul>
+<p><strong>GP-Based Cross-Correlation</strong>:</p>
 </li>
+<li>Computes lag distributions across many GP realizations</li>
+<li>Outputs mean and standard deviation of peak and centroid lags</li>
 </ul>
 <hr />
-<h3 id="4-data-simulation-and-preprocessing">4. Data Simulation and Preprocessing<a class="headerlink" href="#4-data-simulation-and-preprocessing" title="Permanent link">&para;</a></h3>
-<p>STELA includes tools to:</p>
+<h3 id="6-light-curve-simulation">6. Light Curve Simulation<a class="headerlink" href="#6-light-curve-simulation" title="Permanent link">&para;</a></h3>
+<p>STELA allows for simulating synthetic light curves using the method of Timmer and Konig:</p>
 <ul>
-<li>
-<p>Simulate synthetic light curves with:</p>
-<ul>
-<li>Power-law power spectra</li>
-<li>Specified variability amplitude</li>
-<li>Injected time lags</li>
+<li>Specified power spectral properties (e.g., power-law slopes)</li>
+<li>Injected time lags with configurable impulse response functions</li>
+<li>Control over sampling, noise level, and structure</li>
 </ul>
-</li>
-<li>
-<p>Load time series from <code>.dat</code>, <code>.csv</code>, or FITS files</p>
-</li>
-<li>
-<p>Automatically detect and apply preprocessing steps:</p>
-<ul>
-<li>Normality correction</li>
-<li>Standardization</li>
-<li>Resampling to regular time grid</li>
-</ul>
-</li>
-</ul>
+<p>These simulations are useful for benchmarking recovery of lags and variability structure.</p>
 <hr />
 <h2 id="unified-api-design">Unified API Design<a class="headerlink" href="#unified-api-design" title="Permanent link">&para;</a></h2>
-<p>Each major object (e.g., <code>PowerSpectrum</code>, <code>LagFrequencySpectrum</code>, <code>GaussianProcess</code>) includes:</p>
+<p>Every major class in STELA (e.g., <code>PowerSpectrum</code>, <code>LagFrequencySpectrum</code>, <code>GaussianProcess</code>) includes:</p>
 <ul>
-<li><code>.plot()</code> method with consistent styling</li>
-<li>Uncertainty-aware results</li>
-<li>Fully documented parameters and attributes</li>
+<li><code>.plot()</code> method with easily visualizing results</li>
+<li>
+<p>Accepts inputs of either raw <code>LightCurve</code> objects or trained <code>GaussianProcess</code> models.</p>
+<ul>
+<li>If samples have not been previously generated for a Gaussian process model, STELA will do so itself, generating 1000 samples on an evenly sampled time grid of 1000 points.</li>
 </ul>
-<p>STELA accepts either raw <code>LightCurve</code> objects or trained <code>GaussianProcess</code> models in most functions — allowing users to apply the pipeline flexibly.</p>
+</li>
+</ul>
 <hr />
 <h2 id="next-steps">Next Steps<a class="headerlink" href="#next-steps" title="Permanent link">&para;</a></h2>
 <ul>
@@ -1054,11 +1096,6 @@
 <li><a href="../tutorial/">Run the tutorial notebook</a></li>
 <li><a href="../reference/gaussian_process/">Explore the module reference</a></li>
 </ul>
-<p>This package was designed for researchers who need to:
-- Interpolate irregular, noisy light curves
-- Quantify variability in the time and frequency domains
-- Model lag phenomena using cross-correlations and GP-informed analysis
-- Simulate synthetic light curves with physically motivated structure</p>
 
 
 
