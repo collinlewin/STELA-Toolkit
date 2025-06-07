@@ -10,20 +10,21 @@ class CrossCorrelation:
 
     This class supports three primary use cases:
 
-    1. **Regularly sampled LightCurve objects**: The CCF is computed via direct shifting
-    using Pearson correlation coefficients across lag values.
+    1. **Regularly sampled `LightCurve` objects**  
+       Computes the CCF directly using Pearson correlation across lag values. Requires aligned time grids.
 
-    2. **Irregularly sampled LightCurve objects**: Uses the interpolated cross-correlation
-    method (ICCF), introduced by Gaskell & Peterson (1987), which linearly interpolates
-    one light curve onto the other's grid to allow for lag estimation despite gaps.
+    2. **Irregularly sampled `LightCurve` objects**  
+       Uses the interpolated cross-correlation method (ICCF; Gaskell & Peterson 1987), which linearly interpolates
+       one light curve onto the other’s grid to estimate correlations across lags despite uneven sampling.
 
-    3. **GaussianProcess models**: If both inputs are trained GP models, the CCF is computed
-    across all sampled realizations and averaged. If no samples exist, 1000 will be generated
-    automatically on a 1000-point grid. Lag uncertainties are derived from the spread in
-    lag values across realizations.
+    3. **`GaussianProcess` models**  
+       If both inputs are trained GP models with sampled realizations (via `.sample()`), STELA computes the CCF for each
+       realization pair, then averages the resulting peak and centroid lags. The final outputs are returned as tuples:
+       `(mean, standard deviation)` for peak lag, centroid lag, and maximum correlation (rmax).
+       
+       If samples have not yet been generated, 1000 realizations will be drawn automatically on a 1000-point time grid.
 
-    Monte Carlo resampling is also available for estimating confidence intervals using observational
-    error bars.
+    Additionally, optional Monte Carlo resampling is available to assess lag uncertainties from observational errors.
 
     Parameters
     ----------
@@ -35,43 +36,41 @@ class CrossCorrelation:
         Whether to estimate lag uncertainties using Monte Carlo resampling.
     n_trials : int, optional
         Number of Monte Carlo trials.
-    min_lag : float, optional
-        Minimum lag to evaluate, default "auto" results in min_lag = - duration / 2
-    max_lag : float, optional
-        Maximum lag to evaluate, default "auto" results in max_lag = duration / 2
-    dt : float, optional
-        Time step to use for interpolation, less than sampling rate of the data, default of 
-        "auto" results in dt = average sampling rate / 5.
-
+    min_lag : float or "auto", optional
+        Minimum lag to evaluate. If "auto", set to `-duration / 2`.
+    max_lag : float or "auto", optional
+        Maximum lag to evaluate. If "auto", set to `+duration / 2`.
+    dt : float or "auto", optional
+        Time step for lag evaluation. If "auto", set to 1/5 of the mean sampling interval.
     centroid_threshold : float, optional
-        Threshold (fraction of peak CCF) for defining centroid lag region.
-    mode : {'regular', 'interp'}, optional
-        CCF computation mode. Use 'regular' for direct shifting (requires aligned time grids),
-        or 'interp' for ICCF-style interpolation.
+        Threshold (as a fraction of peak correlation) for defining the centroid lag region.
+    mode : {"regular", "interp"}, optional
+        CCF computation mode. Use "regular" for direct shifting, or "interp" for ICCF-based interpolation.
     rmax_threshold : float, optional
-        Monte Carlo trials with maximum correlation below this value are discarded.
+        Trials with a maximum correlation (rmax) below this threshold are discarded when using Monte Carlo.
 
     Attributes
     ----------
     lags : ndarray
         Array of lag values evaluated.
-    ccf : ndarray
-        Cross-correlation coefficients.
-    peak_lag : float
-        Lag corresponding to the peak correlation.
-    centroid_lag : float
-        Centroid lag from the high-correlation region.
-    rmax : float
-        Maximum correlation coefficient.
+    ccf : ndarray or None
+        Cross-correlation coefficients. Not set when both inputs are GP models.
+    peak_lag : float or tuple
+        Peak lag of the CCF. If using GPs, returns (mean, std) across realizations.
+    centroid_lag : float or tuple
+        Centroid lag of the high-correlation region. If using GPs, returns (mean, std).
+    rmax : float or tuple
+        Maximum correlation value. If using GPs, returns (mean, std).
     peak_lags_mc : ndarray or None
-        Peak lags from Monte Carlo trials.
+        Peak lags from Monte Carlo trials, if enabled.
     centroid_lags_mc : ndarray or None
         Centroid lags from Monte Carlo trials.
     peak_lag_ci : tuple or None
-        Confidence interval (16th–84th percentile) on peak lag.
+        68% confidence interval (16th–84th percentile) on peak lag from MC trials.
     centroid_lag_ci : tuple or None
-        Confidence interval on centroid lag.
+        68% confidence interval on centroid lag from MC trials.
     """
+    
     
     def __init__(self,
                  lc_or_model1,
