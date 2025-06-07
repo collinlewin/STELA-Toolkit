@@ -5,7 +5,7 @@
 </p>
 
 
-**STELA (Sampling Time for Even Lightcurve Analysis) Toolkit** is a Python package for interpolating astrophysical light curves using Gaussian Processes in order to compute frequency-domain and standard time domain data products.
+**STELA (Sampling Time for Even Lightcurve Analysis) Toolkit** is a Python package for interpolating astrophysical light curves using Gaussian Processes (more ML models to come!) in order to compute frequency-domain and standard time domain data products.
 
 ---
 
@@ -24,7 +24,7 @@ The documentation includes:
 
 ## Features
 
-- Gaussian Process interpolation with built-in normality testing and transformations, kernel selection, hyperparameter training
+- Gaussian Process regression for all ML skill levels! Built-in normality testing and transformations to help reach normality, kernel selection, hyperparameter training, and much more.
 - Frequency-domain products: power and cross spectra, coherence, lag-frequency and lag-energy spectra
 - Time-domain lag analysis using ICCF and GP-based cross-correlation
 - Simulation of synthetic light curves with custom underlying power spectra and injected lags
