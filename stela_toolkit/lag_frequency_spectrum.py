@@ -12,70 +12,64 @@ class LagFrequencySpectrum:
     """
     Compute the time lag as a function of frequency between two time series.
 
-    This class accepts either LightCurve objects (with regular sampling) or trained
-    GaussianProcess models from STELA. If GP models are provided, the most
-    recently generated samples are used. If no samples have been created yet,
-    the toolkit will automatically generate 1000 samples on a 1000-point grid.
+    This class computes the lag-frequency spectrum using either:
+    - Two `LightCurve` objects (with regularly sampled time arrays), or
+    - Two trained `GaussianProcess` models with generated posterior samples.
 
-    The sign convention is such that a **positive lag** indicates that the input provided as
-    `lc_or_model1` is **lagging behind** the input provided as `lc_or_model2`.
+    If GP models are passed as inputs, the most recently generated samples are used.
+    If none exist, the toolkit will generate 1000 samples on a 1000-point grid by default.
 
-    There are two modes for computing uncertainties:
-    
-    - If the inputs are individual light curves, lag uncertainties are propagated from
-      the coherence spectrum using a theoretical error model.
-    
-    - If the inputs are GP models, the lag spectrum is computed for each sample and
-      uncertainties are reported as the standard deviation across all samples.
+    A **positive lag** means that the first input (`lc_or_model1`) lags behind the second (`lc_or_model2`).
+
+    Uncertainties are estimated using:
+    - **Analytical propagation** from coherence if inputs are light curves.
+    - **Empirical variance** across posterior samples if inputs are Gaussian Process realizations.
 
     Parameters
     ----------
     lc_or_model1 : LightCurve or GaussianProcess
-        First input time series or trained model.
-    
+        First light curve or GP model (can be single or stacked).
+
     lc_or_model2 : LightCurve or GaussianProcess
-        Second input time series or trained model.
-    
+        Second light curve or GP model (must match shape of `lc_or_model1`).
+
     fmin : float or 'auto', optional
-        Minimum frequency to include. If 'auto', uses the lowest nonzero FFT frequency.
-    
+        Minimum frequency for the lag spectrum. If 'auto', uses the lowest nonzero FFT frequency.
+
     fmax : float or 'auto', optional
-        Maximum frequency to include. If 'auto', uses the Nyquist frequency.
-    
+        Maximum frequency for the lag spectrum. If 'auto', uses the Nyquist frequency.
+
     num_bins : int, optional
-        Number of frequency bins.
-    
+        Number of frequency bins to use (ignored if `bin_edges` is given).
+
     bin_type : str, optional
-        Type of binning: 'log' or 'linear'.
-    
+        Type of frequency binning: "log" or "linear" (default: "log").
+
     bin_edges : array-like, optional
-        Custom bin edges (overrides `num_bins` and `bin_type`).
-    
+        Custom frequency bin edges (overrides `num_bins` and `bin_type` if provided).
+
     subtract_coh_bias : bool, optional
-        Whether to subtract Poisson noise bias from the coherence.
-    
-    plot_lfs : bool, optional
-        Whether to generate the lag-frequency plot on initialization.
+        Whether to subtract Poisson noise bias from the coherence estimate (default: True).
 
     Attributes
     ----------
-    freqs : array-like
-        Frequency bin centers.
-    
-    freq_widths : array-like
-        Bin widths for each frequency bin.
-    
-    lags : array-like
-        Computed time lags.
-    
-    lag_errors : array-like
-        Uncertainties in the lag estimates.
-    
-    cohs : array-like
-        Coherence values for each frequency bin.
-    
-    coh_errors : array-like
-        Uncertainties in the coherence values.
+    freqs : ndarray
+        Center frequency of each bin.
+
+    freq_widths : ndarray
+        Width of each frequency bin.
+
+    lags : ndarray
+        Time lag values at each frequency.
+
+    lag_errors : ndarray
+        Uncertainties on the lag values.
+
+    cohs : ndarray
+        Coherence values at each frequency.
+
+    coh_errors : ndarray
+        Uncertainties on the coherence values.
     """
 
     def __init__(self,
