@@ -1183,7 +1183,11 @@ Handles default formatting, error bars, labels, and saving.</p>
 <span class="normal">100</span>
 <span class="normal">101</span>
 <span class="normal">102</span>
-<span class="normal">103</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">Plotter</span><span class="p">:</span>
+<span class="normal">103</span>
+<span class="normal">104</span>
+<span class="normal">105</span>
+<span class="normal">106</span>
+<span class="normal">107</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">Plotter</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Flexible wrapper around matplotlib for plotting binned or unbinned spectral results.</span>
 <span class="sd">    Handles default formatting, error bars, labels, and saving.</span>
@@ -1198,12 +1202,16 @@ Handles default formatting, error bars, labels, and saving.</p>
 <span class="sd">        ----------</span>
 <span class="sd">        x : array-like</span>
 <span class="sd">            x-axis values (e.g., frequencies).</span>
+
 <span class="sd">        y : array-like</span>
 <span class="sd">            y-axis values (e.g., power or cross-power values).</span>
+
 <span class="sd">        xerr : array-like, optional</span>
 <span class="sd">            Uncertainties in the x-axis values (e.g., frequency widths).</span>
+
 <span class="sd">        yerr : array-like, optional</span>
 <span class="sd">            Uncertainties in the y-axis values (e.g., power uncertainties).</span>
+
 <span class="sd">        **kwargs: Additional keyword arguments for customization.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
@@ -1319,14 +1327,14 @@ Handles default formatting, error bars, labels, and saving.</p>
 <details class="parameters:" open>
   <summary>Parameters:</summary>
   <p>x : array-like
-    x-axis values (e.g., frequencies).
-y : array-like
-    y-axis values (e.g., power or cross-power values).
-xerr : array-like, optional
-    Uncertainties in the x-axis values (e.g., frequency widths).
-yerr : array-like, optional
-    Uncertainties in the y-axis values (e.g., power uncertainties).
-**kwargs: Additional keyword arguments for customization.</p>
+    x-axis values (e.g., frequencies).</p>
+<p>y : array-like
+    y-axis values (e.g., power or cross-power values).</p>
+<p>xerr : array-like, optional
+    Uncertainties in the x-axis values (e.g., frequency widths).</p>
+<p>yerr : array-like, optional
+    Uncertainties in the y-axis values (e.g., power uncertainties).</p>
+<p>**kwargs: Additional keyword arguments for customization.</p>
 </details>
 
             <details class="quote">
@@ -1424,7 +1432,11 @@ yerr : array-like, optional
 <span class="normal">100</span>
 <span class="normal">101</span>
 <span class="normal">102</span>
-<span class="normal">103</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@staticmethod</span>
+<span class="normal">103</span>
+<span class="normal">104</span>
+<span class="normal">105</span>
+<span class="normal">106</span>
+<span class="normal">107</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@staticmethod</span>
 <span class="k">def</span> <span class="nf">plot</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">xerr</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">yerr</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Generalized plotting method for spectrum-like data.</span>
@@ -1433,12 +1445,16 @@ yerr : array-like, optional
 <span class="sd">    ----------</span>
 <span class="sd">    x : array-like</span>
 <span class="sd">        x-axis values (e.g., frequencies).</span>
+
 <span class="sd">    y : array-like</span>
 <span class="sd">        y-axis values (e.g., power or cross-power values).</span>
+
 <span class="sd">    xerr : array-like, optional</span>
 <span class="sd">        Uncertainties in the x-axis values (e.g., frequency widths).</span>
+
 <span class="sd">    yerr : array-like, optional</span>
 <span class="sd">        Uncertainties in the y-axis values (e.g., power uncertainties).</span>
+
 <span class="sd">    **kwargs: Additional keyword arguments for customization.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 

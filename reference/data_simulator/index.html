@@ -1164,18 +1164,15 @@
 
 
         <p>Simulates light curves with a specified power spectral density (PSD) and optional lag injection
-via an impulse response function (IRF). The light curve is generated using the Timmer &amp; Koenig
-(1995) method: amplitudes in Fourier space are set by the PSD, and phases are randomized
-uniformly. The signal is then inverse-Fourier transformed to obtain the time-domain light curve.</p>
-<p>The clean light curve is rescaled to have the desired mean and standard deviation. Poisson noise
-may be added to simulate counting statistics, including optional background noise.</p>
-<p>Supports both regularly and irregularly sampled time grids:</p>
-<ul>
-<li>For regular grids: the light curve is oversampled (by default 10×) and then trimmed.</li>
-<li>For irregular grids: the light curve is generated on a fine grid and sampled at the closest
-  points (no interpolation).</li>
-</ul>
-<p>Optional lag injection is supported by convolving the light curve with an IRF.</p>
+via an impulse response function (IRF), using the Timmer &amp; Koenig (1995) method.</p>
+<p>The light curve is generated in Fourier space, with random phases and amplitudes
+shaped by the PSD. It is then inverse-Fourier transformed to the time domain,
+rescaled to the desired mean and standard deviation, and optionally passed through
+Poisson or Gaussian noise models.</p>
+<p>Supports both regularly and irregularly sampled time grids:
+- For regular grids: oversamples the light curve before trimming to the desired grid.
+- For irregular grids: simulates on a fine grid and selects nearest times (no interpolation).</p>
+<p>Optional lag injection is applied via convolution with an impulse response kernel.</p>
 
 
 <p><span class="doc-section-title">Parameters:</span></p>
@@ -1198,8 +1195,7 @@ may be added to simulate counting statistics, including optional background nois
             </td>
             <td>
               <div class="doc-md-description">
-                <p>The array of time stamps for which to simulate the light curve. Can be regular or irregular,
-but must be sorted and contain at least two points.</p>
+                <p>Target time grid for the simulated light curve (must be sorted).</p>
               </div>
             </td>
             <td>
@@ -1215,10 +1211,10 @@ but must be sorted and contain at least two points.</p>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>Type of power spectral density (PSD) to use. Options are:</p>
+                <p>Type of PSD to simulate. Options are:</p>
 <ul>
-<li>'powerlaw': a simple power law PSD.</li>
-<li>'broken_powerlaw': a PSD with two slopes joined at a break frequency.</li>
+<li>'powerlaw'</li>
+<li>'broken_powerlaw'</li>
 </ul>
               </div>
             </td>
@@ -1235,10 +1231,10 @@ but must be sorted and contain at least two points.</p>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>Parameters for the PSD. Required keys depend on the PSD type:</p>
+                <p>Parameters for the PSD model. Depends on <code>psd_type</code>:</p>
 <ul>
-<li>For 'powerlaw': {'slope', 'plnorm'}</li>
-<li>For 'broken_powerlaw': {'slope1', 'f_break', 'slope2', 'plnorm'}</li>
+<li>'powerlaw': {'slope', 'plnorm'}</li>
+<li>'broken_powerlaw': {'slope1', 'f_break', 'slope2', 'plnorm'}</li>
 </ul>
               </div>
             </td>
@@ -1255,7 +1251,7 @@ but must be sorted and contain at least two points.</p>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>Desired mean count rate of the simulated light curve (after rescaling).</p>
+                <p>Desired mean of the light curve after rescaling.</p>
               </div>
             </td>
             <td>
@@ -1271,7 +1267,7 @@ but must be sorted and contain at least two points.</p>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>Desired standard deviation of the simulated light curve (after rescaling).</p>
+                <p>Desired standard deviation of the light curve after rescaling.</p>
               </div>
             </td>
             <td>
@@ -1283,15 +1279,16 @@ but must be sorted and contain at least two points.</p>
                 <code>add_noise</code>
             </td>
             <td>
-                  <code><span title="str">str</span></code>
+                  <code><span title="str">str</span> or None</code>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>Must define add noise to have uncertainties on the final data.
-If "Poisson": Poisson noise is added to the light curve, used to compute uncertainties.
-If "Gaussian": Gaussian noise is added to the light curve, using the uncertainties specified by frac_error.</p>
-<div class="highlight"><pre><span></span><code>- Use gaussian_frac_error to define the errors in this case.
-</code></pre></div>
+                <p>Type of noise to add. Options are:</p>
+<ul>
+<li>"Poisson": adds Poisson-distributed noise with optional background</li>
+<li>"Gaussian": adds Gaussian noise using <code>gaussian_frac_err</code></li>
+<li>None: no noise is added</li>
+</ul>
               </div>
             </td>
             <td>
@@ -1300,19 +1297,18 @@ If "Gaussian": Gaussian noise is added to the light curve, using the uncertainti
           </tr>
           <tr class="doc-section-item">
             <td>
-                <code>exposure_times</code>
+                <code>gaussian_frac_err</code>
             </td>
             <td>
-                  <code><span title="ndarray">ndarray</span> or None</code>
+                  <code><span title="float">float</span> or None</code>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>Exposure durations to use for adding the Poisson noise. If None,
-the time spacing is used to approximate exposure times.</p>
+                <p>Fractional error to use when <code>add_noise="Gaussian"</code>.</p>
               </div>
             </td>
             <td>
-                <em>required</em>
+                  <code>None</code>
             </td>
           </tr>
           <tr class="doc-section-item">
@@ -1324,8 +1320,7 @@ the time spacing is used to approximate exposure times.</p>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>Background rate in counts per unit time to include in the noise simulation (default: 0.0).
-If set, Poisson noise from two background realizations is added and subtracted.</p>
+                <p>Background count rate (used in Poisson noise simulation). Default is 0.</p>
               </div>
             </td>
             <td>
@@ -1341,7 +1336,7 @@ If set, Poisson noise from two background realizations is added and subtracted.<
             </td>
             <td>
               <div class="doc-md-description">
-                <p>For regular grids: how much to oversample before trimming to the target grid (default: 10).</p>
+                <p>Oversampling factor for regularly spaced grids. Default is 10.</p>
               </div>
             </td>
             <td>
@@ -1357,8 +1352,7 @@ If set, Poisson noise from two background realizations is added and subtracted.<
             </td>
             <td>
               <div class="doc-md-description">
-                <p>For irregular grids: how densely to simulate the light curve before selecting closest points
-(default: 100).</p>
+                <p>Factor controlling the resolution of simulation for irregular grids. Default is 100.</p>
               </div>
             </td>
             <td>
@@ -1374,7 +1368,7 @@ If set, Poisson noise from two background realizations is added and subtracted.<
             </td>
             <td>
               <div class="doc-md-description">
-                <p>If True, applies lag injection by convolving with an IRF (default: False).</p>
+                <p>Whether to apply a lag by convolving with an impulse response function. Default is False.</p>
               </div>
             </td>
             <td>
@@ -1390,14 +1384,10 @@ If set, Poisson noise from two background realizations is added and subtracted.<
             </td>
             <td>
               <div class="doc-md-description">
-                <p>Type of impulse response function to use. Options are:</p>
+                <p>Type of IRF for lag injection. Options are:</p>
 <ul>
-<li>'delta': a single delay spike at a fixed lag</li>
-<li>'normal': Gaussian-shaped IRF</li>
-<li>'lognormal': log-normal IRF with skewed tail</li>
-<li>'manual': user-supplied kernel</li>
+<li>'delta', 'normal', 'lognormal', 'manual', or None</li>
 </ul>
-<p>If None, no lag is injected (default: None).</p>
               </div>
             </td>
             <td>
@@ -1413,17 +1403,75 @@ If set, Poisson noise from two background realizations is added and subtracted.<
             </td>
             <td>
               <div class="doc-md-description">
-                <p>Parameters for the selected response_type:</p>
+                <p>Parameters for the IRF. Depends on <code>response_type</code>:</p>
 <ul>
-<li>For 'delta': {'lag': float}</li>
-<li>For 'normal': {'mean': float, 'sigma': float, 'duration': float (optional)}</li>
-<li>For 'lognormal': {'median': float, 'sigma': float, 'duration': float (optional)}</li>
-<li>For 'manual': {'response': array_like}</li>
+<li>'delta': {'lag'}</li>
+<li>'normal': {'mean', 'sigma', 'duration' (optional)}</li>
+<li>'lognormal': {'median', 'sigma', 'duration' (optional)}</li>
+<li>'manual': {'response': array_like}</li>
 </ul>
               </div>
             </td>
             <td>
                   <code>None</code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+<p><span class="doc-section-title">Attributes:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td><code><span title="stela_toolkit.data_simulator.SimulateLightCurve.rates">rates</span></code></td>
+            <td>
+                  <code><span title="ndarray">ndarray</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Simulated light curve values after noise is added.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="stela_toolkit.data_simulator.SimulateLightCurve.errors">errors</span></code></td>
+            <td>
+                  <code><span title="ndarray">ndarray</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Estimated uncertainties for each time point.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="stela_toolkit.data_simulator.SimulateLightCurve.simlc">simlc</span></code></td>
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="LightCurve (stela_toolkit.data_loader.LightCurve)" href="../data_loader/#stela_toolkit.data_loader.LightCurve">LightCurve</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>The simulated light curve object (with noise).</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="stela_toolkit.data_simulator.SimulateLightCurve.simlc_lagged">simlc_lagged</span></code></td>
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="LightCurve (stela_toolkit.data_loader.LightCurve)" href="../data_loader/#stela_toolkit.data_loader.LightCurve">LightCurve</a> or None</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Lagged version of the light curve, if <code>inject_lag=True</code>. Otherwise, None.</p>
+              </div>
             </td>
           </tr>
       </tbody>
@@ -1922,90 +1970,96 @@ If set, Poisson noise from two background realizations is added and subtracted.<
 <span class="normal">489</span>
 <span class="normal">490</span>
 <span class="normal">491</span>
-<span class="normal">492</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">SimulateLightCurve</span><span class="p">:</span>
+<span class="normal">492</span>
+<span class="normal">493</span>
+<span class="normal">494</span>
+<span class="normal">495</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">SimulateLightCurve</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Simulates light curves with a specified power spectral density (PSD) and optional lag injection</span>
-<span class="sd">    via an impulse response function (IRF). The light curve is generated using the Timmer &amp; Koenig</span>
-<span class="sd">    (1995) method: amplitudes in Fourier space are set by the PSD, and phases are randomized</span>
-<span class="sd">    uniformly. The signal is then inverse-Fourier transformed to obtain the time-domain light curve.</span>
+<span class="sd">    via an impulse response function (IRF), using the Timmer &amp; Koenig (1995) method.</span>
 
-<span class="sd">    The clean light curve is rescaled to have the desired mean and standard deviation. Poisson noise</span>
-<span class="sd">    may be added to simulate counting statistics, including optional background noise.</span>
+<span class="sd">    The light curve is generated in Fourier space, with random phases and amplitudes</span>
+<span class="sd">    shaped by the PSD. It is then inverse-Fourier transformed to the time domain,</span>
+<span class="sd">    rescaled to the desired mean and standard deviation, and optionally passed through</span>
+<span class="sd">    Poisson or Gaussian noise models.</span>
 
 <span class="sd">    Supports both regularly and irregularly sampled time grids:</span>
+<span class="sd">    - For regular grids: oversamples the light curve before trimming to the desired grid.</span>
+<span class="sd">    - For irregular grids: simulates on a fine grid and selects nearest times (no interpolation).</span>
 
-<span class="sd">    - For regular grids: the light curve is oversampled (by default 10×) and then trimmed.</span>
-<span class="sd">    - For irregular grids: the light curve is generated on a fine grid and sampled at the closest</span>
-<span class="sd">      points (no interpolation).</span>
-
-<span class="sd">    Optional lag injection is supported by convolving the light curve with an IRF.</span>
+<span class="sd">    Optional lag injection is applied via convolution with an impulse response kernel.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    time_grid : ndarray</span>
-<span class="sd">        The array of time stamps for which to simulate the light curve. Can be regular or irregular,</span>
-<span class="sd">        but must be sorted and contain at least two points.</span>
+<span class="sd">        Target time grid for the simulated light curve (must be sorted).</span>
 
 <span class="sd">    psd_type : str</span>
-<span class="sd">        Type of power spectral density (PSD) to use. Options are:</span>
+<span class="sd">        Type of PSD to simulate. Options are:</span>
 
-<span class="sd">        - &#39;powerlaw&#39;: a simple power law PSD.</span>
-<span class="sd">        - &#39;broken_powerlaw&#39;: a PSD with two slopes joined at a break frequency.</span>
+<span class="sd">        - &#39;powerlaw&#39;</span>
+<span class="sd">        - &#39;broken_powerlaw&#39;</span>
 
 <span class="sd">    psd_params : dict</span>
-<span class="sd">        Parameters for the PSD. Required keys depend on the PSD type:</span>
+<span class="sd">        Parameters for the PSD model. Depends on `psd_type`:</span>
 
-<span class="sd">        - For &#39;powerlaw&#39;: {&#39;slope&#39;, &#39;plnorm&#39;}</span>
-<span class="sd">        - For &#39;broken_powerlaw&#39;: {&#39;slope1&#39;, &#39;f_break&#39;, &#39;slope2&#39;, &#39;plnorm&#39;}</span>
+<span class="sd">         - &#39;powerlaw&#39;: {&#39;slope&#39;, &#39;plnorm&#39;}</span>
+<span class="sd">        - &#39;broken_powerlaw&#39;: {&#39;slope1&#39;, &#39;f_break&#39;, &#39;slope2&#39;, &#39;plnorm&#39;}</span>
 
 <span class="sd">    mean : float</span>
-<span class="sd">        Desired mean count rate of the simulated light curve (after rescaling).</span>
+<span class="sd">        Desired mean of the light curve after rescaling.</span>
 
 <span class="sd">    std : float</span>
-<span class="sd">        Desired standard deviation of the simulated light curve (after rescaling).</span>
+<span class="sd">        Desired standard deviation of the light curve after rescaling.</span>
 
-<span class="sd">    add_noise : str, optional</span>
-<span class="sd">        Must define add noise to have uncertainties on the final data.</span>
-<span class="sd">        If &quot;Poisson&quot;: Poisson noise is added to the light curve, used to compute uncertainties.</span>
-<span class="sd">        If &quot;Gaussian&quot;: Gaussian noise is added to the light curve, using the uncertainties specified by frac_error.</span>
+<span class="sd">    add_noise : str or None, optional</span>
+<span class="sd">        Type of noise to add. Options are:</span>
 
-<span class="sd">            - Use gaussian_frac_error to define the errors in this case.</span>
+<span class="sd">        - &quot;Poisson&quot;: adds Poisson-distributed noise with optional background</span>
+<span class="sd">        - &quot;Gaussian&quot;: adds Gaussian noise using `gaussian_frac_err`</span>
+<span class="sd">        - None: no noise is added</span>
 
-<span class="sd">    exposure_times : ndarray or None, optional</span>
-<span class="sd">        Exposure durations to use for adding the Poisson noise. If None,</span>
-<span class="sd">        the time spacing is used to approximate exposure times.</span>
+<span class="sd">    gaussian_frac_err : float or None, optional</span>
+<span class="sd">        Fractional error to use when `add_noise=&quot;Gaussian&quot;`.</span>
 
 <span class="sd">    bkg_rate : float, optional</span>
-<span class="sd">        Background rate in counts per unit time to include in the noise simulation (default: 0.0).</span>
-<span class="sd">        If set, Poisson noise from two background realizations is added and subtracted.</span>
+<span class="sd">        Background count rate (used in Poisson noise simulation). Default is 0.</span>
 
 <span class="sd">    oversample : int, optional</span>
-<span class="sd">        For regular grids: how much to oversample before trimming to the target grid (default: 10).</span>
+<span class="sd">        Oversampling factor for regularly spaced grids. Default is 10.</span>
 
 <span class="sd">    fine_factor : int, optional</span>
-<span class="sd">        For irregular grids: how densely to simulate the light curve before selecting closest points</span>
-<span class="sd">        (default: 100).</span>
+<span class="sd">        Factor controlling the resolution of simulation for irregular grids. Default is 100.</span>
 
 <span class="sd">    inject_lag : bool, optional</span>
-<span class="sd">        If True, applies lag injection by convolving with an IRF (default: False).</span>
+<span class="sd">        Whether to apply a lag by convolving with an impulse response function. Default is False.</span>
 
 <span class="sd">    response_type : str or None, optional</span>
-<span class="sd">        Type of impulse response function to use. Options are:</span>
+<span class="sd">        Type of IRF for lag injection. Options are:</span>
 
-<span class="sd">        - &#39;delta&#39;: a single delay spike at a fixed lag</span>
-<span class="sd">        - &#39;normal&#39;: Gaussian-shaped IRF</span>
-<span class="sd">        - &#39;lognormal&#39;: log-normal IRF with skewed tail</span>
-<span class="sd">        - &#39;manual&#39;: user-supplied kernel</span>
-
-<span class="sd">        If None, no lag is injected (default: None).</span>
+<span class="sd">        - &#39;delta&#39;, &#39;normal&#39;, &#39;lognormal&#39;, &#39;manual&#39;, or None</span>
 
 <span class="sd">    response_params : dict or None, optional</span>
-<span class="sd">        Parameters for the selected response_type:</span>
+<span class="sd">        Parameters for the IRF. Depends on `response_type`:</span>
 
-<span class="sd">        - For &#39;delta&#39;: {&#39;lag&#39;: float}</span>
-<span class="sd">        - For &#39;normal&#39;: {&#39;mean&#39;: float, &#39;sigma&#39;: float, &#39;duration&#39;: float (optional)}</span>
-<span class="sd">        - For &#39;lognormal&#39;: {&#39;median&#39;: float, &#39;sigma&#39;: float, &#39;duration&#39;: float (optional)}</span>
-<span class="sd">        - For &#39;manual&#39;: {&#39;response&#39;: array_like}</span>
+<span class="sd">        - &#39;delta&#39;: {&#39;lag&#39;}</span>
+<span class="sd">        - &#39;normal&#39;: {&#39;mean&#39;, &#39;sigma&#39;, &#39;duration&#39; (optional)}</span>
+<span class="sd">        - &#39;lognormal&#39;: {&#39;median&#39;, &#39;sigma&#39;, &#39;duration&#39; (optional)}</span>
+<span class="sd">        - &#39;manual&#39;: {&#39;response&#39;: array_like}</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    rates : ndarray</span>
+<span class="sd">        Simulated light curve values after noise is added.</span>
+
+<span class="sd">    errors : ndarray</span>
+<span class="sd">        Estimated uncertainties for each time point.</span>
+
+<span class="sd">    simlc : LightCurve</span>
+<span class="sd">        The simulated light curve object (with noise).</span>
+
+<span class="sd">    simlc_lagged : LightCurve or None</span>
+<span class="sd">        Lagged version of the light curve, if `inject_lag=True`. Otherwise, None.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
@@ -2535,10 +2589,7 @@ If set, Poisson noise from two background realizations is added and subtracted.<
 
             <details class="quote">
               <summary>Source code in <code>stela_toolkit/data_simulator.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">296</span>
-<span class="normal">297</span>
-<span class="normal">298</span>
-<span class="normal">299</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">299</span>
 <span class="normal">300</span>
 <span class="normal">301</span>
 <span class="normal">302</span>
@@ -2562,7 +2613,10 @@ If set, Poisson noise from two background realizations is added and subtracted.<
 <span class="normal">320</span>
 <span class="normal">321</span>
 <span class="normal">322</span>
-<span class="normal">323</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">add_gaussian_noise</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lc</span><span class="p">,</span> <span class="n">frac_err</span><span class="o">=</span><span class="mf">0.05</span><span class="p">,</span> <span class="n">min_error_floor</span><span class="o">=</span><span class="mf">1e-10</span><span class="p">):</span>
+<span class="normal">323</span>
+<span class="normal">324</span>
+<span class="normal">325</span>
+<span class="normal">326</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">add_gaussian_noise</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lc</span><span class="p">,</span> <span class="n">frac_err</span><span class="o">=</span><span class="mf">0.05</span><span class="p">,</span> <span class="n">min_error_floor</span><span class="o">=</span><span class="mf">1e-10</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Add Gaussian noise to a simulated light curve in flux units.</span>
 
@@ -2741,10 +2795,7 @@ to approximate integration time per bin.</p>
 
             <details class="quote">
               <summary>Source code in <code>stela_toolkit/data_simulator.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">228</span>
-<span class="normal">229</span>
-<span class="normal">230</span>
-<span class="normal">231</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">231</span>
 <span class="normal">232</span>
 <span class="normal">233</span>
 <span class="normal">234</span>
@@ -2807,7 +2858,10 @@ to approximate integration time per bin.</p>
 <span class="normal">291</span>
 <span class="normal">292</span>
 <span class="normal">293</span>
-<span class="normal">294</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">add_poisson_noise</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lc</span><span class="p">,</span> <span class="n">time_grid</span><span class="p">,</span> <span class="n">bkg_rate</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">exposure_times</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">min_error_floor</span><span class="o">=</span><span class="mf">1e-10</span><span class="p">):</span>
+<span class="normal">294</span>
+<span class="normal">295</span>
+<span class="normal">296</span>
+<span class="normal">297</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">add_poisson_noise</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lc</span><span class="p">,</span> <span class="n">time_grid</span><span class="p">,</span> <span class="n">bkg_rate</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">exposure_times</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">min_error_floor</span><span class="o">=</span><span class="mf">1e-10</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Add Poisson noise to a simulated light curve.</span>
 
@@ -2998,10 +3052,7 @@ to approximate integration time per bin.</p>
 
             <details class="quote">
               <summary>Source code in <code>stela_toolkit/data_simulator.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">326</span>
-<span class="normal">327</span>
-<span class="normal">328</span>
-<span class="normal">329</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">329</span>
 <span class="normal">330</span>
 <span class="normal">331</span>
 <span class="normal">332</span>
@@ -3030,7 +3081,10 @@ to approximate integration time per bin.</p>
 <span class="normal">355</span>
 <span class="normal">356</span>
 <span class="normal">357</span>
-<span class="normal">358</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">add_regular_gaps</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lc</span><span class="p">,</span> <span class="n">time_grid</span><span class="p">,</span> <span class="n">gap_period</span><span class="p">,</span> <span class="n">gap_duration</span><span class="p">):</span>
+<span class="normal">358</span>
+<span class="normal">359</span>
+<span class="normal">360</span>
+<span class="normal">361</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">add_regular_gaps</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lc</span><span class="p">,</span> <span class="n">time_grid</span><span class="p">,</span> <span class="n">gap_period</span><span class="p">,</span> <span class="n">gap_duration</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Simulate regular gaps in the light curve.</span>
 
@@ -3139,10 +3193,7 @@ to approximate integration time per bin.</p>
 
             <details class="quote">
               <summary>Source code in <code>stela_toolkit/data_simulator.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">360</span>
-<span class="normal">361</span>
-<span class="normal">362</span>
-<span class="normal">363</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">363</span>
 <span class="normal">364</span>
 <span class="normal">365</span>
 <span class="normal">366</span>
@@ -3179,7 +3230,10 @@ to approximate integration time per bin.</p>
 <span class="normal">397</span>
 <span class="normal">398</span>
 <span class="normal">399</span>
-<span class="normal">400</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">create_psd</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">freq</span><span class="p">):</span>
+<span class="normal">400</span>
+<span class="normal">401</span>
+<span class="normal">402</span>
+<span class="normal">403</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">create_psd</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">freq</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Construct the PSD array based on the selected type and parameters.</span>
 
@@ -3308,10 +3362,7 @@ If lag injection is enabled, convolves with a response function.</p>
 
             <details class="quote">
               <summary>Source code in <code>stela_toolkit/data_simulator.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">148</span>
-<span class="normal">149</span>
-<span class="normal">150</span>
-<span class="normal">151</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">151</span>
 <span class="normal">152</span>
 <span class="normal">153</span>
 <span class="normal">154</span>
@@ -3386,7 +3437,10 @@ If lag injection is enabled, convolves with a response function.</p>
 <span class="normal">223</span>
 <span class="normal">224</span>
 <span class="normal">225</span>
-<span class="normal">226</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">generate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">time_grid</span><span class="p">):</span>
+<span class="normal">226</span>
+<span class="normal">227</span>
+<span class="normal">228</span>
+<span class="normal">229</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">generate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">time_grid</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Generate the clean (noise-free) light curve.</span>
 
@@ -3487,10 +3541,7 @@ If lag injection is enabled, convolves with a response function.</p>
 
             <details class="quote">
               <summary>Source code in <code>stela_toolkit/data_simulator.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">402</span>
-<span class="normal">403</span>
-<span class="normal">404</span>
-<span class="normal">405</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">405</span>
 <span class="normal">406</span>
 <span class="normal">407</span>
 <span class="normal">408</span>
@@ -3514,7 +3565,10 @@ If lag injection is enabled, convolves with a response function.</p>
 <span class="normal">426</span>
 <span class="normal">427</span>
 <span class="normal">428</span>
-<span class="normal">429</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">plot</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="normal">429</span>
+<span class="normal">430</span>
+<span class="normal">431</span>
+<span class="normal">432</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">plot</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Plot the simulated light curve/s. Shows both the original and lagged data (if available).</span>
 <span class="sd">    &quot;&quot;&quot;</span>

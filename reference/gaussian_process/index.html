@@ -3126,8 +3126,8 @@ If 'auto', we try several and choose the best using AIC.</p>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">        **kwargs : dict</span>
-<span class="sd">            Additional keyword arguments for plot customization.</span>
+<span class="sd">        pred_times : array_like, optional</span>
+<span class="sd">            Time grid to show prediction, samples. If not specificed, a grid of 1000 points will be automatically used.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="k">if</span> <span class="n">pred_times</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -4184,18 +4184,18 @@ and returns the model with the lowest value.</p>
       <tbody>
           <tr class="doc-section-item">
             <td>
-                <code>**kwargs</code>
+                <code>pred_times</code>
             </td>
             <td>
-                  <code><span title="dict">dict</span></code>
+                  <code><span title="array_like">array_like</span></code>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>Additional keyword arguments for plot customization.</p>
+                <p>Time grid to show prediction, samples. If not specificed, a grid of 1000 points will be automatically used.</p>
               </div>
             </td>
             <td>
-                <em>required</em>
+                  <code>None</code>
             </td>
           </tr>
       </tbody>
@@ -4247,8 +4247,8 @@ and returns the model with the lowest value.</p>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    **kwargs : dict</span>
-<span class="sd">        Additional keyword arguments for plot customization.</span>
+<span class="sd">    pred_times : array_like, optional</span>
+<span class="sd">        Time grid to show prediction, samples. If not specificed, a grid of 1000 points will be automatically used.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">if</span> <span class="n">pred_times</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
