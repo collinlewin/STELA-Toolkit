@@ -13,9 +13,11 @@ plugins:
   - mkdocstrings:
       handlers:
         python:
+          options:
+            docstring_style: numpy
           paths: [stela_toolkit]
   - mkdocs-jupyter:
-      execute: True
+      execute: False
 
 nav:
   - Home: index.md
