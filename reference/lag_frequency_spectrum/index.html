@@ -50,6 +50,8 @@
     
       <link rel="stylesheet" href="../../assets/_mkdocstrings.css">
     
+      <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Saira:wght@400;600;700&display=swap">
+    
       <link rel="stylesheet" href="../../styles/custom.css">
     
     <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
@@ -69,7 +71,7 @@
     
     
     
-    <body dir="ltr" data-md-color-scheme="slate" data-md-color-primary="blue" data-md-color-accent="yellow">
+    <body dir="ltr" data-md-color-scheme="slate" data-md-color-primary="blue" data-md-color-accent="indigo">
   
     
     <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
@@ -124,7 +126,7 @@
     
     
     
-    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="blue" data-md-color-accent="yellow"  aria-hidden="true"  type="radio" name="__palette" id="__palette_0">
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="blue" data-md-color-accent="indigo"  aria-hidden="true"  type="radio" name="__palette" id="__palette_0">
     
   
 </form>
@@ -1128,23 +1130,15 @@
 
 
         <p>Compute the time lag as a function of frequency between two time series.</p>
-<p>This class accepts either LightCurve objects (with regular sampling) or trained
-GaussianProcess models from STELA. If GP models are provided, the most
-recently generated samples are used. If no samples have been created yet,
-the toolkit will automatically generate 1000 samples on a 1000-point grid.</p>
-<p>The sign convention is such that a <strong>positive lag</strong> indicates that the input provided as
-<code>lc_or_model1</code> is <strong>lagging behind</strong> the input provided as <code>lc_or_model2</code>.</p>
-<p>There are two modes for computing uncertainties:</p>
-<ul>
-<li>
-<p>If the inputs are individual light curves, lag uncertainties are propagated from
-  the coherence spectrum using a theoretical error model.</p>
-</li>
-<li>
-<p>If the inputs are GP models, the lag spectrum is computed for each sample and
-  uncertainties are reported as the standard deviation across all samples.</p>
-</li>
-</ul>
+<p>This class computes the lag-frequency spectrum using either:
+- Two <code>LightCurve</code> objects (with regularly sampled time arrays), or
+- Two trained <code>GaussianProcess</code> models with generated posterior samples.</p>
+<p>If GP models are passed as inputs, the most recently generated samples are used.
+If none exist, the toolkit will generate 1000 samples on a 1000-point grid by default.</p>
+<p>A <strong>positive lag</strong> means that the first input (<code>lc_or_model1</code>) lags behind the second (<code>lc_or_model2</code>).</p>
+<p>Uncertainties are estimated using:
+- <strong>Analytical propagation</strong> from coherence if inputs are light curves.
+- <strong>Empirical variance</strong> across posterior samples if inputs are Gaussian Process realizations.</p>
 
 
 <p><span class="doc-section-title">Parameters:</span></p>
@@ -1167,7 +1161,7 @@ the toolkit will automatically generate 1000 samples on a 1000-point grid.</p>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>First input time series or trained model.</p>
+                <p>First light curve or GP model (can be single or stacked).</p>
               </div>
             </td>
             <td>
@@ -1183,7 +1177,7 @@ the toolkit will automatically generate 1000 samples on a 1000-point grid.</p>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>Second input time series or trained model.</p>
+                <p>Second light curve or GP model (must match shape of <code>lc_or_model1</code>).</p>
               </div>
             </td>
             <td>
@@ -1199,7 +1193,7 @@ the toolkit will automatically generate 1000 samples on a 1000-point grid.</p>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>Minimum frequency to include. If 'auto', uses the lowest nonzero FFT frequency.</p>
+                <p>Minimum frequency for the lag spectrum. If 'auto', uses the lowest nonzero FFT frequency.</p>
               </div>
             </td>
             <td>
@@ -1215,7 +1209,7 @@ the toolkit will automatically generate 1000 samples on a 1000-point grid.</p>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>Maximum frequency to include. If 'auto', uses the Nyquist frequency.</p>
+                <p>Maximum frequency for the lag spectrum. If 'auto', uses the Nyquist frequency.</p>
               </div>
             </td>
             <td>
@@ -1231,7 +1225,7 @@ the toolkit will automatically generate 1000 samples on a 1000-point grid.</p>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>Number of frequency bins.</p>
+                <p>Number of frequency bins to use (ignored if <code>bin_edges</code> is given).</p>
               </div>
             </td>
             <td>
@@ -1247,7 +1241,7 @@ the toolkit will automatically generate 1000 samples on a 1000-point grid.</p>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>Type of binning: 'log' or 'linear'.</p>
+                <p>Type of frequency binning: "log" or "linear" (default: "log").</p>
               </div>
             </td>
             <td>
@@ -1263,7 +1257,7 @@ the toolkit will automatically generate 1000 samples on a 1000-point grid.</p>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>Custom bin edges (overrides <code>num_bins</code> and <code>bin_type</code>).</p>
+                <p>Custom frequency bin edges (overrides <code>num_bins</code> and <code>bin_type</code> if provided).</p>
               </div>
             </td>
             <td>
@@ -1279,27 +1273,11 @@ the toolkit will automatically generate 1000 samples on a 1000-point grid.</p>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>Whether to subtract Poisson noise bias from the coherence.</p>
+                <p>Whether to subtract Poisson noise bias from the coherence estimate (default: True).</p>
               </div>
             </td>
             <td>
                   <code>True</code>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                <code>plot_lfs</code>
-            </td>
-            <td>
-                  <code><span title="bool">bool</span></code>
-            </td>
-            <td>
-              <div class="doc-md-description">
-                <p>Whether to generate the lag-frequency plot on initialization.</p>
-              </div>
-            </td>
-            <td>
-                <em>required</em>
             </td>
           </tr>
       </tbody>
@@ -1319,66 +1297,66 @@ the toolkit will automatically generate 1000 samples on a 1000-point grid.</p>
           <tr class="doc-section-item">
             <td><code><span title="stela_toolkit.lag_frequency_spectrum.LagFrequencySpectrum.freqs">freqs</span></code></td>
             <td>
-                  <code><span title="array">array</span> - <span title="like">like</span></code>
+                  <code><span title="ndarray">ndarray</span></code>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>Frequency bin centers.</p>
+                <p>Center frequency of each bin.</p>
               </div>
             </td>
           </tr>
           <tr class="doc-section-item">
             <td><code><span title="stela_toolkit.lag_frequency_spectrum.LagFrequencySpectrum.freq_widths">freq_widths</span></code></td>
             <td>
-                  <code><span title="array">array</span> - <span title="like">like</span></code>
+                  <code><span title="ndarray">ndarray</span></code>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>Bin widths for each frequency bin.</p>
+                <p>Width of each frequency bin.</p>
               </div>
             </td>
           </tr>
           <tr class="doc-section-item">
             <td><code><span title="stela_toolkit.lag_frequency_spectrum.LagFrequencySpectrum.lags">lags</span></code></td>
             <td>
-                  <code><span title="array">array</span> - <span title="like">like</span></code>
+                  <code><span title="ndarray">ndarray</span></code>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>Computed time lags.</p>
+                <p>Time lag values at each frequency.</p>
               </div>
             </td>
           </tr>
           <tr class="doc-section-item">
             <td><code><span title="stela_toolkit.lag_frequency_spectrum.LagFrequencySpectrum.lag_errors">lag_errors</span></code></td>
             <td>
-                  <code><span title="array">array</span> - <span title="like">like</span></code>
+                  <code><span title="ndarray">ndarray</span></code>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>Uncertainties in the lag estimates.</p>
+                <p>Uncertainties on the lag values.</p>
               </div>
             </td>
           </tr>
           <tr class="doc-section-item">
             <td><code><span title="stela_toolkit.lag_frequency_spectrum.LagFrequencySpectrum.cohs">cohs</span></code></td>
             <td>
-                  <code><span title="array">array</span> - <span title="like">like</span></code>
+                  <code><span title="ndarray">ndarray</span></code>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>Coherence values for each frequency bin.</p>
+                <p>Coherence values at each frequency.</p>
               </div>
             </td>
           </tr>
           <tr class="doc-section-item">
             <td><code><span title="stela_toolkit.lag_frequency_spectrum.LagFrequencySpectrum.coh_errors">coh_errors</span></code></td>
             <td>
-                  <code><span title="array">array</span> - <span title="like">like</span></code>
+                  <code><span title="ndarray">ndarray</span></code>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>Uncertainties in the coherence values.</p>
+                <p>Uncertainties on the coherence values.</p>
               </div>
             </td>
           </tr>
@@ -1692,80 +1670,68 @@ the toolkit will automatically generate 1000 samples on a 1000-point grid.</p>
 <span class="normal">307</span>
 <span class="normal">308</span>
 <span class="normal">309</span>
-<span class="normal">310</span>
-<span class="normal">311</span>
-<span class="normal">312</span>
-<span class="normal">313</span>
-<span class="normal">314</span>
-<span class="normal">315</span>
-<span class="normal">316</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">LagFrequencySpectrum</span><span class="p">:</span>
+<span class="normal">310</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">LagFrequencySpectrum</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compute the time lag as a function of frequency between two time series.</span>
 
-<span class="sd">    This class accepts either LightCurve objects (with regular sampling) or trained</span>
-<span class="sd">    GaussianProcess models from STELA. If GP models are provided, the most</span>
-<span class="sd">    recently generated samples are used. If no samples have been created yet,</span>
-<span class="sd">    the toolkit will automatically generate 1000 samples on a 1000-point grid.</span>
+<span class="sd">    This class computes the lag-frequency spectrum using either:</span>
+<span class="sd">    - Two `LightCurve` objects (with regularly sampled time arrays), or</span>
+<span class="sd">    - Two trained `GaussianProcess` models with generated posterior samples.</span>
 
-<span class="sd">    The sign convention is such that a **positive lag** indicates that the input provided as</span>
-<span class="sd">    `lc_or_model1` is **lagging behind** the input provided as `lc_or_model2`.</span>
+<span class="sd">    If GP models are passed as inputs, the most recently generated samples are used.</span>
+<span class="sd">    If none exist, the toolkit will generate 1000 samples on a 1000-point grid by default.</span>
 
-<span class="sd">    There are two modes for computing uncertainties:</span>
+<span class="sd">    A **positive lag** means that the first input (`lc_or_model1`) lags behind the second (`lc_or_model2`).</span>
 
-<span class="sd">    - If the inputs are individual light curves, lag uncertainties are propagated from</span>
-<span class="sd">      the coherence spectrum using a theoretical error model.</span>
-
-<span class="sd">    - If the inputs are GP models, the lag spectrum is computed for each sample and</span>
-<span class="sd">      uncertainties are reported as the standard deviation across all samples.</span>
+<span class="sd">    Uncertainties are estimated using:</span>
+<span class="sd">    - **Analytical propagation** from coherence if inputs are light curves.</span>
+<span class="sd">    - **Empirical variance** across posterior samples if inputs are Gaussian Process realizations.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    lc_or_model1 : LightCurve or GaussianProcess</span>
-<span class="sd">        First input time series or trained model.</span>
+<span class="sd">        First light curve or GP model (can be single or stacked).</span>
 
 <span class="sd">    lc_or_model2 : LightCurve or GaussianProcess</span>
-<span class="sd">        Second input time series or trained model.</span>
+<span class="sd">        Second light curve or GP model (must match shape of `lc_or_model1`).</span>
 
 <span class="sd">    fmin : float or &#39;auto&#39;, optional</span>
-<span class="sd">        Minimum frequency to include. If &#39;auto&#39;, uses the lowest nonzero FFT frequency.</span>
+<span class="sd">        Minimum frequency for the lag spectrum. If &#39;auto&#39;, uses the lowest nonzero FFT frequency.</span>
 
 <span class="sd">    fmax : float or &#39;auto&#39;, optional</span>
-<span class="sd">        Maximum frequency to include. If &#39;auto&#39;, uses the Nyquist frequency.</span>
+<span class="sd">        Maximum frequency for the lag spectrum. If &#39;auto&#39;, uses the Nyquist frequency.</span>
 
 <span class="sd">    num_bins : int, optional</span>
-<span class="sd">        Number of frequency bins.</span>
+<span class="sd">        Number of frequency bins to use (ignored if `bin_edges` is given).</span>
 
 <span class="sd">    bin_type : str, optional</span>
-<span class="sd">        Type of binning: &#39;log&#39; or &#39;linear&#39;.</span>
+<span class="sd">        Type of frequency binning: &quot;log&quot; or &quot;linear&quot; (default: &quot;log&quot;).</span>
 
 <span class="sd">    bin_edges : array-like, optional</span>
-<span class="sd">        Custom bin edges (overrides `num_bins` and `bin_type`).</span>
+<span class="sd">        Custom frequency bin edges (overrides `num_bins` and `bin_type` if provided).</span>
 
 <span class="sd">    subtract_coh_bias : bool, optional</span>
-<span class="sd">        Whether to subtract Poisson noise bias from the coherence.</span>
-
-<span class="sd">    plot_lfs : bool, optional</span>
-<span class="sd">        Whether to generate the lag-frequency plot on initialization.</span>
+<span class="sd">        Whether to subtract Poisson noise bias from the coherence estimate (default: True).</span>
 
 <span class="sd">    Attributes</span>
 <span class="sd">    ----------</span>
-<span class="sd">    freqs : array-like</span>
-<span class="sd">        Frequency bin centers.</span>
+<span class="sd">    freqs : ndarray</span>
+<span class="sd">        Center frequency of each bin.</span>
 
-<span class="sd">    freq_widths : array-like</span>
-<span class="sd">        Bin widths for each frequency bin.</span>
+<span class="sd">    freq_widths : ndarray</span>
+<span class="sd">        Width of each frequency bin.</span>
 
-<span class="sd">    lags : array-like</span>
-<span class="sd">        Computed time lags.</span>
+<span class="sd">    lags : ndarray</span>
+<span class="sd">        Time lag values at each frequency.</span>
 
-<span class="sd">    lag_errors : array-like</span>
-<span class="sd">        Uncertainties in the lag estimates.</span>
+<span class="sd">    lag_errors : ndarray</span>
+<span class="sd">        Uncertainties on the lag values.</span>
 
-<span class="sd">    cohs : array-like</span>
-<span class="sd">        Coherence values for each frequency bin.</span>
+<span class="sd">    cohs : ndarray</span>
+<span class="sd">        Coherence values at each frequency.</span>
 
-<span class="sd">    coh_errors : array-like</span>
-<span class="sd">        Uncertainties in the coherence values.</span>
+<span class="sd">    coh_errors : ndarray</span>
+<span class="sd">        Uncertainties on the coherence values.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
@@ -2206,7 +2172,13 @@ stacked realizations).</p>
 
             <details class="quote">
               <summary>Source code in <code>stela_toolkit/lag_frequency_spectrum.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">124</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">118</span>
+<span class="normal">119</span>
+<span class="normal">120</span>
+<span class="normal">121</span>
+<span class="normal">122</span>
+<span class="normal">123</span>
+<span class="normal">124</span>
 <span class="normal">125</span>
 <span class="normal">126</span>
 <span class="normal">127</span>
@@ -2285,13 +2257,7 @@ stacked realizations).</p>
 <span class="normal">200</span>
 <span class="normal">201</span>
 <span class="normal">202</span>
-<span class="normal">203</span>
-<span class="normal">204</span>
-<span class="normal">205</span>
-<span class="normal">206</span>
-<span class="normal">207</span>
-<span class="normal">208</span>
-<span class="normal">209</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">compute_lag_spectrum</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> 
+<span class="normal">203</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">compute_lag_spectrum</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> 
                          <span class="n">times1</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">rates1</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                          <span class="n">times2</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">rates2</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                          <span class="n">subtract_coh_bias</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
@@ -2474,7 +2440,13 @@ multiple realizations. Returns mean and standard deviation of lag and coherence.
 
             <details class="quote">
               <summary>Source code in <code>stela_toolkit/lag_frequency_spectrum.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">211</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">205</span>
+<span class="normal">206</span>
+<span class="normal">207</span>
+<span class="normal">208</span>
+<span class="normal">209</span>
+<span class="normal">210</span>
+<span class="normal">211</span>
 <span class="normal">212</span>
 <span class="normal">213</span>
 <span class="normal">214</span>
@@ -2517,13 +2489,7 @@ multiple realizations. Returns mean and standard deviation of lag and coherence.
 <span class="normal">251</span>
 <span class="normal">252</span>
 <span class="normal">253</span>
-<span class="normal">254</span>
-<span class="normal">255</span>
-<span class="normal">256</span>
-<span class="normal">257</span>
-<span class="normal">258</span>
-<span class="normal">259</span>
-<span class="normal">260</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">compute_stacked_lag_spectrum</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="normal">254</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">compute_stacked_lag_spectrum</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compute lag-frequency spectrum for stacked GP samples.</span>
 
@@ -2596,15 +2562,15 @@ Wrapper method to use FrequencyBinning.count_frequencies_in_bins with class attr
 
             <details class="quote">
               <summary>Source code in <code>stela_toolkit/lag_frequency_spectrum.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">308</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">302</span>
+<span class="normal">303</span>
+<span class="normal">304</span>
+<span class="normal">305</span>
+<span class="normal">306</span>
+<span class="normal">307</span>
+<span class="normal">308</span>
 <span class="normal">309</span>
-<span class="normal">310</span>
-<span class="normal">311</span>
-<span class="normal">312</span>
-<span class="normal">313</span>
-<span class="normal">314</span>
-<span class="normal">315</span>
-<span class="normal">316</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">count_frequencies_in_bins</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fmin</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">fmax</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">num_bins</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">bin_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">bin_edges</span><span class="o">=</span><span class="p">[]):</span>
+<span class="normal">310</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">count_frequencies_in_bins</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fmin</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">fmax</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">num_bins</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">bin_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">bin_edges</span><span class="o">=</span><span class="p">[]):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Counts the number of frequencies in each frequency bin.</span>
 <span class="sd">    Wrapper method to use FrequencyBinning.count_frequencies_in_bins with class attributes.</span>
@@ -2648,7 +2614,13 @@ Plot appearance can be customized using keyword arguments:</p>
 
             <details class="quote">
               <summary>Source code in <code>stela_toolkit/lag_frequency_spectrum.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">262</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">256</span>
+<span class="normal">257</span>
+<span class="normal">258</span>
+<span class="normal">259</span>
+<span class="normal">260</span>
+<span class="normal">261</span>
+<span class="normal">262</span>
 <span class="normal">263</span>
 <span class="normal">264</span>
 <span class="normal">265</span>
@@ -2686,13 +2658,7 @@ Plot appearance can be customized using keyword arguments:</p>
 <span class="normal">297</span>
 <span class="normal">298</span>
 <span class="normal">299</span>
-<span class="normal">300</span>
-<span class="normal">301</span>
-<span class="normal">302</span>
-<span class="normal">303</span>
-<span class="normal">304</span>
-<span class="normal">305</span>
-<span class="normal">306</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="normal">300</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Plot the lag-frequency and coherence spectrum.</span>
 <span class="sd">    Plot appearance can be customized using keyword arguments:</span>
