@@ -29,22 +29,31 @@ class Coherence:
     ----------
     lc_or_model1 : LightCurve or GaussianProcess
         First input light curve or trained GP model.
+    
     lc_or_model2 : LightCurve or GaussianProcess
         Second input light curve or trained GP model.
+    
     fmin : float or 'auto', optional
         Minimum frequency for the coherence spectrum. If 'auto', uses the lowest nonzero FFT frequency.
+    
     fmax : float or 'auto', optional
         Maximum frequency. If 'auto', uses the Nyquist frequency.
+    
     num_bins : int, optional
         Number of frequency bins.
+    
     bin_type : str, optional
         Type of frequency binning ('log' or 'linear').
+    
     bin_edges : array-like, optional
         Custom frequency bin edges.
+    
     subtract_noise_bias : bool, optional
         Whether to subtract Poisson noise bias from the coherence spectrum.
+    
     bkg1 : float, optional
         Background count rate for lightcurve 1 (used in noise bias correction).
+    
     bkg2 : float, optional
         Background count rate for lightcurve 2.
 
@@ -52,10 +61,13 @@ class Coherence:
     ----------
     freqs : array-like
         Frequency bin centers.
+    
     freq_widths : array-like
         Widths of each frequency bin.
+    
     cohs : array-like
         Coherence values.
+    
     coh_errors : array-like
         Uncertainties in the coherence values.
     """
@@ -72,7 +84,6 @@ class Coherence:
                  bkg1=0,
                  bkg2=0):
         
-        # To do: determine if or if not Poisson statistics for the user
         input_data = _CheckInputs._check_lightcurve_or_model(lc_or_model1)
         if input_data['type'] == 'model':
             self.times1, self.rates1 = input_data['data']

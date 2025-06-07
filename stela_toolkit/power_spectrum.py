@@ -28,16 +28,22 @@ class PowerSpectrum:
     ----------
     lc_or_model : LightCurve or GaussianProcess
         Input light curve or trained GP model.
+    
     fmin : float or 'auto', optional
         Minimum frequency to include. If 'auto', uses the lowest nonzero FFT frequency.
+    
     fmax : float or 'auto', optional
         Maximum frequency to include. If 'auto', uses the Nyquist frequency.
+    
     num_bins : int, optional
         Number of frequency bins.
+    
     bin_type : str, optional
         Binning type: 'log' or 'linear'.
+    
     bin_edges : array-like, optional
         Custom bin edges (overrides `num_bins` and `bin_type`).
+    
     norm : bool, optional
         Whether to normalize the power spectrum to variance units (i.e., PSD units).
 
@@ -45,10 +51,13 @@ class PowerSpectrum:
     ----------
     freqs : array-like
         Center frequencies of each bin.
+    
     freq_widths : array-like
         Bin widths for each frequency bin.
+    
     powers : array-like
         Power spectrum values (or mean if using GP samples).
+    
     power_errors : array-like
         Uncertainties in the power spectrum (std across GP samples if applicable).
     """
@@ -98,8 +107,10 @@ class PowerSpectrum:
         ----------
         times : array-like, optional
             Time array to use (defaults to internal value).
+        
         rates : array-like, optional
             Rate array to use (defaults to internal value).
+        
         norm : bool, optional
             Whether to normalize to variance units.
 
@@ -107,10 +118,13 @@ class PowerSpectrum:
         -------
         freqs : array-like
             Frequencies of the power spectrum.
+        
         freq_widths : array-like or None
             Bin widths (if binned).
+        
         powers : array-like
             Power spectrum values.
+        
         power_errors : array-like or None
             Power spectrum uncertainties (if binned).
         """
@@ -166,10 +180,13 @@ class PowerSpectrum:
         -------
         freqs : array-like
             Frequencies of the power spectrum.
+        
         freq_widths : array-like
             Widths of frequency bins.
+        
         power_mean : array-like
             Mean power spectrum values.
+        
         power_std : array-like
             Standard deviation of power values across realizations.
         """

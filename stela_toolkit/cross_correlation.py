@@ -30,22 +30,31 @@ class CrossCorrelation:
     ----------
     lc_or_model1 : LightCurve or GaussianProcess
         First input light curve or trained GP model.
+    
     lc_or_model2 : LightCurve or GaussianProcess
         Second input light curve or trained GP model.
+    
     run_monte_carlo : bool, optional
         Whether to estimate lag uncertainties using Monte Carlo resampling.
+    
     n_trials : int, optional
         Number of Monte Carlo trials.
+    
     min_lag : float or "auto", optional
         Minimum lag to evaluate. If "auto", set to `-duration / 2`.
+    
     max_lag : float or "auto", optional
         Maximum lag to evaluate. If "auto", set to `+duration / 2`.
+    
     dt : float or "auto", optional
         Time step for lag evaluation. If "auto", set to 1/5 of the mean sampling interval.
+    
     centroid_threshold : float, optional
         Threshold (as a fraction of peak correlation) for defining the centroid lag region.
+    
     mode : {"regular", "interp"}, optional
         CCF computation mode. Use "regular" for direct shifting, or "interp" for ICCF-based interpolation.
+    
     rmax_threshold : float, optional
         Trials with a maximum correlation (rmax) below this threshold are discarded when using Monte Carlo.
 
@@ -53,20 +62,28 @@ class CrossCorrelation:
     ----------
     lags : ndarray
         Array of lag values evaluated.
+    
     ccf : ndarray or None
         Cross-correlation coefficients. Not set when both inputs are GP models.
+    
     peak_lag : float or tuple
         Peak lag of the CCF. If using GPs, returns (mean, std) across realizations.
+    
     centroid_lag : float or tuple
         Centroid lag of the high-correlation region. If using GPs, returns (mean, std).
+    
     rmax : float or tuple
         Maximum correlation value. If using GPs, returns (mean, std).
+    
     peak_lags_mc : ndarray or None
         Peak lags from Monte Carlo trials, if enabled.
+    
     centroid_lags_mc : ndarray or None
         Centroid lags from Monte Carlo trials.
+    
     peak_lag_ci : tuple or None
         68% confidence interval (16th–84th percentile) on peak lag from MC trials.
+    
     centroid_lag_ci : tuple or None
         68% confidence interval on centroid lag from MC trials.
     """
@@ -172,6 +189,7 @@ class CrossCorrelation:
         ----------
         rates1 : ndarray
             First time series.
+       
         rates2 : ndarray
             Second time series.
 
@@ -179,6 +197,7 @@ class CrossCorrelation:
         -------
         lags : ndarray
             Lag values.
+        
         ccf : ndarray
             Pearson correlation coefficients at each lag.
         """
@@ -250,6 +269,7 @@ class CrossCorrelation:
         ----------
         lags : ndarray
             Array of lag values (assumed sorted).
+        
         ccf : ndarray
             Cross-correlation values at each lag.
 
@@ -257,6 +277,7 @@ class CrossCorrelation:
         -------
         peak_lag : float
             Lag corresponding to the maximum correlation.
+        
         centroid_lag : float or np.nan
             Correlation-weighted centroid lag near the peak.
             Returns NaN if a valid centroid region cannot be identified.
@@ -309,6 +330,7 @@ class CrossCorrelation:
         -------
         peak_lags : ndarray
             Peak lag values from all trials.
+        
         centroid_lags : ndarray
             Centroid lag values from all trials.
         """
@@ -361,6 +383,7 @@ class CrossCorrelation:
         ----------
         lower_percentile : float
             Lower percentile bound (default is 16).
+        
         upper_percentile : float
             Upper percentile bound (default is 84).
         """

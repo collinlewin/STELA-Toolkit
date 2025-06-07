@@ -18,6 +18,7 @@ class GaussianProcess:
     incorporating measurement uncertainties and capturing the underlying variability with flexible kernel choices.
 
     By default, the model will try to make things easy for you:
+    
     - If the flux distribution is not normally distributed, we can apply a Box-Cox transformation to make it more Gaussian.
     - The data is standardized (zero mean, unit variance) before training to improve numerical stability.
     - A white noise term can be added to account for extra variance not captured by measurement errors.
@@ -31,6 +32,7 @@ class GaussianProcess:
     If you haven’t generated any samples yet, don’t worry—those modules will do it for you using default settings.
 
     Noise handling is flexible:
+    
     - If your light curve has error bars, they’re passed directly into the GP as a fixed noise model.
     - If not, you can still include a learned white noise term to capture unmodeled variability.
     - You can control whether the model uses just your errors, or also learns extra noise.
@@ -219,6 +221,7 @@ class GaussianProcess:
         ----------
         likelihood : gpytorch.likelihoods.Likelihood
             The likelihood model to use (e.g., Gaussian or FixedNoise).
+        
         kernel_form : str
             The kernel type (e.g., 'Matern32', 'SpectralMixture, 4').
 
@@ -253,6 +256,7 @@ class GaussianProcess:
         ----------
         white_noise : bool
             Whether to include a learnable noise term in the model.
+        
         train_errors : torch.Tensor, optional
             Measurement errors from the light curve.
 
@@ -358,10 +362,13 @@ class GaussianProcess:
         ----------
         num_iter : int, optional
             Number of optimization steps to perform. Default is 500.
+        
         learn_rate : float, optional
             Learning rate for the Adam optimizer. Default is 0.1.
+        
         plot : bool, optional
             If True, display a plot of the NLML loss as training progresses.
+        
         verbose : bool, optional
             If True, print progress updates at regular intervals during training.
         """
@@ -468,10 +475,13 @@ class GaussianProcess:
         ----------
         kernel_list : list of str
             Kernel names to try.
+        
         num_iter : int
             Number of iterations per training run.
+        
         learn_rate : float
             Learning rate for the optimizer.
+        
         verbose : bool
             Whether to print progress for each kernel.
 
@@ -479,6 +489,7 @@ class GaussianProcess:
         -------
         best_model : GPModel
             The model trained with the best-performing kernel.
+        
         best_likelihood : gpytorch.likelihoods.Likelihood
             Corresponding likelihood for the best model.
         """
@@ -616,10 +627,13 @@ class GaussianProcess:
         ----------
         pred_times : array-like
             Time points where samples should be drawn.
+        
         num_samples : int
             Number of realizations to generate.
+        
         save_path : str, optional
             File path to save the samples.
+        
         _save_to_state : bool, optional
             Whether to store results in the object (used by other classes).
 

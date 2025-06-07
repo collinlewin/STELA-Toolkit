@@ -11,7 +11,6 @@ class _ClearWarnings:
         """
         Provides additional information to users when runtime warnings occur.
         """
-
         with warnings.catch_warnings(record=True) as caught_warnings:
             # always show the warning, regardless of previous runs
             warnings.simplefilter("always")

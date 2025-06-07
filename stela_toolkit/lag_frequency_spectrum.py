@@ -13,7 +13,7 @@ class LagFrequencySpectrum:
     Compute the time lag as a function of frequency between two time series.
 
     This class accepts either LightCurve objects (with regular sampling) or trained
-    GaussianProcess models from this package. If GP models are provided, the most
+    GaussianProcess models from STELA. If GP models are provided, the most
     recently generated samples are used. If no samples have been created yet,
     the toolkit will automatically generate 1000 samples on a 1000-point grid.
 
@@ -21,8 +21,10 @@ class LagFrequencySpectrum:
     `lc_or_model1` is **lagging behind** the input provided as `lc_or_model2`.
 
     There are two modes for computing uncertainties:
+    
     - If the inputs are individual light curves, lag uncertainties are propagated from
       the coherence spectrum using a theoretical error model.
+    
     - If the inputs are GP models, the lag spectrum is computed for each sample and
       uncertainties are reported as the standard deviation across all samples.
 
@@ -30,20 +32,28 @@ class LagFrequencySpectrum:
     ----------
     lc_or_model1 : LightCurve or GaussianProcess
         First input time series or trained model.
+    
     lc_or_model2 : LightCurve or GaussianProcess
         Second input time series or trained model.
+    
     fmin : float or 'auto', optional
         Minimum frequency to include. If 'auto', uses the lowest nonzero FFT frequency.
+    
     fmax : float or 'auto', optional
         Maximum frequency to include. If 'auto', uses the Nyquist frequency.
+    
     num_bins : int, optional
         Number of frequency bins.
+    
     bin_type : str, optional
         Type of binning: 'log' or 'linear'.
+    
     bin_edges : array-like, optional
         Custom bin edges (overrides `num_bins` and `bin_type`).
+    
     subtract_coh_bias : bool, optional
         Whether to subtract Poisson noise bias from the coherence.
+    
     plot_lfs : bool, optional
         Whether to generate the lag-frequency plot on initialization.
 
@@ -51,14 +61,19 @@ class LagFrequencySpectrum:
     ----------
     freqs : array-like
         Frequency bin centers.
+    
     freq_widths : array-like
         Bin widths for each frequency bin.
+    
     lags : array-like
         Computed time lags.
+    
     lag_errors : array-like
         Uncertainties in the lag estimates.
+    
     cohs : array-like
         Coherence values for each frequency bin.
+    
     coh_errors : array-like
         Uncertainties in the coherence values.
     """
@@ -73,7 +88,6 @@ class LagFrequencySpectrum:
                  bin_edges=[],
                  subtract_coh_bias=True):
         
-        # To do: update main docstring for lag interpretation, add coherence in plotting !!
         input_data = _CheckInputs._check_lightcurve_or_model(lc_or_model1)
         if input_data['type'] == 'model':
             self.times1, self.rates1 = input_data['data']

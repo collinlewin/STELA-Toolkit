@@ -12,26 +12,36 @@ class _CheckInputs:
         """
         Validate and extract times, rates, and errors from a LightCurve or from arrays.
 
-        Checks input dimensions and nonnegativity of errors. If `req_reg_samp` is True,
-        confirms that time grid is evenly spaced.
+        Checks input dimensions and ensures that error values are nonnegative. If
+        `req_reg_samp` is True, the method also verifies that the time grid is evenly spaced.
 
         Parameters
         ----------
         lightcurve : LightCurve or None
-            LightCurve object to extract data from.
+            LightCurve object to extract data from. If None, uses `times`, `rates`, and `errors`.
+
         times : array-like, optional
-            Time values (used if no LightCurve is given).
+            Time values (used if no LightCurve is provided).
+
         rates : array-like, optional
-            Rate values.
+            Rate values corresponding to the time grid.
+
         errors : array-like, optional
-            Error values.
+            Measurement uncertainties associated with the rate values.
+
         req_reg_samp : bool
-            Whether to enforce regular time sampling.
+            Whether to enforce regular (evenly spaced) time sampling.
 
         Returns
         -------
-        times, rates, errors : tuple of ndarray
-            Validated and converted arrays.
+        times : ndarray
+            Validated time values.
+
+        rates : ndarray
+            Validated rate values.
+
+        errors : ndarray
+            Validated error values (if provided).
         """
 
         if lightcurve:
@@ -94,6 +104,7 @@ class _CheckInputs:
         -------
         pred_times : ndarray
             Time grid for the samples.
+        
         samples : ndarray
             Realizations from the GP posterior.
         """
@@ -160,8 +171,10 @@ class _CheckInputs:
         ----------
         num_bins : int or None
             Number of bins.
+        
         bin_type : str or None
             'log' or 'linear'.
+        
         bin_edges : array-like
             Custom bin edges.
         """

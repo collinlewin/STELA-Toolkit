@@ -27,14 +27,19 @@ class LagEnergySpectrum:
     ----------
     lcs_or_models1 : list of LightCurve or GaussianProcess
         First set of inputs, one per energy bin.
+    
     lcs_or_models2 : list of LightCurve or GaussianProcess
         Second set of inputs, matched to `lcs_or_models1`.
+   
     fmin : float
         Minimum frequency to include when integrating.
+    
     fmax : float
         Maximum frequency to include when integrating.
+    
     bin_edges : array-like
         Edges of the energy bins corresponding to the light curves.
+    
     subtract_coh_bias : bool, optional
         Whether to subtract the coherence noise bias before estimating lag uncertainties.
 
@@ -42,16 +47,21 @@ class LagEnergySpectrum:
     ----------
     energies : array-like
         Mean energy of each bin.
+    
     energy_widths : array-like
         Half-width of each energy bin.
+    
     lags : array-like
         Integrated time lag per energy bin.
+    
     lag_errors : array-like
-        Uncertainties in each lag value.
+        Uncertainties (1 sigma) in each lag value.
+    
     cohs : array-like
         Coherence values per energy bin.
+    
     coh_errors : array-like
-        Uncertainties in the coherence values.
+        Uncertainties (1 sigma) in the coherence values.
     """
 
     def __init__(self,
@@ -89,10 +99,13 @@ class LagEnergySpectrum:
         -------
         lags : list
             List of integrated lags for each bin.
+        
         lag_errors : list
             List of lag uncertainties.
+        
         cohs : list
             List of mean coherence values.
+        
         coh_errors : list
             List of coherence uncertainties.
         """

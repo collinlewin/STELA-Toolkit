@@ -92,6 +92,7 @@ class Preprocessing:
         ----------
         lightcurve : LightCurve, optional
             Light curve to extract rates from.
+        
         rates : array-like, optional
             Direct rate values if not using a LightCurve.
         """
@@ -133,12 +134,16 @@ class Preprocessing:
         ----------
         lightcurve : LightCurve, optional
             The light curve object containing the rates to test.
+        
         rates : array-like, optional
             Direct rate values if not using a LightCurve.
+        
         plot : bool, optional
             Whether to display a Q-Q plot.
+        
         _boxcox : bool, optional
             Whether this check is being called internally after Box-Cox (affects messaging only).
+        
         verbose : bool, optional
             Whether to generate print statements.
 
@@ -146,6 +151,7 @@ class Preprocessing:
         -------
         is_normal : bool
             True if the data appears normally distributed (p > 0.05).
+        
         pvalue : float
             The p-value from the chosen normality test.
         """
@@ -205,6 +211,7 @@ class Preprocessing:
         ----------
         lightcurve : LightCurve
             The input light curve.
+        
         save : bool
             Whether to modify the light curve in place.
         """
@@ -277,6 +284,7 @@ class Preprocessing:
         ----------
         lightcurve : LightCurve
             The input light curve containing flux values.
+        
         plot : bool, optional
             Whether to show a Q-Q plot comparing original and Box-Cox transformed distributions.
 
@@ -284,6 +292,7 @@ class Preprocessing:
         -------
         is_normal : bool
             True if the Box-Cox transformed data appears normally distributed (p > 0.05).
+        
         pvalue : float
             The p-value from the normality test applied to the transformed data.
         """
@@ -331,10 +340,13 @@ class Preprocessing:
         ----------
         start_time : float, optional
             Lower time bound.
+        
         end_time : float, optional
             Upper time bound.
+        
         plot : bool
             Whether to plot before/after trimming.
+        
         save : bool
             Whether to modify the light curve in place.
         """
@@ -383,6 +395,7 @@ class Preprocessing:
         ----------
         lightcurve : LightCurve
             Light curve to clean.
+       
         verbose : bool
             Whether to print how many NaNs were removed.
         """
@@ -412,14 +425,19 @@ class Preprocessing:
         ----------
         lightcurve : LightCurve
             The input light curve.
+        
         threshold : float
             IQR multiplier.
+        
         rolling_window : int, optional
             Size of local window (if local filtering is desired).
+        
         plot : bool
             Whether to visualize removed points.
+        
         save : bool
             Whether to modify the light curve in place.
+        
         verbose : bool
             Whether to print how many points were removed.
         """
@@ -500,10 +518,13 @@ class Preprocessing:
         ----------
         lightcurve : LightCurve
             The input light curve.
+        
         degree : int
             Degree of the polynomial (default is 1).
+        
         plot : bool
             Whether to show the trend removal visually.
+        
         save : bool
             Whether to apply the change to the light curve.
 

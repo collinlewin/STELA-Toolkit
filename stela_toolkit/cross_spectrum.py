@@ -26,18 +26,25 @@ class CrossSpectrum:
     ----------
     lc_or_model1 : LightCurve or GaussianProcess
         First input light curve or trained GP model.
+    
     lc_or_model2 : LightCurve or GaussianProcess
         Second input light curve or trained GP model.
+    
     fmin : float or 'auto', optional
         Minimum frequency to include. If 'auto', uses lowest nonzero FFT frequency.
+    
     fmax : float or 'auto', optional
         Maximum frequency to include. If 'auto', uses the Nyquist frequency.
+    
     num_bins : int, optional
         Number of frequency bins.
+    
     bin_type : str, optional
         Binning type: 'log' or 'linear'.
+    
     bin_edges : array-like, optional
         Custom frequency bin edges. Overrides `num_bins` and `bin_type` if provided.
+    
     norm : bool, optional
         Whether to normalize the cross-spectrum to variance units (i.e., PSD units).
 
@@ -45,10 +52,13 @@ class CrossSpectrum:
     ----------
     freqs : array-like
         Frequency bin centers.
+    
     freq_widths : array-like
         Frequency bin widths.
+    
     cs : array-like
         Complex cross-spectrum values.
+    
     cs_errors : array-like
         Uncertainties in the binned cross-spectrum (if stacked).
     """
@@ -105,23 +115,34 @@ class CrossSpectrum:
 
         Parameters
         ----------
-        times1, rates1 : array-like, optional
-            Time and rate arrays for the first light curve.
-        times2, rates2 : array-like, optional
-            Time and rate arrays for the second light curve.
+        times1 : array-like, optional
+            Time values for the first light curve.
+
+        rates1 : array-like, optional
+            Flux or count rate values for the first light curve.
+
+        times2 : array-like, optional
+            Time values for the second light curve.
+
+        rates2 : array-like, optional
+            Flux or count rate values for the second light curve.
+
         norm : bool, optional
             Whether to normalize the result to power spectral density units.
 
         Returns
         -------
         freqs : array-like
-            Frequencies of the cross-spectrum.
+            Frequencies at which the cross-spectrum is evaluated.
+
         freq_widths : array-like
-            Widths of frequency bins.
+            Widths of frequency bins (for error bars or plotting).
+
         cross_spectrum : array-like
-            Complex cross-spectrum values.
+            Complex cross-spectrum values for each frequency bin.
+
         cross_spectrum_errors : array-like or None
-            Uncertainties in the binned cross-spectrum (None if not binned).
+            Uncertainties in the binned cross-spectrum values. None if unbinned.
         """
 
         times1 = self.times1 if times1 is None else times1
@@ -190,10 +211,13 @@ class CrossSpectrum:
         -------
         freqs : array-like
             Frequencies of the cross-spectrum.
+        
         freq_widths : array-like
             Widths of frequency bins.
+        
         cross_spectra_mean : array-like
             Mean cross-spectrum across GP samples.
+        
         cross_spectra_std : array-like
             Standard deviation of the cross-spectrum across samples.
         """
@@ -228,12 +252,16 @@ class CrossSpectrum:
         ----------
         freqs : array-like, optional
             Frequencies at which the cross-spectrum is evaluated.
+        
         freq_widths : array-like, optional
             Widths of the frequency bins.
+        
         cs : array-like, optional
             Cross-spectrum values.
+       
         cs_errors : array-like, optional
             Uncertainties in the cross-spectrum.
+        
         **kwargs : dict
             Additional keyword arguments for plot customization.
         """

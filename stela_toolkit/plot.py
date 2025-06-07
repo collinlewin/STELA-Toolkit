@@ -13,11 +13,16 @@ class Plotter:
         Generalized plotting method for spectrum-like data.
 
         Parameters:
-        - x: Array of x-axis values (e.g., frequencies).
-        - y: Array of y-axis values (e.g., power or cross-power values).
-        - xerr: Uncertainties in the x-axis values (e.g., frequency widths).
-        - yerr: Uncertainties in the y-axis values (e.g., power uncertainties).
-        - **kwargs: Additional keyword arguments for customization.
+        ----------
+        x : array-like
+            x-axis values (e.g., frequencies).
+        y : array-like
+            y-axis values (e.g., power or cross-power values).
+        xerr : array-like, optional
+            Uncertainties in the x-axis values (e.g., frequency widths).
+        yerr : array-like, optional
+            Uncertainties in the y-axis values (e.g., power uncertainties).
+        **kwargs: Additional keyword arguments for customization.
         """
 
         if xerr is not None:

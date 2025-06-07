@@ -20,12 +20,16 @@ class LightCurve:
     ----------
     times : array-like, optional
         Array of time values.
+    
     rates : array-like, optional
         Array of measured rates (e.g., flux, count rate).
+    
     errors : array-like, optional
         Array of uncertainties on the rates. Optional but recommended.
+    
     file_path : str, optional
         Path to a file to load light curve data from. Supports FITS and text formats.
+    
     file_columns : list of int or str, optional
         List specifying the columns to read as [time, rate, error]. Column names or indices allowed.
 
@@ -33,8 +37,10 @@ class LightCurve:
     ----------
     times : ndarray
         Array of time values.
+    
     rates : ndarray
         Array of rate values.
+    
     errors : ndarray
         Array of errors, if provided.
     """
@@ -93,13 +99,21 @@ class LightCurve:
         ----------
         file_path : str
             Path to the input file.
-        file_columns : list of int or str
-            Columns to use for [time, rate, error].
+
+        file_columns : list of int or str, optional
+            Column indices or names to use for [time, rate, error].
+            Defaults to [0, 1, 2].
 
         Returns
         -------
-        times, rates, errors : tuple of ndarrays
-            Loaded arrays of time, rate, and error.
+        times : ndarray
+            Array of time values.
+
+        rates : ndarray
+            Array of flux or count rate values.
+
+        errors : ndarray
+            Array of measurement uncertainties.
         """
 
         try:
@@ -125,15 +139,23 @@ class LightCurve:
         ----------
         file_path : str
             Path to the FITS file.
-        file_columns : list
-            Columns to extract as [time, rate, error].
+
+        file_columns : list of int or str
+            Columns to extract, specified as [time, rate, error].
+
         hdu : int
-            Header/Data Unit (HDU) index to read from.
+            Index of the Header/Data Unit (HDU) to read from.
 
         Returns
         -------
-        times, rates, errors : tuple of ndarrays
-            Arrays of time, rate, and error values.
+        times : ndarray
+            Array of time values.
+
+        rates : ndarray
+            Array of flux or count rate values.
+
+        errors : ndarray
+            Array of measurement uncertainties.
         """
 
         time_column, rate_column = file_columns[0], file_columns[1]
@@ -179,15 +201,24 @@ class LightCurve:
         ----------
         file_path : str
             Path to the input text file.
-        file_columns : list
-            Columns to extract as [time, rate, error].
+
+        file_columns : list of int or str
+            Columns to extract, specified as [time, rate, error].
+
         delimiter : str, optional
-            Delimiter used in the file (guessed from extension if not provided).
+            Delimiter used in the file (e.g., ',' for CSV, '\\t' for tab-separated).
+            If not provided, the delimiter is inferred from the file extension.
 
         Returns
         -------
-        times, rates, errors : tuple of ndarrays
-            Arrays of time, rate, and error values.
+        times : ndarray
+            Array of time values.
+
+        rates : ndarray
+            Array of flux or count rate values.
+
+        errors : ndarray
+            Array of measurement uncertainties.
         """
 
         time_column, rate_column = file_columns[0], file_columns[1]
@@ -250,6 +281,7 @@ class LightCurve:
         -------
         freqs : ndarray
             Frequencies of the FFT.
+        
         fft_values : ndarray
             Complex FFT values.
 

@@ -9,26 +9,37 @@ class FrequencyBinning:
     Provides methods for defining bins (linear or logarithmic, or user-defined), binning frequency
     data and corresponding values, and calculating statistics for binned data.
     """
-    # To do: Modify count_frequencies_in_bins for already binned data
-    
+
     @staticmethod
     def define_bins(fmin, fmax, num_bins=None, bin_type="log", bin_edges=[]):
         """
-        Defines bin edges for the given frequencies based on the specified binning type.
+        Defines bin edges for a frequency range using the specified binning type.
 
-        If custom bins are provided, they are used directly. Otherwise, bins are computed
-        either logarithmically or linearly based on the specified bin type.
+        If `bin_edges` are provided, they are used directly. Otherwise, bin edges are
+        computed between `fmin` and `fmax` using either logarithmic or linear spacing.
 
-        Parameters:
-        - freqs (array-like): Array of frequencies to define bins for.
-        - num_bins (int): Number of bins to create (ignored if `bins` is provided).
-        - bins (array-like): Custom array of bin edges (optional).
-        - bin_type (str): Type of binning ("log" for logarithmic, "linear" for linear).
+        Parameters
+        ----------
+        fmin : float
+            Minimum frequency value.
 
-        Returns:
-        - bin_edges (array-like): Array of bin edges for the specified binning type.
+        fmax : float
+            Maximum frequency value.
+
+        num_bins : int, optional
+            Number of bins to create (used only if `bin_edges` is not provided).
+
+        bin_type : str, optional
+            Type of binning to use: "log" for logarithmic or "linear" for linear spacing.
+
+        bin_edges : array-like, optional
+            Custom array of bin edges. If provided, overrides `fmin`, `fmax`, and `num_bins`.
+
+        Returns
+        -------
+        bin_edges : array-like
+            Array of frequency bin edges based on the specified settings.
         """
-
         if len(bin_edges) > 0:
             # Use custom bins
             bin_edges = np.array(bin_edges)
@@ -51,18 +62,35 @@ class FrequencyBinning:
     @staticmethod
     def bin_data(freqs, values, bin_edges):
         """
-        Bins frequencies and corresponding values into specified bins.
+        Bins frequencies and corresponding values into the specified bin edges.
 
-        Parameters:
-        - freqs (array-like): Array of frequencies to be binned.
-        - values (array-like): Array of values corresponding to the frequencies.
-        - bin_edges (array-like): Array of bin edges defining the bins.
+        For each bin, computes the mean frequency, bin half-width (for error bars),
+        mean value, and standard deviation of values within the bin.
 
-        Returns:
-        - binned_freqs (array-like): Mean frequency for each bin.
-        - binned_freq_widths (array-like): Half-widths of the frequency bins (for error bars).
-        - binned_values (array-like): Mean value for each bin.
-        - binned_value_errors (array-like): Standard deviation of the values in each bin.
+        Parameters
+        ----------
+        freqs : array-like
+            Array of frequency values to be binned.
+
+        values : array-like
+            Array of values corresponding to each frequency.
+
+        bin_edges : array-like
+            Array of bin edges that define the frequency bins.
+
+        Returns
+        -------
+        binned_freqs : array-like
+            Mean frequency for each bin.
+
+        binned_freq_widths : array-like
+            Half-width of each frequency bin (for plotting error bars).
+
+        binned_values : array-like
+            Mean value of the data within each bin.
+
+        binned_value_errors : array-like
+            Standard deviation of the values in each bin.
         """
         binned_freqs = []
         binned_freq_widths = []
@@ -99,16 +127,33 @@ class FrequencyBinning:
         """
         Counts the number of frequencies in each bin for the power spectrum.
 
-        Parameters:
-        - spectrum: The object containing attributes like `times`, `fmin`, and `fmax`.
-        - fmin: Minimum frequency (optional, falls back to spectrum's attribute).
-        - fmax: Maximum frequency (optional, falls back to spectrum's attribute).
-        - num_bins: Number of bins to create (if bin_edges is not provided).
-        - bin_type: Type of binning ("log" or "linear").
-        - bin_edges: Custom array of bin edges (optional).
+        If `bin_edges` are provided, they are used directly. Otherwise, bins are
+        defined using `fmin`, `fmax`, `num_bins`, and `bin_type`.
 
-        Returns:
-        - bin_counts: List of counts of frequencies in each bin.
+        Parameters
+        ----------
+        spectrum : object
+            Object containing attributes like `times`, `fmin`, and `fmax`.
+
+        fmin : float, optional
+            Minimum frequency. If not provided, defaults to `spectrum.fmin`.
+
+        fmax : float, optional
+            Maximum frequency. If not provided, defaults to `spectrum.fmax`.
+
+        num_bins : int, optional
+            Number of bins to create (used only if `bin_edges` is not provided).
+
+        bin_type : str, optional
+            Type of binning to use: "log" or "linear".
+
+        bin_edges : array-like, optional
+            Custom array of bin edges. If provided, overrides `fmin`, `fmax`, and `num_bins`.
+
+        Returns
+        -------
+        bin_counts : list of int
+            List containing the number of frequencies in each bin.
         """
         # Use spectrum's attributes if not provided
         fmin = spectrum.fmin if fmin is None else fmin

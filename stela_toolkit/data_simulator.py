@@ -15,6 +15,7 @@ class SimulateLightCurve:
     may be added to simulate counting statistics, including optional background noise.
 
     Supports both regularly and irregularly sampled time grids:
+    
     - For regular grids: the light curve is oversampled (by default 10×) and then trimmed.
     - For irregular grids: the light curve is generated on a fine grid and sampled at the closest
       points (no interpolation).
@@ -29,11 +30,13 @@ class SimulateLightCurve:
 
     psd_type : str
         Type of power spectral density (PSD) to use. Options are:
+        
         - 'powerlaw': a simple power law PSD.
         - 'broken_powerlaw': a PSD with two slopes joined at a break frequency.
 
     psd_params : dict
         Parameters for the PSD. Required keys depend on the PSD type:
+        
         - For 'powerlaw': {'slope', 'plnorm'}
         - For 'broken_powerlaw': {'slope1', 'f_break', 'slope2', 'plnorm'}
 
@@ -47,6 +50,7 @@ class SimulateLightCurve:
         Must define add noise to have uncertainties on the final data.
         If "Poisson": Poisson noise is added to the light curve, used to compute uncertainties.
         If "Gaussian": Gaussian noise is added to the light curve, using the uncertainties specified by frac_error.
+        
             - Use gaussian_frac_error to define the errors in this case.
 
     exposure_times : ndarray or None, optional
@@ -69,14 +73,17 @@ class SimulateLightCurve:
 
     response_type : str or None, optional
         Type of impulse response function to use. Options are:
+        
         - 'delta': a single delay spike at a fixed lag
         - 'normal': Gaussian-shaped IRF
         - 'lognormal': log-normal IRF with skewed tail
         - 'manual': user-supplied kernel
+        
         If None, no lag is injected (default: None).
 
     response_params : dict or None, optional
         Parameters for the selected response_type:
+        
         - For 'delta': {'lag': float}
         - For 'normal': {'mean': float, 'sigma': float, 'duration': float (optional)}
         - For 'lognormal': {'median': float, 'sigma': float, 'duration': float (optional)}
@@ -154,6 +161,7 @@ class SimulateLightCurve:
         -------
         rates : ndarray
             Simulated light curve values.
+        
         rates_lagged : ndarray or None
             Lagged version of the light curve if `inject_lag` is True.
         """
@@ -225,13 +233,17 @@ class SimulateLightCurve:
         ----------
         lc : ndarray
             Clean light curve values.
+        
         time_grid : ndarray
             Time values.
+        
         bkg_rate : float, optional
             Background count rate.
+        
         exposure_times : ndarray or None, optional
             Exposure duration for each point. If None, use time spacing
             to approximate integration time per bin.
+        
         min_error_floor : float, optional
             Minimum uncertainty to avoid zeros.
 
@@ -239,6 +251,7 @@ class SimulateLightCurve:
         -------
         noisy_lc : ndarray
             Noisy light curve.
+        
         noise_estimate : ndarray
             Estimated error bars.
         """
@@ -318,10 +331,13 @@ class SimulateLightCurve:
         ----------
         lc : ndarray
             Input light curve values.
+        
         time_grid : ndarray
             Time values.
+        
         gap_period : float
             Period between gaps.
+       
         gap_duration : float
             Duration of each gap.
 
