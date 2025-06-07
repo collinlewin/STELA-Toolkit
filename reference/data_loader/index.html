@@ -50,6 +50,8 @@
     
       <link rel="stylesheet" href="../../assets/_mkdocstrings.css">
     
+      <link rel="stylesheet" href="../../styles/custom.css">
+    
     <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
@@ -62,10 +64,12 @@
   
     
     
+      
     
     
     
-    <body dir="ltr" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo">
+    
+    <body dir="ltr" data-md-color-scheme="slate" data-md-color-primary="blue" data-md-color-accent="yellow">
   
     
     <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
@@ -86,9 +90,7 @@
     
       
 
-  
-
-<header class="md-header md-header--shadow" data-md-component="header">
+<header class="md-header" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
     <a href="../.." title="STELA Toolkit" class="md-header__button md-logo" aria-label="STELA Toolkit" data-md-component="logo">
       
@@ -117,7 +119,19 @@
     </div>
     
       
+        <form class="md-header__option" data-md-component="palette">
+  
     
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="blue" data-md-color-accent="yellow"  aria-hidden="true"  type="radio" name="__palette" id="__palette_0">
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
     
     
     
@@ -171,6 +185,132 @@
       
         
           
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../overview/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Overview
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../gaussian_process_intro/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Gaussian Processes
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../installation/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Installation
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../tutorial/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Tutorial
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../coherence/" class="md-tabs__link">
+          
+  
+  
+  Class Reference
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
         
       
       <main class="md-main" data-md-component="main">
@@ -184,8 +324,10 @@
                     
 
 
+  
 
-<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
     <a href="../.." title="STELA Toolkit" class="md-nav__button md-logo" aria-label="STELA Toolkit" data-md-component="logo">
       
@@ -319,20 +461,28 @@
     
     
     
+      
+        
+        
+      
+      
+        
+      
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
       
         
         
         <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" checked>
         
           
-          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="">
             
   
   
   <span class="md-ellipsis">
-    Module Reference
+    Class Reference
     
   </span>
   
@@ -343,7 +493,7 @@
         <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_6">
             <span class="md-nav__icon md-icon"></span>
-            Module Reference
+            Class Reference
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
             
@@ -492,24 +642,6 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#stela_toolkit.data_loader.LightCurve--parameters" class="md-nav__link">
-    <span class="md-ellipsis">
-      Parameters
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#stela_toolkit.data_loader.LightCurve--attributes" class="md-nav__link">
-    <span class="md-ellipsis">
-      Attributes
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
   <a href="#stela_toolkit.data_loader.LightCurve.mean" class="md-nav__link">
     <span class="md-ellipsis">
       mean
@@ -534,21 +666,6 @@
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="__add__">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#stela_toolkit.data_loader.LightCurve.__add__--returns" class="md-nav__link">
-    <span class="md-ellipsis">
-      Returns
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
 </li>
         
           <li class="md-nav__item">
@@ -557,21 +674,6 @@
       __sub__
     </span>
   </a>
-  
-    <nav class="md-nav" aria-label="__sub__">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#stela_toolkit.data_loader.LightCurve.__sub__--returns" class="md-nav__link">
-    <span class="md-ellipsis">
-      Returns
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
         
@@ -582,21 +684,6 @@
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="__truediv__">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#stela_toolkit.data_loader.LightCurve.__truediv__--returns" class="md-nav__link">
-    <span class="md-ellipsis">
-      Returns
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
 </li>
         
           <li class="md-nav__item">
@@ -605,30 +692,6 @@
       fft
     </span>
   </a>
-  
-    <nav class="md-nav" aria-label="fft">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#stela_toolkit.data_loader.LightCurve.fft--returns" class="md-nav__link">
-    <span class="md-ellipsis">
-      Returns
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#stela_toolkit.data_loader.LightCurve.fft--raises" class="md-nav__link">
-    <span class="md-ellipsis">
-      Raises
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
         
@@ -639,30 +702,6 @@
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="load_file">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#stela_toolkit.data_loader.LightCurve.load_file--parameters" class="md-nav__link">
-    <span class="md-ellipsis">
-      Parameters
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#stela_toolkit.data_loader.LightCurve.load_file--returns" class="md-nav__link">
-    <span class="md-ellipsis">
-      Returns
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
 </li>
         
           <li class="md-nav__item">
@@ -671,30 +710,6 @@
       load_fits
     </span>
   </a>
-  
-    <nav class="md-nav" aria-label="load_fits">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#stela_toolkit.data_loader.LightCurve.load_fits--parameters" class="md-nav__link">
-    <span class="md-ellipsis">
-      Parameters
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#stela_toolkit.data_loader.LightCurve.load_fits--returns" class="md-nav__link">
-    <span class="md-ellipsis">
-      Returns
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
         
@@ -705,30 +720,6 @@
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="load_text_file">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#stela_toolkit.data_loader.LightCurve.load_text_file--parameters" class="md-nav__link">
-    <span class="md-ellipsis">
-      Parameters
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#stela_toolkit.data_loader.LightCurve.load_text_file--returns" class="md-nav__link">
-    <span class="md-ellipsis">
-      Returns
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
 </li>
         
           <li class="md-nav__item">
@@ -737,21 +728,6 @@
       plot
     </span>
   </a>
-  
-    <nav class="md-nav" aria-label="plot">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#stela_toolkit.data_loader.LightCurve.plot--parameters" class="md-nav__link">
-    <span class="md-ellipsis">
-      Parameters
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
         
@@ -782,29 +758,6 @@
   
   <span class="md-ellipsis">
     Data Simulator
-    
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../frequency_binning/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    Frequency Binning
     
   </span>
   
@@ -891,29 +844,6 @@
   
   
     <li class="md-nav__item">
-      <a href="../plot/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    Plotting
-    
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
       <a href="../power_spectrum/" class="md-nav__link">
         
   
@@ -963,15 +893,25 @@
     
     
     
+      
+      
+        
+          
+          
+        
+      
     
-    <li class="md-nav__item md-nav__item--nested">
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6_13" >
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6_11" >
         
           
-          <label class="md-nav__link" for="__nav_6_13" id="__nav_6_13_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_6_11" id="__nav_6_11_label" tabindex="">
             
   
   
@@ -984,12 +924,58 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_6_13_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_6_13">
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_6_11_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6_11">
             <span class="md-nav__icon md-icon"></span>
             Internal
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../frequency_binning/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Frequency Binning
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../plot/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Plotting
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
             
               
                 
@@ -1098,24 +1084,6 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#stela_toolkit.data_loader.LightCurve--parameters" class="md-nav__link">
-    <span class="md-ellipsis">
-      Parameters
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#stela_toolkit.data_loader.LightCurve--attributes" class="md-nav__link">
-    <span class="md-ellipsis">
-      Attributes
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
   <a href="#stela_toolkit.data_loader.LightCurve.mean" class="md-nav__link">
     <span class="md-ellipsis">
       mean
@@ -1140,21 +1108,6 @@
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="__add__">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#stela_toolkit.data_loader.LightCurve.__add__--returns" class="md-nav__link">
-    <span class="md-ellipsis">
-      Returns
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
 </li>
         
           <li class="md-nav__item">
@@ -1163,21 +1116,6 @@
       __sub__
     </span>
   </a>
-  
-    <nav class="md-nav" aria-label="__sub__">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#stela_toolkit.data_loader.LightCurve.__sub__--returns" class="md-nav__link">
-    <span class="md-ellipsis">
-      Returns
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
         
@@ -1188,21 +1126,6 @@
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="__truediv__">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#stela_toolkit.data_loader.LightCurve.__truediv__--returns" class="md-nav__link">
-    <span class="md-ellipsis">
-      Returns
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
 </li>
         
           <li class="md-nav__item">
@@ -1211,30 +1134,6 @@
       fft
     </span>
   </a>
-  
-    <nav class="md-nav" aria-label="fft">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#stela_toolkit.data_loader.LightCurve.fft--returns" class="md-nav__link">
-    <span class="md-ellipsis">
-      Returns
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#stela_toolkit.data_loader.LightCurve.fft--raises" class="md-nav__link">
-    <span class="md-ellipsis">
-      Raises
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
         
@@ -1245,30 +1144,6 @@
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="load_file">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#stela_toolkit.data_loader.LightCurve.load_file--parameters" class="md-nav__link">
-    <span class="md-ellipsis">
-      Parameters
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#stela_toolkit.data_loader.LightCurve.load_file--returns" class="md-nav__link">
-    <span class="md-ellipsis">
-      Returns
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
 </li>
         
           <li class="md-nav__item">
@@ -1277,30 +1152,6 @@
       load_fits
     </span>
   </a>
-  
-    <nav class="md-nav" aria-label="load_fits">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#stela_toolkit.data_loader.LightCurve.load_fits--parameters" class="md-nav__link">
-    <span class="md-ellipsis">
-      Parameters
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#stela_toolkit.data_loader.LightCurve.load_fits--returns" class="md-nav__link">
-    <span class="md-ellipsis">
-      Returns
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
         
@@ -1311,30 +1162,6 @@
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="load_text_file">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#stela_toolkit.data_loader.LightCurve.load_text_file--parameters" class="md-nav__link">
-    <span class="md-ellipsis">
-      Parameters
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#stela_toolkit.data_loader.LightCurve.load_text_file--returns" class="md-nav__link">
-    <span class="md-ellipsis">
-      Returns
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
 </li>
         
           <li class="md-nav__item">
@@ -1343,21 +1170,6 @@
       plot
     </span>
   </a>
-  
-    <nav class="md-nav" aria-label="plot">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#stela_toolkit.data_loader.LightCurve.plot--parameters" class="md-nav__link">
-    <span class="md-ellipsis">
-      Parameters
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
         
@@ -1430,24 +1242,148 @@ Light curves can be initialized directly from arrays or loaded from supported fi
 enforced or checked as needed.</p>
 <p>Supports basic arithmetic operations (addition, subtraction, division) with other LightCurve 
 objects and provides utilities for plotting and computing Fourier transforms.</p>
-<h4 id="stela_toolkit.data_loader.LightCurve--parameters">Parameters<a class="headerlink" href="#stela_toolkit.data_loader.LightCurve--parameters" title="Permanent link">&para;</a></h4>
-<p>times : array-like, optional
-    Array of time values.
-rates : array-like, optional
-    Array of measured rates (e.g., flux, count rate).
-errors : array-like, optional
-    Array of uncertainties on the rates. Optional but recommended.
-file_path : str, optional
-    Path to a file to load light curve data from. Supports FITS and text formats.
-file_columns : list of int or str, optional
-    List specifying the columns to read as [time, rate, error]. Column names or indices allowed.</p>
-<h4 id="stela_toolkit.data_loader.LightCurve--attributes">Attributes<a class="headerlink" href="#stela_toolkit.data_loader.LightCurve--attributes" title="Permanent link">&para;</a></h4>
-<p>times : ndarray
-    Array of time values.
-rates : ndarray
-    Array of rate values.
-errors : ndarray
-    Array of errors, if provided.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>times</code>
+            </td>
+            <td>
+                  <code><span title="array">array</span> - <span title="like">like</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Array of time values.</p>
+              </div>
+            </td>
+            <td>
+                  <code>[]</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>rates</code>
+            </td>
+            <td>
+                  <code><span title="array">array</span> - <span title="like">like</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Array of measured rates (e.g., flux, count rate).</p>
+              </div>
+            </td>
+            <td>
+                  <code>[]</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>errors</code>
+            </td>
+            <td>
+                  <code><span title="array">array</span> - <span title="like">like</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Array of uncertainties on the rates. Optional but recommended.</p>
+              </div>
+            </td>
+            <td>
+                  <code>[]</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>file_path</code>
+            </td>
+            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Path to a file to load light curve data from. Supports FITS and text formats.</p>
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>file_columns</code>
+            </td>
+            <td>
+                  <code>list of int or str</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>List specifying the columns to read as [time, rate, error]. Column names or indices allowed.</p>
+              </div>
+            </td>
+            <td>
+                  <code>[0, 1, 2]</code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+<p><span class="doc-section-title">Attributes:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td><code><span title="stela_toolkit.data_loader.LightCurve.times">times</span></code></td>
+            <td>
+                  <code><span title="ndarray">ndarray</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Array of time values.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="stela_toolkit.data_loader.LightCurve.rates">rates</span></code></td>
+            <td>
+                  <code><span title="ndarray">ndarray</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Array of rate values.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="stela_toolkit.data_loader.LightCurve.errors">errors</span></code></td>
+            <td>
+                  <code><span title="ndarray">ndarray</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Array of errors, if provided.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
 
 
@@ -1814,7 +1750,39 @@ errors : ndarray
 <span class="normal">361</span>
 <span class="normal">362</span>
 <span class="normal">363</span>
-<span class="normal">364</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">LightCurve</span><span class="p">:</span>
+<span class="normal">364</span>
+<span class="normal">365</span>
+<span class="normal">366</span>
+<span class="normal">367</span>
+<span class="normal">368</span>
+<span class="normal">369</span>
+<span class="normal">370</span>
+<span class="normal">371</span>
+<span class="normal">372</span>
+<span class="normal">373</span>
+<span class="normal">374</span>
+<span class="normal">375</span>
+<span class="normal">376</span>
+<span class="normal">377</span>
+<span class="normal">378</span>
+<span class="normal">379</span>
+<span class="normal">380</span>
+<span class="normal">381</span>
+<span class="normal">382</span>
+<span class="normal">383</span>
+<span class="normal">384</span>
+<span class="normal">385</span>
+<span class="normal">386</span>
+<span class="normal">387</span>
+<span class="normal">388</span>
+<span class="normal">389</span>
+<span class="normal">390</span>
+<span class="normal">391</span>
+<span class="normal">392</span>
+<span class="normal">393</span>
+<span class="normal">394</span>
+<span class="normal">395</span>
+<span class="normal">396</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">LightCurve</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Container for light curve data, including time, rate, and optional error arrays.</span>
 
@@ -1830,12 +1798,16 @@ errors : ndarray
 <span class="sd">    ----------</span>
 <span class="sd">    times : array-like, optional</span>
 <span class="sd">        Array of time values.</span>
+
 <span class="sd">    rates : array-like, optional</span>
 <span class="sd">        Array of measured rates (e.g., flux, count rate).</span>
+
 <span class="sd">    errors : array-like, optional</span>
 <span class="sd">        Array of uncertainties on the rates. Optional but recommended.</span>
+
 <span class="sd">    file_path : str, optional</span>
 <span class="sd">        Path to a file to load light curve data from. Supports FITS and text formats.</span>
+
 <span class="sd">    file_columns : list of int or str, optional</span>
 <span class="sd">        List specifying the columns to read as [time, rate, error]. Column names or indices allowed.</span>
 
@@ -1843,8 +1815,10 @@ errors : ndarray
 <span class="sd">    ----------</span>
 <span class="sd">    times : ndarray</span>
 <span class="sd">        Array of time values.</span>
+
 <span class="sd">    rates : ndarray</span>
 <span class="sd">        Array of rate values.</span>
+
 <span class="sd">    errors : ndarray</span>
 <span class="sd">        Array of errors, if provided.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -1903,13 +1877,21 @@ errors : ndarray
 <span class="sd">        ----------</span>
 <span class="sd">        file_path : str</span>
 <span class="sd">            Path to the input file.</span>
-<span class="sd">        file_columns : list of int or str</span>
-<span class="sd">            Columns to use for [time, rate, error].</span>
+
+<span class="sd">        file_columns : list of int or str, optional</span>
+<span class="sd">            Column indices or names to use for [time, rate, error].</span>
+<span class="sd">            Defaults to [0, 1, 2].</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
-<span class="sd">        times, rates, errors : tuple of ndarrays</span>
-<span class="sd">            Loaded arrays of time, rate, and error.</span>
+<span class="sd">        times : ndarray</span>
+<span class="sd">            Array of time values.</span>
+
+<span class="sd">        rates : ndarray</span>
+<span class="sd">            Array of flux or count rate values.</span>
+
+<span class="sd">        errors : ndarray</span>
+<span class="sd">            Array of measurement uncertainties.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="k">try</span><span class="p">:</span>
@@ -1935,15 +1917,23 @@ errors : ndarray
 <span class="sd">        ----------</span>
 <span class="sd">        file_path : str</span>
 <span class="sd">            Path to the FITS file.</span>
-<span class="sd">        file_columns : list</span>
-<span class="sd">            Columns to extract as [time, rate, error].</span>
+
+<span class="sd">        file_columns : list of int or str</span>
+<span class="sd">            Columns to extract, specified as [time, rate, error].</span>
+
 <span class="sd">        hdu : int</span>
-<span class="sd">            Header/Data Unit (HDU) index to read from.</span>
+<span class="sd">            Index of the Header/Data Unit (HDU) to read from.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
-<span class="sd">        times, rates, errors : tuple of ndarrays</span>
-<span class="sd">            Arrays of time, rate, and error values.</span>
+<span class="sd">        times : ndarray</span>
+<span class="sd">            Array of time values.</span>
+
+<span class="sd">        rates : ndarray</span>
+<span class="sd">            Array of flux or count rate values.</span>
+
+<span class="sd">        errors : ndarray</span>
+<span class="sd">            Array of measurement uncertainties.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="n">time_column</span><span class="p">,</span> <span class="n">rate_column</span> <span class="o">=</span> <span class="n">file_columns</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">file_columns</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
@@ -1989,15 +1979,24 @@ errors : ndarray
 <span class="sd">        ----------</span>
 <span class="sd">        file_path : str</span>
 <span class="sd">            Path to the input text file.</span>
-<span class="sd">        file_columns : list</span>
-<span class="sd">            Columns to extract as [time, rate, error].</span>
+
+<span class="sd">        file_columns : list of int or str</span>
+<span class="sd">            Columns to extract, specified as [time, rate, error].</span>
+
 <span class="sd">        delimiter : str, optional</span>
-<span class="sd">            Delimiter used in the file (guessed from extension if not provided).</span>
+<span class="sd">            Delimiter used in the file (e.g., &#39;,&#39; for CSV, &#39;\\t&#39; for tab-separated).</span>
+<span class="sd">            If not provided, the delimiter is inferred from the file extension.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
-<span class="sd">        times, rates, errors : tuple of ndarrays</span>
-<span class="sd">            Arrays of time, rate, and error values.</span>
+<span class="sd">        times : ndarray</span>
+<span class="sd">            Array of time values.</span>
+
+<span class="sd">        rates : ndarray</span>
+<span class="sd">            Array of flux or count rate values.</span>
+
+<span class="sd">        errors : ndarray</span>
+<span class="sd">            Array of measurement uncertainties.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="n">time_column</span><span class="p">,</span> <span class="n">rate_column</span> <span class="o">=</span> <span class="n">file_columns</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">file_columns</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
@@ -2060,6 +2059,7 @@ errors : ndarray
 <span class="sd">        -------</span>
 <span class="sd">        freqs : ndarray</span>
 <span class="sd">            Frequencies of the FFT.</span>
+
 <span class="sd">        fft_values : ndarray</span>
 <span class="sd">            Complex FFT values.</span>
 
@@ -2243,41 +2243,61 @@ errors : ndarray
     <div class="doc doc-contents ">
 
         <p>Add two LightCurve objects element-wise.</p>
-<h5 id="stela_toolkit.data_loader.LightCurve.__add__--returns">Returns<a class="headerlink" href="#stela_toolkit.data_loader.LightCurve.__add__--returns" title="Permanent link">&para;</a></h5>
-<p>LightCurve
-    New LightCurve with summed rates and propagated uncertainties.</p>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="LightCurve (stela_toolkit.data_loader.LightCurve)" href="#stela_toolkit.data_loader.LightCurve">LightCurve</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>New LightCurve with summed rates and propagated uncertainties.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
 
             <details class="quote">
               <summary>Source code in <code>stela_toolkit/data_loader.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">275</span>
-<span class="normal">276</span>
-<span class="normal">277</span>
-<span class="normal">278</span>
-<span class="normal">279</span>
-<span class="normal">280</span>
-<span class="normal">281</span>
-<span class="normal">282</span>
-<span class="normal">283</span>
-<span class="normal">284</span>
-<span class="normal">285</span>
-<span class="normal">286</span>
-<span class="normal">287</span>
-<span class="normal">288</span>
-<span class="normal">289</span>
-<span class="normal">290</span>
-<span class="normal">291</span>
-<span class="normal">292</span>
-<span class="normal">293</span>
-<span class="normal">294</span>
-<span class="normal">295</span>
-<span class="normal">296</span>
-<span class="normal">297</span>
-<span class="normal">298</span>
-<span class="normal">299</span>
-<span class="normal">300</span>
-<span class="normal">301</span>
-<span class="normal">302</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__add__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other_lightcurve</span><span class="p">):</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">307</span>
+<span class="normal">308</span>
+<span class="normal">309</span>
+<span class="normal">310</span>
+<span class="normal">311</span>
+<span class="normal">312</span>
+<span class="normal">313</span>
+<span class="normal">314</span>
+<span class="normal">315</span>
+<span class="normal">316</span>
+<span class="normal">317</span>
+<span class="normal">318</span>
+<span class="normal">319</span>
+<span class="normal">320</span>
+<span class="normal">321</span>
+<span class="normal">322</span>
+<span class="normal">323</span>
+<span class="normal">324</span>
+<span class="normal">325</span>
+<span class="normal">326</span>
+<span class="normal">327</span>
+<span class="normal">328</span>
+<span class="normal">329</span>
+<span class="normal">330</span>
+<span class="normal">331</span>
+<span class="normal">332</span>
+<span class="normal">333</span>
+<span class="normal">334</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__add__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other_lightcurve</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Add two LightCurve objects element-wise.</span>
 
@@ -2323,42 +2343,62 @@ errors : ndarray
     <div class="doc doc-contents ">
 
         <p>Subtract one LightCurve from another element-wise.</p>
-<h5 id="stela_toolkit.data_loader.LightCurve.__sub__--returns">Returns<a class="headerlink" href="#stela_toolkit.data_loader.LightCurve.__sub__--returns" title="Permanent link">&para;</a></h5>
-<p>LightCurve
-    New LightCurve with difference of rates and propagated uncertainties.</p>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="LightCurve (stela_toolkit.data_loader.LightCurve)" href="#stela_toolkit.data_loader.LightCurve">LightCurve</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>New LightCurve with difference of rates and propagated uncertainties.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
 
             <details class="quote">
               <summary>Source code in <code>stela_toolkit/data_loader.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">304</span>
-<span class="normal">305</span>
-<span class="normal">306</span>
-<span class="normal">307</span>
-<span class="normal">308</span>
-<span class="normal">309</span>
-<span class="normal">310</span>
-<span class="normal">311</span>
-<span class="normal">312</span>
-<span class="normal">313</span>
-<span class="normal">314</span>
-<span class="normal">315</span>
-<span class="normal">316</span>
-<span class="normal">317</span>
-<span class="normal">318</span>
-<span class="normal">319</span>
-<span class="normal">320</span>
-<span class="normal">321</span>
-<span class="normal">322</span>
-<span class="normal">323</span>
-<span class="normal">324</span>
-<span class="normal">325</span>
-<span class="normal">326</span>
-<span class="normal">327</span>
-<span class="normal">328</span>
-<span class="normal">329</span>
-<span class="normal">330</span>
-<span class="normal">331</span>
-<span class="normal">332</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__sub__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other_lightcurve</span><span class="p">):</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">336</span>
+<span class="normal">337</span>
+<span class="normal">338</span>
+<span class="normal">339</span>
+<span class="normal">340</span>
+<span class="normal">341</span>
+<span class="normal">342</span>
+<span class="normal">343</span>
+<span class="normal">344</span>
+<span class="normal">345</span>
+<span class="normal">346</span>
+<span class="normal">347</span>
+<span class="normal">348</span>
+<span class="normal">349</span>
+<span class="normal">350</span>
+<span class="normal">351</span>
+<span class="normal">352</span>
+<span class="normal">353</span>
+<span class="normal">354</span>
+<span class="normal">355</span>
+<span class="normal">356</span>
+<span class="normal">357</span>
+<span class="normal">358</span>
+<span class="normal">359</span>
+<span class="normal">360</span>
+<span class="normal">361</span>
+<span class="normal">362</span>
+<span class="normal">363</span>
+<span class="normal">364</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__sub__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other_lightcurve</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Subtract one LightCurve from another element-wise.</span>
 
@@ -2405,44 +2445,64 @@ errors : ndarray
     <div class="doc doc-contents ">
 
         <p>Divide one LightCurve by another element-wise.</p>
-<h5 id="stela_toolkit.data_loader.LightCurve.__truediv__--returns">Returns<a class="headerlink" href="#stela_toolkit.data_loader.LightCurve.__truediv__--returns" title="Permanent link">&para;</a></h5>
-<p>LightCurve
-    New LightCurve with element-wise division and propagated relative uncertainties.</p>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="LightCurve (stela_toolkit.data_loader.LightCurve)" href="#stela_toolkit.data_loader.LightCurve">LightCurve</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>New LightCurve with element-wise division and propagated relative uncertainties.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
 
             <details class="quote">
               <summary>Source code in <code>stela_toolkit/data_loader.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">334</span>
-<span class="normal">335</span>
-<span class="normal">336</span>
-<span class="normal">337</span>
-<span class="normal">338</span>
-<span class="normal">339</span>
-<span class="normal">340</span>
-<span class="normal">341</span>
-<span class="normal">342</span>
-<span class="normal">343</span>
-<span class="normal">344</span>
-<span class="normal">345</span>
-<span class="normal">346</span>
-<span class="normal">347</span>
-<span class="normal">348</span>
-<span class="normal">349</span>
-<span class="normal">350</span>
-<span class="normal">351</span>
-<span class="normal">352</span>
-<span class="normal">353</span>
-<span class="normal">354</span>
-<span class="normal">355</span>
-<span class="normal">356</span>
-<span class="normal">357</span>
-<span class="normal">358</span>
-<span class="normal">359</span>
-<span class="normal">360</span>
-<span class="normal">361</span>
-<span class="normal">362</span>
-<span class="normal">363</span>
-<span class="normal">364</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__truediv__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other_lightcurve</span><span class="p">):</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">366</span>
+<span class="normal">367</span>
+<span class="normal">368</span>
+<span class="normal">369</span>
+<span class="normal">370</span>
+<span class="normal">371</span>
+<span class="normal">372</span>
+<span class="normal">373</span>
+<span class="normal">374</span>
+<span class="normal">375</span>
+<span class="normal">376</span>
+<span class="normal">377</span>
+<span class="normal">378</span>
+<span class="normal">379</span>
+<span class="normal">380</span>
+<span class="normal">381</span>
+<span class="normal">382</span>
+<span class="normal">383</span>
+<span class="normal">384</span>
+<span class="normal">385</span>
+<span class="normal">386</span>
+<span class="normal">387</span>
+<span class="normal">388</span>
+<span class="normal">389</span>
+<span class="normal">390</span>
+<span class="normal">391</span>
+<span class="normal">392</span>
+<span class="normal">393</span>
+<span class="normal">394</span>
+<span class="normal">395</span>
+<span class="normal">396</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__truediv__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other_lightcurve</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Divide one LightCurve by another element-wise.</span>
 
@@ -2491,47 +2551,96 @@ errors : ndarray
     <div class="doc doc-contents ">
 
         <p>Compute the Fast Fourier Transform (FFT) of the light curve.</p>
-<h5 id="stela_toolkit.data_loader.LightCurve.fft--returns">Returns<a class="headerlink" href="#stela_toolkit.data_loader.LightCurve.fft--returns" title="Permanent link">&para;</a></h5>
-<p>freqs : ndarray
-    Frequencies of the FFT.
-fft_values : ndarray
-    Complex FFT values.</p>
-<h5 id="stela_toolkit.data_loader.LightCurve.fft--raises">Raises<a class="headerlink" href="#stela_toolkit.data_loader.LightCurve.fft--raises" title="Permanent link">&para;</a></h5>
-<p>ValueError
-    If the time sampling is not uniform. Interpolation is required before applying FFT.</p>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+<th>Name</th>          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+<td><code>freqs</code></td>            <td>
+                  <code><span title="ndarray">ndarray</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Frequencies of the FFT.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+<td><code>fft_values</code></td>            <td>
+                  <code><span title="ndarray">ndarray</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Complex FFT values.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+<p><span class="doc-section-title">Raises:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="ValueError">ValueError</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>If the time sampling is not uniform. Interpolation is required before applying FFT.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
 
             <details class="quote">
               <summary>Source code in <code>stela_toolkit/data_loader.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">245</span>
-<span class="normal">246</span>
-<span class="normal">247</span>
-<span class="normal">248</span>
-<span class="normal">249</span>
-<span class="normal">250</span>
-<span class="normal">251</span>
-<span class="normal">252</span>
-<span class="normal">253</span>
-<span class="normal">254</span>
-<span class="normal">255</span>
-<span class="normal">256</span>
-<span class="normal">257</span>
-<span class="normal">258</span>
-<span class="normal">259</span>
-<span class="normal">260</span>
-<span class="normal">261</span>
-<span class="normal">262</span>
-<span class="normal">263</span>
-<span class="normal">264</span>
-<span class="normal">265</span>
-<span class="normal">266</span>
-<span class="normal">267</span>
-<span class="normal">268</span>
-<span class="normal">269</span>
-<span class="normal">270</span>
-<span class="normal">271</span>
-<span class="normal">272</span>
-<span class="normal">273</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">fft</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">276</span>
+<span class="normal">277</span>
+<span class="normal">278</span>
+<span class="normal">279</span>
+<span class="normal">280</span>
+<span class="normal">281</span>
+<span class="normal">282</span>
+<span class="normal">283</span>
+<span class="normal">284</span>
+<span class="normal">285</span>
+<span class="normal">286</span>
+<span class="normal">287</span>
+<span class="normal">288</span>
+<span class="normal">289</span>
+<span class="normal">290</span>
+<span class="normal">291</span>
+<span class="normal">292</span>
+<span class="normal">293</span>
+<span class="normal">294</span>
+<span class="normal">295</span>
+<span class="normal">296</span>
+<span class="normal">297</span>
+<span class="normal">298</span>
+<span class="normal">299</span>
+<span class="normal">300</span>
+<span class="normal">301</span>
+<span class="normal">302</span>
+<span class="normal">303</span>
+<span class="normal">304</span>
+<span class="normal">305</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">fft</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compute the Fast Fourier Transform (FFT) of the light curve.</span>
 
@@ -2539,6 +2648,7 @@ fft_values : ndarray
 <span class="sd">    -------</span>
 <span class="sd">    freqs : ndarray</span>
 <span class="sd">        Frequencies of the FFT.</span>
+
 <span class="sd">    fft_values : ndarray</span>
 <span class="sd">        Complex FFT values.</span>
 
@@ -2578,25 +2688,102 @@ fft_values : ndarray
     <div class="doc doc-contents ">
 
         <p>Load light curve data from a FITS or text-based file.</p>
-<h5 id="stela_toolkit.data_loader.LightCurve.load_file--parameters">Parameters<a class="headerlink" href="#stela_toolkit.data_loader.LightCurve.load_file--parameters" title="Permanent link">&para;</a></h5>
-<p>file_path : str
-    Path to the input file.
-file_columns : list of int or str
-    Columns to use for [time, rate, error].</p>
-<h5 id="stela_toolkit.data_loader.LightCurve.load_file--returns">Returns<a class="headerlink" href="#stela_toolkit.data_loader.LightCurve.load_file--returns" title="Permanent link">&para;</a></h5>
-<p>times, rates, errors : tuple of ndarrays
-    Loaded arrays of time, rate, and error.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>file_path</code>
+            </td>
+            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Path to the input file.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>file_columns</code>
+            </td>
+            <td>
+                  <code>list of int or str</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Column indices or names to use for [time, rate, error].
+Defaults to [0, 1, 2].</p>
+              </div>
+            </td>
+            <td>
+                  <code>[0, 1, 2]</code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+<th>Name</th>          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+<td><code>times</code></td>            <td>
+                  <code><span title="ndarray">ndarray</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Array of time values.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+<td><code>rates</code></td>            <td>
+                  <code><span title="ndarray">ndarray</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Array of flux or count rate values.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+<td><code>errors</code></td>            <td>
+                  <code><span title="ndarray">ndarray</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Array of measurement uncertainties.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
 
             <details class="quote">
               <summary>Source code in <code>stela_toolkit/data_loader.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 88</span>
-<span class="normal"> 89</span>
-<span class="normal"> 90</span>
-<span class="normal"> 91</span>
-<span class="normal"> 92</span>
-<span class="normal"> 93</span>
-<span class="normal"> 94</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 94</span>
 <span class="normal"> 95</span>
 <span class="normal"> 96</span>
 <span class="normal"> 97</span>
@@ -2620,7 +2807,21 @@ file_columns : list of int or str
 <span class="normal">115</span>
 <span class="normal">116</span>
 <span class="normal">117</span>
-<span class="normal">118</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">load_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_path</span><span class="p">,</span> <span class="n">file_columns</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]):</span>
+<span class="normal">118</span>
+<span class="normal">119</span>
+<span class="normal">120</span>
+<span class="normal">121</span>
+<span class="normal">122</span>
+<span class="normal">123</span>
+<span class="normal">124</span>
+<span class="normal">125</span>
+<span class="normal">126</span>
+<span class="normal">127</span>
+<span class="normal">128</span>
+<span class="normal">129</span>
+<span class="normal">130</span>
+<span class="normal">131</span>
+<span class="normal">132</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">load_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_path</span><span class="p">,</span> <span class="n">file_columns</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Load light curve data from a FITS or text-based file.</span>
 
@@ -2628,13 +2829,21 @@ file_columns : list of int or str
 <span class="sd">    ----------</span>
 <span class="sd">    file_path : str</span>
 <span class="sd">        Path to the input file.</span>
-<span class="sd">    file_columns : list of int or str</span>
-<span class="sd">        Columns to use for [time, rate, error].</span>
+
+<span class="sd">    file_columns : list of int or str, optional</span>
+<span class="sd">        Column indices or names to use for [time, rate, error].</span>
+<span class="sd">        Defaults to [0, 1, 2].</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    times, rates, errors : tuple of ndarrays</span>
-<span class="sd">        Loaded arrays of time, rate, and error.</span>
+<span class="sd">    times : ndarray</span>
+<span class="sd">        Array of time values.</span>
+
+<span class="sd">    rates : ndarray</span>
+<span class="sd">        Array of flux or count rate values.</span>
+
+<span class="sd">    errors : ndarray</span>
+<span class="sd">        Array of measurement uncertainties.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">try</span><span class="p">:</span>
@@ -2669,35 +2878,117 @@ file_columns : list of int or str
     <div class="doc doc-contents ">
 
         <p>Load light curve data from a specified HDU of a FITS file.</p>
-<h5 id="stela_toolkit.data_loader.LightCurve.load_fits--parameters">Parameters<a class="headerlink" href="#stela_toolkit.data_loader.LightCurve.load_fits--parameters" title="Permanent link">&para;</a></h5>
-<p>file_path : str
-    Path to the FITS file.
-file_columns : list
-    Columns to extract as [time, rate, error].
-hdu : int
-    Header/Data Unit (HDU) index to read from.</p>
-<h5 id="stela_toolkit.data_loader.LightCurve.load_fits--returns">Returns<a class="headerlink" href="#stela_toolkit.data_loader.LightCurve.load_fits--returns" title="Permanent link">&para;</a></h5>
-<p>times, rates, errors : tuple of ndarrays
-    Arrays of time, rate, and error values.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>file_path</code>
+            </td>
+            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Path to the FITS file.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>file_columns</code>
+            </td>
+            <td>
+                  <code>list of int or str</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Columns to extract, specified as [time, rate, error].</p>
+              </div>
+            </td>
+            <td>
+                  <code>[0, 1, 2]</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>hdu</code>
+            </td>
+            <td>
+                  <code><span title="int">int</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Index of the Header/Data Unit (HDU) to read from.</p>
+              </div>
+            </td>
+            <td>
+                  <code>1</code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+<th>Name</th>          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+<td><code>times</code></td>            <td>
+                  <code><span title="ndarray">ndarray</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Array of time values.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+<td><code>rates</code></td>            <td>
+                  <code><span title="ndarray">ndarray</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Array of flux or count rate values.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+<td><code>errors</code></td>            <td>
+                  <code><span title="ndarray">ndarray</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Array of measurement uncertainties.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
 
             <details class="quote">
               <summary>Source code in <code>stela_toolkit/data_loader.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">120</span>
-<span class="normal">121</span>
-<span class="normal">122</span>
-<span class="normal">123</span>
-<span class="normal">124</span>
-<span class="normal">125</span>
-<span class="normal">126</span>
-<span class="normal">127</span>
-<span class="normal">128</span>
-<span class="normal">129</span>
-<span class="normal">130</span>
-<span class="normal">131</span>
-<span class="normal">132</span>
-<span class="normal">133</span>
-<span class="normal">134</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">134</span>
 <span class="normal">135</span>
 <span class="normal">136</span>
 <span class="normal">137</span>
@@ -2735,7 +3026,29 @@ hdu : int
 <span class="normal">169</span>
 <span class="normal">170</span>
 <span class="normal">171</span>
-<span class="normal">172</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">load_fits</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_path</span><span class="p">,</span> <span class="n">file_columns</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="n">hdu</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+<span class="normal">172</span>
+<span class="normal">173</span>
+<span class="normal">174</span>
+<span class="normal">175</span>
+<span class="normal">176</span>
+<span class="normal">177</span>
+<span class="normal">178</span>
+<span class="normal">179</span>
+<span class="normal">180</span>
+<span class="normal">181</span>
+<span class="normal">182</span>
+<span class="normal">183</span>
+<span class="normal">184</span>
+<span class="normal">185</span>
+<span class="normal">186</span>
+<span class="normal">187</span>
+<span class="normal">188</span>
+<span class="normal">189</span>
+<span class="normal">190</span>
+<span class="normal">191</span>
+<span class="normal">192</span>
+<span class="normal">193</span>
+<span class="normal">194</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">load_fits</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_path</span><span class="p">,</span> <span class="n">file_columns</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="n">hdu</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Load light curve data from a specified HDU of a FITS file.</span>
 
@@ -2743,15 +3056,23 @@ hdu : int
 <span class="sd">    ----------</span>
 <span class="sd">    file_path : str</span>
 <span class="sd">        Path to the FITS file.</span>
-<span class="sd">    file_columns : list</span>
-<span class="sd">        Columns to extract as [time, rate, error].</span>
+
+<span class="sd">    file_columns : list of int or str</span>
+<span class="sd">        Columns to extract, specified as [time, rate, error].</span>
+
 <span class="sd">    hdu : int</span>
-<span class="sd">        Header/Data Unit (HDU) index to read from.</span>
+<span class="sd">        Index of the Header/Data Unit (HDU) to read from.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    times, rates, errors : tuple of ndarrays</span>
-<span class="sd">        Arrays of time, rate, and error values.</span>
+<span class="sd">    times : ndarray</span>
+<span class="sd">        Array of time values.</span>
+
+<span class="sd">    rates : ndarray</span>
+<span class="sd">        Array of flux or count rate values.</span>
+
+<span class="sd">    errors : ndarray</span>
+<span class="sd">        Array of measurement uncertainties.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">time_column</span><span class="p">,</span> <span class="n">rate_column</span> <span class="o">=</span> <span class="n">file_columns</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">file_columns</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
@@ -2806,43 +3127,118 @@ hdu : int
     <div class="doc doc-contents ">
 
         <p>Load light curve data from a CSV or plain-text file.</p>
-<h5 id="stela_toolkit.data_loader.LightCurve.load_text_file--parameters">Parameters<a class="headerlink" href="#stela_toolkit.data_loader.LightCurve.load_text_file--parameters" title="Permanent link">&para;</a></h5>
-<p>file_path : str
-    Path to the input text file.
-file_columns : list
-    Columns to extract as [time, rate, error].
-delimiter : str, optional
-    Delimiter used in the file (guessed from extension if not provided).</p>
-<h5 id="stela_toolkit.data_loader.LightCurve.load_text_file--returns">Returns<a class="headerlink" href="#stela_toolkit.data_loader.LightCurve.load_text_file--returns" title="Permanent link">&para;</a></h5>
-<p>times, rates, errors : tuple of ndarrays
-    Arrays of time, rate, and error values.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>file_path</code>
+            </td>
+            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Path to the input text file.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>file_columns</code>
+            </td>
+            <td>
+                  <code>list of int or str</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Columns to extract, specified as [time, rate, error].</p>
+              </div>
+            </td>
+            <td>
+                  <code>[0, 1, 2]</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>delimiter</code>
+            </td>
+            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Delimiter used in the file (e.g., ',' for CSV, '\t' for tab-separated).
+If not provided, the delimiter is inferred from the file extension.</p>
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+<th>Name</th>          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+<td><code>times</code></td>            <td>
+                  <code><span title="ndarray">ndarray</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Array of time values.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+<td><code>rates</code></td>            <td>
+                  <code><span title="ndarray">ndarray</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Array of flux or count rate values.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+<td><code>errors</code></td>            <td>
+                  <code><span title="ndarray">ndarray</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Array of measurement uncertainties.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
 
             <details class="quote">
               <summary>Source code in <code>stela_toolkit/data_loader.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">174</span>
-<span class="normal">175</span>
-<span class="normal">176</span>
-<span class="normal">177</span>
-<span class="normal">178</span>
-<span class="normal">179</span>
-<span class="normal">180</span>
-<span class="normal">181</span>
-<span class="normal">182</span>
-<span class="normal">183</span>
-<span class="normal">184</span>
-<span class="normal">185</span>
-<span class="normal">186</span>
-<span class="normal">187</span>
-<span class="normal">188</span>
-<span class="normal">189</span>
-<span class="normal">190</span>
-<span class="normal">191</span>
-<span class="normal">192</span>
-<span class="normal">193</span>
-<span class="normal">194</span>
-<span class="normal">195</span>
-<span class="normal">196</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">196</span>
 <span class="normal">197</span>
 <span class="normal">198</span>
 <span class="normal">199</span>
@@ -2875,7 +3271,38 @@ delimiter : str, optional
 <span class="normal">226</span>
 <span class="normal">227</span>
 <span class="normal">228</span>
-<span class="normal">229</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">load_text_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_path</span><span class="p">,</span> <span class="n">file_columns</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="n">delimiter</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="normal">229</span>
+<span class="normal">230</span>
+<span class="normal">231</span>
+<span class="normal">232</span>
+<span class="normal">233</span>
+<span class="normal">234</span>
+<span class="normal">235</span>
+<span class="normal">236</span>
+<span class="normal">237</span>
+<span class="normal">238</span>
+<span class="normal">239</span>
+<span class="normal">240</span>
+<span class="normal">241</span>
+<span class="normal">242</span>
+<span class="normal">243</span>
+<span class="normal">244</span>
+<span class="normal">245</span>
+<span class="normal">246</span>
+<span class="normal">247</span>
+<span class="normal">248</span>
+<span class="normal">249</span>
+<span class="normal">250</span>
+<span class="normal">251</span>
+<span class="normal">252</span>
+<span class="normal">253</span>
+<span class="normal">254</span>
+<span class="normal">255</span>
+<span class="normal">256</span>
+<span class="normal">257</span>
+<span class="normal">258</span>
+<span class="normal">259</span>
+<span class="normal">260</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">load_text_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_path</span><span class="p">,</span> <span class="n">file_columns</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="n">delimiter</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Load light curve data from a CSV or plain-text file.</span>
 
@@ -2883,15 +3310,24 @@ delimiter : str, optional
 <span class="sd">    ----------</span>
 <span class="sd">    file_path : str</span>
 <span class="sd">        Path to the input text file.</span>
-<span class="sd">    file_columns : list</span>
-<span class="sd">        Columns to extract as [time, rate, error].</span>
+
+<span class="sd">    file_columns : list of int or str</span>
+<span class="sd">        Columns to extract, specified as [time, rate, error].</span>
+
 <span class="sd">    delimiter : str, optional</span>
-<span class="sd">        Delimiter used in the file (guessed from extension if not provided).</span>
+<span class="sd">        Delimiter used in the file (e.g., &#39;,&#39; for CSV, &#39;\\t&#39; for tab-separated).</span>
+<span class="sd">        If not provided, the delimiter is inferred from the file extension.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    times, rates, errors : tuple of ndarrays</span>
-<span class="sd">        Arrays of time, rate, and error values.</span>
+<span class="sd">    times : ndarray</span>
+<span class="sd">        Array of time values.</span>
+
+<span class="sd">    rates : ndarray</span>
+<span class="sd">        Array of flux or count rate values.</span>
+
+<span class="sd">    errors : ndarray</span>
+<span class="sd">        Array of measurement uncertainties.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">time_column</span><span class="p">,</span> <span class="n">rate_column</span> <span class="o">=</span> <span class="n">file_columns</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">file_columns</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
@@ -2949,26 +3385,54 @@ delimiter : str, optional
     <div class="doc doc-contents ">
 
         <p>Plot the light curve.</p>
-<h5 id="stela_toolkit.data_loader.LightCurve.plot--parameters">Parameters<a class="headerlink" href="#stela_toolkit.data_loader.LightCurve.plot--parameters" title="Permanent link">&para;</a></h5>
-<p>**kwargs : dict
-    Additional keyword arguments for customizing the plot.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>**kwargs</code>
+            </td>
+            <td>
+                  <code><span title="dict">dict</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Additional keyword arguments for customizing the plot.</p>
+              </div>
+            </td>
+            <td>
+                  <code>{}</code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
 
             <details class="quote">
               <summary>Source code in <code>stela_toolkit/data_loader.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">231</span>
-<span class="normal">232</span>
-<span class="normal">233</span>
-<span class="normal">234</span>
-<span class="normal">235</span>
-<span class="normal">236</span>
-<span class="normal">237</span>
-<span class="normal">238</span>
-<span class="normal">239</span>
-<span class="normal">240</span>
-<span class="normal">241</span>
-<span class="normal">242</span>
-<span class="normal">243</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">262</span>
+<span class="normal">263</span>
+<span class="normal">264</span>
+<span class="normal">265</span>
+<span class="normal">266</span>
+<span class="normal">267</span>
+<span class="normal">268</span>
+<span class="normal">269</span>
+<span class="normal">270</span>
+<span class="normal">271</span>
+<span class="normal">272</span>
+<span class="normal">273</span>
+<span class="normal">274</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Plot the light curve.</span>
 
@@ -3023,6 +3487,12 @@ delimiter : str, optional
 <script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
         </div>
         
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
       </main>
       
         <footer class="md-footer">
@@ -3051,7 +3521,7 @@ delimiter : str, optional
     
     
       
-      <script id="__config" type="application/json">{"base": "../..", "features": [], "search": "../../assets/javascripts/workers/search.d50fe291.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+      <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.tabs", "navigation.top", "content.code.copy", "navigation.sections", "navigation.expand"], "search": "../../assets/javascripts/workers/search.d50fe291.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
     
     
       <script src="../../assets/javascripts/bundle.13a4f30d.min.js"></script>

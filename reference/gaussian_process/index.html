@@ -11,7 +11,7 @@
       
       
       
-        <link rel="prev" href="../frequency_binning/">
+        <link rel="prev" href="../data_simulator/">
       
       
         <link rel="next" href="../lag_energy_spectrum/">
@@ -50,6 +50,8 @@
     
       <link rel="stylesheet" href="../../assets/_mkdocstrings.css">
     
+      <link rel="stylesheet" href="../../styles/custom.css">
+    
     <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
@@ -62,10 +64,12 @@
   
     
     
+      
     
     
     
-    <body dir="ltr" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo">
+    
+    <body dir="ltr" data-md-color-scheme="slate" data-md-color-primary="blue" data-md-color-accent="yellow">
   
     
     <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
@@ -86,9 +90,7 @@
     
       
 
-  
-
-<header class="md-header md-header--shadow" data-md-component="header">
+<header class="md-header" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
     <a href="../.." title="STELA Toolkit" class="md-header__button md-logo" aria-label="STELA Toolkit" data-md-component="logo">
       
@@ -117,7 +119,19 @@
     </div>
     
       
+        <form class="md-header__option" data-md-component="palette">
+  
     
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="blue" data-md-color-accent="yellow"  aria-hidden="true"  type="radio" name="__palette" id="__palette_0">
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
     
     
     
@@ -171,6 +185,132 @@
       
         
           
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../overview/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Overview
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../gaussian_process_intro/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Gaussian Processes
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../installation/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Installation
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../tutorial/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Tutorial
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../coherence/" class="md-tabs__link">
+          
+  
+  
+  Class Reference
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
         
       
       <main class="md-main" data-md-component="main">
@@ -184,8 +324,10 @@
                     
 
 
+  
 
-<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
     <a href="../.." title="STELA Toolkit" class="md-nav__button md-logo" aria-label="STELA Toolkit" data-md-component="logo">
       
@@ -319,20 +461,28 @@
     
     
     
+      
+        
+        
+      
+      
+        
+      
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
       
         
         
         <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" checked>
         
           
-          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="">
             
   
   
   <span class="md-ellipsis">
-    Module Reference
+    Class Reference
     
   </span>
   
@@ -343,7 +493,7 @@
         <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_6">
             <span class="md-nav__icon md-icon"></span>
-            Module Reference
+            Class Reference
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
             
@@ -466,29 +616,6 @@
                 
   
   
-  
-  
-    <li class="md-nav__item">
-      <a href="../frequency_binning/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    Frequency Binning
-    
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
     
   
   
@@ -561,44 +688,11 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#stela_toolkit.gaussian_process.GaussianProcess--parameters" class="md-nav__link">
-    <span class="md-ellipsis">
-      Parameters
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#stela_toolkit.gaussian_process.GaussianProcess--attributes" class="md-nav__link">
-    <span class="md-ellipsis">
-      Attributes
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
   <a href="#stela_toolkit.gaussian_process.GaussianProcess.aic" class="md-nav__link">
     <span class="md-ellipsis">
       aic
     </span>
   </a>
-  
-    <nav class="md-nav" aria-label="aic">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#stela_toolkit.gaussian_process.GaussianProcess.aic--returns" class="md-nav__link">
-    <span class="md-ellipsis">
-      Returns
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
         
@@ -609,21 +703,6 @@
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="bic">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#stela_toolkit.gaussian_process.GaussianProcess.bic--returns" class="md-nav__link">
-    <span class="md-ellipsis">
-      Returns
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
 </li>
         
           <li class="md-nav__item">
@@ -632,30 +711,6 @@
       create_gp_model
     </span>
   </a>
-  
-    <nav class="md-nav" aria-label="create_gp_model">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#stela_toolkit.gaussian_process.GaussianProcess.create_gp_model--parameters" class="md-nav__link">
-    <span class="md-ellipsis">
-      Parameters
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#stela_toolkit.gaussian_process.GaussianProcess.create_gp_model--returns" class="md-nav__link">
-    <span class="md-ellipsis">
-      Returns
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
         
@@ -675,30 +730,6 @@
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="find_best_kernel">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#stela_toolkit.gaussian_process.GaussianProcess.find_best_kernel--parameters" class="md-nav__link">
-    <span class="md-ellipsis">
-      Parameters
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#stela_toolkit.gaussian_process.GaussianProcess.find_best_kernel--returns" class="md-nav__link">
-    <span class="md-ellipsis">
-      Returns
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
 </li>
         
           <li class="md-nav__item">
@@ -707,21 +738,6 @@
       get_hyperparameters
     </span>
   </a>
-  
-    <nav class="md-nav" aria-label="get_hyperparameters">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#stela_toolkit.gaussian_process.GaussianProcess.get_hyperparameters--returns" class="md-nav__link">
-    <span class="md-ellipsis">
-      Returns
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
         
@@ -732,30 +748,6 @@
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="load">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#stela_toolkit.gaussian_process.GaussianProcess.load--parameters" class="md-nav__link">
-    <span class="md-ellipsis">
-      Parameters
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#stela_toolkit.gaussian_process.GaussianProcess.load--returns" class="md-nav__link">
-    <span class="md-ellipsis">
-      Returns
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
 </li>
         
           <li class="md-nav__item">
@@ -764,21 +756,6 @@
       plot
     </span>
   </a>
-  
-    <nav class="md-nav" aria-label="plot">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#stela_toolkit.gaussian_process.GaussianProcess.plot--parameters" class="md-nav__link">
-    <span class="md-ellipsis">
-      Parameters
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
         
@@ -789,30 +766,6 @@
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="predict">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#stela_toolkit.gaussian_process.GaussianProcess.predict--parameters" class="md-nav__link">
-    <span class="md-ellipsis">
-      Parameters
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#stela_toolkit.gaussian_process.GaussianProcess.predict--returns" class="md-nav__link">
-    <span class="md-ellipsis">
-      Returns
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
 </li>
         
           <li class="md-nav__item">
@@ -821,30 +774,6 @@
       sample
     </span>
   </a>
-  
-    <nav class="md-nav" aria-label="sample">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#stela_toolkit.gaussian_process.GaussianProcess.sample--parameters" class="md-nav__link">
-    <span class="md-ellipsis">
-      Parameters
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#stela_toolkit.gaussian_process.GaussianProcess.sample--returns" class="md-nav__link">
-    <span class="md-ellipsis">
-      Returns
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
         
@@ -855,21 +784,6 @@
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="save">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#stela_toolkit.gaussian_process.GaussianProcess.save--parameters" class="md-nav__link">
-    <span class="md-ellipsis">
-      Parameters
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
 </li>
         
           <li class="md-nav__item">
@@ -878,30 +792,6 @@
       set_kernel
     </span>
   </a>
-  
-    <nav class="md-nav" aria-label="set_kernel">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#stela_toolkit.gaussian_process.GaussianProcess.set_kernel--parameters" class="md-nav__link">
-    <span class="md-ellipsis">
-      Parameters
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#stela_toolkit.gaussian_process.GaussianProcess.set_kernel--returns" class="md-nav__link">
-    <span class="md-ellipsis">
-      Returns
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
         
@@ -912,30 +802,6 @@
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="set_likelihood">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#stela_toolkit.gaussian_process.GaussianProcess.set_likelihood--parameters" class="md-nav__link">
-    <span class="md-ellipsis">
-      Parameters
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#stela_toolkit.gaussian_process.GaussianProcess.set_likelihood--returns" class="md-nav__link">
-    <span class="md-ellipsis">
-      Returns
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
 </li>
         
           <li class="md-nav__item">
@@ -944,21 +810,6 @@
       train
     </span>
   </a>
-  
-    <nav class="md-nav" aria-label="train">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#stela_toolkit.gaussian_process.GaussianProcess.train--parameters" class="md-nav__link">
-    <span class="md-ellipsis">
-      Parameters
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
         
@@ -1029,29 +880,6 @@
   
   
     <li class="md-nav__item">
-      <a href="../plot/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    Plotting
-    
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
       <a href="../power_spectrum/" class="md-nav__link">
         
   
@@ -1101,15 +929,25 @@
     
     
     
+      
+      
+        
+          
+          
+        
+      
     
-    <li class="md-nav__item md-nav__item--nested">
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6_13" >
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6_11" >
         
           
-          <label class="md-nav__link" for="__nav_6_13" id="__nav_6_13_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_6_11" id="__nav_6_11_label" tabindex="">
             
   
   
@@ -1122,12 +960,58 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_6_13_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_6_13">
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_6_11_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6_11">
             <span class="md-nav__icon md-icon"></span>
             Internal
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../frequency_binning/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Frequency Binning
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../plot/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Plotting
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
             
               
                 
@@ -1236,44 +1120,11 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#stela_toolkit.gaussian_process.GaussianProcess--parameters" class="md-nav__link">
-    <span class="md-ellipsis">
-      Parameters
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#stela_toolkit.gaussian_process.GaussianProcess--attributes" class="md-nav__link">
-    <span class="md-ellipsis">
-      Attributes
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
   <a href="#stela_toolkit.gaussian_process.GaussianProcess.aic" class="md-nav__link">
     <span class="md-ellipsis">
       aic
     </span>
   </a>
-  
-    <nav class="md-nav" aria-label="aic">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#stela_toolkit.gaussian_process.GaussianProcess.aic--returns" class="md-nav__link">
-    <span class="md-ellipsis">
-      Returns
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
         
@@ -1284,21 +1135,6 @@
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="bic">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#stela_toolkit.gaussian_process.GaussianProcess.bic--returns" class="md-nav__link">
-    <span class="md-ellipsis">
-      Returns
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
 </li>
         
           <li class="md-nav__item">
@@ -1307,30 +1143,6 @@
       create_gp_model
     </span>
   </a>
-  
-    <nav class="md-nav" aria-label="create_gp_model">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#stela_toolkit.gaussian_process.GaussianProcess.create_gp_model--parameters" class="md-nav__link">
-    <span class="md-ellipsis">
-      Parameters
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#stela_toolkit.gaussian_process.GaussianProcess.create_gp_model--returns" class="md-nav__link">
-    <span class="md-ellipsis">
-      Returns
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
         
@@ -1350,30 +1162,6 @@
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="find_best_kernel">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#stela_toolkit.gaussian_process.GaussianProcess.find_best_kernel--parameters" class="md-nav__link">
-    <span class="md-ellipsis">
-      Parameters
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#stela_toolkit.gaussian_process.GaussianProcess.find_best_kernel--returns" class="md-nav__link">
-    <span class="md-ellipsis">
-      Returns
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
 </li>
         
           <li class="md-nav__item">
@@ -1382,21 +1170,6 @@
       get_hyperparameters
     </span>
   </a>
-  
-    <nav class="md-nav" aria-label="get_hyperparameters">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#stela_toolkit.gaussian_process.GaussianProcess.get_hyperparameters--returns" class="md-nav__link">
-    <span class="md-ellipsis">
-      Returns
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
         
@@ -1407,30 +1180,6 @@
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="load">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#stela_toolkit.gaussian_process.GaussianProcess.load--parameters" class="md-nav__link">
-    <span class="md-ellipsis">
-      Parameters
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#stela_toolkit.gaussian_process.GaussianProcess.load--returns" class="md-nav__link">
-    <span class="md-ellipsis">
-      Returns
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
 </li>
         
           <li class="md-nav__item">
@@ -1439,21 +1188,6 @@
       plot
     </span>
   </a>
-  
-    <nav class="md-nav" aria-label="plot">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#stela_toolkit.gaussian_process.GaussianProcess.plot--parameters" class="md-nav__link">
-    <span class="md-ellipsis">
-      Parameters
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
         
@@ -1464,30 +1198,6 @@
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="predict">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#stela_toolkit.gaussian_process.GaussianProcess.predict--parameters" class="md-nav__link">
-    <span class="md-ellipsis">
-      Parameters
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#stela_toolkit.gaussian_process.GaussianProcess.predict--returns" class="md-nav__link">
-    <span class="md-ellipsis">
-      Returns
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
 </li>
         
           <li class="md-nav__item">
@@ -1496,30 +1206,6 @@
       sample
     </span>
   </a>
-  
-    <nav class="md-nav" aria-label="sample">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#stela_toolkit.gaussian_process.GaussianProcess.sample--parameters" class="md-nav__link">
-    <span class="md-ellipsis">
-      Parameters
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#stela_toolkit.gaussian_process.GaussianProcess.sample--returns" class="md-nav__link">
-    <span class="md-ellipsis">
-      Returns
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
         
@@ -1530,21 +1216,6 @@
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="save">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#stela_toolkit.gaussian_process.GaussianProcess.save--parameters" class="md-nav__link">
-    <span class="md-ellipsis">
-      Parameters
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
 </li>
         
           <li class="md-nav__item">
@@ -1553,30 +1224,6 @@
       set_kernel
     </span>
   </a>
-  
-    <nav class="md-nav" aria-label="set_kernel">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#stela_toolkit.gaussian_process.GaussianProcess.set_kernel--parameters" class="md-nav__link">
-    <span class="md-ellipsis">
-      Parameters
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#stela_toolkit.gaussian_process.GaussianProcess.set_kernel--returns" class="md-nav__link">
-    <span class="md-ellipsis">
-      Returns
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
         
@@ -1587,30 +1234,6 @@
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="set_likelihood">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#stela_toolkit.gaussian_process.GaussianProcess.set_likelihood--parameters" class="md-nav__link">
-    <span class="md-ellipsis">
-      Parameters
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#stela_toolkit.gaussian_process.GaussianProcess.set_likelihood--returns" class="md-nav__link">
-    <span class="md-ellipsis">
-      Returns
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
 </li>
         
           <li class="md-nav__item">
@@ -1619,21 +1242,6 @@
       train
     </span>
   </a>
-  
-    <nav class="md-nav" aria-label="train">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#stela_toolkit.gaussian_process.GaussianProcess.train--parameters" class="md-nav__link">
-    <span class="md-ellipsis">
-      Parameters
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
         
@@ -1703,63 +1311,320 @@
 <p>This class allows you to model a light curve as a continuous, probabilistic function using a Gaussian Process.
 You provide a LightCurve object, and the model will fit a smooth function to the observed rates,
 incorporating measurement uncertainties and capturing the underlying variability with flexible kernel choices.</p>
-<p>By default, the model will try to make things easy for you:
-- If the flux distribution is not normally distributed, we can apply a Box-Cox transformation to make it more Gaussian.
-- The data is standardized (zero mean, unit variance) before training to improve numerical stability.
-- A white noise term can be added to account for extra variance not captured by measurement errors.
-- If you don’t specify a kernel, the model will try several standard ones and pick the best using AIC.</p>
+<p>By default, the model will try to make things easy for you:</p>
+<ul>
+<li>If the flux distribution is not normally distributed, we can apply a Box-Cox transformation to make it more Gaussian.</li>
+<li>The data is standardized (zero mean, unit variance) before training to improve numerical stability.</li>
+<li>A white noise term can be added to account for extra variance not captured by measurement errors.</li>
+<li>If you don’t specify a kernel, the model will try several standard ones and pick the best using AIC.</li>
+</ul>
 <p>Once trained, the model allows you to generate samples from the posterior predictive distribution—
 these are realizations of what the light curve <em>could</em> look like, given the data and uncertainties.
 These samples are central to downstream STELA analyses like coherence, cross-spectrum, and lag measurements,
 which will automatically use the most recently generated GP samples if a model is passed in.</p>
 <p>If you haven’t generated any samples yet, don’t worry—those modules will do it for you using default settings.</p>
-<p>Noise handling is flexible:
-- If your light curve has error bars, they’re passed directly into the GP as a fixed noise model.
-- If not, you can still include a learned white noise term to capture unmodeled variability.
-- You can control whether the model uses just your errors, or also learns extra noise.</p>
+<p>Noise handling is flexible:</p>
+<ul>
+<li>If your light curve has error bars, they’re passed directly into the GP as a fixed noise model.</li>
+<li>If not, you can still include a learned white noise term to capture unmodeled variability.</li>
+<li>You can control whether the model uses just your errors, or also learns extra noise.</li>
+</ul>
 <p>Model training uses exact inference with GPyTorch and is done via gradient descent.
 You can control the number of iterations, the optimizer learning rate, and whether to plot the training progress.</p>
-<h4 id="stela_toolkit.gaussian_process.GaussianProcess--parameters">Parameters<a class="headerlink" href="#stela_toolkit.gaussian_process.GaussianProcess--parameters" title="Permanent link">&para;</a></h4>
-<p>lightcurve : LightCurve
-    The input light curve to model.
-kernel_form : str or list, optional
-    Kernel type to use (e.g., 'Matern32', 'RBF', 'SpectralMixture, N'), or list of types for auto-selection.
-    If 'auto', we try several and choose the best using AIC.
-white_noise : bool, optional
-    Whether to include a white noise component in addition to measurement errors.
-enforce_normality : bool, optional
-    Whether to apply a Box-Cox transformation to make the flux distribution more Gaussian.
-run_training : bool, optional
-    Whether to train the GP model on initialization.
-plot_training : bool, optional
-    Whether to plot the training loss during optimization.
-num_iter : int, optional
-    Number of iterations for GP training.
-learn_rate : float, optional
-    Learning rate for the optimizer.
-sample_time_grid : array-like, optional
-    Time grid on which to draw posterior samples after training.
-num_samples : int, optional
-    Number of GP samples to draw from the posterior.
-verbose : bool, optional
-    Whether to print model selection, training progress, and sampling diagnostics.</p>
-<h4 id="stela_toolkit.gaussian_process.GaussianProcess--attributes">Attributes<a class="headerlink" href="#stela_toolkit.gaussian_process.GaussianProcess--attributes" title="Permanent link">&para;</a></h4>
-<p>model : gpytorch.models.ExactGP
-    The trained GP model used for prediction and sampling.
-likelihood : gpytorch.likelihoods.Likelihood
-    The likelihood model used (e.g., Gaussian with or without fixed noise).
-train_times : torch.Tensor
-    Time points used for training the GP.
-train_rates : torch.Tensor
-    Rate values used for training.
-train_errors : torch.Tensor
-    Measurement uncertainties (empty if not provided).
-samples : ndarray
-    Posterior samples drawn after training (used by downstream STELA modules).
-pred_times : torch.Tensor
-    Time grid on which posterior samples were drawn.
-kernel_form : str
-    Name of the kernel used in the final trained model.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>lightcurve</code>
+            </td>
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="LightCurve (stela_toolkit.power_spectrum.LightCurve)" href="../data_loader/#stela_toolkit.data_loader.LightCurve">LightCurve</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>The input light curve to model.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>kernel_form</code>
+            </td>
+            <td>
+                  <code><span title="str">str</span> or <span title="list">list</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Kernel type to use (e.g., 'Matern32', 'RBF', 'SpectralMixture, N'), or list of types for auto-selection.
+If 'auto', we try several and choose the best using AIC.</p>
+              </div>
+            </td>
+            <td>
+                  <code>&#39;auto&#39;</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>white_noise</code>
+            </td>
+            <td>
+                  <code><span title="bool">bool</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Whether to include a white noise component in addition to measurement errors.</p>
+              </div>
+            </td>
+            <td>
+                  <code>True</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>enforce_normality</code>
+            </td>
+            <td>
+                  <code><span title="bool">bool</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Whether to apply a Box-Cox transformation to make the flux distribution more Gaussian.</p>
+              </div>
+            </td>
+            <td>
+                  <code>False</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>run_training</code>
+            </td>
+            <td>
+                  <code><span title="bool">bool</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Whether to train the GP model on initialization.</p>
+              </div>
+            </td>
+            <td>
+                  <code>True</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>plot_training</code>
+            </td>
+            <td>
+                  <code><span title="bool">bool</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Whether to plot the training loss during optimization.</p>
+              </div>
+            </td>
+            <td>
+                  <code>False</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>num_iter</code>
+            </td>
+            <td>
+                  <code><span title="int">int</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Number of iterations for GP training.</p>
+              </div>
+            </td>
+            <td>
+                  <code>500</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>learn_rate</code>
+            </td>
+            <td>
+                  <code><span title="float">float</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Learning rate for the optimizer.</p>
+              </div>
+            </td>
+            <td>
+                  <code>0.1</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>sample_time_grid</code>
+            </td>
+            <td>
+                  <code><span title="array">array</span> - <span title="like">like</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Time grid on which to draw posterior samples after training.</p>
+              </div>
+            </td>
+            <td>
+                  <code>[]</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>num_samples</code>
+            </td>
+            <td>
+                  <code><span title="int">int</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Number of GP samples to draw from the posterior.</p>
+              </div>
+            </td>
+            <td>
+                  <code>1000</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>verbose</code>
+            </td>
+            <td>
+                  <code><span title="bool">bool</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Whether to print model selection, training progress, and sampling diagnostics.</p>
+              </div>
+            </td>
+            <td>
+                  <code>False</code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+<p><span class="doc-section-title">Attributes:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td><code><span title="stela_toolkit.gaussian_process.GaussianProcess.model">model</span></code></td>
+            <td>
+                  <code><span title="gpytorch.models.ExactGP">ExactGP</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>The trained GP model used for prediction and sampling.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="stela_toolkit.gaussian_process.GaussianProcess.likelihood">likelihood</span></code></td>
+            <td>
+                  <code><span title="gpytorch.likelihoods.Likelihood">Likelihood</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>The likelihood model used (e.g., Gaussian with or without fixed noise).</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="stela_toolkit.gaussian_process.GaussianProcess.train_times">train_times</span></code></td>
+            <td>
+                  <code><span title="torch.Tensor">Tensor</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Time points used for training the GP.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="stela_toolkit.gaussian_process.GaussianProcess.train_rates">train_rates</span></code></td>
+            <td>
+                  <code><span title="torch.Tensor">Tensor</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Rate values used for training.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="stela_toolkit.gaussian_process.GaussianProcess.train_errors">train_errors</span></code></td>
+            <td>
+                  <code><span title="torch.Tensor">Tensor</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Measurement uncertainties (empty if not provided).</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="stela_toolkit.gaussian_process.GaussianProcess.samples">samples</span></code></td>
+            <td>
+                  <code><span title="ndarray">ndarray</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Posterior samples drawn after training (used by downstream STELA modules).</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="stela_toolkit.gaussian_process.GaussianProcess.pred_times">pred_times</span></code></td>
+            <td>
+                  <code><span title="torch.Tensor">Tensor</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Time grid on which posterior samples were drawn.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="stela_toolkit.gaussian_process.GaussianProcess.kernel_form">kernel_form</span></code></td>
+            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Name of the kernel used in the final trained model.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
 
 
@@ -2529,7 +2394,38 @@ kernel_form : str
 <span class="normal">769</span>
 <span class="normal">770</span>
 <span class="normal">771</span>
-<span class="normal">772</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">GaussianProcess</span><span class="p">:</span>
+<span class="normal">772</span>
+<span class="normal">773</span>
+<span class="normal">774</span>
+<span class="normal">775</span>
+<span class="normal">776</span>
+<span class="normal">777</span>
+<span class="normal">778</span>
+<span class="normal">779</span>
+<span class="normal">780</span>
+<span class="normal">781</span>
+<span class="normal">782</span>
+<span class="normal">783</span>
+<span class="normal">784</span>
+<span class="normal">785</span>
+<span class="normal">786</span>
+<span class="normal">787</span>
+<span class="normal">788</span>
+<span class="normal">789</span>
+<span class="normal">790</span>
+<span class="normal">791</span>
+<span class="normal">792</span>
+<span class="normal">793</span>
+<span class="normal">794</span>
+<span class="normal">795</span>
+<span class="normal">796</span>
+<span class="normal">797</span>
+<span class="normal">798</span>
+<span class="normal">799</span>
+<span class="normal">800</span>
+<span class="normal">801</span>
+<span class="normal">802</span>
+<span class="normal">803</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">GaussianProcess</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Fit and sample from a Gaussian Process (GP) model for light curve data.</span>
 
@@ -2538,6 +2434,7 @@ kernel_form : str
 <span class="sd">    incorporating measurement uncertainties and capturing the underlying variability with flexible kernel choices.</span>
 
 <span class="sd">    By default, the model will try to make things easy for you:</span>
+
 <span class="sd">    - If the flux distribution is not normally distributed, we can apply a Box-Cox transformation to make it more Gaussian.</span>
 <span class="sd">    - The data is standardized (zero mean, unit variance) before training to improve numerical stability.</span>
 <span class="sd">    - A white noise term can be added to account for extra variance not captured by measurement errors.</span>
@@ -2551,6 +2448,7 @@ kernel_form : str
 <span class="sd">    If you haven’t generated any samples yet, don’t worry—those modules will do it for you using default settings.</span>
 
 <span class="sd">    Noise handling is flexible:</span>
+
 <span class="sd">    - If your light curve has error bars, they’re passed directly into the GP as a fixed noise model.</span>
 <span class="sd">    - If not, you can still include a learned white noise term to capture unmodeled variability.</span>
 <span class="sd">    - You can control whether the model uses just your errors, or also learns extra noise.</span>
@@ -2562,25 +2460,35 @@ kernel_form : str
 <span class="sd">    ----------</span>
 <span class="sd">    lightcurve : LightCurve</span>
 <span class="sd">        The input light curve to model.</span>
+
 <span class="sd">    kernel_form : str or list, optional</span>
 <span class="sd">        Kernel type to use (e.g., &#39;Matern32&#39;, &#39;RBF&#39;, &#39;SpectralMixture, N&#39;), or list of types for auto-selection.</span>
 <span class="sd">        If &#39;auto&#39;, we try several and choose the best using AIC.</span>
+
 <span class="sd">    white_noise : bool, optional</span>
 <span class="sd">        Whether to include a white noise component in addition to measurement errors.</span>
+
 <span class="sd">    enforce_normality : bool, optional</span>
 <span class="sd">        Whether to apply a Box-Cox transformation to make the flux distribution more Gaussian.</span>
+
 <span class="sd">    run_training : bool, optional</span>
 <span class="sd">        Whether to train the GP model on initialization.</span>
+
 <span class="sd">    plot_training : bool, optional</span>
 <span class="sd">        Whether to plot the training loss during optimization.</span>
+
 <span class="sd">    num_iter : int, optional</span>
 <span class="sd">        Number of iterations for GP training.</span>
+
 <span class="sd">    learn_rate : float, optional</span>
 <span class="sd">        Learning rate for the optimizer.</span>
+
 <span class="sd">    sample_time_grid : array-like, optional</span>
 <span class="sd">        Time grid on which to draw posterior samples after training.</span>
+
 <span class="sd">    num_samples : int, optional</span>
 <span class="sd">        Number of GP samples to draw from the posterior.</span>
+
 <span class="sd">    verbose : bool, optional</span>
 <span class="sd">        Whether to print model selection, training progress, and sampling diagnostics.</span>
 
@@ -2588,18 +2496,25 @@ kernel_form : str
 <span class="sd">    ----------</span>
 <span class="sd">    model : gpytorch.models.ExactGP</span>
 <span class="sd">        The trained GP model used for prediction and sampling.</span>
+
 <span class="sd">    likelihood : gpytorch.likelihoods.Likelihood</span>
 <span class="sd">        The likelihood model used (e.g., Gaussian with or without fixed noise).</span>
+
 <span class="sd">    train_times : torch.Tensor</span>
 <span class="sd">        Time points used for training the GP.</span>
+
 <span class="sd">    train_rates : torch.Tensor</span>
 <span class="sd">        Rate values used for training.</span>
+
 <span class="sd">    train_errors : torch.Tensor</span>
 <span class="sd">        Measurement uncertainties (empty if not provided).</span>
+
 <span class="sd">    samples : ndarray</span>
 <span class="sd">        Posterior samples drawn after training (used by downstream STELA modules).</span>
+
 <span class="sd">    pred_times : torch.Tensor</span>
 <span class="sd">        Time grid on which posterior samples were drawn.</span>
+
 <span class="sd">    kernel_form : str</span>
 <span class="sd">        Name of the kernel used in the final trained model.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -2722,6 +2637,7 @@ kernel_form : str
 <span class="sd">        ----------</span>
 <span class="sd">        likelihood : gpytorch.likelihoods.Likelihood</span>
 <span class="sd">            The likelihood model to use (e.g., Gaussian or FixedNoise).</span>
+
 <span class="sd">        kernel_form : str</span>
 <span class="sd">            The kernel type (e.g., &#39;Matern32&#39;, &#39;SpectralMixture, 4&#39;).</span>
 
@@ -2756,6 +2672,7 @@ kernel_form : str
 <span class="sd">        ----------</span>
 <span class="sd">        white_noise : bool</span>
 <span class="sd">            Whether to include a learnable noise term in the model.</span>
+
 <span class="sd">        train_errors : torch.Tensor, optional</span>
 <span class="sd">            Measurement errors from the light curve.</span>
 
@@ -2861,10 +2778,13 @@ kernel_form : str
 <span class="sd">        ----------</span>
 <span class="sd">        num_iter : int, optional</span>
 <span class="sd">            Number of optimization steps to perform. Default is 500.</span>
+
 <span class="sd">        learn_rate : float, optional</span>
 <span class="sd">            Learning rate for the Adam optimizer. Default is 0.1.</span>
+
 <span class="sd">        plot : bool, optional</span>
 <span class="sd">            If True, display a plot of the NLML loss as training progresses.</span>
+
 <span class="sd">        verbose : bool, optional</span>
 <span class="sd">            If True, print progress updates at regular intervals during training.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -2971,10 +2891,13 @@ kernel_form : str
 <span class="sd">        ----------</span>
 <span class="sd">        kernel_list : list of str</span>
 <span class="sd">            Kernel names to try.</span>
+
 <span class="sd">        num_iter : int</span>
 <span class="sd">            Number of iterations per training run.</span>
+
 <span class="sd">        learn_rate : float</span>
 <span class="sd">            Learning rate for the optimizer.</span>
+
 <span class="sd">        verbose : bool</span>
 <span class="sd">            Whether to print progress for each kernel.</span>
 
@@ -2982,6 +2905,7 @@ kernel_form : str
 <span class="sd">        -------</span>
 <span class="sd">        best_model : GPModel</span>
 <span class="sd">            The model trained with the best-performing kernel.</span>
+
 <span class="sd">        best_likelihood : gpytorch.likelihoods.Likelihood</span>
 <span class="sd">            Corresponding likelihood for the best model.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -3119,10 +3043,13 @@ kernel_form : str
 <span class="sd">        ----------</span>
 <span class="sd">        pred_times : array-like</span>
 <span class="sd">            Time points where samples should be drawn.</span>
+
 <span class="sd">        num_samples : int</span>
 <span class="sd">            Number of realizations to generate.</span>
+
 <span class="sd">        save_path : str, optional</span>
 <span class="sd">            File path to save the samples.</span>
+
 <span class="sd">        _save_to_state : bool, optional</span>
 <span class="sd">            Whether to store results in the object (used by other classes).</span>
 
@@ -3317,32 +3244,52 @@ kernel_form : str
     <div class="doc doc-contents ">
 
         <p>Compute the Akaike Information Criterion (AIC) for the trained model.</p>
-<h5 id="stela_toolkit.gaussian_process.GaussianProcess.aic--returns">Returns<a class="headerlink" href="#stela_toolkit.gaussian_process.GaussianProcess.aic--returns" title="Permanent link">&para;</a></h5>
-<p>aic : float
-    The AIC value (lower is better).</p>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+<th>Name</th>          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+<td><code>aic</code></td>            <td>
+                  <code><span title="float">float</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>The AIC value (lower is better).</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
 
             <details class="quote">
               <summary>Source code in <code>stela_toolkit/gaussian_process.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">571</span>
-<span class="normal">572</span>
-<span class="normal">573</span>
-<span class="normal">574</span>
-<span class="normal">575</span>
-<span class="normal">576</span>
-<span class="normal">577</span>
-<span class="normal">578</span>
-<span class="normal">579</span>
-<span class="normal">580</span>
-<span class="normal">581</span>
-<span class="normal">582</span>
-<span class="normal">583</span>
-<span class="normal">584</span>
-<span class="normal">585</span>
-<span class="normal">586</span>
-<span class="normal">587</span>
-<span class="normal">588</span>
-<span class="normal">589</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">aic</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">599</span>
+<span class="normal">600</span>
+<span class="normal">601</span>
+<span class="normal">602</span>
+<span class="normal">603</span>
+<span class="normal">604</span>
+<span class="normal">605</span>
+<span class="normal">606</span>
+<span class="normal">607</span>
+<span class="normal">608</span>
+<span class="normal">609</span>
+<span class="normal">610</span>
+<span class="normal">611</span>
+<span class="normal">612</span>
+<span class="normal">613</span>
+<span class="normal">614</span>
+<span class="normal">615</span>
+<span class="normal">616</span>
+<span class="normal">617</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">aic</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compute the Akaike Information Criterion (AIC) for the trained model.</span>
 
@@ -3379,33 +3326,53 @@ kernel_form : str
     <div class="doc doc-contents ">
 
         <p>Compute the Bayesian Information Criterion (BIC) for the trained model.</p>
-<h5 id="stela_toolkit.gaussian_process.GaussianProcess.bic--returns">Returns<a class="headerlink" href="#stela_toolkit.gaussian_process.GaussianProcess.bic--returns" title="Permanent link">&para;</a></h5>
-<p>bic : float
-    The BIC value (lower is better).</p>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+<th>Name</th>          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+<td><code>bic</code></td>            <td>
+                  <code><span title="float">float</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>The BIC value (lower is better).</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
 
             <details class="quote">
               <summary>Source code in <code>stela_toolkit/gaussian_process.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">550</span>
-<span class="normal">551</span>
-<span class="normal">552</span>
-<span class="normal">553</span>
-<span class="normal">554</span>
-<span class="normal">555</span>
-<span class="normal">556</span>
-<span class="normal">557</span>
-<span class="normal">558</span>
-<span class="normal">559</span>
-<span class="normal">560</span>
-<span class="normal">561</span>
-<span class="normal">562</span>
-<span class="normal">563</span>
-<span class="normal">564</span>
-<span class="normal">565</span>
-<span class="normal">566</span>
-<span class="normal">567</span>
-<span class="normal">568</span>
-<span class="normal">569</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">bic</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">578</span>
+<span class="normal">579</span>
+<span class="normal">580</span>
+<span class="normal">581</span>
+<span class="normal">582</span>
+<span class="normal">583</span>
+<span class="normal">584</span>
+<span class="normal">585</span>
+<span class="normal">586</span>
+<span class="normal">587</span>
+<span class="normal">588</span>
+<span class="normal">589</span>
+<span class="normal">590</span>
+<span class="normal">591</span>
+<span class="normal">592</span>
+<span class="normal">593</span>
+<span class="normal">594</span>
+<span class="normal">595</span>
+<span class="normal">596</span>
+<span class="normal">597</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">bic</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compute the Bayesian Information Criterion (BIC) for the trained model.</span>
 
@@ -3443,38 +3410,81 @@ kernel_form : str
     <div class="doc doc-contents ">
 
         <p>Build a GP model with the specified likelihood and kernel.</p>
-<h5 id="stela_toolkit.gaussian_process.GaussianProcess.create_gp_model--parameters">Parameters<a class="headerlink" href="#stela_toolkit.gaussian_process.GaussianProcess.create_gp_model--parameters" title="Permanent link">&para;</a></h5>
-<p>likelihood : gpytorch.likelihoods.Likelihood
-    The likelihood model to use (e.g., Gaussian or FixedNoise).
-kernel_form : str
-    The kernel type (e.g., 'Matern32', 'SpectralMixture, 4').</p>
-<h5 id="stela_toolkit.gaussian_process.GaussianProcess.create_gp_model--returns">Returns<a class="headerlink" href="#stela_toolkit.gaussian_process.GaussianProcess.create_gp_model--returns" title="Permanent link">&para;</a></h5>
-<p>GPModel
-    A subclass of gpytorch.models.ExactGP for training.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>likelihood</code>
+            </td>
+            <td>
+                  <code><span title="gpytorch.likelihoods.Likelihood">Likelihood</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>The likelihood model to use (e.g., Gaussian or FixedNoise).</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>kernel_form</code>
+            </td>
+            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>The kernel type (e.g., 'Matern32', 'SpectralMixture, 4').</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="GPModel">GPModel</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>A subclass of gpytorch.models.ExactGP for training.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
 
             <details class="quote">
               <summary>Source code in <code>stela_toolkit/gaussian_process.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">197</span>
-<span class="normal">198</span>
-<span class="normal">199</span>
-<span class="normal">200</span>
-<span class="normal">201</span>
-<span class="normal">202</span>
-<span class="normal">203</span>
-<span class="normal">204</span>
-<span class="normal">205</span>
-<span class="normal">206</span>
-<span class="normal">207</span>
-<span class="normal">208</span>
-<span class="normal">209</span>
-<span class="normal">210</span>
-<span class="normal">211</span>
-<span class="normal">212</span>
-<span class="normal">213</span>
-<span class="normal">214</span>
-<span class="normal">215</span>
-<span class="normal">216</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">216</span>
 <span class="normal">217</span>
 <span class="normal">218</span>
 <span class="normal">219</span>
@@ -3483,7 +3493,27 @@ kernel_form : str
 <span class="normal">222</span>
 <span class="normal">223</span>
 <span class="normal">224</span>
-<span class="normal">225</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">create_gp_model</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">likelihood</span><span class="p">,</span> <span class="n">kernel_form</span><span class="p">):</span>
+<span class="normal">225</span>
+<span class="normal">226</span>
+<span class="normal">227</span>
+<span class="normal">228</span>
+<span class="normal">229</span>
+<span class="normal">230</span>
+<span class="normal">231</span>
+<span class="normal">232</span>
+<span class="normal">233</span>
+<span class="normal">234</span>
+<span class="normal">235</span>
+<span class="normal">236</span>
+<span class="normal">237</span>
+<span class="normal">238</span>
+<span class="normal">239</span>
+<span class="normal">240</span>
+<span class="normal">241</span>
+<span class="normal">242</span>
+<span class="normal">243</span>
+<span class="normal">244</span>
+<span class="normal">245</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">create_gp_model</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">likelihood</span><span class="p">,</span> <span class="n">kernel_form</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Build a GP model with the specified likelihood and kernel.</span>
 
@@ -3491,6 +3521,7 @@ kernel_form : str
 <span class="sd">    ----------</span>
 <span class="sd">    likelihood : gpytorch.likelihoods.Likelihood</span>
 <span class="sd">        The likelihood model to use (e.g., Gaussian or FixedNoise).</span>
+
 <span class="sd">    kernel_form : str</span>
 <span class="sd">        The kernel type (e.g., &#39;Matern32&#39;, &#39;SpectralMixture, 4&#39;).</span>
 
@@ -3537,26 +3568,7 @@ selects the most appropriate test (Shapiro-Wilk or Lilliefors) based on sample s
 
             <details class="quote">
               <summary>Source code in <code>stela_toolkit/gaussian_process.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">162</span>
-<span class="normal">163</span>
-<span class="normal">164</span>
-<span class="normal">165</span>
-<span class="normal">166</span>
-<span class="normal">167</span>
-<span class="normal">168</span>
-<span class="normal">169</span>
-<span class="normal">170</span>
-<span class="normal">171</span>
-<span class="normal">172</span>
-<span class="normal">173</span>
-<span class="normal">174</span>
-<span class="normal">175</span>
-<span class="normal">176</span>
-<span class="normal">177</span>
-<span class="normal">178</span>
-<span class="normal">179</span>
-<span class="normal">180</span>
-<span class="normal">181</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">181</span>
 <span class="normal">182</span>
 <span class="normal">183</span>
 <span class="normal">184</span>
@@ -3569,7 +3581,26 @@ selects the most appropriate test (Shapiro-Wilk or Lilliefors) based on sample s
 <span class="normal">191</span>
 <span class="normal">192</span>
 <span class="normal">193</span>
-<span class="normal">194</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">enforce_normality</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="normal">194</span>
+<span class="normal">195</span>
+<span class="normal">196</span>
+<span class="normal">197</span>
+<span class="normal">198</span>
+<span class="normal">199</span>
+<span class="normal">200</span>
+<span class="normal">201</span>
+<span class="normal">202</span>
+<span class="normal">203</span>
+<span class="normal">204</span>
+<span class="normal">205</span>
+<span class="normal">206</span>
+<span class="normal">207</span>
+<span class="normal">208</span>
+<span class="normal">209</span>
+<span class="normal">210</span>
+<span class="normal">211</span>
+<span class="normal">212</span>
+<span class="normal">213</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">enforce_normality</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Check normality of the input data and apply a Box-Cox transformation if needed.</span>
 
@@ -3622,49 +3653,123 @@ selects the most appropriate test (Shapiro-Wilk or Lilliefors) based on sample s
         <p>Search over a list of kernels and return the best one by AIC.</p>
 <p>Trains the model separately with each kernel in the list, computes the AIC,
 and returns the model with the lowest value.</p>
-<h5 id="stela_toolkit.gaussian_process.GaussianProcess.find_best_kernel--parameters">Parameters<a class="headerlink" href="#stela_toolkit.gaussian_process.GaussianProcess.find_best_kernel--parameters" title="Permanent link">&para;</a></h5>
-<p>kernel_list : list of str
-    Kernel names to try.
-num_iter : int
-    Number of iterations per training run.
-learn_rate : float
-    Learning rate for the optimizer.
-verbose : bool
-    Whether to print progress for each kernel.</p>
-<h5 id="stela_toolkit.gaussian_process.GaussianProcess.find_best_kernel--returns">Returns<a class="headerlink" href="#stela_toolkit.gaussian_process.GaussianProcess.find_best_kernel--returns" title="Permanent link">&para;</a></h5>
-<p>best_model : GPModel
-    The model trained with the best-performing kernel.
-best_likelihood : gpytorch.likelihoods.Likelihood
-    Corresponding likelihood for the best model.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>kernel_list</code>
+            </td>
+            <td>
+                  <code>list of str</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Kernel names to try.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>num_iter</code>
+            </td>
+            <td>
+                  <code><span title="int">int</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Number of iterations per training run.</p>
+              </div>
+            </td>
+            <td>
+                  <code>500</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>learn_rate</code>
+            </td>
+            <td>
+                  <code><span title="float">float</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Learning rate for the optimizer.</p>
+              </div>
+            </td>
+            <td>
+                  <code>0.1</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>verbose</code>
+            </td>
+            <td>
+                  <code><span title="bool">bool</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Whether to print progress for each kernel.</p>
+              </div>
+            </td>
+            <td>
+                  <code>False</code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+<th>Name</th>          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+<td><code>best_model</code></td>            <td>
+                  <code><span title="GPModel">GPModel</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>The model trained with the best-performing kernel.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+<td><code>best_likelihood</code></td>            <td>
+                  <code><span title="gpytorch.likelihoods.Likelihood">Likelihood</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Corresponding likelihood for the best model.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
 
             <details class="quote">
               <summary>Source code in <code>stela_toolkit/gaussian_process.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">443</span>
-<span class="normal">444</span>
-<span class="normal">445</span>
-<span class="normal">446</span>
-<span class="normal">447</span>
-<span class="normal">448</span>
-<span class="normal">449</span>
-<span class="normal">450</span>
-<span class="normal">451</span>
-<span class="normal">452</span>
-<span class="normal">453</span>
-<span class="normal">454</span>
-<span class="normal">455</span>
-<span class="normal">456</span>
-<span class="normal">457</span>
-<span class="normal">458</span>
-<span class="normal">459</span>
-<span class="normal">460</span>
-<span class="normal">461</span>
-<span class="normal">462</span>
-<span class="normal">463</span>
-<span class="normal">464</span>
-<span class="normal">465</span>
-<span class="normal">466</span>
-<span class="normal">467</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">467</span>
 <span class="normal">468</span>
 <span class="normal">469</span>
 <span class="normal">470</span>
@@ -3696,7 +3801,35 @@ best_likelihood : gpytorch.likelihoods.Likelihood
 <span class="normal">496</span>
 <span class="normal">497</span>
 <span class="normal">498</span>
-<span class="normal">499</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">find_best_kernel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">kernel_list</span><span class="p">,</span> <span class="n">num_iter</span><span class="o">=</span><span class="mi">500</span><span class="p">,</span> <span class="n">learn_rate</span><span class="o">=</span><span class="mf">1e-1</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="normal">499</span>
+<span class="normal">500</span>
+<span class="normal">501</span>
+<span class="normal">502</span>
+<span class="normal">503</span>
+<span class="normal">504</span>
+<span class="normal">505</span>
+<span class="normal">506</span>
+<span class="normal">507</span>
+<span class="normal">508</span>
+<span class="normal">509</span>
+<span class="normal">510</span>
+<span class="normal">511</span>
+<span class="normal">512</span>
+<span class="normal">513</span>
+<span class="normal">514</span>
+<span class="normal">515</span>
+<span class="normal">516</span>
+<span class="normal">517</span>
+<span class="normal">518</span>
+<span class="normal">519</span>
+<span class="normal">520</span>
+<span class="normal">521</span>
+<span class="normal">522</span>
+<span class="normal">523</span>
+<span class="normal">524</span>
+<span class="normal">525</span>
+<span class="normal">526</span>
+<span class="normal">527</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">find_best_kernel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">kernel_list</span><span class="p">,</span> <span class="n">num_iter</span><span class="o">=</span><span class="mi">500</span><span class="p">,</span> <span class="n">learn_rate</span><span class="o">=</span><span class="mf">1e-1</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Search over a list of kernels and return the best one by AIC.</span>
 
@@ -3707,10 +3840,13 @@ best_likelihood : gpytorch.likelihoods.Likelihood
 <span class="sd">    ----------</span>
 <span class="sd">    kernel_list : list of str</span>
 <span class="sd">        Kernel names to try.</span>
+
 <span class="sd">    num_iter : int</span>
 <span class="sd">        Number of iterations per training run.</span>
+
 <span class="sd">    learn_rate : float</span>
 <span class="sd">        Learning rate for the optimizer.</span>
+
 <span class="sd">    verbose : bool</span>
 <span class="sd">        Whether to print progress for each kernel.</span>
 
@@ -3718,6 +3854,7 @@ best_likelihood : gpytorch.likelihoods.Likelihood
 <span class="sd">    -------</span>
 <span class="sd">    best_model : GPModel</span>
 <span class="sd">        The model trained with the best-performing kernel.</span>
+
 <span class="sd">    best_likelihood : gpytorch.likelihoods.Likelihood</span>
 <span class="sd">        Corresponding likelihood for the best model.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -3771,44 +3908,36 @@ best_likelihood : gpytorch.likelihoods.Likelihood
     <div class="doc doc-contents ">
 
         <p>Return the learned GP hyperparameters (lengthscale, noise, weights, etc.).</p>
-<h5 id="stela_toolkit.gaussian_process.GaussianProcess.get_hyperparameters--returns">Returns<a class="headerlink" href="#stela_toolkit.gaussian_process.GaussianProcess.get_hyperparameters--returns" title="Permanent link">&para;</a></h5>
-<p>hyper_dict : dict
-    Dictionary mapping parameter names to their (transformed) values.
-        Note: All rate-associated hyperparameters (e.g., not lengthscale) 
-        are in units of the standardized data, not the original flux/time units.</p>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+<th>Name</th>          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+<td><code>hyper_dict</code></td>            <td>
+                  <code><span title="dict">dict</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Dictionary mapping parameter names to their (transformed) values.
+    Note: All rate-associated hyperparameters (e.g., not lengthscale) 
+    are in units of the standardized data, not the original flux/time units.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
 
             <details class="quote">
               <summary>Source code in <code>stela_toolkit/gaussian_process.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">501</span>
-<span class="normal">502</span>
-<span class="normal">503</span>
-<span class="normal">504</span>
-<span class="normal">505</span>
-<span class="normal">506</span>
-<span class="normal">507</span>
-<span class="normal">508</span>
-<span class="normal">509</span>
-<span class="normal">510</span>
-<span class="normal">511</span>
-<span class="normal">512</span>
-<span class="normal">513</span>
-<span class="normal">514</span>
-<span class="normal">515</span>
-<span class="normal">516</span>
-<span class="normal">517</span>
-<span class="normal">518</span>
-<span class="normal">519</span>
-<span class="normal">520</span>
-<span class="normal">521</span>
-<span class="normal">522</span>
-<span class="normal">523</span>
-<span class="normal">524</span>
-<span class="normal">525</span>
-<span class="normal">526</span>
-<span class="normal">527</span>
-<span class="normal">528</span>
-<span class="normal">529</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">529</span>
 <span class="normal">530</span>
 <span class="normal">531</span>
 <span class="normal">532</span>
@@ -3827,7 +3956,35 @@ best_likelihood : gpytorch.likelihoods.Likelihood
 <span class="normal">545</span>
 <span class="normal">546</span>
 <span class="normal">547</span>
-<span class="normal">548</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">get_hyperparameters</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="normal">548</span>
+<span class="normal">549</span>
+<span class="normal">550</span>
+<span class="normal">551</span>
+<span class="normal">552</span>
+<span class="normal">553</span>
+<span class="normal">554</span>
+<span class="normal">555</span>
+<span class="normal">556</span>
+<span class="normal">557</span>
+<span class="normal">558</span>
+<span class="normal">559</span>
+<span class="normal">560</span>
+<span class="normal">561</span>
+<span class="normal">562</span>
+<span class="normal">563</span>
+<span class="normal">564</span>
+<span class="normal">565</span>
+<span class="normal">566</span>
+<span class="normal">567</span>
+<span class="normal">568</span>
+<span class="normal">569</span>
+<span class="normal">570</span>
+<span class="normal">571</span>
+<span class="normal">572</span>
+<span class="normal">573</span>
+<span class="normal">574</span>
+<span class="normal">575</span>
+<span class="normal">576</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">get_hyperparameters</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return the learned GP hyperparameters (lengthscale, noise, weights, etc.).</span>
 
@@ -3897,36 +4054,84 @@ best_likelihood : gpytorch.likelihoods.Likelihood
     <div class="doc doc-contents ">
 
         <p>Load a saved GaussianProcess model from file.</p>
-<h5 id="stela_toolkit.gaussian_process.GaussianProcess.load--parameters">Parameters<a class="headerlink" href="#stela_toolkit.gaussian_process.GaussianProcess.load--parameters" title="Permanent link">&para;</a></h5>
-<p>file_path : str
-    Path to the saved file.</p>
-<h5 id="stela_toolkit.gaussian_process.GaussianProcess.load--returns">Returns<a class="headerlink" href="#stela_toolkit.gaussian_process.GaussianProcess.load--returns" title="Permanent link">&para;</a></h5>
-<p>GaussianProcess
-    Restored instance of the model.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>file_path</code>
+            </td>
+            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Path to the saved file.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="GaussianProcess (stela_toolkit.gaussian_process.GaussianProcess)" href="#stela_toolkit.gaussian_process.GaussianProcess">GaussianProcess</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Restored instance of the model.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
 
             <details class="quote">
               <summary>Source code in <code>stela_toolkit/gaussian_process.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">729</span>
-<span class="normal">730</span>
-<span class="normal">731</span>
-<span class="normal">732</span>
-<span class="normal">733</span>
-<span class="normal">734</span>
-<span class="normal">735</span>
-<span class="normal">736</span>
-<span class="normal">737</span>
-<span class="normal">738</span>
-<span class="normal">739</span>
-<span class="normal">740</span>
-<span class="normal">741</span>
-<span class="normal">742</span>
-<span class="normal">743</span>
-<span class="normal">744</span>
-<span class="normal">745</span>
-<span class="normal">746</span>
-<span class="normal">747</span>
-<span class="normal">748</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@staticmethod</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">760</span>
+<span class="normal">761</span>
+<span class="normal">762</span>
+<span class="normal">763</span>
+<span class="normal">764</span>
+<span class="normal">765</span>
+<span class="normal">766</span>
+<span class="normal">767</span>
+<span class="normal">768</span>
+<span class="normal">769</span>
+<span class="normal">770</span>
+<span class="normal">771</span>
+<span class="normal">772</span>
+<span class="normal">773</span>
+<span class="normal">774</span>
+<span class="normal">775</span>
+<span class="normal">776</span>
+<span class="normal">777</span>
+<span class="normal">778</span>
+<span class="normal">779</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@staticmethod</span>
 <span class="k">def</span> <span class="nf">load</span><span class="p">(</span><span class="n">file_path</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Load a saved GaussianProcess model from file.</span>
@@ -3964,51 +4169,79 @@ best_likelihood : gpytorch.likelihoods.Likelihood
     <div class="doc doc-contents ">
 
         <p>Plot the GP fit including mean, confidence intervals, one posterior sample, and data.</p>
-<h5 id="stela_toolkit.gaussian_process.GaussianProcess.plot--parameters">Parameters<a class="headerlink" href="#stela_toolkit.gaussian_process.GaussianProcess.plot--parameters" title="Permanent link">&para;</a></h5>
-<p>**kwargs : dict
-    Additional keyword arguments for plot customization.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>**kwargs</code>
+            </td>
+            <td>
+                  <code><span title="dict">dict</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Additional keyword arguments for plot customization.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
 
             <details class="quote">
               <summary>Source code in <code>stela_toolkit/gaussian_process.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">676</span>
-<span class="normal">677</span>
-<span class="normal">678</span>
-<span class="normal">679</span>
-<span class="normal">680</span>
-<span class="normal">681</span>
-<span class="normal">682</span>
-<span class="normal">683</span>
-<span class="normal">684</span>
-<span class="normal">685</span>
-<span class="normal">686</span>
-<span class="normal">687</span>
-<span class="normal">688</span>
-<span class="normal">689</span>
-<span class="normal">690</span>
-<span class="normal">691</span>
-<span class="normal">692</span>
-<span class="normal">693</span>
-<span class="normal">694</span>
-<span class="normal">695</span>
-<span class="normal">696</span>
-<span class="normal">697</span>
-<span class="normal">698</span>
-<span class="normal">699</span>
-<span class="normal">700</span>
-<span class="normal">701</span>
-<span class="normal">702</span>
-<span class="normal">703</span>
-<span class="normal">704</span>
-<span class="normal">705</span>
-<span class="normal">706</span>
-<span class="normal">707</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">707</span>
 <span class="normal">708</span>
 <span class="normal">709</span>
 <span class="normal">710</span>
 <span class="normal">711</span>
 <span class="normal">712</span>
-<span class="normal">713</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pred_times</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="normal">713</span>
+<span class="normal">714</span>
+<span class="normal">715</span>
+<span class="normal">716</span>
+<span class="normal">717</span>
+<span class="normal">718</span>
+<span class="normal">719</span>
+<span class="normal">720</span>
+<span class="normal">721</span>
+<span class="normal">722</span>
+<span class="normal">723</span>
+<span class="normal">724</span>
+<span class="normal">725</span>
+<span class="normal">726</span>
+<span class="normal">727</span>
+<span class="normal">728</span>
+<span class="normal">729</span>
+<span class="normal">730</span>
+<span class="normal">731</span>
+<span class="normal">732</span>
+<span class="normal">733</span>
+<span class="normal">734</span>
+<span class="normal">735</span>
+<span class="normal">736</span>
+<span class="normal">737</span>
+<span class="normal">738</span>
+<span class="normal">739</span>
+<span class="normal">740</span>
+<span class="normal">741</span>
+<span class="normal">742</span>
+<span class="normal">743</span>
+<span class="normal">744</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pred_times</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Plot the GP fit including mean, confidence intervals, one posterior sample, and data.</span>
 
@@ -4064,51 +4297,99 @@ best_likelihood : gpytorch.likelihoods.Likelihood
     <div class="doc doc-contents ">
 
         <p>Compute the posterior mean and 2-sigma confidence intervals at specified times.</p>
-<h5 id="stela_toolkit.gaussian_process.GaussianProcess.predict--parameters">Parameters<a class="headerlink" href="#stela_toolkit.gaussian_process.GaussianProcess.predict--parameters" title="Permanent link">&para;</a></h5>
-<p>pred_times : array-like
-    Time values to predict.</p>
-<h5 id="stela_toolkit.gaussian_process.GaussianProcess.predict--returns">Returns<a class="headerlink" href="#stela_toolkit.gaussian_process.GaussianProcess.predict--returns" title="Permanent link">&para;</a></h5>
-<p>mean, lower, upper : ndarray
-    Predicted mean and lower/upper bounds of the 95 percent confidence interval.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>pred_times</code>
+            </td>
+            <td>
+                  <code><span title="array">array</span> - <span title="like">like</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Time values to predict.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code>mean, lower, upper : ndarray</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Predicted mean and lower/upper bounds of the 95 percent confidence interval.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
 
             <details class="quote">
               <summary>Source code in <code>stela_toolkit/gaussian_process.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">640</span>
-<span class="normal">641</span>
-<span class="normal">642</span>
-<span class="normal">643</span>
-<span class="normal">644</span>
-<span class="normal">645</span>
-<span class="normal">646</span>
-<span class="normal">647</span>
-<span class="normal">648</span>
-<span class="normal">649</span>
-<span class="normal">650</span>
-<span class="normal">651</span>
-<span class="normal">652</span>
-<span class="normal">653</span>
-<span class="normal">654</span>
-<span class="normal">655</span>
-<span class="normal">656</span>
-<span class="normal">657</span>
-<span class="normal">658</span>
-<span class="normal">659</span>
-<span class="normal">660</span>
-<span class="normal">661</span>
-<span class="normal">662</span>
-<span class="normal">663</span>
-<span class="normal">664</span>
-<span class="normal">665</span>
-<span class="normal">666</span>
-<span class="normal">667</span>
-<span class="normal">668</span>
-<span class="normal">669</span>
-<span class="normal">670</span>
-<span class="normal">671</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">671</span>
 <span class="normal">672</span>
 <span class="normal">673</span>
-<span class="normal">674</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">predict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pred_times</span><span class="p">):</span>
+<span class="normal">674</span>
+<span class="normal">675</span>
+<span class="normal">676</span>
+<span class="normal">677</span>
+<span class="normal">678</span>
+<span class="normal">679</span>
+<span class="normal">680</span>
+<span class="normal">681</span>
+<span class="normal">682</span>
+<span class="normal">683</span>
+<span class="normal">684</span>
+<span class="normal">685</span>
+<span class="normal">686</span>
+<span class="normal">687</span>
+<span class="normal">688</span>
+<span class="normal">689</span>
+<span class="normal">690</span>
+<span class="normal">691</span>
+<span class="normal">692</span>
+<span class="normal">693</span>
+<span class="normal">694</span>
+<span class="normal">695</span>
+<span class="normal">696</span>
+<span class="normal">697</span>
+<span class="normal">698</span>
+<span class="normal">699</span>
+<span class="normal">700</span>
+<span class="normal">701</span>
+<span class="normal">702</span>
+<span class="normal">703</span>
+<span class="normal">704</span>
+<span class="normal">705</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">predict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pred_times</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compute the posterior mean and 2-sigma confidence intervals at specified times.</span>
 
@@ -4163,51 +4444,113 @@ best_likelihood : gpytorch.likelihoods.Likelihood
         <p>Generate posterior samples from the trained GP model.</p>
 <p>These samples represent plausible realizations of the light curve. These are what is used
 by the coherence, power spectrum, and lag modules when a GP model is passed in.</p>
-<h5 id="stela_toolkit.gaussian_process.GaussianProcess.sample--parameters">Parameters<a class="headerlink" href="#stela_toolkit.gaussian_process.GaussianProcess.sample--parameters" title="Permanent link">&para;</a></h5>
-<p>pred_times : array-like
-    Time points where samples should be drawn.
-num_samples : int
-    Number of realizations to generate.
-save_path : str, optional
-    File path to save the samples.
-_save_to_state : bool, optional
-    Whether to store results in the object (used by other classes).</p>
-<h5 id="stela_toolkit.gaussian_process.GaussianProcess.sample--returns">Returns<a class="headerlink" href="#stela_toolkit.gaussian_process.GaussianProcess.sample--returns" title="Permanent link">&para;</a></h5>
-<p>samples : ndarray
-    Array of sampled light curves with shape (num_samples, len(pred_times)).</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>pred_times</code>
+            </td>
+            <td>
+                  <code><span title="array">array</span> - <span title="like">like</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Time points where samples should be drawn.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>num_samples</code>
+            </td>
+            <td>
+                  <code><span title="int">int</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Number of realizations to generate.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>save_path</code>
+            </td>
+            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>File path to save the samples.</p>
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>_save_to_state</code>
+            </td>
+            <td>
+                  <code><span title="bool">bool</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Whether to store results in the object (used by other classes).</p>
+              </div>
+            </td>
+            <td>
+                  <code>True</code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+<th>Name</th>          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+<td><code>samples</code></td>            <td>
+                  <code><span title="ndarray">ndarray</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Array of sampled light curves with shape (num_samples, len(pred_times)).</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
 
             <details class="quote">
               <summary>Source code in <code>stela_toolkit/gaussian_process.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">591</span>
-<span class="normal">592</span>
-<span class="normal">593</span>
-<span class="normal">594</span>
-<span class="normal">595</span>
-<span class="normal">596</span>
-<span class="normal">597</span>
-<span class="normal">598</span>
-<span class="normal">599</span>
-<span class="normal">600</span>
-<span class="normal">601</span>
-<span class="normal">602</span>
-<span class="normal">603</span>
-<span class="normal">604</span>
-<span class="normal">605</span>
-<span class="normal">606</span>
-<span class="normal">607</span>
-<span class="normal">608</span>
-<span class="normal">609</span>
-<span class="normal">610</span>
-<span class="normal">611</span>
-<span class="normal">612</span>
-<span class="normal">613</span>
-<span class="normal">614</span>
-<span class="normal">615</span>
-<span class="normal">616</span>
-<span class="normal">617</span>
-<span class="normal">618</span>
-<span class="normal">619</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">619</span>
 <span class="normal">620</span>
 <span class="normal">621</span>
 <span class="normal">622</span>
@@ -4226,7 +4569,38 @@ _save_to_state : bool, optional
 <span class="normal">635</span>
 <span class="normal">636</span>
 <span class="normal">637</span>
-<span class="normal">638</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">sample</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pred_times</span><span class="p">,</span> <span class="n">num_samples</span><span class="p">,</span> <span class="n">save_path</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">_save_to_state</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<span class="normal">638</span>
+<span class="normal">639</span>
+<span class="normal">640</span>
+<span class="normal">641</span>
+<span class="normal">642</span>
+<span class="normal">643</span>
+<span class="normal">644</span>
+<span class="normal">645</span>
+<span class="normal">646</span>
+<span class="normal">647</span>
+<span class="normal">648</span>
+<span class="normal">649</span>
+<span class="normal">650</span>
+<span class="normal">651</span>
+<span class="normal">652</span>
+<span class="normal">653</span>
+<span class="normal">654</span>
+<span class="normal">655</span>
+<span class="normal">656</span>
+<span class="normal">657</span>
+<span class="normal">658</span>
+<span class="normal">659</span>
+<span class="normal">660</span>
+<span class="normal">661</span>
+<span class="normal">662</span>
+<span class="normal">663</span>
+<span class="normal">664</span>
+<span class="normal">665</span>
+<span class="normal">666</span>
+<span class="normal">667</span>
+<span class="normal">668</span>
+<span class="normal">669</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">sample</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pred_times</span><span class="p">,</span> <span class="n">num_samples</span><span class="p">,</span> <span class="n">save_path</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">_save_to_state</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Generate posterior samples from the trained GP model.</span>
 
@@ -4237,10 +4611,13 @@ _save_to_state : bool, optional
 <span class="sd">    ----------</span>
 <span class="sd">    pred_times : array-like</span>
 <span class="sd">        Time points where samples should be drawn.</span>
+
 <span class="sd">    num_samples : int</span>
 <span class="sd">        Number of realizations to generate.</span>
+
 <span class="sd">    save_path : str, optional</span>
 <span class="sd">        File path to save the samples.</span>
+
 <span class="sd">    _save_to_state : bool, optional</span>
 <span class="sd">        Whether to store results in the object (used by other classes).</span>
 
@@ -4292,26 +4669,54 @@ _save_to_state : bool, optional
     <div class="doc doc-contents ">
 
         <p>Save the trained GP model to a file using pickle.</p>
-<h5 id="stela_toolkit.gaussian_process.GaussianProcess.save--parameters">Parameters<a class="headerlink" href="#stela_toolkit.gaussian_process.GaussianProcess.save--parameters" title="Permanent link">&para;</a></h5>
-<p>file_path : str
-    Path to save the model.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>file_path</code>
+            </td>
+            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Path to save the model.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
 
             <details class="quote">
               <summary>Source code in <code>stela_toolkit/gaussian_process.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">715</span>
-<span class="normal">716</span>
-<span class="normal">717</span>
-<span class="normal">718</span>
-<span class="normal">719</span>
-<span class="normal">720</span>
-<span class="normal">721</span>
-<span class="normal">722</span>
-<span class="normal">723</span>
-<span class="normal">724</span>
-<span class="normal">725</span>
-<span class="normal">726</span>
-<span class="normal">727</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_path</span><span class="p">):</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">746</span>
+<span class="normal">747</span>
+<span class="normal">748</span>
+<span class="normal">749</span>
+<span class="normal">750</span>
+<span class="normal">751</span>
+<span class="normal">752</span>
+<span class="normal">753</span>
+<span class="normal">754</span>
+<span class="normal">755</span>
+<span class="normal">756</span>
+<span class="normal">757</span>
+<span class="normal">758</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_path</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Save the trained GP model to a file using pickle.</span>
 
@@ -4344,37 +4749,65 @@ _save_to_state : bool, optional
         <p>Set the GP kernel (covariance function) based on user input.</p>
 <p>Handles spectral mixture, Matern, RBF, and other kernel types supported by GPyTorch.
 Applies reasonable defaults for lengthscale initialization.</p>
-<h5 id="stela_toolkit.gaussian_process.GaussianProcess.set_kernel--parameters">Parameters<a class="headerlink" href="#stela_toolkit.gaussian_process.GaussianProcess.set_kernel--parameters" title="Permanent link">&para;</a></h5>
-<p>kernel_form : str
-    Name of the kernel, or 'SpectralMixture, N' to set the number of components.</p>
-<h5 id="stela_toolkit.gaussian_process.GaussianProcess.set_kernel--returns">Returns<a class="headerlink" href="#stela_toolkit.gaussian_process.GaussianProcess.set_kernel--returns" title="Permanent link">&para;</a></h5>
-<p>covar_module : gpytorch.kernels.Kernel</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>kernel_form</code>
+            </td>
+            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Name of the kernel, or 'SpectralMixture, N' to set the number of components.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+<th>Name</th>          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+<td><code>covar_module</code></td>            <td>
+                  <code><span title="gpytorch.kernels.Kernel">Kernel</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
 
             <details class="quote">
               <summary>Source code in <code>stela_toolkit/gaussian_process.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">274</span>
-<span class="normal">275</span>
-<span class="normal">276</span>
-<span class="normal">277</span>
-<span class="normal">278</span>
-<span class="normal">279</span>
-<span class="normal">280</span>
-<span class="normal">281</span>
-<span class="normal">282</span>
-<span class="normal">283</span>
-<span class="normal">284</span>
-<span class="normal">285</span>
-<span class="normal">286</span>
-<span class="normal">287</span>
-<span class="normal">288</span>
-<span class="normal">289</span>
-<span class="normal">290</span>
-<span class="normal">291</span>
-<span class="normal">292</span>
-<span class="normal">293</span>
-<span class="normal">294</span>
-<span class="normal">295</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">295</span>
 <span class="normal">296</span>
 <span class="normal">297</span>
 <span class="normal">298</span>
@@ -4410,7 +4843,28 @@ Applies reasonable defaults for lengthscale initialization.</p>
 <span class="normal">328</span>
 <span class="normal">329</span>
 <span class="normal">330</span>
-<span class="normal">331</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">set_kernel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">kernel_form</span><span class="p">):</span>
+<span class="normal">331</span>
+<span class="normal">332</span>
+<span class="normal">333</span>
+<span class="normal">334</span>
+<span class="normal">335</span>
+<span class="normal">336</span>
+<span class="normal">337</span>
+<span class="normal">338</span>
+<span class="normal">339</span>
+<span class="normal">340</span>
+<span class="normal">341</span>
+<span class="normal">342</span>
+<span class="normal">343</span>
+<span class="normal">344</span>
+<span class="normal">345</span>
+<span class="normal">346</span>
+<span class="normal">347</span>
+<span class="normal">348</span>
+<span class="normal">349</span>
+<span class="normal">350</span>
+<span class="normal">351</span>
+<span class="normal">352</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">set_kernel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">kernel_form</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Set the GP kernel (covariance function) based on user input.</span>
 
@@ -4489,39 +4943,81 @@ Applies reasonable defaults for lengthscale initialization.</p>
 <p>If error bars are available, uses a FixedNoiseGaussianLikelihood. Otherwise, defaults to a
 GaussianLikelihood with optional white noise. If white noise is enabled, the noise level
 is initialized based on Poisson statistics or variance in the data.</p>
-<h5 id="stela_toolkit.gaussian_process.GaussianProcess.set_likelihood--parameters">Parameters<a class="headerlink" href="#stela_toolkit.gaussian_process.GaussianProcess.set_likelihood--parameters" title="Permanent link">&para;</a></h5>
-<p>white_noise : bool
-    Whether to include a learnable noise term in the model.
-train_errors : torch.Tensor, optional
-    Measurement errors from the light curve.</p>
-<h5 id="stela_toolkit.gaussian_process.GaussianProcess.set_likelihood--returns">Returns<a class="headerlink" href="#stela_toolkit.gaussian_process.GaussianProcess.set_likelihood--returns" title="Permanent link">&para;</a></h5>
-<p>likelihood : gpytorch.likelihoods.Likelihood
-    GPyTorch subclass, also used for training.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>white_noise</code>
+            </td>
+            <td>
+                  <code><span title="bool">bool</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Whether to include a learnable noise term in the model.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>train_errors</code>
+            </td>
+            <td>
+                  <code><span title="torch.Tensor">Tensor</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Measurement errors from the light curve.</p>
+              </div>
+            </td>
+            <td>
+                  <code><span title="torch.tensor">tensor</span>([])</code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+<th>Name</th>          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+<td><code>likelihood</code></td>            <td>
+                  <code><span title="gpytorch.likelihoods.Likelihood">Likelihood</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>GPyTorch subclass, also used for training.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
 
             <details class="quote">
               <summary>Source code in <code>stela_toolkit/gaussian_process.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">227</span>
-<span class="normal">228</span>
-<span class="normal">229</span>
-<span class="normal">230</span>
-<span class="normal">231</span>
-<span class="normal">232</span>
-<span class="normal">233</span>
-<span class="normal">234</span>
-<span class="normal">235</span>
-<span class="normal">236</span>
-<span class="normal">237</span>
-<span class="normal">238</span>
-<span class="normal">239</span>
-<span class="normal">240</span>
-<span class="normal">241</span>
-<span class="normal">242</span>
-<span class="normal">243</span>
-<span class="normal">244</span>
-<span class="normal">245</span>
-<span class="normal">246</span>
-<span class="normal">247</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">247</span>
 <span class="normal">248</span>
 <span class="normal">249</span>
 <span class="normal">250</span>
@@ -4546,7 +5042,28 @@ train_errors : torch.Tensor, optional
 <span class="normal">269</span>
 <span class="normal">270</span>
 <span class="normal">271</span>
-<span class="normal">272</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">set_likelihood</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">white_noise</span><span class="p">,</span> <span class="n">train_errors</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">([])):</span>
+<span class="normal">272</span>
+<span class="normal">273</span>
+<span class="normal">274</span>
+<span class="normal">275</span>
+<span class="normal">276</span>
+<span class="normal">277</span>
+<span class="normal">278</span>
+<span class="normal">279</span>
+<span class="normal">280</span>
+<span class="normal">281</span>
+<span class="normal">282</span>
+<span class="normal">283</span>
+<span class="normal">284</span>
+<span class="normal">285</span>
+<span class="normal">286</span>
+<span class="normal">287</span>
+<span class="normal">288</span>
+<span class="normal">289</span>
+<span class="normal">290</span>
+<span class="normal">291</span>
+<span class="normal">292</span>
+<span class="normal">293</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">set_likelihood</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">white_noise</span><span class="p">,</span> <span class="n">train_errors</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">([])):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Set up the GP likelihood model based on user input and data characteristics.</span>
 
@@ -4558,6 +5075,7 @@ train_errors : torch.Tensor, optional
 <span class="sd">    ----------</span>
 <span class="sd">    white_noise : bool</span>
 <span class="sd">        Whether to include a learnable noise term in the model.</span>
+
 <span class="sd">    train_errors : torch.Tensor, optional</span>
 <span class="sd">        Measurement errors from the light curve.</span>
 
@@ -4612,41 +5130,90 @@ train_errors : torch.Tensor, optional
         <p>Train the GP model using the Adam optimizer to minimize the negative log marginal likelihood (NLML).</p>
 <p>By default, prints progress periodically and optionally plots the NLML loss curve over training iterations.
 This function is typically called after initialization unless <code>run_training=True</code> was set earlier.</p>
-<h5 id="stela_toolkit.gaussian_process.GaussianProcess.train--parameters">Parameters<a class="headerlink" href="#stela_toolkit.gaussian_process.GaussianProcess.train--parameters" title="Permanent link">&para;</a></h5>
-<p>num_iter : int, optional
-    Number of optimization steps to perform. Default is 500.
-learn_rate : float, optional
-    Learning rate for the Adam optimizer. Default is 0.1.
-plot : bool, optional
-    If True, display a plot of the NLML loss as training progresses.
-verbose : bool, optional
-    If True, print progress updates at regular intervals during training.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>num_iter</code>
+            </td>
+            <td>
+                  <code><span title="int">int</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Number of optimization steps to perform. Default is 500.</p>
+              </div>
+            </td>
+            <td>
+                  <code>500</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>learn_rate</code>
+            </td>
+            <td>
+                  <code><span title="float">float</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Learning rate for the Adam optimizer. Default is 0.1.</p>
+              </div>
+            </td>
+            <td>
+                  <code>0.1</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>plot</code>
+            </td>
+            <td>
+                  <code><span title="bool">bool</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>If True, display a plot of the NLML loss as training progresses.</p>
+              </div>
+            </td>
+            <td>
+                  <code>False</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>verbose</code>
+            </td>
+            <td>
+                  <code><span title="bool">bool</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>If True, print progress updates at regular intervals during training.</p>
+              </div>
+            </td>
+            <td>
+                  <code>False</code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
 
             <details class="quote">
               <summary>Source code in <code>stela_toolkit/gaussian_process.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">333</span>
-<span class="normal">334</span>
-<span class="normal">335</span>
-<span class="normal">336</span>
-<span class="normal">337</span>
-<span class="normal">338</span>
-<span class="normal">339</span>
-<span class="normal">340</span>
-<span class="normal">341</span>
-<span class="normal">342</span>
-<span class="normal">343</span>
-<span class="normal">344</span>
-<span class="normal">345</span>
-<span class="normal">346</span>
-<span class="normal">347</span>
-<span class="normal">348</span>
-<span class="normal">349</span>
-<span class="normal">350</span>
-<span class="normal">351</span>
-<span class="normal">352</span>
-<span class="normal">353</span>
-<span class="normal">354</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">354</span>
 <span class="normal">355</span>
 <span class="normal">356</span>
 <span class="normal">357</span>
@@ -4733,7 +5300,31 @@ verbose : bool, optional
 <span class="normal">438</span>
 <span class="normal">439</span>
 <span class="normal">440</span>
-<span class="normal">441</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">train</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">num_iter</span><span class="o">=</span><span class="mi">500</span><span class="p">,</span> <span class="n">learn_rate</span><span class="o">=</span><span class="mf">1e-1</span><span class="p">,</span> <span class="n">plot</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="normal">441</span>
+<span class="normal">442</span>
+<span class="normal">443</span>
+<span class="normal">444</span>
+<span class="normal">445</span>
+<span class="normal">446</span>
+<span class="normal">447</span>
+<span class="normal">448</span>
+<span class="normal">449</span>
+<span class="normal">450</span>
+<span class="normal">451</span>
+<span class="normal">452</span>
+<span class="normal">453</span>
+<span class="normal">454</span>
+<span class="normal">455</span>
+<span class="normal">456</span>
+<span class="normal">457</span>
+<span class="normal">458</span>
+<span class="normal">459</span>
+<span class="normal">460</span>
+<span class="normal">461</span>
+<span class="normal">462</span>
+<span class="normal">463</span>
+<span class="normal">464</span>
+<span class="normal">465</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">train</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">num_iter</span><span class="o">=</span><span class="mi">500</span><span class="p">,</span> <span class="n">learn_rate</span><span class="o">=</span><span class="mf">1e-1</span><span class="p">,</span> <span class="n">plot</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Train the GP model using the Adam optimizer to minimize the negative log marginal likelihood (NLML).</span>
 
@@ -4744,10 +5335,13 @@ verbose : bool, optional
 <span class="sd">    ----------</span>
 <span class="sd">    num_iter : int, optional</span>
 <span class="sd">        Number of optimization steps to perform. Default is 500.</span>
+
 <span class="sd">    learn_rate : float, optional</span>
 <span class="sd">        Learning rate for the Adam optimizer. Default is 0.1.</span>
+
 <span class="sd">    plot : bool, optional</span>
 <span class="sd">        If True, display a plot of the NLML loss as training progresses.</span>
+
 <span class="sd">    verbose : bool, optional</span>
 <span class="sd">        If True, print progress updates at regular intervals during training.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -4884,6 +5478,12 @@ verbose : bool, optional
 <script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
         </div>
         
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
       </main>
       
         <footer class="md-footer">
@@ -4912,7 +5512,7 @@ verbose : bool, optional
     
     
       
-      <script id="__config" type="application/json">{"base": "../..", "features": [], "search": "../../assets/javascripts/workers/search.d50fe291.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+      <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.tabs", "navigation.top", "content.code.copy", "navigation.sections", "navigation.expand"], "search": "../../assets/javascripts/workers/search.d50fe291.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
     
     
       <script src="../../assets/javascripts/bundle.13a4f30d.min.js"></script>

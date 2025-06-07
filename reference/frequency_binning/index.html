@@ -11,10 +11,10 @@
       
       
       
-        <link rel="prev" href="../data_simulator/">
+        <link rel="prev" href="../preprocessing/">
       
       
-        <link rel="next" href="../gaussian_process/">
+        <link rel="next" href="../plot/">
       
       
       <link rel="icon" href="../../assets/stela_logo_sq.png">
@@ -50,6 +50,8 @@
     
       <link rel="stylesheet" href="../../assets/_mkdocstrings.css">
     
+      <link rel="stylesheet" href="../../styles/custom.css">
+    
     <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
@@ -62,10 +64,12 @@
   
     
     
+      
     
     
     
-    <body dir="ltr" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo">
+    
+    <body dir="ltr" data-md-color-scheme="slate" data-md-color-primary="blue" data-md-color-accent="yellow">
   
     
     <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
@@ -86,9 +90,7 @@
     
       
 
-  
-
-<header class="md-header md-header--shadow" data-md-component="header">
+<header class="md-header" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
     <a href="../.." title="STELA Toolkit" class="md-header__button md-logo" aria-label="STELA Toolkit" data-md-component="logo">
       
@@ -117,7 +119,19 @@
     </div>
     
       
+        <form class="md-header__option" data-md-component="palette">
+  
     
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="blue" data-md-color-accent="yellow"  aria-hidden="true"  type="radio" name="__palette" id="__palette_0">
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
     
     
     
@@ -171,6 +185,132 @@
       
         
           
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../overview/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Overview
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../gaussian_process_intro/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Gaussian Processes
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../installation/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Installation
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../tutorial/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Tutorial
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../coherence/" class="md-tabs__link">
+          
+  
+  
+  Class Reference
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
         
       
       <main class="md-main" data-md-component="main">
@@ -184,8 +324,10 @@
                     
 
 
+  
 
-<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
     <a href="../.." title="STELA Toolkit" class="md-nav__button md-logo" aria-label="STELA Toolkit" data-md-component="logo">
       
@@ -319,20 +461,28 @@
     
     
     
+      
+        
+        
+      
+      
+        
+      
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
       
         
         
         <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" checked>
         
           
-          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="">
             
   
   
   <span class="md-ellipsis">
-    Module Reference
+    Class Reference
     
   </span>
   
@@ -343,7 +493,7 @@
         <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_6">
             <span class="md-nav__icon md-icon"></span>
-            Module Reference
+            Class Reference
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
             
@@ -461,6 +611,169 @@
   
 
               
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../gaussian_process/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Gaussian Process
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../lag_energy_spectrum/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Lag Energy Spectrum
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../lag_frequency_spectrum/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Lag Frequency Spectrum
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../power_spectrum/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Power Spectrum
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../preprocessing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Preprocessing
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+          
+          
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6_11" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_6_11" id="__nav_6_11_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    Internal
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_6_11_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_6_11">
+            <span class="md-nav__icon md-icon"></span>
+            Internal
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
             
               
                 
@@ -585,75 +898,6 @@
   
   
     <li class="md-nav__item">
-      <a href="../gaussian_process/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    Gaussian Process
-    
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../lag_energy_spectrum/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    Lag Energy Spectrum
-    
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../lag_frequency_spectrum/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    Lag Frequency Spectrum
-    
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
       <a href="../plot/" class="md-nav__link">
         
   
@@ -669,90 +913,6 @@
   
 
               
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../power_spectrum/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    Power Spectrum
-    
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../preprocessing/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    Preprocessing
-    
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    
-    
-    
-    
-    
-    <li class="md-nav__item md-nav__item--nested">
-      
-        
-        
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6_13" >
-        
-          
-          <label class="md-nav__link" for="__nav_6_13" id="__nav_6_13_label" tabindex="0">
-            
-  
-  
-  <span class="md-ellipsis">
-    Internal
-    
-  </span>
-  
-
-            <span class="md-nav__icon md-icon"></span>
-          </label>
-        
-        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_6_13_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_6_13">
-            <span class="md-nav__icon md-icon"></span>
-            Internal
-          </label>
-          <ul class="md-nav__list" data-md-scrollfix>
             
               
                 
@@ -1109,33 +1269,89 @@ data and corresponding values, and calculating statistics for binned data.</p>
 <span class="normal">150</span>
 <span class="normal">151</span>
 <span class="normal">152</span>
-<span class="normal">153</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">FrequencyBinning</span><span class="p">:</span>
+<span class="normal">153</span>
+<span class="normal">154</span>
+<span class="normal">155</span>
+<span class="normal">156</span>
+<span class="normal">157</span>
+<span class="normal">158</span>
+<span class="normal">159</span>
+<span class="normal">160</span>
+<span class="normal">161</span>
+<span class="normal">162</span>
+<span class="normal">163</span>
+<span class="normal">164</span>
+<span class="normal">165</span>
+<span class="normal">166</span>
+<span class="normal">167</span>
+<span class="normal">168</span>
+<span class="normal">169</span>
+<span class="normal">170</span>
+<span class="normal">171</span>
+<span class="normal">172</span>
+<span class="normal">173</span>
+<span class="normal">174</span>
+<span class="normal">175</span>
+<span class="normal">176</span>
+<span class="normal">177</span>
+<span class="normal">178</span>
+<span class="normal">179</span>
+<span class="normal">180</span>
+<span class="normal">181</span>
+<span class="normal">182</span>
+<span class="normal">183</span>
+<span class="normal">184</span>
+<span class="normal">185</span>
+<span class="normal">186</span>
+<span class="normal">187</span>
+<span class="normal">188</span>
+<span class="normal">189</span>
+<span class="normal">190</span>
+<span class="normal">191</span>
+<span class="normal">192</span>
+<span class="normal">193</span>
+<span class="normal">194</span>
+<span class="normal">195</span>
+<span class="normal">196</span>
+<span class="normal">197</span>
+<span class="normal">198</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">FrequencyBinning</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A utility class for binning data over frequency space.</span>
 
 <span class="sd">    Provides methods for defining bins (linear or logarithmic, or user-defined), binning frequency</span>
 <span class="sd">    data and corresponding values, and calculating statistics for binned data.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="c1"># To do: Modify count_frequencies_in_bins for already binned data</span>
 
     <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">define_bins</span><span class="p">(</span><span class="n">fmin</span><span class="p">,</span> <span class="n">fmax</span><span class="p">,</span> <span class="n">num_bins</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">bin_type</span><span class="o">=</span><span class="s2">&quot;log&quot;</span><span class="p">,</span> <span class="n">bin_edges</span><span class="o">=</span><span class="p">[]):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Defines bin edges for the given frequencies based on the specified binning type.</span>
+<span class="sd">        Defines bin edges for a frequency range using the specified binning type.</span>
 
-<span class="sd">        If custom bins are provided, they are used directly. Otherwise, bins are computed</span>
-<span class="sd">        either logarithmically or linearly based on the specified bin type.</span>
+<span class="sd">        If `bin_edges` are provided, they are used directly. Otherwise, bin edges are</span>
+<span class="sd">        computed between `fmin` and `fmax` using either logarithmic or linear spacing.</span>
 
-<span class="sd">        Parameters:</span>
-<span class="sd">        - freqs (array-like): Array of frequencies to define bins for.</span>
-<span class="sd">        - num_bins (int): Number of bins to create (ignored if `bins` is provided).</span>
-<span class="sd">        - bins (array-like): Custom array of bin edges (optional).</span>
-<span class="sd">        - bin_type (str): Type of binning (&quot;log&quot; for logarithmic, &quot;linear&quot; for linear).</span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        fmin : float</span>
+<span class="sd">            Minimum frequency value.</span>
 
-<span class="sd">        Returns:</span>
-<span class="sd">        - bin_edges (array-like): Array of bin edges for the specified binning type.</span>
+<span class="sd">        fmax : float</span>
+<span class="sd">            Maximum frequency value.</span>
+
+<span class="sd">        num_bins : int, optional</span>
+<span class="sd">            Number of bins to create (used only if `bin_edges` is not provided).</span>
+
+<span class="sd">        bin_type : str, optional</span>
+<span class="sd">            Type of binning to use: &quot;log&quot; for logarithmic or &quot;linear&quot; for linear spacing.</span>
+
+<span class="sd">        bin_edges : array-like, optional</span>
+<span class="sd">            Custom array of bin edges. If provided, overrides `fmin`, `fmax`, and `num_bins`.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        bin_edges : array-like</span>
+<span class="sd">            Array of frequency bin edges based on the specified settings.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">bin_edges</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
             <span class="c1"># Use custom bins</span>
             <span class="n">bin_edges</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">bin_edges</span><span class="p">)</span>
@@ -1158,18 +1374,35 @@ data and corresponding values, and calculating statistics for binned data.</p>
     <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">bin_data</span><span class="p">(</span><span class="n">freqs</span><span class="p">,</span> <span class="n">values</span><span class="p">,</span> <span class="n">bin_edges</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Bins frequencies and corresponding values into specified bins.</span>
+<span class="sd">        Bins frequencies and corresponding values into the specified bin edges.</span>
 
-<span class="sd">        Parameters:</span>
-<span class="sd">        - freqs (array-like): Array of frequencies to be binned.</span>
-<span class="sd">        - values (array-like): Array of values corresponding to the frequencies.</span>
-<span class="sd">        - bin_edges (array-like): Array of bin edges defining the bins.</span>
+<span class="sd">        For each bin, computes the mean frequency, bin half-width (for error bars),</span>
+<span class="sd">        mean value, and standard deviation of values within the bin.</span>
 
-<span class="sd">        Returns:</span>
-<span class="sd">        - binned_freqs (array-like): Mean frequency for each bin.</span>
-<span class="sd">        - binned_freq_widths (array-like): Half-widths of the frequency bins (for error bars).</span>
-<span class="sd">        - binned_values (array-like): Mean value for each bin.</span>
-<span class="sd">        - binned_value_errors (array-like): Standard deviation of the values in each bin.</span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        freqs : array-like</span>
+<span class="sd">            Array of frequency values to be binned.</span>
+
+<span class="sd">        values : array-like</span>
+<span class="sd">            Array of values corresponding to each frequency.</span>
+
+<span class="sd">        bin_edges : array-like</span>
+<span class="sd">            Array of bin edges that define the frequency bins.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        binned_freqs : array-like</span>
+<span class="sd">            Mean frequency for each bin.</span>
+
+<span class="sd">        binned_freq_widths : array-like</span>
+<span class="sd">            Half-width of each frequency bin (for plotting error bars).</span>
+
+<span class="sd">        binned_values : array-like</span>
+<span class="sd">            Mean value of the data within each bin.</span>
+
+<span class="sd">        binned_value_errors : array-like</span>
+<span class="sd">            Standard deviation of the values in each bin.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">binned_freqs</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="n">binned_freq_widths</span> <span class="o">=</span> <span class="p">[]</span>
@@ -1206,16 +1439,33 @@ data and corresponding values, and calculating statistics for binned data.</p>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Counts the number of frequencies in each bin for the power spectrum.</span>
 
-<span class="sd">        Parameters:</span>
-<span class="sd">        - spectrum: The object containing attributes like `times`, `fmin`, and `fmax`.</span>
-<span class="sd">        - fmin: Minimum frequency (optional, falls back to spectrum&#39;s attribute).</span>
-<span class="sd">        - fmax: Maximum frequency (optional, falls back to spectrum&#39;s attribute).</span>
-<span class="sd">        - num_bins: Number of bins to create (if bin_edges is not provided).</span>
-<span class="sd">        - bin_type: Type of binning (&quot;log&quot; or &quot;linear&quot;).</span>
-<span class="sd">        - bin_edges: Custom array of bin edges (optional).</span>
+<span class="sd">        If `bin_edges` are provided, they are used directly. Otherwise, bins are</span>
+<span class="sd">        defined using `fmin`, `fmax`, `num_bins`, and `bin_type`.</span>
 
-<span class="sd">        Returns:</span>
-<span class="sd">        - bin_counts: List of counts of frequencies in each bin.</span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        spectrum : object</span>
+<span class="sd">            Object containing attributes like `times`, `fmin`, and `fmax`.</span>
+
+<span class="sd">        fmin : float, optional</span>
+<span class="sd">            Minimum frequency. If not provided, defaults to `spectrum.fmin`.</span>
+
+<span class="sd">        fmax : float, optional</span>
+<span class="sd">            Maximum frequency. If not provided, defaults to `spectrum.fmax`.</span>
+
+<span class="sd">        num_bins : int, optional</span>
+<span class="sd">            Number of bins to create (used only if `bin_edges` is not provided).</span>
+
+<span class="sd">        bin_type : str, optional</span>
+<span class="sd">            Type of binning to use: &quot;log&quot; or &quot;linear&quot;.</span>
+
+<span class="sd">        bin_edges : array-like, optional</span>
+<span class="sd">            Custom array of bin edges. If provided, overrides `fmin`, `fmax`, and `num_bins`.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        bin_counts : list of int</span>
+<span class="sd">            List containing the number of frequencies in each bin.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># Use spectrum&#39;s attributes if not provided</span>
         <span class="n">fmin</span> <span class="o">=</span> <span class="n">spectrum</span><span class="o">.</span><span class="n">fmin</span> <span class="k">if</span> <span class="n">fmin</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">fmin</span>
@@ -1288,79 +1538,222 @@ data and corresponding values, and calculating statistics for binned data.</p>
 
     <div class="doc doc-contents ">
 
-        <p>Bins frequencies and corresponding values into specified bins.</p>
-<p>Parameters:
-- freqs (array-like): Array of frequencies to be binned.
-- values (array-like): Array of values corresponding to the frequencies.
-- bin_edges (array-like): Array of bin edges defining the bins.</p>
-<p>Returns:
-- binned_freqs (array-like): Mean frequency for each bin.
-- binned_freq_widths (array-like): Half-widths of the frequency bins (for error bars).
-- binned_values (array-like): Mean value for each bin.
-- binned_value_errors (array-like): Standard deviation of the values in each bin.</p>
+        <p>Bins frequencies and corresponding values into the specified bin edges.</p>
+<p>For each bin, computes the mean frequency, bin half-width (for error bars),
+mean value, and standard deviation of values within the bin.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>freqs</code>
+            </td>
+            <td>
+                  <code><span title="array">array</span> - <span title="like">like</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Array of frequency values to be binned.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>values</code>
+            </td>
+            <td>
+                  <code><span title="array">array</span> - <span title="like">like</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Array of values corresponding to each frequency.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>bin_edges</code>
+            </td>
+            <td>
+                  <code><span title="array">array</span> - <span title="like">like</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Array of bin edges that define the frequency bins.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+<th>Name</th>          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+<td><code>binned_freqs</code></td>            <td>
+                  <code><span title="array">array</span> - <span title="like">like</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Mean frequency for each bin.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+<td><code>binned_freq_widths</code></td>            <td>
+                  <code><span title="array">array</span> - <span title="like">like</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Half-width of each frequency bin (for plotting error bars).</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+<td><code>binned_values</code></td>            <td>
+                  <code><span title="array">array</span> - <span title="like">like</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Mean value of the data within each bin.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+<td><code>binned_value_errors</code></td>            <td>
+                  <code><span title="array">array</span> - <span title="like">like</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Standard deviation of the values in each bin.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
 
             <details class="quote">
               <summary>Source code in <code>stela_toolkit/frequency_binning.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">51</span>
-<span class="normal">52</span>
-<span class="normal">53</span>
-<span class="normal">54</span>
-<span class="normal">55</span>
-<span class="normal">56</span>
-<span class="normal">57</span>
-<span class="normal">58</span>
-<span class="normal">59</span>
-<span class="normal">60</span>
-<span class="normal">61</span>
-<span class="normal">62</span>
-<span class="normal">63</span>
-<span class="normal">64</span>
-<span class="normal">65</span>
-<span class="normal">66</span>
-<span class="normal">67</span>
-<span class="normal">68</span>
-<span class="normal">69</span>
-<span class="normal">70</span>
-<span class="normal">71</span>
-<span class="normal">72</span>
-<span class="normal">73</span>
-<span class="normal">74</span>
-<span class="normal">75</span>
-<span class="normal">76</span>
-<span class="normal">77</span>
-<span class="normal">78</span>
-<span class="normal">79</span>
-<span class="normal">80</span>
-<span class="normal">81</span>
-<span class="normal">82</span>
-<span class="normal">83</span>
-<span class="normal">84</span>
-<span class="normal">85</span>
-<span class="normal">86</span>
-<span class="normal">87</span>
-<span class="normal">88</span>
-<span class="normal">89</span>
-<span class="normal">90</span>
-<span class="normal">91</span>
-<span class="normal">92</span>
-<span class="normal">93</span>
-<span class="normal">94</span>
-<span class="normal">95</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@staticmethod</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 62</span>
+<span class="normal"> 63</span>
+<span class="normal"> 64</span>
+<span class="normal"> 65</span>
+<span class="normal"> 66</span>
+<span class="normal"> 67</span>
+<span class="normal"> 68</span>
+<span class="normal"> 69</span>
+<span class="normal"> 70</span>
+<span class="normal"> 71</span>
+<span class="normal"> 72</span>
+<span class="normal"> 73</span>
+<span class="normal"> 74</span>
+<span class="normal"> 75</span>
+<span class="normal"> 76</span>
+<span class="normal"> 77</span>
+<span class="normal"> 78</span>
+<span class="normal"> 79</span>
+<span class="normal"> 80</span>
+<span class="normal"> 81</span>
+<span class="normal"> 82</span>
+<span class="normal"> 83</span>
+<span class="normal"> 84</span>
+<span class="normal"> 85</span>
+<span class="normal"> 86</span>
+<span class="normal"> 87</span>
+<span class="normal"> 88</span>
+<span class="normal"> 89</span>
+<span class="normal"> 90</span>
+<span class="normal"> 91</span>
+<span class="normal"> 92</span>
+<span class="normal"> 93</span>
+<span class="normal"> 94</span>
+<span class="normal"> 95</span>
+<span class="normal"> 96</span>
+<span class="normal"> 97</span>
+<span class="normal"> 98</span>
+<span class="normal"> 99</span>
+<span class="normal">100</span>
+<span class="normal">101</span>
+<span class="normal">102</span>
+<span class="normal">103</span>
+<span class="normal">104</span>
+<span class="normal">105</span>
+<span class="normal">106</span>
+<span class="normal">107</span>
+<span class="normal">108</span>
+<span class="normal">109</span>
+<span class="normal">110</span>
+<span class="normal">111</span>
+<span class="normal">112</span>
+<span class="normal">113</span>
+<span class="normal">114</span>
+<span class="normal">115</span>
+<span class="normal">116</span>
+<span class="normal">117</span>
+<span class="normal">118</span>
+<span class="normal">119</span>
+<span class="normal">120</span>
+<span class="normal">121</span>
+<span class="normal">122</span>
+<span class="normal">123</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@staticmethod</span>
 <span class="k">def</span> <span class="nf">bin_data</span><span class="p">(</span><span class="n">freqs</span><span class="p">,</span> <span class="n">values</span><span class="p">,</span> <span class="n">bin_edges</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Bins frequencies and corresponding values into specified bins.</span>
+<span class="sd">    Bins frequencies and corresponding values into the specified bin edges.</span>
 
-<span class="sd">    Parameters:</span>
-<span class="sd">    - freqs (array-like): Array of frequencies to be binned.</span>
-<span class="sd">    - values (array-like): Array of values corresponding to the frequencies.</span>
-<span class="sd">    - bin_edges (array-like): Array of bin edges defining the bins.</span>
+<span class="sd">    For each bin, computes the mean frequency, bin half-width (for error bars),</span>
+<span class="sd">    mean value, and standard deviation of values within the bin.</span>
 
-<span class="sd">    Returns:</span>
-<span class="sd">    - binned_freqs (array-like): Mean frequency for each bin.</span>
-<span class="sd">    - binned_freq_widths (array-like): Half-widths of the frequency bins (for error bars).</span>
-<span class="sd">    - binned_values (array-like): Mean value for each bin.</span>
-<span class="sd">    - binned_value_errors (array-like): Standard deviation of the values in each bin.</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    freqs : array-like</span>
+<span class="sd">        Array of frequency values to be binned.</span>
+
+<span class="sd">    values : array-like</span>
+<span class="sd">        Array of values corresponding to each frequency.</span>
+
+<span class="sd">    bin_edges : array-like</span>
+<span class="sd">        Array of bin edges that define the frequency bins.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    binned_freqs : array-like</span>
+<span class="sd">        Mean frequency for each bin.</span>
+
+<span class="sd">    binned_freq_widths : array-like</span>
+<span class="sd">        Half-width of each frequency bin (for plotting error bars).</span>
+
+<span class="sd">    binned_values : array-like</span>
+<span class="sd">        Mean value of the data within each bin.</span>
+
+<span class="sd">    binned_value_errors : array-like</span>
+<span class="sd">        Standard deviation of the values in each bin.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">binned_freqs</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="n">binned_freq_widths</span> <span class="o">=</span> <span class="p">[]</span>
@@ -1413,48 +1806,147 @@ data and corresponding values, and calculating statistics for binned data.</p>
     <div class="doc doc-contents ">
 
         <p>Counts the number of frequencies in each bin for the power spectrum.</p>
-<p>Parameters:
-- spectrum: The object containing attributes like <code>times</code>, <code>fmin</code>, and <code>fmax</code>.
-- fmin: Minimum frequency (optional, falls back to spectrum's attribute).
-- fmax: Maximum frequency (optional, falls back to spectrum's attribute).
-- num_bins: Number of bins to create (if bin_edges is not provided).
-- bin_type: Type of binning ("log" or "linear").
-- bin_edges: Custom array of bin edges (optional).</p>
-<p>Returns:
-- bin_counts: List of counts of frequencies in each bin.</p>
+<p>If <code>bin_edges</code> are provided, they are used directly. Otherwise, bins are
+defined using <code>fmin</code>, <code>fmax</code>, <code>num_bins</code>, and <code>bin_type</code>.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>spectrum</code>
+            </td>
+            <td>
+                  <code><span title="object">object</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Object containing attributes like <code>times</code>, <code>fmin</code>, and <code>fmax</code>.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>fmin</code>
+            </td>
+            <td>
+                  <code><span title="float">float</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Minimum frequency. If not provided, defaults to <code>spectrum.fmin</code>.</p>
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>fmax</code>
+            </td>
+            <td>
+                  <code><span title="float">float</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Maximum frequency. If not provided, defaults to <code>spectrum.fmax</code>.</p>
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>num_bins</code>
+            </td>
+            <td>
+                  <code><span title="int">int</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Number of bins to create (used only if <code>bin_edges</code> is not provided).</p>
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>bin_type</code>
+            </td>
+            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Type of binning to use: "log" or "linear".</p>
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>bin_edges</code>
+            </td>
+            <td>
+                  <code><span title="array">array</span> - <span title="like">like</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Custom array of bin edges. If provided, overrides <code>fmin</code>, <code>fmax</code>, and <code>num_bins</code>.</p>
+              </div>
+            </td>
+            <td>
+                  <code>[]</code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+<th>Name</th>          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+<td><code>bin_counts</code></td>            <td>
+                  <code>list of int</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>List containing the number of frequencies in each bin.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
 
             <details class="quote">
               <summary>Source code in <code>stela_toolkit/frequency_binning.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 97</span>
-<span class="normal"> 98</span>
-<span class="normal"> 99</span>
-<span class="normal">100</span>
-<span class="normal">101</span>
-<span class="normal">102</span>
-<span class="normal">103</span>
-<span class="normal">104</span>
-<span class="normal">105</span>
-<span class="normal">106</span>
-<span class="normal">107</span>
-<span class="normal">108</span>
-<span class="normal">109</span>
-<span class="normal">110</span>
-<span class="normal">111</span>
-<span class="normal">112</span>
-<span class="normal">113</span>
-<span class="normal">114</span>
-<span class="normal">115</span>
-<span class="normal">116</span>
-<span class="normal">117</span>
-<span class="normal">118</span>
-<span class="normal">119</span>
-<span class="normal">120</span>
-<span class="normal">121</span>
-<span class="normal">122</span>
-<span class="normal">123</span>
-<span class="normal">124</span>
-<span class="normal">125</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">125</span>
 <span class="normal">126</span>
 <span class="normal">127</span>
 <span class="normal">128</span>
@@ -1482,21 +1974,83 @@ data and corresponding values, and calculating statistics for binned data.</p>
 <span class="normal">150</span>
 <span class="normal">151</span>
 <span class="normal">152</span>
-<span class="normal">153</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@staticmethod</span>
+<span class="normal">153</span>
+<span class="normal">154</span>
+<span class="normal">155</span>
+<span class="normal">156</span>
+<span class="normal">157</span>
+<span class="normal">158</span>
+<span class="normal">159</span>
+<span class="normal">160</span>
+<span class="normal">161</span>
+<span class="normal">162</span>
+<span class="normal">163</span>
+<span class="normal">164</span>
+<span class="normal">165</span>
+<span class="normal">166</span>
+<span class="normal">167</span>
+<span class="normal">168</span>
+<span class="normal">169</span>
+<span class="normal">170</span>
+<span class="normal">171</span>
+<span class="normal">172</span>
+<span class="normal">173</span>
+<span class="normal">174</span>
+<span class="normal">175</span>
+<span class="normal">176</span>
+<span class="normal">177</span>
+<span class="normal">178</span>
+<span class="normal">179</span>
+<span class="normal">180</span>
+<span class="normal">181</span>
+<span class="normal">182</span>
+<span class="normal">183</span>
+<span class="normal">184</span>
+<span class="normal">185</span>
+<span class="normal">186</span>
+<span class="normal">187</span>
+<span class="normal">188</span>
+<span class="normal">189</span>
+<span class="normal">190</span>
+<span class="normal">191</span>
+<span class="normal">192</span>
+<span class="normal">193</span>
+<span class="normal">194</span>
+<span class="normal">195</span>
+<span class="normal">196</span>
+<span class="normal">197</span>
+<span class="normal">198</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@staticmethod</span>
 <span class="k">def</span> <span class="nf">count_frequencies_in_bins</span><span class="p">(</span><span class="n">spectrum</span><span class="p">,</span> <span class="n">fmin</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">fmax</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">num_bins</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">bin_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">bin_edges</span><span class="o">=</span><span class="p">[]):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Counts the number of frequencies in each bin for the power spectrum.</span>
 
-<span class="sd">    Parameters:</span>
-<span class="sd">    - spectrum: The object containing attributes like `times`, `fmin`, and `fmax`.</span>
-<span class="sd">    - fmin: Minimum frequency (optional, falls back to spectrum&#39;s attribute).</span>
-<span class="sd">    - fmax: Maximum frequency (optional, falls back to spectrum&#39;s attribute).</span>
-<span class="sd">    - num_bins: Number of bins to create (if bin_edges is not provided).</span>
-<span class="sd">    - bin_type: Type of binning (&quot;log&quot; or &quot;linear&quot;).</span>
-<span class="sd">    - bin_edges: Custom array of bin edges (optional).</span>
+<span class="sd">    If `bin_edges` are provided, they are used directly. Otherwise, bins are</span>
+<span class="sd">    defined using `fmin`, `fmax`, `num_bins`, and `bin_type`.</span>
 
-<span class="sd">    Returns:</span>
-<span class="sd">    - bin_counts: List of counts of frequencies in each bin.</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    spectrum : object</span>
+<span class="sd">        Object containing attributes like `times`, `fmin`, and `fmax`.</span>
+
+<span class="sd">    fmin : float, optional</span>
+<span class="sd">        Minimum frequency. If not provided, defaults to `spectrum.fmin`.</span>
+
+<span class="sd">    fmax : float, optional</span>
+<span class="sd">        Maximum frequency. If not provided, defaults to `spectrum.fmax`.</span>
+
+<span class="sd">    num_bins : int, optional</span>
+<span class="sd">        Number of bins to create (used only if `bin_edges` is not provided).</span>
+
+<span class="sd">    bin_type : str, optional</span>
+<span class="sd">        Type of binning to use: &quot;log&quot; or &quot;linear&quot;.</span>
+
+<span class="sd">    bin_edges : array-like, optional</span>
+<span class="sd">        Custom array of bin edges. If provided, overrides `fmin`, `fmax`, and `num_bins`.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    bin_counts : list of int</span>
+<span class="sd">        List containing the number of frequencies in each bin.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># Use spectrum&#39;s attributes if not provided</span>
     <span class="n">fmin</span> <span class="o">=</span> <span class="n">spectrum</span><span class="o">.</span><span class="n">fmin</span> <span class="k">if</span> <span class="n">fmin</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">fmin</span>
@@ -1560,21 +2114,133 @@ data and corresponding values, and calculating statistics for binned data.</p>
 
     <div class="doc doc-contents ">
 
-        <p>Defines bin edges for the given frequencies based on the specified binning type.</p>
-<p>If custom bins are provided, they are used directly. Otherwise, bins are computed
-either logarithmically or linearly based on the specified bin type.</p>
-<p>Parameters:
-- freqs (array-like): Array of frequencies to define bins for.
-- num_bins (int): Number of bins to create (ignored if <code>bins</code> is provided).
-- bins (array-like): Custom array of bin edges (optional).
-- bin_type (str): Type of binning ("log" for logarithmic, "linear" for linear).</p>
-<p>Returns:
-- bin_edges (array-like): Array of bin edges for the specified binning type.</p>
+        <p>Defines bin edges for a frequency range using the specified binning type.</p>
+<p>If <code>bin_edges</code> are provided, they are used directly. Otherwise, bin edges are
+computed between <code>fmin</code> and <code>fmax</code> using either logarithmic or linear spacing.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>fmin</code>
+            </td>
+            <td>
+                  <code><span title="float">float</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Minimum frequency value.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>fmax</code>
+            </td>
+            <td>
+                  <code><span title="float">float</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Maximum frequency value.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>num_bins</code>
+            </td>
+            <td>
+                  <code><span title="int">int</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Number of bins to create (used only if <code>bin_edges</code> is not provided).</p>
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>bin_type</code>
+            </td>
+            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Type of binning to use: "log" for logarithmic or "linear" for linear spacing.</p>
+              </div>
+            </td>
+            <td>
+                  <code>&#39;log&#39;</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>bin_edges</code>
+            </td>
+            <td>
+                  <code><span title="array">array</span> - <span title="like">like</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Custom array of bin edges. If provided, overrides <code>fmin</code>, <code>fmax</code>, and <code>num_bins</code>.</p>
+              </div>
+            </td>
+            <td>
+                  <code>[]</code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+<th>Name</th>          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+<td><code>bin_edges</code></td>            <td>
+                  <code><span title="array">array</span> - <span title="like">like</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Array of frequency bin edges based on the specified settings.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
 
             <details class="quote">
               <summary>Source code in <code>stela_toolkit/frequency_binning.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">14</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">13</span>
+<span class="normal">14</span>
 <span class="normal">15</span>
 <span class="normal">16</span>
 <span class="normal">17</span>
@@ -1609,24 +2275,47 @@ either logarithmically or linearly based on the specified bin type.</p>
 <span class="normal">46</span>
 <span class="normal">47</span>
 <span class="normal">48</span>
-<span class="normal">49</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@staticmethod</span>
+<span class="normal">49</span>
+<span class="normal">50</span>
+<span class="normal">51</span>
+<span class="normal">52</span>
+<span class="normal">53</span>
+<span class="normal">54</span>
+<span class="normal">55</span>
+<span class="normal">56</span>
+<span class="normal">57</span>
+<span class="normal">58</span>
+<span class="normal">59</span>
+<span class="normal">60</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@staticmethod</span>
 <span class="k">def</span> <span class="nf">define_bins</span><span class="p">(</span><span class="n">fmin</span><span class="p">,</span> <span class="n">fmax</span><span class="p">,</span> <span class="n">num_bins</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">bin_type</span><span class="o">=</span><span class="s2">&quot;log&quot;</span><span class="p">,</span> <span class="n">bin_edges</span><span class="o">=</span><span class="p">[]):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Defines bin edges for the given frequencies based on the specified binning type.</span>
+<span class="sd">    Defines bin edges for a frequency range using the specified binning type.</span>
 
-<span class="sd">    If custom bins are provided, they are used directly. Otherwise, bins are computed</span>
-<span class="sd">    either logarithmically or linearly based on the specified bin type.</span>
+<span class="sd">    If `bin_edges` are provided, they are used directly. Otherwise, bin edges are</span>
+<span class="sd">    computed between `fmin` and `fmax` using either logarithmic or linear spacing.</span>
 
-<span class="sd">    Parameters:</span>
-<span class="sd">    - freqs (array-like): Array of frequencies to define bins for.</span>
-<span class="sd">    - num_bins (int): Number of bins to create (ignored if `bins` is provided).</span>
-<span class="sd">    - bins (array-like): Custom array of bin edges (optional).</span>
-<span class="sd">    - bin_type (str): Type of binning (&quot;log&quot; for logarithmic, &quot;linear&quot; for linear).</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    fmin : float</span>
+<span class="sd">        Minimum frequency value.</span>
 
-<span class="sd">    Returns:</span>
-<span class="sd">    - bin_edges (array-like): Array of bin edges for the specified binning type.</span>
+<span class="sd">    fmax : float</span>
+<span class="sd">        Maximum frequency value.</span>
+
+<span class="sd">    num_bins : int, optional</span>
+<span class="sd">        Number of bins to create (used only if `bin_edges` is not provided).</span>
+
+<span class="sd">    bin_type : str, optional</span>
+<span class="sd">        Type of binning to use: &quot;log&quot; for logarithmic or &quot;linear&quot; for linear spacing.</span>
+
+<span class="sd">    bin_edges : array-like, optional</span>
+<span class="sd">        Custom array of bin edges. If provided, overrides `fmin`, `fmax`, and `num_bins`.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    bin_edges : array-like</span>
+<span class="sd">        Array of frequency bin edges based on the specified settings.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">bin_edges</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
         <span class="c1"># Use custom bins</span>
         <span class="n">bin_edges</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">bin_edges</span><span class="p">)</span>
@@ -1687,6 +2376,12 @@ either logarithmically or linearly based on the specified bin type.</p>
 <script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
         </div>
         
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
       </main>
       
         <footer class="md-footer">
@@ -1715,7 +2410,7 @@ either logarithmically or linearly based on the specified bin type.</p>
     
     
       
-      <script id="__config" type="application/json">{"base": "../..", "features": [], "search": "../../assets/javascripts/workers/search.d50fe291.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+      <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.tabs", "navigation.top", "content.code.copy", "navigation.sections", "navigation.expand"], "search": "../../assets/javascripts/workers/search.d50fe291.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
     
     
       <script src="../../assets/javascripts/bundle.13a4f30d.min.js"></script>

@@ -50,6 +50,8 @@
     
       <link rel="stylesheet" href="../../assets/_mkdocstrings.css">
     
+      <link rel="stylesheet" href="../../styles/custom.css">
+    
     <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
@@ -62,10 +64,12 @@
   
     
     
+      
     
     
     
-    <body dir="ltr" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo">
+    
+    <body dir="ltr" data-md-color-scheme="slate" data-md-color-primary="blue" data-md-color-accent="yellow">
   
     
     <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
@@ -86,9 +90,7 @@
     
       
 
-  
-
-<header class="md-header md-header--shadow" data-md-component="header">
+<header class="md-header" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
     <a href="../.." title="STELA Toolkit" class="md-header__button md-logo" aria-label="STELA Toolkit" data-md-component="logo">
       
@@ -117,7 +119,19 @@
     </div>
     
       
+        <form class="md-header__option" data-md-component="palette">
+  
     
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="blue" data-md-color-accent="yellow"  aria-hidden="true"  type="radio" name="__palette" id="__palette_0">
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
     
     
     
@@ -171,6 +185,132 @@
       
         
           
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../overview/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Overview
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../gaussian_process_intro/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Gaussian Processes
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../installation/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Installation
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../tutorial/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Tutorial
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../coherence/" class="md-tabs__link">
+          
+  
+  
+  Class Reference
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
         
       
       <main class="md-main" data-md-component="main">
@@ -184,8 +324,10 @@
                     
 
 
+  
 
-<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
     <a href="../.." title="STELA Toolkit" class="md-nav__button md-logo" aria-label="STELA Toolkit" data-md-component="logo">
       
@@ -319,20 +461,28 @@
     
     
     
+      
+        
+        
+      
+      
+        
+      
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
       
         
         
         <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" checked>
         
           
-          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="">
             
   
   
   <span class="md-ellipsis">
-    Module Reference
+    Class Reference
     
   </span>
   
@@ -343,7 +493,7 @@
         <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_6">
             <span class="md-nav__icon md-icon"></span>
-            Module Reference
+            Class Reference
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
             
@@ -469,29 +619,6 @@
   
   
     <li class="md-nav__item">
-      <a href="../frequency_binning/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    Frequency Binning
-    
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
       <a href="../gaussian_process/" class="md-nav__link">
         
   
@@ -584,53 +711,11 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#stela_toolkit.lag_energy_spectrum.LagEnergySpectrum--parameters" class="md-nav__link">
-    <span class="md-ellipsis">
-      Parameters
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#stela_toolkit.lag_energy_spectrum.LagEnergySpectrum--attributes" class="md-nav__link">
-    <span class="md-ellipsis">
-      Attributes
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
   <a href="#stela_toolkit.lag_energy_spectrum.LagEnergySpectrum.compute_lag_spectrum" class="md-nav__link">
     <span class="md-ellipsis">
       compute_lag_spectrum
     </span>
   </a>
-  
-    <nav class="md-nav" aria-label="compute_lag_spectrum">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#stela_toolkit.lag_energy_spectrum.LagEnergySpectrum.compute_lag_spectrum--parameters" class="md-nav__link">
-    <span class="md-ellipsis">
-      Parameters
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#stela_toolkit.lag_energy_spectrum.LagEnergySpectrum.compute_lag_spectrum--returns" class="md-nav__link">
-    <span class="md-ellipsis">
-      Returns
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
         
@@ -649,21 +734,6 @@
       plot
     </span>
   </a>
-  
-    <nav class="md-nav" aria-label="plot">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#stela_toolkit.lag_energy_spectrum.LagEnergySpectrum.plot--parameters" class="md-nav__link">
-    <span class="md-ellipsis">
-      Parameters
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
         
@@ -694,29 +764,6 @@
   
   <span class="md-ellipsis">
     Lag Frequency Spectrum
-    
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../plot/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    Plotting
     
   </span>
   
@@ -783,15 +830,25 @@
     
     
     
+      
+      
+        
+          
+          
+        
+      
     
-    <li class="md-nav__item md-nav__item--nested">
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6_13" >
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6_11" >
         
           
-          <label class="md-nav__link" for="__nav_6_13" id="__nav_6_13_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_6_11" id="__nav_6_11_label" tabindex="">
             
   
   
@@ -804,12 +861,58 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_6_13_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_6_13">
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_6_11_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6_11">
             <span class="md-nav__icon md-icon"></span>
             Internal
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../frequency_binning/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Frequency Binning
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../plot/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Plotting
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
             
               
                 
@@ -918,53 +1021,11 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#stela_toolkit.lag_energy_spectrum.LagEnergySpectrum--parameters" class="md-nav__link">
-    <span class="md-ellipsis">
-      Parameters
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#stela_toolkit.lag_energy_spectrum.LagEnergySpectrum--attributes" class="md-nav__link">
-    <span class="md-ellipsis">
-      Attributes
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
   <a href="#stela_toolkit.lag_energy_spectrum.LagEnergySpectrum.compute_lag_spectrum" class="md-nav__link">
     <span class="md-ellipsis">
       compute_lag_spectrum
     </span>
   </a>
-  
-    <nav class="md-nav" aria-label="compute_lag_spectrum">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#stela_toolkit.lag_energy_spectrum.LagEnergySpectrum.compute_lag_spectrum--parameters" class="md-nav__link">
-    <span class="md-ellipsis">
-      Parameters
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#stela_toolkit.lag_energy_spectrum.LagEnergySpectrum.compute_lag_spectrum--returns" class="md-nav__link">
-    <span class="md-ellipsis">
-      Returns
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
         
@@ -983,21 +1044,6 @@
       plot
     </span>
   </a>
-  
-    <nav class="md-nav" aria-label="plot">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#stela_toolkit.lag_energy_spectrum.LagEnergySpectrum.plot--parameters" class="md-nav__link">
-    <span class="md-ellipsis">
-      Parameters
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
         
@@ -1074,32 +1120,197 @@ the lag-energy spectrum.</p>
 the corresponding series in <code>lcs_or_models2</code>.</p>
 <p>Coherence values are also computed for each energy bin to assess correlation strength,
 and noise bias correction can be applied to the coherence before estimating uncertainties.</p>
-<h4 id="stela_toolkit.lag_energy_spectrum.LagEnergySpectrum--parameters">Parameters<a class="headerlink" href="#stela_toolkit.lag_energy_spectrum.LagEnergySpectrum--parameters" title="Permanent link">&para;</a></h4>
-<p>lcs_or_models1 : list of LightCurve or GaussianProcess
-    First set of inputs, one per energy bin.
-lcs_or_models2 : list of LightCurve or GaussianProcess
-    Second set of inputs, matched to <code>lcs_or_models1</code>.
-fmin : float
-    Minimum frequency to include when integrating.
-fmax : float
-    Maximum frequency to include when integrating.
-bin_edges : array-like
-    Edges of the energy bins corresponding to the light curves.
-subtract_coh_bias : bool, optional
-    Whether to subtract the coherence noise bias before estimating lag uncertainties.</p>
-<h4 id="stela_toolkit.lag_energy_spectrum.LagEnergySpectrum--attributes">Attributes<a class="headerlink" href="#stela_toolkit.lag_energy_spectrum.LagEnergySpectrum--attributes" title="Permanent link">&para;</a></h4>
-<p>energies : array-like
-    Mean energy of each bin.
-energy_widths : array-like
-    Half-width of each energy bin.
-lags : array-like
-    Integrated time lag per energy bin.
-lag_errors : array-like
-    Uncertainties in each lag value.
-cohs : array-like
-    Coherence values per energy bin.
-coh_errors : array-like
-    Uncertainties in the coherence values.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>lcs_or_models1</code>
+            </td>
+            <td>
+                  <code>list of LightCurve or GaussianProcess</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>First set of inputs, one per energy bin.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>lcs_or_models2</code>
+            </td>
+            <td>
+                  <code>list of LightCurve or GaussianProcess</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Second set of inputs, matched to <code>lcs_or_models1</code>.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>fmin</code>
+            </td>
+            <td>
+                  <code><span title="float">float</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Minimum frequency to include when integrating.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>fmax</code>
+            </td>
+            <td>
+                  <code><span title="float">float</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Maximum frequency to include when integrating.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>bin_edges</code>
+            </td>
+            <td>
+                  <code><span title="array">array</span> - <span title="like">like</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Edges of the energy bins corresponding to the light curves.</p>
+              </div>
+            </td>
+            <td>
+                  <code>[]</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>subtract_coh_bias</code>
+            </td>
+            <td>
+                  <code><span title="bool">bool</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Whether to subtract the coherence noise bias before estimating lag uncertainties.</p>
+              </div>
+            </td>
+            <td>
+                  <code>True</code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+<p><span class="doc-section-title">Attributes:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td><code><span title="stela_toolkit.lag_energy_spectrum.LagEnergySpectrum.energies">energies</span></code></td>
+            <td>
+                  <code><span title="array">array</span> - <span title="like">like</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Mean energy of each bin.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="stela_toolkit.lag_energy_spectrum.LagEnergySpectrum.energy_widths">energy_widths</span></code></td>
+            <td>
+                  <code><span title="array">array</span> - <span title="like">like</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Half-width of each energy bin.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="stela_toolkit.lag_energy_spectrum.LagEnergySpectrum.lags">lags</span></code></td>
+            <td>
+                  <code><span title="array">array</span> - <span title="like">like</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Integrated time lag per energy bin.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="stela_toolkit.lag_energy_spectrum.LagEnergySpectrum.lag_errors">lag_errors</span></code></td>
+            <td>
+                  <code><span title="array">array</span> - <span title="like">like</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Uncertainties (1 sigma) in each lag value.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="stela_toolkit.lag_energy_spectrum.LagEnergySpectrum.cohs">cohs</span></code></td>
+            <td>
+                  <code><span title="array">array</span> - <span title="like">like</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Coherence values per energy bin.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="stela_toolkit.lag_energy_spectrum.LagEnergySpectrum.coh_errors">coh_errors</span></code></td>
+            <td>
+                  <code><span title="array">array</span> - <span title="like">like</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Uncertainties (1 sigma) in the coherence values.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
 
 
@@ -1270,7 +1481,20 @@ coh_errors : array-like
 <span class="normal">166</span>
 <span class="normal">167</span>
 <span class="normal">168</span>
-<span class="normal">169</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">LagEnergySpectrum</span><span class="p">:</span>
+<span class="normal">169</span>
+<span class="normal">170</span>
+<span class="normal">171</span>
+<span class="normal">172</span>
+<span class="normal">173</span>
+<span class="normal">174</span>
+<span class="normal">175</span>
+<span class="normal">176</span>
+<span class="normal">177</span>
+<span class="normal">178</span>
+<span class="normal">179</span>
+<span class="normal">180</span>
+<span class="normal">181</span>
+<span class="normal">182</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">LagEnergySpectrum</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compute the time lag as a function of energy between two sets of light curves or GP models.</span>
 
@@ -1292,14 +1516,19 @@ coh_errors : array-like
 <span class="sd">    ----------</span>
 <span class="sd">    lcs_or_models1 : list of LightCurve or GaussianProcess</span>
 <span class="sd">        First set of inputs, one per energy bin.</span>
+
 <span class="sd">    lcs_or_models2 : list of LightCurve or GaussianProcess</span>
 <span class="sd">        Second set of inputs, matched to `lcs_or_models1`.</span>
+
 <span class="sd">    fmin : float</span>
 <span class="sd">        Minimum frequency to include when integrating.</span>
+
 <span class="sd">    fmax : float</span>
 <span class="sd">        Maximum frequency to include when integrating.</span>
+
 <span class="sd">    bin_edges : array-like</span>
 <span class="sd">        Edges of the energy bins corresponding to the light curves.</span>
+
 <span class="sd">    subtract_coh_bias : bool, optional</span>
 <span class="sd">        Whether to subtract the coherence noise bias before estimating lag uncertainties.</span>
 
@@ -1307,16 +1536,21 @@ coh_errors : array-like
 <span class="sd">    ----------</span>
 <span class="sd">    energies : array-like</span>
 <span class="sd">        Mean energy of each bin.</span>
+
 <span class="sd">    energy_widths : array-like</span>
 <span class="sd">        Half-width of each energy bin.</span>
+
 <span class="sd">    lags : array-like</span>
 <span class="sd">        Integrated time lag per energy bin.</span>
+
 <span class="sd">    lag_errors : array-like</span>
-<span class="sd">        Uncertainties in each lag value.</span>
+<span class="sd">        Uncertainties (1 sigma) in each lag value.</span>
+
 <span class="sd">    cohs : array-like</span>
 <span class="sd">        Coherence values per energy bin.</span>
+
 <span class="sd">    coh_errors : array-like</span>
-<span class="sd">        Uncertainties in the coherence values.</span>
+<span class="sd">        Uncertainties (1 sigma) in the coherence values.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
@@ -1354,10 +1588,13 @@ coh_errors : array-like
 <span class="sd">        -------</span>
 <span class="sd">        lags : list</span>
 <span class="sd">            List of integrated lags for each bin.</span>
+
 <span class="sd">        lag_errors : list</span>
 <span class="sd">            List of lag uncertainties.</span>
+
 <span class="sd">        cohs : list</span>
 <span class="sd">            List of mean coherence values.</span>
+
 <span class="sd">        coh_errors : list</span>
 <span class="sd">            List of coherence uncertainties.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -1459,33 +1696,95 @@ coh_errors : array-like
     <div class="doc doc-contents ">
 
         <p>Compute the lag and coherence for each energy bin.</p>
-<h5 id="stela_toolkit.lag_energy_spectrum.LagEnergySpectrum.compute_lag_spectrum--parameters">Parameters<a class="headerlink" href="#stela_toolkit.lag_energy_spectrum.LagEnergySpectrum.compute_lag_spectrum--parameters" title="Permanent link">&para;</a></h5>
-<p>subtract_coh_bias : bool
-    Whether to subtract Poisson noise bias from the coherence.</p>
-<h5 id="stela_toolkit.lag_energy_spectrum.LagEnergySpectrum.compute_lag_spectrum--returns">Returns<a class="headerlink" href="#stela_toolkit.lag_energy_spectrum.LagEnergySpectrum.compute_lag_spectrum--returns" title="Permanent link">&para;</a></h5>
-<p>lags : list
-    List of integrated lags for each bin.
-lag_errors : list
-    List of lag uncertainties.
-cohs : list
-    List of mean coherence values.
-coh_errors : list
-    List of coherence uncertainties.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>subtract_coh_bias</code>
+            </td>
+            <td>
+                  <code><span title="bool">bool</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Whether to subtract Poisson noise bias from the coherence.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+<th>Name</th>          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+<td><code>lags</code></td>            <td>
+                  <code><span title="list">list</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>List of integrated lags for each bin.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+<td><code>lag_errors</code></td>            <td>
+                  <code><span title="list">list</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>List of lag uncertainties.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+<td><code>cohs</code></td>            <td>
+                  <code><span title="list">list</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>List of mean coherence values.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+<td><code>coh_errors</code></td>            <td>
+                  <code><span title="list">list</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>List of coherence uncertainties.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
 
             <details class="quote">
               <summary>Source code in <code>stela_toolkit/lag_energy_spectrum.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 79</span>
-<span class="normal"> 80</span>
-<span class="normal"> 81</span>
-<span class="normal"> 82</span>
-<span class="normal"> 83</span>
-<span class="normal"> 84</span>
-<span class="normal"> 85</span>
-<span class="normal"> 86</span>
-<span class="normal"> 87</span>
-<span class="normal"> 88</span>
-<span class="normal"> 89</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 89</span>
 <span class="normal"> 90</span>
 <span class="normal"> 91</span>
 <span class="normal"> 92</span>
@@ -1510,7 +1809,20 @@ coh_errors : list
 <span class="normal">111</span>
 <span class="normal">112</span>
 <span class="normal">113</span>
-<span class="normal">114</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">compute_lag_spectrum</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">subtract_coh_bias</span><span class="p">):</span>
+<span class="normal">114</span>
+<span class="normal">115</span>
+<span class="normal">116</span>
+<span class="normal">117</span>
+<span class="normal">118</span>
+<span class="normal">119</span>
+<span class="normal">120</span>
+<span class="normal">121</span>
+<span class="normal">122</span>
+<span class="normal">123</span>
+<span class="normal">124</span>
+<span class="normal">125</span>
+<span class="normal">126</span>
+<span class="normal">127</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">compute_lag_spectrum</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">subtract_coh_bias</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compute the lag and coherence for each energy bin.</span>
 
@@ -1523,10 +1835,13 @@ coh_errors : list
 <span class="sd">    -------</span>
 <span class="sd">    lags : list</span>
 <span class="sd">        List of integrated lags for each bin.</span>
+
 <span class="sd">    lag_errors : list</span>
 <span class="sd">        List of lag uncertainties.</span>
+
 <span class="sd">    cohs : list</span>
 <span class="sd">        List of mean coherence values.</span>
+
 <span class="sd">    coh_errors : list</span>
 <span class="sd">        List of coherence uncertainties.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -1569,15 +1884,15 @@ Wrapper method to use FrequencyBinning.count_frequencies_in_bins with class attr
 
             <details class="quote">
               <summary>Source code in <code>stela_toolkit/lag_energy_spectrum.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">161</span>
-<span class="normal">162</span>
-<span class="normal">163</span>
-<span class="normal">164</span>
-<span class="normal">165</span>
-<span class="normal">166</span>
-<span class="normal">167</span>
-<span class="normal">168</span>
-<span class="normal">169</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">count_frequencies_in_bins</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fmin</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">fmax</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">num_bins</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">bin_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">bin_edges</span><span class="o">=</span><span class="p">[]):</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">174</span>
+<span class="normal">175</span>
+<span class="normal">176</span>
+<span class="normal">177</span>
+<span class="normal">178</span>
+<span class="normal">179</span>
+<span class="normal">180</span>
+<span class="normal">181</span>
+<span class="normal">182</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">count_frequencies_in_bins</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fmin</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">fmax</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">num_bins</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">bin_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">bin_edges</span><span class="o">=</span><span class="p">[]):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Counts the number of frequencies in each frequency bin.</span>
 <span class="sd">    Wrapper method to use FrequencyBinning.count_frequencies_in_bins with class attributes.</span>
@@ -1604,27 +1919,42 @@ Wrapper method to use FrequencyBinning.count_frequencies_in_bins with class attr
     <div class="doc doc-contents ">
 
         <p>Plot the lag-energy spectrum and associated coherence values.</p>
-<h5 id="stela_toolkit.lag_energy_spectrum.LagEnergySpectrum.plot--parameters">Parameters<a class="headerlink" href="#stela_toolkit.lag_energy_spectrum.LagEnergySpectrum.plot--parameters" title="Permanent link">&para;</a></h5>
-<p>**kwargs : dict
-    Keyword arguments for customizing the plot (e.g., xlabel, xscale, yscale).</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>**kwargs</code>
+            </td>
+            <td>
+                  <code><span title="dict">dict</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Keyword arguments for customizing the plot (e.g., xlabel, xscale, yscale).</p>
+              </div>
+            </td>
+            <td>
+                  <code>{}</code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
 
             <details class="quote">
               <summary>Source code in <code>stela_toolkit/lag_energy_spectrum.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">116</span>
-<span class="normal">117</span>
-<span class="normal">118</span>
-<span class="normal">119</span>
-<span class="normal">120</span>
-<span class="normal">121</span>
-<span class="normal">122</span>
-<span class="normal">123</span>
-<span class="normal">124</span>
-<span class="normal">125</span>
-<span class="normal">126</span>
-<span class="normal">127</span>
-<span class="normal">128</span>
-<span class="normal">129</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">129</span>
 <span class="normal">130</span>
 <span class="normal">131</span>
 <span class="normal">132</span>
@@ -1654,7 +1984,20 @@ Wrapper method to use FrequencyBinning.count_frequencies_in_bins with class attr
 <span class="normal">156</span>
 <span class="normal">157</span>
 <span class="normal">158</span>
-<span class="normal">159</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">energies</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">energy_widths</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">lags</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">lag_errors</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">cohs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">coh_errors</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="normal">159</span>
+<span class="normal">160</span>
+<span class="normal">161</span>
+<span class="normal">162</span>
+<span class="normal">163</span>
+<span class="normal">164</span>
+<span class="normal">165</span>
+<span class="normal">166</span>
+<span class="normal">167</span>
+<span class="normal">168</span>
+<span class="normal">169</span>
+<span class="normal">170</span>
+<span class="normal">171</span>
+<span class="normal">172</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">energies</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">energy_widths</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">lags</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">lag_errors</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">cohs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">coh_errors</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Plot the lag-energy spectrum and associated coherence values.</span>
 
@@ -1740,6 +2083,12 @@ Wrapper method to use FrequencyBinning.count_frequencies_in_bins with class attr
 <script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
         </div>
         
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
       </main>
       
         <footer class="md-footer">
@@ -1768,7 +2117,7 @@ Wrapper method to use FrequencyBinning.count_frequencies_in_bins with class attr
     
     
       
-      <script id="__config" type="application/json">{"base": "../..", "features": [], "search": "../../assets/javascripts/workers/search.d50fe291.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+      <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.tabs", "navigation.top", "content.code.copy", "navigation.sections", "navigation.expand"], "search": "../../assets/javascripts/workers/search.d50fe291.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
     
     
       <script src="../../assets/javascripts/bundle.13a4f30d.min.js"></script>

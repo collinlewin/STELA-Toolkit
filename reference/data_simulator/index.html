@@ -14,7 +14,7 @@
         <link rel="prev" href="../data_loader/">
       
       
-        <link rel="next" href="../frequency_binning/">
+        <link rel="next" href="../gaussian_process/">
       
       
       <link rel="icon" href="../../assets/stela_logo_sq.png">
@@ -50,6 +50,8 @@
     
       <link rel="stylesheet" href="../../assets/_mkdocstrings.css">
     
+      <link rel="stylesheet" href="../../styles/custom.css">
+    
     <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
@@ -62,10 +64,12 @@
   
     
     
+      
     
     
     
-    <body dir="ltr" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo">
+    
+    <body dir="ltr" data-md-color-scheme="slate" data-md-color-primary="blue" data-md-color-accent="yellow">
   
     
     <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
@@ -86,9 +90,7 @@
     
       
 
-  
-
-<header class="md-header md-header--shadow" data-md-component="header">
+<header class="md-header" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
     <a href="../.." title="STELA Toolkit" class="md-header__button md-logo" aria-label="STELA Toolkit" data-md-component="logo">
       
@@ -117,7 +119,19 @@
     </div>
     
       
+        <form class="md-header__option" data-md-component="palette">
+  
     
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="blue" data-md-color-accent="yellow"  aria-hidden="true"  type="radio" name="__palette" id="__palette_0">
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
     
     
     
@@ -171,6 +185,132 @@
       
         
           
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../overview/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Overview
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../gaussian_process_intro/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Gaussian Processes
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../installation/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Installation
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../tutorial/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Tutorial
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../coherence/" class="md-tabs__link">
+          
+  
+  
+  Class Reference
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
         
       
       <main class="md-main" data-md-component="main">
@@ -184,8 +324,10 @@
                     
 
 
+  
 
-<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
     <a href="../.." title="STELA Toolkit" class="md-nav__button md-logo" aria-label="STELA Toolkit" data-md-component="logo">
       
@@ -319,20 +461,28 @@
     
     
     
+      
+        
+        
+      
+      
+        
+      
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
       
         
         
         <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" checked>
         
           
-          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="">
             
   
   
   <span class="md-ellipsis">
-    Module Reference
+    Class Reference
     
   </span>
   
@@ -343,7 +493,7 @@
         <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_6">
             <span class="md-nav__icon md-icon"></span>
-            Module Reference
+            Class Reference
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
             
@@ -515,44 +665,11 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#stela_toolkit.data_simulator.SimulateLightCurve--parameters" class="md-nav__link">
-    <span class="md-ellipsis">
-      Parameters
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
   <a href="#stela_toolkit.data_simulator.SimulateLightCurve.add_gaussian_noise" class="md-nav__link">
     <span class="md-ellipsis">
       add_gaussian_noise
     </span>
   </a>
-  
-    <nav class="md-nav" aria-label="add_gaussian_noise">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#stela_toolkit.data_simulator.SimulateLightCurve.add_gaussian_noise--parameters" class="md-nav__link">
-    <span class="md-ellipsis">
-      Parameters
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#stela_toolkit.data_simulator.SimulateLightCurve.add_gaussian_noise--returns" class="md-nav__link">
-    <span class="md-ellipsis">
-      Returns
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
         
@@ -563,30 +680,6 @@
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="add_poisson_noise">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#stela_toolkit.data_simulator.SimulateLightCurve.add_poisson_noise--parameters" class="md-nav__link">
-    <span class="md-ellipsis">
-      Parameters
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#stela_toolkit.data_simulator.SimulateLightCurve.add_poisson_noise--returns" class="md-nav__link">
-    <span class="md-ellipsis">
-      Returns
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
 </li>
         
           <li class="md-nav__item">
@@ -595,30 +688,6 @@
       add_regular_gaps
     </span>
   </a>
-  
-    <nav class="md-nav" aria-label="add_regular_gaps">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#stela_toolkit.data_simulator.SimulateLightCurve.add_regular_gaps--parameters" class="md-nav__link">
-    <span class="md-ellipsis">
-      Parameters
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#stela_toolkit.data_simulator.SimulateLightCurve.add_regular_gaps--returns" class="md-nav__link">
-    <span class="md-ellipsis">
-      Returns
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
         
@@ -629,30 +698,6 @@
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="create_psd">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#stela_toolkit.data_simulator.SimulateLightCurve.create_psd--parameters" class="md-nav__link">
-    <span class="md-ellipsis">
-      Parameters
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#stela_toolkit.data_simulator.SimulateLightCurve.create_psd--returns" class="md-nav__link">
-    <span class="md-ellipsis">
-      Returns
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
 </li>
         
           <li class="md-nav__item">
@@ -661,30 +706,6 @@
       generate
     </span>
   </a>
-  
-    <nav class="md-nav" aria-label="generate">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#stela_toolkit.data_simulator.SimulateLightCurve.generate--parameters" class="md-nav__link">
-    <span class="md-ellipsis">
-      Parameters
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#stela_toolkit.data_simulator.SimulateLightCurve.generate--returns" class="md-nav__link">
-    <span class="md-ellipsis">
-      Returns
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
         
@@ -706,29 +727,6 @@
   
 </nav>
       
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../frequency_binning/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    Frequency Binning
-    
-  </span>
-  
-
-      </a>
     </li>
   
 
@@ -810,29 +808,6 @@
   
   
     <li class="md-nav__item">
-      <a href="../plot/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    Plotting
-    
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
       <a href="../power_spectrum/" class="md-nav__link">
         
   
@@ -882,15 +857,25 @@
     
     
     
+      
+      
+        
+          
+          
+        
+      
     
-    <li class="md-nav__item md-nav__item--nested">
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6_13" >
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6_11" >
         
           
-          <label class="md-nav__link" for="__nav_6_13" id="__nav_6_13_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_6_11" id="__nav_6_11_label" tabindex="">
             
   
   
@@ -903,12 +888,58 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_6_13_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_6_13">
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_6_11_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6_11">
             <span class="md-nav__icon md-icon"></span>
             Internal
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../frequency_binning/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Frequency Binning
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../plot/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Plotting
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
             
               
                 
@@ -1017,44 +1048,11 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#stela_toolkit.data_simulator.SimulateLightCurve--parameters" class="md-nav__link">
-    <span class="md-ellipsis">
-      Parameters
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
   <a href="#stela_toolkit.data_simulator.SimulateLightCurve.add_gaussian_noise" class="md-nav__link">
     <span class="md-ellipsis">
       add_gaussian_noise
     </span>
   </a>
-  
-    <nav class="md-nav" aria-label="add_gaussian_noise">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#stela_toolkit.data_simulator.SimulateLightCurve.add_gaussian_noise--parameters" class="md-nav__link">
-    <span class="md-ellipsis">
-      Parameters
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#stela_toolkit.data_simulator.SimulateLightCurve.add_gaussian_noise--returns" class="md-nav__link">
-    <span class="md-ellipsis">
-      Returns
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
         
@@ -1065,30 +1063,6 @@
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="add_poisson_noise">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#stela_toolkit.data_simulator.SimulateLightCurve.add_poisson_noise--parameters" class="md-nav__link">
-    <span class="md-ellipsis">
-      Parameters
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#stela_toolkit.data_simulator.SimulateLightCurve.add_poisson_noise--returns" class="md-nav__link">
-    <span class="md-ellipsis">
-      Returns
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
 </li>
         
           <li class="md-nav__item">
@@ -1097,30 +1071,6 @@
       add_regular_gaps
     </span>
   </a>
-  
-    <nav class="md-nav" aria-label="add_regular_gaps">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#stela_toolkit.data_simulator.SimulateLightCurve.add_regular_gaps--parameters" class="md-nav__link">
-    <span class="md-ellipsis">
-      Parameters
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#stela_toolkit.data_simulator.SimulateLightCurve.add_regular_gaps--returns" class="md-nav__link">
-    <span class="md-ellipsis">
-      Returns
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
         
@@ -1131,30 +1081,6 @@
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="create_psd">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#stela_toolkit.data_simulator.SimulateLightCurve.create_psd--parameters" class="md-nav__link">
-    <span class="md-ellipsis">
-      Parameters
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#stela_toolkit.data_simulator.SimulateLightCurve.create_psd--returns" class="md-nav__link">
-    <span class="md-ellipsis">
-      Returns
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
 </li>
         
           <li class="md-nav__item">
@@ -1163,30 +1089,6 @@
       generate
     </span>
   </a>
-  
-    <nav class="md-nav" aria-label="generate">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#stela_toolkit.data_simulator.SimulateLightCurve.generate--parameters" class="md-nav__link">
-    <span class="md-ellipsis">
-      Parameters
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#stela_toolkit.data_simulator.SimulateLightCurve.generate--returns" class="md-nav__link">
-    <span class="md-ellipsis">
-      Returns
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
         
@@ -1267,95 +1169,266 @@ via an impulse response function (IRF). The light curve is generated using the T
 uniformly. The signal is then inverse-Fourier transformed to obtain the time-domain light curve.</p>
 <p>The clean light curve is rescaled to have the desired mean and standard deviation. Poisson noise
 may be added to simulate counting statistics, including optional background noise.</p>
-<p>Supports both regularly and irregularly sampled time grids:
-- For regular grids: the light curve is oversampled (by default 10×) and then trimmed.
-- For irregular grids: the light curve is generated on a fine grid and sampled at the closest
-  points (no interpolation).</p>
+<p>Supports both regularly and irregularly sampled time grids:</p>
+<ul>
+<li>For regular grids: the light curve is oversampled (by default 10×) and then trimmed.</li>
+<li>For irregular grids: the light curve is generated on a fine grid and sampled at the closest
+  points (no interpolation).</li>
+</ul>
 <p>Optional lag injection is supported by convolving the light curve with an IRF.</p>
-<h4 id="stela_toolkit.data_simulator.SimulateLightCurve--parameters">Parameters<a class="headerlink" href="#stela_toolkit.data_simulator.SimulateLightCurve--parameters" title="Permanent link">&para;</a></h4>
-<p>time_grid : ndarray
-    The array of time stamps for which to simulate the light curve. Can be regular or irregular,
-    but must be sorted and contain at least two points.</p>
 
 
-<details class="psd_type-" open>
-  <summary>str</summary>
-  <p>Type of power spectral density (PSD) to use. Options are:
-- 'powerlaw': a simple power law PSD.
-- 'broken_powerlaw': a PSD with two slopes joined at a break frequency.</p>
-</details>
-
-<details class="psd_params-" open>
-  <summary>dict</summary>
-  <p>Parameters for the PSD. Required keys depend on the PSD type:
-- For 'powerlaw': {'slope', 'plnorm'}
-- For 'broken_powerlaw': {'slope1', 'f_break', 'slope2', 'plnorm'}</p>
-</details>
-
-<details class="mean-" open>
-  <summary>float</summary>
-  <p>Desired mean count rate of the simulated light curve (after rescaling).</p>
-</details>
-
-<details class="std-" open>
-  <summary>float</summary>
-  <p>Desired standard deviation of the simulated light curve (after rescaling).</p>
-</details>
-
-<details class="add_noise-" open>
-  <summary>str, optional</summary>
-  <p>Must define add noise to have uncertainties on the final data.
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>time_grid</code>
+            </td>
+            <td>
+                  <code><span title="ndarray">ndarray</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>The array of time stamps for which to simulate the light curve. Can be regular or irregular,
+but must be sorted and contain at least two points.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>psd_type</code>
+            </td>
+            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Type of power spectral density (PSD) to use. Options are:</p>
+<ul>
+<li>'powerlaw': a simple power law PSD.</li>
+<li>'broken_powerlaw': a PSD with two slopes joined at a break frequency.</li>
+</ul>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>psd_params</code>
+            </td>
+            <td>
+                  <code><span title="dict">dict</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Parameters for the PSD. Required keys depend on the PSD type:</p>
+<ul>
+<li>For 'powerlaw': {'slope', 'plnorm'}</li>
+<li>For 'broken_powerlaw': {'slope1', 'f_break', 'slope2', 'plnorm'}</li>
+</ul>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>mean</code>
+            </td>
+            <td>
+                  <code><span title="float">float</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Desired mean count rate of the simulated light curve (after rescaling).</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>std</code>
+            </td>
+            <td>
+                  <code><span title="float">float</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Desired standard deviation of the simulated light curve (after rescaling).</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>add_noise</code>
+            </td>
+            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Must define add noise to have uncertainties on the final data.
 If "Poisson": Poisson noise is added to the light curve, used to compute uncertainties.
-If "Gaussian": Gaussian noise is added to the light curve, using the uncertainties specified by frac_error.
-    - Use gaussian_frac_error to define the errors in this case.</p>
-</details>
-
-<details class="exposure_times-" open>
-  <summary>ndarray or None, optional</summary>
-  <p>Exposure durations to use for adding the Poisson noise. If None,
+If "Gaussian": Gaussian noise is added to the light curve, using the uncertainties specified by frac_error.</p>
+<div class="highlight"><pre><span></span><code>- Use gaussian_frac_error to define the errors in this case.
+</code></pre></div>
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>exposure_times</code>
+            </td>
+            <td>
+                  <code><span title="ndarray">ndarray</span> or None</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Exposure durations to use for adding the Poisson noise. If None,
 the time spacing is used to approximate exposure times.</p>
-</details>
-
-<details class="bkg_rate-" open>
-  <summary>float, optional</summary>
-  <p>Background rate in counts per unit time to include in the noise simulation (default: 0.0).
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>bkg_rate</code>
+            </td>
+            <td>
+                  <code><span title="float">float</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Background rate in counts per unit time to include in the noise simulation (default: 0.0).
 If set, Poisson noise from two background realizations is added and subtracted.</p>
-</details>
-
-<details class="oversample-" open>
-  <summary>int, optional</summary>
-  <p>For regular grids: how much to oversample before trimming to the target grid (default: 10).</p>
-</details>
-
-<details class="fine_factor-" open>
-  <summary>int, optional</summary>
-  <p>For irregular grids: how densely to simulate the light curve before selecting closest points
+              </div>
+            </td>
+            <td>
+                  <code>0.0</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>oversample</code>
+            </td>
+            <td>
+                  <code><span title="int">int</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>For regular grids: how much to oversample before trimming to the target grid (default: 10).</p>
+              </div>
+            </td>
+            <td>
+                  <code>10</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>fine_factor</code>
+            </td>
+            <td>
+                  <code><span title="int">int</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>For irregular grids: how densely to simulate the light curve before selecting closest points
 (default: 100).</p>
-</details>
+              </div>
+            </td>
+            <td>
+                  <code>100</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>inject_lag</code>
+            </td>
+            <td>
+                  <code><span title="bool">bool</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>If True, applies lag injection by convolving with an IRF (default: False).</p>
+              </div>
+            </td>
+            <td>
+                  <code>False</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>response_type</code>
+            </td>
+            <td>
+                  <code><span title="str">str</span> or None</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Type of impulse response function to use. Options are:</p>
+<ul>
+<li>'delta': a single delay spike at a fixed lag</li>
+<li>'normal': Gaussian-shaped IRF</li>
+<li>'lognormal': log-normal IRF with skewed tail</li>
+<li>'manual': user-supplied kernel</li>
+</ul>
+<p>If None, no lag is injected (default: None).</p>
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>response_params</code>
+            </td>
+            <td>
+                  <code><span title="dict">dict</span> or None</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Parameters for the selected response_type:</p>
+<ul>
+<li>For 'delta': {'lag': float}</li>
+<li>For 'normal': {'mean': float, 'sigma': float, 'duration': float (optional)}</li>
+<li>For 'lognormal': {'median': float, 'sigma': float, 'duration': float (optional)}</li>
+<li>For 'manual': {'response': array_like}</li>
+</ul>
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
-<details class="inject_lag-" open>
-  <summary>bool, optional</summary>
-  <p>If True, applies lag injection by convolving with an IRF (default: False).</p>
-</details>
-
-<details class="response_type-" open>
-  <summary>str or None, optional</summary>
-  <p>Type of impulse response function to use. Options are:
-- 'delta': a single delay spike at a fixed lag
-- 'normal': Gaussian-shaped IRF
-- 'lognormal': log-normal IRF with skewed tail
-- 'manual': user-supplied kernel
-If None, no lag is injected (default: None).</p>
-</details>
-
-<details class="response_params-" open>
-  <summary>dict or None, optional</summary>
-  <p>Parameters for the selected response_type:
-- For 'delta': {'lag': float}
-- For 'normal': {'mean': float, 'sigma': float, 'duration': float (optional)}
-- For 'lognormal': {'median': float, 'sigma': float, 'duration': float (optional)}
-- For 'manual': {'response': array_like}</p>
-</details>
 
 
 
@@ -1833,7 +1906,23 @@ If None, no lag is injected (default: None).</p>
 <span class="normal">473</span>
 <span class="normal">474</span>
 <span class="normal">475</span>
-<span class="normal">476</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">SimulateLightCurve</span><span class="p">:</span>
+<span class="normal">476</span>
+<span class="normal">477</span>
+<span class="normal">478</span>
+<span class="normal">479</span>
+<span class="normal">480</span>
+<span class="normal">481</span>
+<span class="normal">482</span>
+<span class="normal">483</span>
+<span class="normal">484</span>
+<span class="normal">485</span>
+<span class="normal">486</span>
+<span class="normal">487</span>
+<span class="normal">488</span>
+<span class="normal">489</span>
+<span class="normal">490</span>
+<span class="normal">491</span>
+<span class="normal">492</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">SimulateLightCurve</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Simulates light curves with a specified power spectral density (PSD) and optional lag injection</span>
 <span class="sd">    via an impulse response function (IRF). The light curve is generated using the Timmer &amp; Koenig</span>
@@ -1844,6 +1933,7 @@ If None, no lag is injected (default: None).</p>
 <span class="sd">    may be added to simulate counting statistics, including optional background noise.</span>
 
 <span class="sd">    Supports both regularly and irregularly sampled time grids:</span>
+
 <span class="sd">    - For regular grids: the light curve is oversampled (by default 10×) and then trimmed.</span>
 <span class="sd">    - For irregular grids: the light curve is generated on a fine grid and sampled at the closest</span>
 <span class="sd">      points (no interpolation).</span>
@@ -1858,11 +1948,13 @@ If None, no lag is injected (default: None).</p>
 
 <span class="sd">    psd_type : str</span>
 <span class="sd">        Type of power spectral density (PSD) to use. Options are:</span>
+
 <span class="sd">        - &#39;powerlaw&#39;: a simple power law PSD.</span>
 <span class="sd">        - &#39;broken_powerlaw&#39;: a PSD with two slopes joined at a break frequency.</span>
 
 <span class="sd">    psd_params : dict</span>
 <span class="sd">        Parameters for the PSD. Required keys depend on the PSD type:</span>
+
 <span class="sd">        - For &#39;powerlaw&#39;: {&#39;slope&#39;, &#39;plnorm&#39;}</span>
 <span class="sd">        - For &#39;broken_powerlaw&#39;: {&#39;slope1&#39;, &#39;f_break&#39;, &#39;slope2&#39;, &#39;plnorm&#39;}</span>
 
@@ -1876,6 +1968,7 @@ If None, no lag is injected (default: None).</p>
 <span class="sd">        Must define add noise to have uncertainties on the final data.</span>
 <span class="sd">        If &quot;Poisson&quot;: Poisson noise is added to the light curve, used to compute uncertainties.</span>
 <span class="sd">        If &quot;Gaussian&quot;: Gaussian noise is added to the light curve, using the uncertainties specified by frac_error.</span>
+
 <span class="sd">            - Use gaussian_frac_error to define the errors in this case.</span>
 
 <span class="sd">    exposure_times : ndarray or None, optional</span>
@@ -1898,14 +1991,17 @@ If None, no lag is injected (default: None).</p>
 
 <span class="sd">    response_type : str or None, optional</span>
 <span class="sd">        Type of impulse response function to use. Options are:</span>
+
 <span class="sd">        - &#39;delta&#39;: a single delay spike at a fixed lag</span>
 <span class="sd">        - &#39;normal&#39;: Gaussian-shaped IRF</span>
 <span class="sd">        - &#39;lognormal&#39;: log-normal IRF with skewed tail</span>
 <span class="sd">        - &#39;manual&#39;: user-supplied kernel</span>
+
 <span class="sd">        If None, no lag is injected (default: None).</span>
 
 <span class="sd">    response_params : dict or None, optional</span>
 <span class="sd">        Parameters for the selected response_type:</span>
+
 <span class="sd">        - For &#39;delta&#39;: {&#39;lag&#39;: float}</span>
 <span class="sd">        - For &#39;normal&#39;: {&#39;mean&#39;: float, &#39;sigma&#39;: float, &#39;duration&#39;: float (optional)}</span>
 <span class="sd">        - For &#39;lognormal&#39;: {&#39;median&#39;: float, &#39;sigma&#39;: float, &#39;duration&#39;: float (optional)}</span>
@@ -1983,6 +2079,7 @@ If None, no lag is injected (default: None).</p>
 <span class="sd">        -------</span>
 <span class="sd">        rates : ndarray</span>
 <span class="sd">            Simulated light curve values.</span>
+
 <span class="sd">        rates_lagged : ndarray or None</span>
 <span class="sd">            Lagged version of the light curve if `inject_lag` is True.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -2054,13 +2151,17 @@ If None, no lag is injected (default: None).</p>
 <span class="sd">        ----------</span>
 <span class="sd">        lc : ndarray</span>
 <span class="sd">            Clean light curve values.</span>
+
 <span class="sd">        time_grid : ndarray</span>
 <span class="sd">            Time values.</span>
+
 <span class="sd">        bkg_rate : float, optional</span>
 <span class="sd">            Background count rate.</span>
+
 <span class="sd">        exposure_times : ndarray or None, optional</span>
 <span class="sd">            Exposure duration for each point. If None, use time spacing</span>
 <span class="sd">            to approximate integration time per bin.</span>
+
 <span class="sd">        min_error_floor : float, optional</span>
 <span class="sd">            Minimum uncertainty to avoid zeros.</span>
 
@@ -2068,6 +2169,7 @@ If None, no lag is injected (default: None).</p>
 <span class="sd">        -------</span>
 <span class="sd">        noisy_lc : ndarray</span>
 <span class="sd">            Noisy light curve.</span>
+
 <span class="sd">        noise_estimate : ndarray</span>
 <span class="sd">            Estimated error bars.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -2147,10 +2249,13 @@ If None, no lag is injected (default: None).</p>
 <span class="sd">        ----------</span>
 <span class="sd">        lc : ndarray</span>
 <span class="sd">            Input light curve values.</span>
+
 <span class="sd">        time_grid : ndarray</span>
 <span class="sd">            Time values.</span>
+
 <span class="sd">        gap_period : float</span>
 <span class="sd">            Period between gaps.</span>
+
 <span class="sd">        gap_duration : float</span>
 <span class="sd">            Duration of each gap.</span>
 
@@ -2330,45 +2435,107 @@ If None, no lag is injected (default: None).</p>
     <div class="doc doc-contents ">
 
         <p>Add Gaussian noise to a simulated light curve in flux units.</p>
-<h5 id="stela_toolkit.data_simulator.SimulateLightCurve.add_gaussian_noise--parameters">Parameters<a class="headerlink" href="#stela_toolkit.data_simulator.SimulateLightCurve.add_gaussian_noise--parameters" title="Permanent link">&para;</a></h5>
-<p>lc : ndarray
-    Simulated light curve values (flux units).</p>
 
 
-<details class="frac_err-" open>
-  <summary>float</summary>
-  <p>Fractional error (e.g., 0.05 = 5%).</p>
-</details>
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>lc</code>
+            </td>
+            <td>
+                  <code><span title="ndarray">ndarray</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Simulated light curve values (flux units).</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>frac_err</code>
+            </td>
+            <td>
+                  <code><span title="float">float</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Fractional error (e.g., 0.05 = 5%).</p>
+              </div>
+            </td>
+            <td>
+                  <code>0.05</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>min_error_floor</code>
+            </td>
+            <td>
+                  <code><span title="float">float</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Minimum allowed error value to prevent zeros.</p>
+              </div>
+            </td>
+            <td>
+                  <code>1e-10</code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
-<details class="min_error_floor-" open>
-  <summary>float</summary>
-  <p>Minimum allowed error value to prevent zeros.</p>
-</details>        <h5 id="stela_toolkit.data_simulator.SimulateLightCurve.add_gaussian_noise--returns">Returns<a class="headerlink" href="#stela_toolkit.data_simulator.SimulateLightCurve.add_gaussian_noise--returns" title="Permanent link">&para;</a></h5>
-<p>noisy_lc : ndarray
-    Light curve with added Gaussian noise.</p>
 
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+<th>Name</th>          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+<td><code>noisy_lc</code></td>            <td>
+                  <code><span title="ndarray">ndarray</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Light curve with added Gaussian noise.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+<td><code>errors</code></td>            <td>
+                  <code><span title="ndarray">ndarray</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Standard deviation of the Gaussian noise at each point.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
-<details class="errors-" open>
-  <summary>ndarray</summary>
-  <p>Standard deviation of the Gaussian noise at each point.</p>
-</details>
 
             <details class="quote">
               <summary>Source code in <code>stela_toolkit/data_simulator.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">283</span>
-<span class="normal">284</span>
-<span class="normal">285</span>
-<span class="normal">286</span>
-<span class="normal">287</span>
-<span class="normal">288</span>
-<span class="normal">289</span>
-<span class="normal">290</span>
-<span class="normal">291</span>
-<span class="normal">292</span>
-<span class="normal">293</span>
-<span class="normal">294</span>
-<span class="normal">295</span>
-<span class="normal">296</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">296</span>
 <span class="normal">297</span>
 <span class="normal">298</span>
 <span class="normal">299</span>
@@ -2382,7 +2549,20 @@ If None, no lag is injected (default: None).</p>
 <span class="normal">307</span>
 <span class="normal">308</span>
 <span class="normal">309</span>
-<span class="normal">310</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">add_gaussian_noise</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lc</span><span class="p">,</span> <span class="n">frac_err</span><span class="o">=</span><span class="mf">0.05</span><span class="p">,</span> <span class="n">min_error_floor</span><span class="o">=</span><span class="mf">1e-10</span><span class="p">):</span>
+<span class="normal">310</span>
+<span class="normal">311</span>
+<span class="normal">312</span>
+<span class="normal">313</span>
+<span class="normal">314</span>
+<span class="normal">315</span>
+<span class="normal">316</span>
+<span class="normal">317</span>
+<span class="normal">318</span>
+<span class="normal">319</span>
+<span class="normal">320</span>
+<span class="normal">321</span>
+<span class="normal">322</span>
+<span class="normal">323</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">add_gaussian_noise</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lc</span><span class="p">,</span> <span class="n">frac_err</span><span class="o">=</span><span class="mf">0.05</span><span class="p">,</span> <span class="n">min_error_floor</span><span class="o">=</span><span class="mf">1e-10</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Add Gaussian noise to a simulated light curve in flux units.</span>
 
@@ -2428,36 +2608,140 @@ If None, no lag is injected (default: None).</p>
     <div class="doc doc-contents ">
 
         <p>Add Poisson noise to a simulated light curve.</p>
-<h5 id="stela_toolkit.data_simulator.SimulateLightCurve.add_poisson_noise--parameters">Parameters<a class="headerlink" href="#stela_toolkit.data_simulator.SimulateLightCurve.add_poisson_noise--parameters" title="Permanent link">&para;</a></h5>
-<p>lc : ndarray
-    Clean light curve values.
-time_grid : ndarray
-    Time values.
-bkg_rate : float, optional
-    Background count rate.
-exposure_times : ndarray or None, optional
-    Exposure duration for each point. If None, use time spacing
-    to approximate integration time per bin.
-min_error_floor : float, optional
-    Minimum uncertainty to avoid zeros.</p>
-<h5 id="stela_toolkit.data_simulator.SimulateLightCurve.add_poisson_noise--returns">Returns<a class="headerlink" href="#stela_toolkit.data_simulator.SimulateLightCurve.add_poisson_noise--returns" title="Permanent link">&para;</a></h5>
-<p>noisy_lc : ndarray
-    Noisy light curve.
-noise_estimate : ndarray
-    Estimated error bars.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>lc</code>
+            </td>
+            <td>
+                  <code><span title="ndarray">ndarray</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Clean light curve values.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>time_grid</code>
+            </td>
+            <td>
+                  <code><span title="ndarray">ndarray</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Time values.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>bkg_rate</code>
+            </td>
+            <td>
+                  <code><span title="float">float</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Background count rate.</p>
+              </div>
+            </td>
+            <td>
+                  <code>0.0</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>exposure_times</code>
+            </td>
+            <td>
+                  <code><span title="ndarray">ndarray</span> or None</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Exposure duration for each point. If None, use time spacing
+to approximate integration time per bin.</p>
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>min_error_floor</code>
+            </td>
+            <td>
+                  <code><span title="float">float</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Minimum uncertainty to avoid zeros.</p>
+              </div>
+            </td>
+            <td>
+                  <code>1e-10</code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+<th>Name</th>          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+<td><code>noisy_lc</code></td>            <td>
+                  <code><span title="ndarray">ndarray</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Noisy light curve.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+<td><code>noise_estimate</code></td>            <td>
+                  <code><span title="ndarray">ndarray</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Estimated error bars.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
 
             <details class="quote">
               <summary>Source code in <code>stela_toolkit/data_simulator.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">220</span>
-<span class="normal">221</span>
-<span class="normal">222</span>
-<span class="normal">223</span>
-<span class="normal">224</span>
-<span class="normal">225</span>
-<span class="normal">226</span>
-<span class="normal">227</span>
-<span class="normal">228</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">228</span>
 <span class="normal">229</span>
 <span class="normal">230</span>
 <span class="normal">231</span>
@@ -2510,7 +2794,20 @@ noise_estimate : ndarray
 <span class="normal">278</span>
 <span class="normal">279</span>
 <span class="normal">280</span>
-<span class="normal">281</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">add_poisson_noise</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lc</span><span class="p">,</span> <span class="n">time_grid</span><span class="p">,</span> <span class="n">bkg_rate</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">exposure_times</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">min_error_floor</span><span class="o">=</span><span class="mf">1e-10</span><span class="p">):</span>
+<span class="normal">281</span>
+<span class="normal">282</span>
+<span class="normal">283</span>
+<span class="normal">284</span>
+<span class="normal">285</span>
+<span class="normal">286</span>
+<span class="normal">287</span>
+<span class="normal">288</span>
+<span class="normal">289</span>
+<span class="normal">290</span>
+<span class="normal">291</span>
+<span class="normal">292</span>
+<span class="normal">293</span>
+<span class="normal">294</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">add_poisson_noise</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lc</span><span class="p">,</span> <span class="n">time_grid</span><span class="p">,</span> <span class="n">bkg_rate</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">exposure_times</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">min_error_floor</span><span class="o">=</span><span class="mf">1e-10</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Add Poisson noise to a simulated light curve.</span>
 
@@ -2518,13 +2815,17 @@ noise_estimate : ndarray
 <span class="sd">    ----------</span>
 <span class="sd">    lc : ndarray</span>
 <span class="sd">        Clean light curve values.</span>
+
 <span class="sd">    time_grid : ndarray</span>
 <span class="sd">        Time values.</span>
+
 <span class="sd">    bkg_rate : float, optional</span>
 <span class="sd">        Background count rate.</span>
+
 <span class="sd">    exposure_times : ndarray or None, optional</span>
 <span class="sd">        Exposure duration for each point. If None, use time spacing</span>
 <span class="sd">        to approximate integration time per bin.</span>
+
 <span class="sd">    min_error_floor : float, optional</span>
 <span class="sd">        Minimum uncertainty to avoid zeros.</span>
 
@@ -2532,6 +2833,7 @@ noise_estimate : ndarray
 <span class="sd">    -------</span>
 <span class="sd">    noisy_lc : ndarray</span>
 <span class="sd">        Noisy light curve.</span>
+
 <span class="sd">    noise_estimate : ndarray</span>
 <span class="sd">        Estimated error bars.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -2590,36 +2892,113 @@ noise_estimate : ndarray
     <div class="doc doc-contents ">
 
         <p>Simulate regular gaps in the light curve.</p>
-<h5 id="stela_toolkit.data_simulator.SimulateLightCurve.add_regular_gaps--parameters">Parameters<a class="headerlink" href="#stela_toolkit.data_simulator.SimulateLightCurve.add_regular_gaps--parameters" title="Permanent link">&para;</a></h5>
-<p>lc : ndarray
-    Input light curve values.
-time_grid : ndarray
-    Time values.
-gap_period : float
-    Period between gaps.
-gap_duration : float
-    Duration of each gap.</p>
-<h5 id="stela_toolkit.data_simulator.SimulateLightCurve.add_regular_gaps--returns">Returns<a class="headerlink" href="#stela_toolkit.data_simulator.SimulateLightCurve.add_regular_gaps--returns" title="Permanent link">&para;</a></h5>
-<p>gapped_lc : ndarray
-    Light curve with NaNs inserted for gaps.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>lc</code>
+            </td>
+            <td>
+                  <code><span title="ndarray">ndarray</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Input light curve values.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>time_grid</code>
+            </td>
+            <td>
+                  <code><span title="ndarray">ndarray</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Time values.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>gap_period</code>
+            </td>
+            <td>
+                  <code><span title="float">float</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Period between gaps.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>gap_duration</code>
+            </td>
+            <td>
+                  <code><span title="float">float</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Duration of each gap.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+<th>Name</th>          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+<td><code>gapped_lc</code></td>            <td>
+                  <code><span title="ndarray">ndarray</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Light curve with NaNs inserted for gaps.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
 
             <details class="quote">
               <summary>Source code in <code>stela_toolkit/data_simulator.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">313</span>
-<span class="normal">314</span>
-<span class="normal">315</span>
-<span class="normal">316</span>
-<span class="normal">317</span>
-<span class="normal">318</span>
-<span class="normal">319</span>
-<span class="normal">320</span>
-<span class="normal">321</span>
-<span class="normal">322</span>
-<span class="normal">323</span>
-<span class="normal">324</span>
-<span class="normal">325</span>
-<span class="normal">326</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">326</span>
 <span class="normal">327</span>
 <span class="normal">328</span>
 <span class="normal">329</span>
@@ -2635,7 +3014,23 @@ gap_duration : float
 <span class="normal">339</span>
 <span class="normal">340</span>
 <span class="normal">341</span>
-<span class="normal">342</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">add_regular_gaps</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lc</span><span class="p">,</span> <span class="n">time_grid</span><span class="p">,</span> <span class="n">gap_period</span><span class="p">,</span> <span class="n">gap_duration</span><span class="p">):</span>
+<span class="normal">342</span>
+<span class="normal">343</span>
+<span class="normal">344</span>
+<span class="normal">345</span>
+<span class="normal">346</span>
+<span class="normal">347</span>
+<span class="normal">348</span>
+<span class="normal">349</span>
+<span class="normal">350</span>
+<span class="normal">351</span>
+<span class="normal">352</span>
+<span class="normal">353</span>
+<span class="normal">354</span>
+<span class="normal">355</span>
+<span class="normal">356</span>
+<span class="normal">357</span>
+<span class="normal">358</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">add_regular_gaps</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lc</span><span class="p">,</span> <span class="n">time_grid</span><span class="p">,</span> <span class="n">gap_period</span><span class="p">,</span> <span class="n">gap_duration</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Simulate regular gaps in the light curve.</span>
 
@@ -2643,10 +3038,13 @@ gap_duration : float
 <span class="sd">    ----------</span>
 <span class="sd">    lc : ndarray</span>
 <span class="sd">        Input light curve values.</span>
+
 <span class="sd">    time_grid : ndarray</span>
 <span class="sd">        Time values.</span>
+
 <span class="sd">    gap_period : float</span>
 <span class="sd">        Period between gaps.</span>
+
 <span class="sd">    gap_duration : float</span>
 <span class="sd">        Duration of each gap.</span>
 
@@ -2683,33 +3081,65 @@ gap_duration : float
     <div class="doc doc-contents ">
 
         <p>Construct the PSD array based on the selected type and parameters.</p>
-<h5 id="stela_toolkit.data_simulator.SimulateLightCurve.create_psd--parameters">Parameters<a class="headerlink" href="#stela_toolkit.data_simulator.SimulateLightCurve.create_psd--parameters" title="Permanent link">&para;</a></h5>
-<p>freq : ndarray
-    Frequency array.</p>
-<h5 id="stela_toolkit.data_simulator.SimulateLightCurve.create_psd--returns">Returns<a class="headerlink" href="#stela_toolkit.data_simulator.SimulateLightCurve.create_psd--returns" title="Permanent link">&para;</a></h5>
-<p>psd : ndarray
-    Power spectral density values.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>freq</code>
+            </td>
+            <td>
+                  <code><span title="ndarray">ndarray</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Frequency array.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+<th>Name</th>          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+<td><code>psd</code></td>            <td>
+                  <code><span title="ndarray">ndarray</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Power spectral density values.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
 
             <details class="quote">
               <summary>Source code in <code>stela_toolkit/data_simulator.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">344</span>
-<span class="normal">345</span>
-<span class="normal">346</span>
-<span class="normal">347</span>
-<span class="normal">348</span>
-<span class="normal">349</span>
-<span class="normal">350</span>
-<span class="normal">351</span>
-<span class="normal">352</span>
-<span class="normal">353</span>
-<span class="normal">354</span>
-<span class="normal">355</span>
-<span class="normal">356</span>
-<span class="normal">357</span>
-<span class="normal">358</span>
-<span class="normal">359</span>
-<span class="normal">360</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">360</span>
 <span class="normal">361</span>
 <span class="normal">362</span>
 <span class="normal">363</span>
@@ -2733,7 +3163,23 @@ gap_duration : float
 <span class="normal">381</span>
 <span class="normal">382</span>
 <span class="normal">383</span>
-<span class="normal">384</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">create_psd</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">freq</span><span class="p">):</span>
+<span class="normal">384</span>
+<span class="normal">385</span>
+<span class="normal">386</span>
+<span class="normal">387</span>
+<span class="normal">388</span>
+<span class="normal">389</span>
+<span class="normal">390</span>
+<span class="normal">391</span>
+<span class="normal">392</span>
+<span class="normal">393</span>
+<span class="normal">394</span>
+<span class="normal">395</span>
+<span class="normal">396</span>
+<span class="normal">397</span>
+<span class="normal">398</span>
+<span class="normal">399</span>
+<span class="normal">400</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">create_psd</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">freq</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Construct the PSD array based on the selected type and parameters.</span>
 
@@ -2794,26 +3240,75 @@ gap_duration : float
         <p>Generate the clean (noise-free) light curve.</p>
 <p>Handles regular vs. irregular time grids and applies normalization.
 If lag injection is enabled, convolves with a response function.</p>
-<h5 id="stela_toolkit.data_simulator.SimulateLightCurve.generate--parameters">Parameters<a class="headerlink" href="#stela_toolkit.data_simulator.SimulateLightCurve.generate--parameters" title="Permanent link">&para;</a></h5>
-<p>time_grid : array-like
-    Desired output time grid.</p>
-<h5 id="stela_toolkit.data_simulator.SimulateLightCurve.generate--returns">Returns<a class="headerlink" href="#stela_toolkit.data_simulator.SimulateLightCurve.generate--returns" title="Permanent link">&para;</a></h5>
-<p>rates : ndarray
-    Simulated light curve values.
-rates_lagged : ndarray or None
-    Lagged version of the light curve if <code>inject_lag</code> is True.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>time_grid</code>
+            </td>
+            <td>
+                  <code><span title="array">array</span> - <span title="like">like</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Desired output time grid.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+<th>Name</th>          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+<td><code>rates</code></td>            <td>
+                  <code><span title="ndarray">ndarray</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Simulated light curve values.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+<td><code>rates_lagged</code></td>            <td>
+                  <code><span title="ndarray">ndarray</span> or None</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Lagged version of the light curve if <code>inject_lag</code> is True.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
 
             <details class="quote">
               <summary>Source code in <code>stela_toolkit/data_simulator.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">141</span>
-<span class="normal">142</span>
-<span class="normal">143</span>
-<span class="normal">144</span>
-<span class="normal">145</span>
-<span class="normal">146</span>
-<span class="normal">147</span>
-<span class="normal">148</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">148</span>
 <span class="normal">149</span>
 <span class="normal">150</span>
 <span class="normal">151</span>
@@ -2883,7 +3378,15 @@ rates_lagged : ndarray or None
 <span class="normal">215</span>
 <span class="normal">216</span>
 <span class="normal">217</span>
-<span class="normal">218</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">generate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">time_grid</span><span class="p">):</span>
+<span class="normal">218</span>
+<span class="normal">219</span>
+<span class="normal">220</span>
+<span class="normal">221</span>
+<span class="normal">222</span>
+<span class="normal">223</span>
+<span class="normal">224</span>
+<span class="normal">225</span>
+<span class="normal">226</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">generate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">time_grid</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Generate the clean (noise-free) light curve.</span>
 
@@ -2899,6 +3402,7 @@ rates_lagged : ndarray or None
 <span class="sd">    -------</span>
 <span class="sd">    rates : ndarray</span>
 <span class="sd">        Simulated light curve values.</span>
+
 <span class="sd">    rates_lagged : ndarray or None</span>
 <span class="sd">        Lagged version of the light curve if `inject_lag` is True.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -2983,23 +3487,7 @@ rates_lagged : ndarray or None
 
             <details class="quote">
               <summary>Source code in <code>stela_toolkit/data_simulator.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">386</span>
-<span class="normal">387</span>
-<span class="normal">388</span>
-<span class="normal">389</span>
-<span class="normal">390</span>
-<span class="normal">391</span>
-<span class="normal">392</span>
-<span class="normal">393</span>
-<span class="normal">394</span>
-<span class="normal">395</span>
-<span class="normal">396</span>
-<span class="normal">397</span>
-<span class="normal">398</span>
-<span class="normal">399</span>
-<span class="normal">400</span>
-<span class="normal">401</span>
-<span class="normal">402</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">402</span>
 <span class="normal">403</span>
 <span class="normal">404</span>
 <span class="normal">405</span>
@@ -3010,7 +3498,23 @@ rates_lagged : ndarray or None
 <span class="normal">410</span>
 <span class="normal">411</span>
 <span class="normal">412</span>
-<span class="normal">413</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">plot</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="normal">413</span>
+<span class="normal">414</span>
+<span class="normal">415</span>
+<span class="normal">416</span>
+<span class="normal">417</span>
+<span class="normal">418</span>
+<span class="normal">419</span>
+<span class="normal">420</span>
+<span class="normal">421</span>
+<span class="normal">422</span>
+<span class="normal">423</span>
+<span class="normal">424</span>
+<span class="normal">425</span>
+<span class="normal">426</span>
+<span class="normal">427</span>
+<span class="normal">428</span>
+<span class="normal">429</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">plot</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Plot the simulated light curve/s. Shows both the original and lagged data (if available).</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -3080,6 +3584,12 @@ rates_lagged : ndarray or None
 <script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
         </div>
         
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
       </main>
       
         <footer class="md-footer">
@@ -3108,7 +3618,7 @@ rates_lagged : ndarray or None
     
     
       
-      <script id="__config" type="application/json">{"base": "../..", "features": [], "search": "../../assets/javascripts/workers/search.d50fe291.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+      <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.tabs", "navigation.top", "content.code.copy", "navigation.sections", "navigation.expand"], "search": "../../assets/javascripts/workers/search.d50fe291.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
     
     
       <script src="../../assets/javascripts/bundle.13a4f30d.min.js"></script>

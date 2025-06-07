@@ -14,7 +14,7 @@
         <link rel="prev" href="../lag_energy_spectrum/">
       
       
-        <link rel="next" href="../plot/">
+        <link rel="next" href="../power_spectrum/">
       
       
       <link rel="icon" href="../../assets/stela_logo_sq.png">
@@ -50,6 +50,8 @@
     
       <link rel="stylesheet" href="../../assets/_mkdocstrings.css">
     
+      <link rel="stylesheet" href="../../styles/custom.css">
+    
     <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
@@ -62,10 +64,12 @@
   
     
     
+      
     
     
     
-    <body dir="ltr" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo">
+    
+    <body dir="ltr" data-md-color-scheme="slate" data-md-color-primary="blue" data-md-color-accent="yellow">
   
     
     <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
@@ -86,9 +90,7 @@
     
       
 
-  
-
-<header class="md-header md-header--shadow" data-md-component="header">
+<header class="md-header" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
     <a href="../.." title="STELA Toolkit" class="md-header__button md-logo" aria-label="STELA Toolkit" data-md-component="logo">
       
@@ -117,7 +119,19 @@
     </div>
     
       
+        <form class="md-header__option" data-md-component="palette">
+  
     
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="blue" data-md-color-accent="yellow"  aria-hidden="true"  type="radio" name="__palette" id="__palette_0">
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
     
     
     
@@ -171,6 +185,132 @@
       
         
           
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../overview/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Overview
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../gaussian_process_intro/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Gaussian Processes
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../installation/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Installation
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../tutorial/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Tutorial
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../coherence/" class="md-tabs__link">
+          
+  
+  
+  Class Reference
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
         
       
       <main class="md-main" data-md-component="main">
@@ -184,8 +324,10 @@
                     
 
 
+  
 
-<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
     <a href="../.." title="STELA Toolkit" class="md-nav__button md-logo" aria-label="STELA Toolkit" data-md-component="logo">
       
@@ -319,20 +461,28 @@
     
     
     
+      
+        
+        
+      
+      
+        
+      
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
       
         
         
         <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" checked>
         
           
-          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="">
             
   
   
   <span class="md-ellipsis">
-    Module Reference
+    Class Reference
     
   </span>
   
@@ -343,7 +493,7 @@
         <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_6">
             <span class="md-nav__icon md-icon"></span>
-            Module Reference
+            Class Reference
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
             
@@ -452,29 +602,6 @@
   
   <span class="md-ellipsis">
     Data Simulator
-    
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../frequency_binning/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    Frequency Binning
     
   </span>
   
@@ -607,53 +734,11 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#stela_toolkit.lag_frequency_spectrum.LagFrequencySpectrum--parameters" class="md-nav__link">
-    <span class="md-ellipsis">
-      Parameters
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#stela_toolkit.lag_frequency_spectrum.LagFrequencySpectrum--attributes" class="md-nav__link">
-    <span class="md-ellipsis">
-      Attributes
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
   <a href="#stela_toolkit.lag_frequency_spectrum.LagFrequencySpectrum.compute_lag_spectrum" class="md-nav__link">
     <span class="md-ellipsis">
       compute_lag_spectrum
     </span>
   </a>
-  
-    <nav class="md-nav" aria-label="compute_lag_spectrum">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#stela_toolkit.lag_frequency_spectrum.LagFrequencySpectrum.compute_lag_spectrum--parameters" class="md-nav__link">
-    <span class="md-ellipsis">
-      Parameters
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#stela_toolkit.lag_frequency_spectrum.LagFrequencySpectrum.compute_lag_spectrum--returns" class="md-nav__link">
-    <span class="md-ellipsis">
-      Returns
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
         
@@ -663,21 +748,6 @@
       compute_stacked_lag_spectrum
     </span>
   </a>
-  
-    <nav class="md-nav" aria-label="compute_stacked_lag_spectrum">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#stela_toolkit.lag_frequency_spectrum.LagFrequencySpectrum.compute_stacked_lag_spectrum--returns" class="md-nav__link">
-    <span class="md-ellipsis">
-      Returns
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
         
@@ -697,21 +767,6 @@
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="plot">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#stela_toolkit.lag_frequency_spectrum.LagFrequencySpectrum.plot--parameters" class="md-nav__link">
-    <span class="md-ellipsis">
-      Parameters
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
 </li>
         
       </ul>
@@ -723,29 +778,6 @@
   
 </nav>
       
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../plot/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    Plotting
-    
-  </span>
-  
-
-      </a>
     </li>
   
 
@@ -807,15 +839,25 @@
     
     
     
+      
+      
+        
+          
+          
+        
+      
     
-    <li class="md-nav__item md-nav__item--nested">
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6_13" >
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6_11" >
         
           
-          <label class="md-nav__link" for="__nav_6_13" id="__nav_6_13_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_6_11" id="__nav_6_11_label" tabindex="">
             
   
   
@@ -828,12 +870,58 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_6_13_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_6_13">
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_6_11_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6_11">
             <span class="md-nav__icon md-icon"></span>
             Internal
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../frequency_binning/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Frequency Binning
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../plot/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Plotting
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
             
               
                 
@@ -942,53 +1030,11 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#stela_toolkit.lag_frequency_spectrum.LagFrequencySpectrum--parameters" class="md-nav__link">
-    <span class="md-ellipsis">
-      Parameters
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#stela_toolkit.lag_frequency_spectrum.LagFrequencySpectrum--attributes" class="md-nav__link">
-    <span class="md-ellipsis">
-      Attributes
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
   <a href="#stela_toolkit.lag_frequency_spectrum.LagFrequencySpectrum.compute_lag_spectrum" class="md-nav__link">
     <span class="md-ellipsis">
       compute_lag_spectrum
     </span>
   </a>
-  
-    <nav class="md-nav" aria-label="compute_lag_spectrum">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#stela_toolkit.lag_frequency_spectrum.LagFrequencySpectrum.compute_lag_spectrum--parameters" class="md-nav__link">
-    <span class="md-ellipsis">
-      Parameters
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#stela_toolkit.lag_frequency_spectrum.LagFrequencySpectrum.compute_lag_spectrum--returns" class="md-nav__link">
-    <span class="md-ellipsis">
-      Returns
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
         
@@ -998,21 +1044,6 @@
       compute_stacked_lag_spectrum
     </span>
   </a>
-  
-    <nav class="md-nav" aria-label="compute_stacked_lag_spectrum">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#stela_toolkit.lag_frequency_spectrum.LagFrequencySpectrum.compute_stacked_lag_spectrum--returns" class="md-nav__link">
-    <span class="md-ellipsis">
-      Returns
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
         
@@ -1031,21 +1062,6 @@
       plot
     </span>
   </a>
-  
-    <nav class="md-nav" aria-label="plot">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#stela_toolkit.lag_frequency_spectrum.LagFrequencySpectrum.plot--parameters" class="md-nav__link">
-    <span class="md-ellipsis">
-      Parameters
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
         
@@ -1113,48 +1129,261 @@
 
         <p>Compute the time lag as a function of frequency between two time series.</p>
 <p>This class accepts either LightCurve objects (with regular sampling) or trained
-GaussianProcess models from this package. If GP models are provided, the most
+GaussianProcess models from STELA. If GP models are provided, the most
 recently generated samples are used. If no samples have been created yet,
 the toolkit will automatically generate 1000 samples on a 1000-point grid.</p>
 <p>The sign convention is such that a <strong>positive lag</strong> indicates that the input provided as
 <code>lc_or_model1</code> is <strong>lagging behind</strong> the input provided as <code>lc_or_model2</code>.</p>
-<p>There are two modes for computing uncertainties:
-- If the inputs are individual light curves, lag uncertainties are propagated from
-  the coherence spectrum using a theoretical error model.
-- If the inputs are GP models, the lag spectrum is computed for each sample and
+<p>There are two modes for computing uncertainties:</p>
+<ul>
+<li>
+<p>If the inputs are individual light curves, lag uncertainties are propagated from
+  the coherence spectrum using a theoretical error model.</p>
+</li>
+<li>
+<p>If the inputs are GP models, the lag spectrum is computed for each sample and
   uncertainties are reported as the standard deviation across all samples.</p>
-<h4 id="stela_toolkit.lag_frequency_spectrum.LagFrequencySpectrum--parameters">Parameters<a class="headerlink" href="#stela_toolkit.lag_frequency_spectrum.LagFrequencySpectrum--parameters" title="Permanent link">&para;</a></h4>
-<p>lc_or_model1 : LightCurve or GaussianProcess
-    First input time series or trained model.
-lc_or_model2 : LightCurve or GaussianProcess
-    Second input time series or trained model.
-fmin : float or 'auto', optional
-    Minimum frequency to include. If 'auto', uses the lowest nonzero FFT frequency.
-fmax : float or 'auto', optional
-    Maximum frequency to include. If 'auto', uses the Nyquist frequency.
-num_bins : int, optional
-    Number of frequency bins.
-bin_type : str, optional
-    Type of binning: 'log' or 'linear'.
-bin_edges : array-like, optional
-    Custom bin edges (overrides <code>num_bins</code> and <code>bin_type</code>).
-subtract_coh_bias : bool, optional
-    Whether to subtract Poisson noise bias from the coherence.
-plot_lfs : bool, optional
-    Whether to generate the lag-frequency plot on initialization.</p>
-<h4 id="stela_toolkit.lag_frequency_spectrum.LagFrequencySpectrum--attributes">Attributes<a class="headerlink" href="#stela_toolkit.lag_frequency_spectrum.LagFrequencySpectrum--attributes" title="Permanent link">&para;</a></h4>
-<p>freqs : array-like
-    Frequency bin centers.
-freq_widths : array-like
-    Bin widths for each frequency bin.
-lags : array-like
-    Computed time lags.
-lag_errors : array-like
-    Uncertainties in the lag estimates.
-cohs : array-like
-    Coherence values for each frequency bin.
-coh_errors : array-like
-    Uncertainties in the coherence values.</p>
+</li>
+</ul>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>lc_or_model1</code>
+            </td>
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="LightCurve (stela_toolkit.data_loader.LightCurve)" href="../data_loader/#stela_toolkit.data_loader.LightCurve">LightCurve</a> or <a class="autorefs autorefs-internal" title="GaussianProcess (stela_toolkit.gaussian_process.GaussianProcess)" href="../gaussian_process/#stela_toolkit.gaussian_process.GaussianProcess">GaussianProcess</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>First input time series or trained model.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>lc_or_model2</code>
+            </td>
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="LightCurve (stela_toolkit.data_loader.LightCurve)" href="../data_loader/#stela_toolkit.data_loader.LightCurve">LightCurve</a> or <a class="autorefs autorefs-internal" title="GaussianProcess (stela_toolkit.gaussian_process.GaussianProcess)" href="../gaussian_process/#stela_toolkit.gaussian_process.GaussianProcess">GaussianProcess</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Second input time series or trained model.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>fmin</code>
+            </td>
+            <td>
+                  <code><span title="float">float</span> or <span title="auto">auto</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Minimum frequency to include. If 'auto', uses the lowest nonzero FFT frequency.</p>
+              </div>
+            </td>
+            <td>
+                  <code>&#39;auto&#39;</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>fmax</code>
+            </td>
+            <td>
+                  <code><span title="float">float</span> or <span title="auto">auto</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Maximum frequency to include. If 'auto', uses the Nyquist frequency.</p>
+              </div>
+            </td>
+            <td>
+                  <code>&#39;auto&#39;</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>num_bins</code>
+            </td>
+            <td>
+                  <code><span title="int">int</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Number of frequency bins.</p>
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>bin_type</code>
+            </td>
+            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Type of binning: 'log' or 'linear'.</p>
+              </div>
+            </td>
+            <td>
+                  <code>&#39;log&#39;</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>bin_edges</code>
+            </td>
+            <td>
+                  <code><span title="array">array</span> - <span title="like">like</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Custom bin edges (overrides <code>num_bins</code> and <code>bin_type</code>).</p>
+              </div>
+            </td>
+            <td>
+                  <code>[]</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>subtract_coh_bias</code>
+            </td>
+            <td>
+                  <code><span title="bool">bool</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Whether to subtract Poisson noise bias from the coherence.</p>
+              </div>
+            </td>
+            <td>
+                  <code>True</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>plot_lfs</code>
+            </td>
+            <td>
+                  <code><span title="bool">bool</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Whether to generate the lag-frequency plot on initialization.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+<p><span class="doc-section-title">Attributes:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td><code><span title="stela_toolkit.lag_frequency_spectrum.LagFrequencySpectrum.freqs">freqs</span></code></td>
+            <td>
+                  <code><span title="array">array</span> - <span title="like">like</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Frequency bin centers.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="stela_toolkit.lag_frequency_spectrum.LagFrequencySpectrum.freq_widths">freq_widths</span></code></td>
+            <td>
+                  <code><span title="array">array</span> - <span title="like">like</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Bin widths for each frequency bin.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="stela_toolkit.lag_frequency_spectrum.LagFrequencySpectrum.lags">lags</span></code></td>
+            <td>
+                  <code><span title="array">array</span> - <span title="like">like</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Computed time lags.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="stela_toolkit.lag_frequency_spectrum.LagFrequencySpectrum.lag_errors">lag_errors</span></code></td>
+            <td>
+                  <code><span title="array">array</span> - <span title="like">like</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Uncertainties in the lag estimates.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="stela_toolkit.lag_frequency_spectrum.LagFrequencySpectrum.cohs">cohs</span></code></td>
+            <td>
+                  <code><span title="array">array</span> - <span title="like">like</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Coherence values for each frequency bin.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="stela_toolkit.lag_frequency_spectrum.LagFrequencySpectrum.coh_errors">coh_errors</span></code></td>
+            <td>
+                  <code><span title="array">array</span> - <span title="like">like</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Uncertainties in the coherence values.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
 
 
@@ -1434,12 +1663,26 @@ coh_errors : array-like
 <span class="normal">278</span>
 <span class="normal">279</span>
 <span class="normal">280</span>
-<span class="normal">281</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">LagFrequencySpectrum</span><span class="p">:</span>
+<span class="normal">281</span>
+<span class="normal">282</span>
+<span class="normal">283</span>
+<span class="normal">284</span>
+<span class="normal">285</span>
+<span class="normal">286</span>
+<span class="normal">287</span>
+<span class="normal">288</span>
+<span class="normal">289</span>
+<span class="normal">290</span>
+<span class="normal">291</span>
+<span class="normal">292</span>
+<span class="normal">293</span>
+<span class="normal">294</span>
+<span class="normal">295</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">LagFrequencySpectrum</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compute the time lag as a function of frequency between two time series.</span>
 
 <span class="sd">    This class accepts either LightCurve objects (with regular sampling) or trained</span>
-<span class="sd">    GaussianProcess models from this package. If GP models are provided, the most</span>
+<span class="sd">    GaussianProcess models from STELA. If GP models are provided, the most</span>
 <span class="sd">    recently generated samples are used. If no samples have been created yet,</span>
 <span class="sd">    the toolkit will automatically generate 1000 samples on a 1000-point grid.</span>
 
@@ -1447,8 +1690,10 @@ coh_errors : array-like
 <span class="sd">    `lc_or_model1` is **lagging behind** the input provided as `lc_or_model2`.</span>
 
 <span class="sd">    There are two modes for computing uncertainties:</span>
+
 <span class="sd">    - If the inputs are individual light curves, lag uncertainties are propagated from</span>
 <span class="sd">      the coherence spectrum using a theoretical error model.</span>
+
 <span class="sd">    - If the inputs are GP models, the lag spectrum is computed for each sample and</span>
 <span class="sd">      uncertainties are reported as the standard deviation across all samples.</span>
 
@@ -1456,20 +1701,28 @@ coh_errors : array-like
 <span class="sd">    ----------</span>
 <span class="sd">    lc_or_model1 : LightCurve or GaussianProcess</span>
 <span class="sd">        First input time series or trained model.</span>
+
 <span class="sd">    lc_or_model2 : LightCurve or GaussianProcess</span>
 <span class="sd">        Second input time series or trained model.</span>
+
 <span class="sd">    fmin : float or &#39;auto&#39;, optional</span>
 <span class="sd">        Minimum frequency to include. If &#39;auto&#39;, uses the lowest nonzero FFT frequency.</span>
+
 <span class="sd">    fmax : float or &#39;auto&#39;, optional</span>
 <span class="sd">        Maximum frequency to include. If &#39;auto&#39;, uses the Nyquist frequency.</span>
+
 <span class="sd">    num_bins : int, optional</span>
 <span class="sd">        Number of frequency bins.</span>
+
 <span class="sd">    bin_type : str, optional</span>
 <span class="sd">        Type of binning: &#39;log&#39; or &#39;linear&#39;.</span>
+
 <span class="sd">    bin_edges : array-like, optional</span>
 <span class="sd">        Custom bin edges (overrides `num_bins` and `bin_type`).</span>
+
 <span class="sd">    subtract_coh_bias : bool, optional</span>
 <span class="sd">        Whether to subtract Poisson noise bias from the coherence.</span>
+
 <span class="sd">    plot_lfs : bool, optional</span>
 <span class="sd">        Whether to generate the lag-frequency plot on initialization.</span>
 
@@ -1477,14 +1730,19 @@ coh_errors : array-like
 <span class="sd">    ----------</span>
 <span class="sd">    freqs : array-like</span>
 <span class="sd">        Frequency bin centers.</span>
+
 <span class="sd">    freq_widths : array-like</span>
 <span class="sd">        Bin widths for each frequency bin.</span>
+
 <span class="sd">    lags : array-like</span>
 <span class="sd">        Computed time lags.</span>
+
 <span class="sd">    lag_errors : array-like</span>
 <span class="sd">        Uncertainties in the lag estimates.</span>
+
 <span class="sd">    cohs : array-like</span>
 <span class="sd">        Coherence values for each frequency bin.</span>
+
 <span class="sd">    coh_errors : array-like</span>
 <span class="sd">        Uncertainties in the coherence values.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -1499,7 +1757,6 @@ coh_errors : array-like
                  <span class="n">bin_edges</span><span class="o">=</span><span class="p">[],</span>
                  <span class="n">subtract_coh_bias</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 
-        <span class="c1"># To do: update main docstring for lag interpretation, add coherence in plotting !!</span>
         <span class="n">input_data</span> <span class="o">=</span> <span class="n">_CheckInputs</span><span class="o">.</span><span class="n">_check_lightcurve_or_model</span><span class="p">(</span><span class="n">lc_or_model1</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">input_data</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;model&#39;</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">times1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">rates1</span> <span class="o">=</span> <span class="n">input_data</span><span class="p">[</span><span class="s1">&#39;data&#39;</span><span class="p">]</span>
@@ -1734,45 +1991,179 @@ coh_errors : array-like
         <p>Compute the lag spectrum for a single pair of light curves or model realizations.</p>
 <p>The phase of the cross-spectrum is converted to time lags, and uncertainties are
 computed either from coherence (light curves) or from GP sampling (if stacked mode).</p>
-<h5 id="stela_toolkit.lag_frequency_spectrum.LagFrequencySpectrum.compute_lag_spectrum--parameters">Parameters<a class="headerlink" href="#stela_toolkit.lag_frequency_spectrum.LagFrequencySpectrum.compute_lag_spectrum--parameters" title="Permanent link">&para;</a></h5>
-<p>times1, rates1 : array-like, optional
-    Input time and rates for the first time series.
-times2, rates2 : array-like, optional
-    Input time and rates for the second time series.
-subtract_coh_bias : bool, optional
-    Whether to subtract noise bias from coherence.</p>
-<h5 id="stela_toolkit.lag_frequency_spectrum.LagFrequencySpectrum.compute_lag_spectrum--returns">Returns<a class="headerlink" href="#stela_toolkit.lag_frequency_spectrum.LagFrequencySpectrum.compute_lag_spectrum--returns" title="Permanent link">&para;</a></h5>
-<p>freqs : array-like
-    Frequency bin centers.
-freq_widths : array-like
-    Frequency bin widths.
-lags : array-like
-    Time lags at each frequency.
-lag_errors : array-like
-    Uncertainty in the lag values.
-cohs : array-like
-    Coherence values.
-coh_errors : array-like
-    Uncertainties in the coherence values.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>times1</code>
+            </td>
+            <td>
+                  <code><span title="array">array</span> - <span title="like">like</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Input time and rates for the first time series.</p>
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>rates1</code>
+            </td>
+            <td>
+                  <code><span title="array">array</span> - <span title="like">like</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Input time and rates for the first time series.</p>
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>times2</code>
+            </td>
+            <td>
+                  <code><span title="array">array</span> - <span title="like">like</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Input time and rates for the second time series.</p>
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>rates2</code>
+            </td>
+            <td>
+                  <code><span title="array">array</span> - <span title="like">like</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Input time and rates for the second time series.</p>
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>subtract_coh_bias</code>
+            </td>
+            <td>
+                  <code><span title="bool">bool</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Whether to subtract noise bias from coherence.</p>
+              </div>
+            </td>
+            <td>
+                  <code>True</code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+<th>Name</th>          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+<td><code>freqs</code></td>            <td>
+                  <code><span title="array">array</span> - <span title="like">like</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Frequency bin centers.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+<td><code>freq_widths</code></td>            <td>
+                  <code><span title="array">array</span> - <span title="like">like</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Frequency bin widths.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+<td><code>lags</code></td>            <td>
+                  <code><span title="array">array</span> - <span title="like">like</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Time lags at each frequency.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+<td><code>lag_errors</code></td>            <td>
+                  <code><span title="array">array</span> - <span title="like">like</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Uncertainty in the lag values.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+<td><code>cohs</code></td>            <td>
+                  <code><span title="array">array</span> - <span title="like">like</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Coherence values.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+<td><code>coh_errors</code></td>            <td>
+                  <code><span title="array">array</span> - <span title="like">like</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Uncertainties in the coherence values.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
 
             <details class="quote">
               <summary>Source code in <code>stela_toolkit/lag_frequency_spectrum.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">110</span>
-<span class="normal">111</span>
-<span class="normal">112</span>
-<span class="normal">113</span>
-<span class="normal">114</span>
-<span class="normal">115</span>
-<span class="normal">116</span>
-<span class="normal">117</span>
-<span class="normal">118</span>
-<span class="normal">119</span>
-<span class="normal">120</span>
-<span class="normal">121</span>
-<span class="normal">122</span>
-<span class="normal">123</span>
-<span class="normal">124</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">124</span>
 <span class="normal">125</span>
 <span class="normal">126</span>
 <span class="normal">127</span>
@@ -1829,7 +2220,21 @@ coh_errors : array-like
 <span class="normal">178</span>
 <span class="normal">179</span>
 <span class="normal">180</span>
-<span class="normal">181</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">compute_lag_spectrum</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> 
+<span class="normal">181</span>
+<span class="normal">182</span>
+<span class="normal">183</span>
+<span class="normal">184</span>
+<span class="normal">185</span>
+<span class="normal">186</span>
+<span class="normal">187</span>
+<span class="normal">188</span>
+<span class="normal">189</span>
+<span class="normal">190</span>
+<span class="normal">191</span>
+<span class="normal">192</span>
+<span class="normal">193</span>
+<span class="normal">194</span>
+<span class="normal">195</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">compute_lag_spectrum</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> 
                          <span class="n">times1</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">rates1</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                          <span class="n">times2</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">rates2</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                          <span class="n">subtract_coh_bias</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
@@ -1921,38 +2326,84 @@ coh_errors : array-like
         <p>Compute lag-frequency spectrum for stacked GP samples.</p>
 <p>This method assumes the input light curves are model-generated and include
 multiple realizations. Returns mean and standard deviation of lag and coherence.</p>
-<h5 id="stela_toolkit.lag_frequency_spectrum.LagFrequencySpectrum.compute_stacked_lag_spectrum--returns">Returns<a class="headerlink" href="#stela_toolkit.lag_frequency_spectrum.LagFrequencySpectrum.compute_stacked_lag_spectrum--returns" title="Permanent link">&para;</a></h5>
-<p>freqs : array-like
-    Frequency bin centers.
-freq_widths : array-like
-    Frequency bin widths.
-lags : array-like
-    Mean time lags across samples.
-lag_errors : array-like
-    Standard deviation of lags.
-cohs : array-like
-    Mean coherence values.
-coh_errors : array-like
-    Standard deviation of coherence values.</p>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+<th>Name</th>          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+<td><code>freqs</code></td>            <td>
+                  <code><span title="array">array</span> - <span title="like">like</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Frequency bin centers.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+<td><code>freq_widths</code></td>            <td>
+                  <code><span title="array">array</span> - <span title="like">like</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Frequency bin widths.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+<td><code>lags</code></td>            <td>
+                  <code><span title="array">array</span> - <span title="like">like</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Mean time lags across samples.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+<td><code>lag_errors</code></td>            <td>
+                  <code><span title="array">array</span> - <span title="like">like</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Standard deviation of lags.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+<td><code>cohs</code></td>            <td>
+                  <code><span title="array">array</span> - <span title="like">like</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Mean coherence values.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+<td><code>coh_errors</code></td>            <td>
+                  <code><span title="array">array</span> - <span title="like">like</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Standard deviation of coherence values.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
 
             <details class="quote">
               <summary>Source code in <code>stela_toolkit/lag_frequency_spectrum.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">183</span>
-<span class="normal">184</span>
-<span class="normal">185</span>
-<span class="normal">186</span>
-<span class="normal">187</span>
-<span class="normal">188</span>
-<span class="normal">189</span>
-<span class="normal">190</span>
-<span class="normal">191</span>
-<span class="normal">192</span>
-<span class="normal">193</span>
-<span class="normal">194</span>
-<span class="normal">195</span>
-<span class="normal">196</span>
-<span class="normal">197</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">197</span>
 <span class="normal">198</span>
 <span class="normal">199</span>
 <span class="normal">200</span>
@@ -1982,7 +2433,21 @@ coh_errors : array-like
 <span class="normal">224</span>
 <span class="normal">225</span>
 <span class="normal">226</span>
-<span class="normal">227</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">compute_stacked_lag_spectrum</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="normal">227</span>
+<span class="normal">228</span>
+<span class="normal">229</span>
+<span class="normal">230</span>
+<span class="normal">231</span>
+<span class="normal">232</span>
+<span class="normal">233</span>
+<span class="normal">234</span>
+<span class="normal">235</span>
+<span class="normal">236</span>
+<span class="normal">237</span>
+<span class="normal">238</span>
+<span class="normal">239</span>
+<span class="normal">240</span>
+<span class="normal">241</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">compute_stacked_lag_spectrum</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compute lag-frequency spectrum for stacked GP samples.</span>
 
@@ -2050,15 +2515,15 @@ Wrapper method to use FrequencyBinning.count_frequencies_in_bins with class attr
 
             <details class="quote">
               <summary>Source code in <code>stela_toolkit/lag_frequency_spectrum.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">273</span>
-<span class="normal">274</span>
-<span class="normal">275</span>
-<span class="normal">276</span>
-<span class="normal">277</span>
-<span class="normal">278</span>
-<span class="normal">279</span>
-<span class="normal">280</span>
-<span class="normal">281</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">count_frequencies_in_bins</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fmin</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">fmax</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">num_bins</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">bin_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">bin_edges</span><span class="o">=</span><span class="p">[]):</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">287</span>
+<span class="normal">288</span>
+<span class="normal">289</span>
+<span class="normal">290</span>
+<span class="normal">291</span>
+<span class="normal">292</span>
+<span class="normal">293</span>
+<span class="normal">294</span>
+<span class="normal">295</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">count_frequencies_in_bins</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fmin</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">fmax</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">num_bins</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">bin_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">bin_edges</span><span class="o">=</span><span class="p">[]):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Counts the number of frequencies in each frequency bin.</span>
 <span class="sd">    Wrapper method to use FrequencyBinning.count_frequencies_in_bins with class attributes.</span>
@@ -2085,28 +2550,42 @@ Wrapper method to use FrequencyBinning.count_frequencies_in_bins with class attr
     <div class="doc doc-contents ">
 
         <p>Plot the lag-frequency and coherence spectrum.</p>
-<h5 id="stela_toolkit.lag_frequency_spectrum.LagFrequencySpectrum.plot--parameters">Parameters<a class="headerlink" href="#stela_toolkit.lag_frequency_spectrum.LagFrequencySpectrum.plot--parameters" title="Permanent link">&para;</a></h5>
-<p>**kwargs : dict
-    Custom plotting arguments (xlabel, xscale, yscale, etc.).</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>**kwargs</code>
+            </td>
+            <td>
+                  <code><span title="dict">dict</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Custom plotting arguments (xlabel, xscale, yscale, etc.).</p>
+              </div>
+            </td>
+            <td>
+                  <code>{}</code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
 
             <details class="quote">
               <summary>Source code in <code>stela_toolkit/lag_frequency_spectrum.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">229</span>
-<span class="normal">230</span>
-<span class="normal">231</span>
-<span class="normal">232</span>
-<span class="normal">233</span>
-<span class="normal">234</span>
-<span class="normal">235</span>
-<span class="normal">236</span>
-<span class="normal">237</span>
-<span class="normal">238</span>
-<span class="normal">239</span>
-<span class="normal">240</span>
-<span class="normal">241</span>
-<span class="normal">242</span>
-<span class="normal">243</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">243</span>
 <span class="normal">244</span>
 <span class="normal">245</span>
 <span class="normal">246</span>
@@ -2134,7 +2613,21 @@ Wrapper method to use FrequencyBinning.count_frequencies_in_bins with class attr
 <span class="normal">268</span>
 <span class="normal">269</span>
 <span class="normal">270</span>
-<span class="normal">271</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">freqs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">freq_widths</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">lags</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">lag_errors</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">cohs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">coh_errors</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="normal">271</span>
+<span class="normal">272</span>
+<span class="normal">273</span>
+<span class="normal">274</span>
+<span class="normal">275</span>
+<span class="normal">276</span>
+<span class="normal">277</span>
+<span class="normal">278</span>
+<span class="normal">279</span>
+<span class="normal">280</span>
+<span class="normal">281</span>
+<span class="normal">282</span>
+<span class="normal">283</span>
+<span class="normal">284</span>
+<span class="normal">285</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">freqs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">freq_widths</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">lags</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">lag_errors</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">cohs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">coh_errors</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Plot the lag-frequency and coherence spectrum.</span>
 
@@ -2219,6 +2712,12 @@ Wrapper method to use FrequencyBinning.count_frequencies_in_bins with class attr
 <script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
         </div>
         
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
       </main>
       
         <footer class="md-footer">
@@ -2247,7 +2746,7 @@ Wrapper method to use FrequencyBinning.count_frequencies_in_bins with class attr
     
     
       
-      <script id="__config" type="application/json">{"base": "../..", "features": [], "search": "../../assets/javascripts/workers/search.d50fe291.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+      <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.tabs", "navigation.top", "content.code.copy", "navigation.sections", "navigation.expand"], "search": "../../assets/javascripts/workers/search.d50fe291.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
     
     
       <script src="../../assets/javascripts/bundle.13a4f30d.min.js"></script>

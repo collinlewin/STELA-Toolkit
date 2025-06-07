@@ -50,6 +50,8 @@
     
       <link rel="stylesheet" href="../../assets/_mkdocstrings.css">
     
+      <link rel="stylesheet" href="../../styles/custom.css">
+    
     <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
@@ -62,10 +64,12 @@
   
     
     
+      
     
     
     
-    <body dir="ltr" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo">
+    
+    <body dir="ltr" data-md-color-scheme="slate" data-md-color-primary="blue" data-md-color-accent="yellow">
   
     
     <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
@@ -86,9 +90,7 @@
     
       
 
-  
-
-<header class="md-header md-header--shadow" data-md-component="header">
+<header class="md-header" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
     <a href="../.." title="STELA Toolkit" class="md-header__button md-logo" aria-label="STELA Toolkit" data-md-component="logo">
       
@@ -117,7 +119,19 @@
     </div>
     
       
+        <form class="md-header__option" data-md-component="palette">
+  
     
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="blue" data-md-color-accent="yellow"  aria-hidden="true"  type="radio" name="__palette" id="__palette_0">
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
     
     
     
@@ -171,6 +185,132 @@
       
         
           
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../overview/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Overview
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../gaussian_process_intro/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Gaussian Processes
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../installation/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Installation
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../tutorial/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Tutorial
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../coherence/" class="md-tabs__link">
+          
+  
+  
+  Class Reference
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
         
       
       <main class="md-main" data-md-component="main">
@@ -184,8 +324,10 @@
                     
 
 
+  
 
-<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
     <a href="../.." title="STELA Toolkit" class="md-nav__button md-logo" aria-label="STELA Toolkit" data-md-component="logo">
       
@@ -319,20 +461,28 @@
     
     
     
+      
+        
+        
+      
+      
+        
+      
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
       
         
         
         <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" checked>
         
           
-          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="">
             
   
   
   <span class="md-ellipsis">
-    Module Reference
+    Class Reference
     
   </span>
   
@@ -343,7 +493,7 @@
         <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_6">
             <span class="md-nav__icon md-icon"></span>
-            Module Reference
+            Class Reference
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
             
@@ -446,53 +596,11 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#stela_toolkit.cross_correlation.CrossCorrelation--parameters" class="md-nav__link">
-    <span class="md-ellipsis">
-      Parameters
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#stela_toolkit.cross_correlation.CrossCorrelation--attributes" class="md-nav__link">
-    <span class="md-ellipsis">
-      Attributes
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
   <a href="#stela_toolkit.cross_correlation.CrossCorrelation.compute_ccf" class="md-nav__link">
     <span class="md-ellipsis">
       compute_ccf
     </span>
   </a>
-  
-    <nav class="md-nav" aria-label="compute_ccf">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#stela_toolkit.cross_correlation.CrossCorrelation.compute_ccf--parameters" class="md-nav__link">
-    <span class="md-ellipsis">
-      Parameters
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#stela_toolkit.cross_correlation.CrossCorrelation.compute_ccf--returns" class="md-nav__link">
-    <span class="md-ellipsis">
-      Returns
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
         
@@ -503,21 +611,6 @@
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="compute_ccf_interp">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#stela_toolkit.cross_correlation.CrossCorrelation.compute_ccf_interp--returns" class="md-nav__link">
-    <span class="md-ellipsis">
-      Returns
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
 </li>
         
           <li class="md-nav__item">
@@ -526,21 +619,6 @@
       compute_confidence_intervals
     </span>
   </a>
-  
-    <nav class="md-nav" aria-label="compute_confidence_intervals">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#stela_toolkit.cross_correlation.CrossCorrelation.compute_confidence_intervals--parameters" class="md-nav__link">
-    <span class="md-ellipsis">
-      Parameters
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
         
@@ -551,30 +629,6 @@
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="find_peak_and_centroid">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#stela_toolkit.cross_correlation.CrossCorrelation.find_peak_and_centroid--parameters" class="md-nav__link">
-    <span class="md-ellipsis">
-      Parameters
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#stela_toolkit.cross_correlation.CrossCorrelation.find_peak_and_centroid--returns" class="md-nav__link">
-    <span class="md-ellipsis">
-      Returns
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
 </li>
         
           <li class="md-nav__item">
@@ -584,21 +638,6 @@
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="plot">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#stela_toolkit.cross_correlation.CrossCorrelation.plot--parameters" class="md-nav__link">
-    <span class="md-ellipsis">
-      Parameters
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
 </li>
         
           <li class="md-nav__item">
@@ -607,21 +646,6 @@
       run_monte_carlo
     </span>
   </a>
-  
-    <nav class="md-nav" aria-label="run_monte_carlo">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#stela_toolkit.cross_correlation.CrossCorrelation.run_monte_carlo--returns" class="md-nav__link">
-    <span class="md-ellipsis">
-      Returns
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
         
@@ -715,29 +739,6 @@
   
   
     <li class="md-nav__item">
-      <a href="../frequency_binning/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    Frequency Binning
-    
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
       <a href="../gaussian_process/" class="md-nav__link">
         
   
@@ -807,29 +808,6 @@
   
   
     <li class="md-nav__item">
-      <a href="../plot/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    Plotting
-    
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
       <a href="../power_spectrum/" class="md-nav__link">
         
   
@@ -879,15 +857,25 @@
     
     
     
+      
+      
+        
+          
+          
+        
+      
     
-    <li class="md-nav__item md-nav__item--nested">
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6_13" >
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6_11" >
         
           
-          <label class="md-nav__link" for="__nav_6_13" id="__nav_6_13_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_6_11" id="__nav_6_11_label" tabindex="">
             
   
   
@@ -900,12 +888,58 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_6_13_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_6_13">
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_6_11_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6_11">
             <span class="md-nav__icon md-icon"></span>
             Internal
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../frequency_binning/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Frequency Binning
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../plot/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Plotting
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
             
               
                 
@@ -1014,53 +1048,11 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#stela_toolkit.cross_correlation.CrossCorrelation--parameters" class="md-nav__link">
-    <span class="md-ellipsis">
-      Parameters
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#stela_toolkit.cross_correlation.CrossCorrelation--attributes" class="md-nav__link">
-    <span class="md-ellipsis">
-      Attributes
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
   <a href="#stela_toolkit.cross_correlation.CrossCorrelation.compute_ccf" class="md-nav__link">
     <span class="md-ellipsis">
       compute_ccf
     </span>
   </a>
-  
-    <nav class="md-nav" aria-label="compute_ccf">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#stela_toolkit.cross_correlation.CrossCorrelation.compute_ccf--parameters" class="md-nav__link">
-    <span class="md-ellipsis">
-      Parameters
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#stela_toolkit.cross_correlation.CrossCorrelation.compute_ccf--returns" class="md-nav__link">
-    <span class="md-ellipsis">
-      Returns
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
         
@@ -1071,21 +1063,6 @@
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="compute_ccf_interp">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#stela_toolkit.cross_correlation.CrossCorrelation.compute_ccf_interp--returns" class="md-nav__link">
-    <span class="md-ellipsis">
-      Returns
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
 </li>
         
           <li class="md-nav__item">
@@ -1094,21 +1071,6 @@
       compute_confidence_intervals
     </span>
   </a>
-  
-    <nav class="md-nav" aria-label="compute_confidence_intervals">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#stela_toolkit.cross_correlation.CrossCorrelation.compute_confidence_intervals--parameters" class="md-nav__link">
-    <span class="md-ellipsis">
-      Parameters
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
         
@@ -1119,30 +1081,6 @@
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="find_peak_and_centroid">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#stela_toolkit.cross_correlation.CrossCorrelation.find_peak_and_centroid--parameters" class="md-nav__link">
-    <span class="md-ellipsis">
-      Parameters
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#stela_toolkit.cross_correlation.CrossCorrelation.find_peak_and_centroid--returns" class="md-nav__link">
-    <span class="md-ellipsis">
-      Returns
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
 </li>
         
           <li class="md-nav__item">
@@ -1152,21 +1090,6 @@
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="plot">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#stela_toolkit.cross_correlation.CrossCorrelation.plot--parameters" class="md-nav__link">
-    <span class="md-ellipsis">
-      Parameters
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
 </li>
         
           <li class="md-nav__item">
@@ -1175,21 +1098,6 @@
       run_monte_carlo
     </span>
   </a>
-  
-    <nav class="md-nav" aria-label="run_monte_carlo">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#stela_toolkit.cross_correlation.CrossCorrelation.run_monte_carlo--returns" class="md-nav__link">
-    <span class="md-ellipsis">
-      Returns
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
         
@@ -1276,46 +1184,294 @@
 </ol>
 <p>If samples have not yet been generated, 1000 realizations will be drawn automatically on a 1000-point time grid.</p>
 <p>Additionally, optional Monte Carlo resampling is available to assess lag uncertainties from observational errors.</p>
-<h4 id="stela_toolkit.cross_correlation.CrossCorrelation--parameters">Parameters<a class="headerlink" href="#stela_toolkit.cross_correlation.CrossCorrelation--parameters" title="Permanent link">&para;</a></h4>
-<p>lc_or_model1 : LightCurve or GaussianProcess
-    First input light curve or trained GP model.
-lc_or_model2 : LightCurve or GaussianProcess
-    Second input light curve or trained GP model.
-run_monte_carlo : bool, optional
-    Whether to estimate lag uncertainties using Monte Carlo resampling.
-n_trials : int, optional
-    Number of Monte Carlo trials.
-min_lag : float or "auto", optional
-    Minimum lag to evaluate. If "auto", set to <code>-duration / 2</code>.
-max_lag : float or "auto", optional
-    Maximum lag to evaluate. If "auto", set to <code>+duration / 2</code>.
-dt : float or "auto", optional
-    Time step for lag evaluation. If "auto", set to &#8533; of the mean sampling interval.
-centroid_threshold : float, optional
-    Threshold (as a fraction of peak correlation) for defining the centroid lag region.
-mode : {"regular", "interp"}, optional
-    CCF computation mode. Use "regular" for direct shifting, or "interp" for ICCF-based interpolation.
-rmax_threshold : float, optional
-    Trials with a maximum correlation (rmax) below this threshold are discarded when using Monte Carlo.</p>
-<h4 id="stela_toolkit.cross_correlation.CrossCorrelation--attributes">Attributes<a class="headerlink" href="#stela_toolkit.cross_correlation.CrossCorrelation--attributes" title="Permanent link">&para;</a></h4>
-<p>lags : ndarray
-    Array of lag values evaluated.
-ccf : ndarray or None
-    Cross-correlation coefficients. Not set when both inputs are GP models.
-peak_lag : float or tuple
-    Peak lag of the CCF. If using GPs, returns (mean, std) across realizations.
-centroid_lag : float or tuple
-    Centroid lag of the high-correlation region. If using GPs, returns (mean, std).
-rmax : float or tuple
-    Maximum correlation value. If using GPs, returns (mean, std).
-peak_lags_mc : ndarray or None
-    Peak lags from Monte Carlo trials, if enabled.
-centroid_lags_mc : ndarray or None
-    Centroid lags from Monte Carlo trials.
-peak_lag_ci : tuple or None
-    68% confidence interval (16<sup>th</sup>–84<sup>th</sup> percentile) on peak lag from MC trials.
-centroid_lag_ci : tuple or None
-    68% confidence interval on centroid lag from MC trials.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>lc_or_model1</code>
+            </td>
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="LightCurve (stela_toolkit.power_spectrum.LightCurve)" href="../data_loader/#stela_toolkit.data_loader.LightCurve">LightCurve</a> or <a class="autorefs autorefs-internal" title="GaussianProcess (stela_toolkit.gaussian_process.GaussianProcess)" href="../gaussian_process/#stela_toolkit.gaussian_process.GaussianProcess">GaussianProcess</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>First input light curve or trained GP model.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>lc_or_model2</code>
+            </td>
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="LightCurve (stela_toolkit.power_spectrum.LightCurve)" href="../data_loader/#stela_toolkit.data_loader.LightCurve">LightCurve</a> or <a class="autorefs autorefs-internal" title="GaussianProcess (stela_toolkit.gaussian_process.GaussianProcess)" href="../gaussian_process/#stela_toolkit.gaussian_process.GaussianProcess">GaussianProcess</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Second input light curve or trained GP model.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>run_monte_carlo</code>
+            </td>
+            <td>
+                  <code><span title="bool">bool</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Whether to estimate lag uncertainties using Monte Carlo resampling.</p>
+              </div>
+            </td>
+            <td>
+                  <code>False</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>n_trials</code>
+            </td>
+            <td>
+                  <code><span title="int">int</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Number of Monte Carlo trials.</p>
+              </div>
+            </td>
+            <td>
+                  <code>1000</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>min_lag</code>
+            </td>
+            <td>
+                  <code><span title="float">float</span> or <span title="auto">auto</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Minimum lag to evaluate. If "auto", set to <code>-duration / 2</code>.</p>
+              </div>
+            </td>
+            <td>
+                  <code>&#39;auto&#39;</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>max_lag</code>
+            </td>
+            <td>
+                  <code><span title="float">float</span> or <span title="auto">auto</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Maximum lag to evaluate. If "auto", set to <code>+duration / 2</code>.</p>
+              </div>
+            </td>
+            <td>
+                  <code>&#39;auto&#39;</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>dt</code>
+            </td>
+            <td>
+                  <code><span title="float">float</span> or <span title="auto">auto</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Time step for lag evaluation. If "auto", set to &#8533; of the mean sampling interval.</p>
+              </div>
+            </td>
+            <td>
+                  <code>&#39;auto&#39;</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>centroid_threshold</code>
+            </td>
+            <td>
+                  <code><span title="float">float</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Threshold (as a fraction of peak correlation) for defining the centroid lag region.</p>
+              </div>
+            </td>
+            <td>
+                  <code>0.8</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>mode</code>
+            </td>
+            <td>
+                  <code>(<span title="regular">regular</span>, <span title="interp">interp</span>)</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>CCF computation mode. Use "regular" for direct shifting, or "interp" for ICCF-based interpolation.</p>
+              </div>
+            </td>
+            <td>
+                  <code>&#34;regular&#34;</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>rmax_threshold</code>
+            </td>
+            <td>
+                  <code><span title="float">float</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Trials with a maximum correlation (rmax) below this threshold are discarded when using Monte Carlo.</p>
+              </div>
+            </td>
+            <td>
+                  <code>0.0</code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+<p><span class="doc-section-title">Attributes:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td><code><span title="stela_toolkit.cross_correlation.CrossCorrelation.lags">lags</span></code></td>
+            <td>
+                  <code><span title="ndarray">ndarray</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Array of lag values evaluated.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="stela_toolkit.cross_correlation.CrossCorrelation.ccf">ccf</span></code></td>
+            <td>
+                  <code><span title="ndarray">ndarray</span> or None</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Cross-correlation coefficients. Not set when both inputs are GP models.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="stela_toolkit.cross_correlation.CrossCorrelation.peak_lag">peak_lag</span></code></td>
+            <td>
+                  <code><span title="float">float</span> or <span title="tuple">tuple</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Peak lag of the CCF. If using GPs, returns (mean, std) across realizations.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="stela_toolkit.cross_correlation.CrossCorrelation.centroid_lag">centroid_lag</span></code></td>
+            <td>
+                  <code><span title="float">float</span> or <span title="tuple">tuple</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Centroid lag of the high-correlation region. If using GPs, returns (mean, std).</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="stela_toolkit.cross_correlation.CrossCorrelation.rmax">rmax</span></code></td>
+            <td>
+                  <code><span title="float">float</span> or <span title="tuple">tuple</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Maximum correlation value. If using GPs, returns (mean, std).</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="stela_toolkit.cross_correlation.CrossCorrelation.peak_lags_mc">peak_lags_mc</span></code></td>
+            <td>
+                  <code><span title="ndarray">ndarray</span> or None</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Peak lags from Monte Carlo trials, if enabled.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="stela_toolkit.cross_correlation.CrossCorrelation.centroid_lags_mc">centroid_lags_mc</span></code></td>
+            <td>
+                  <code><span title="ndarray">ndarray</span> or None</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Centroid lags from Monte Carlo trials.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="stela_toolkit.cross_correlation.CrossCorrelation.peak_lag_ci">peak_lag_ci</span></code></td>
+            <td>
+                  <code><span title="tuple">tuple</span> or None</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>68% confidence interval (16<sup>th</sup>–84<sup>th</sup> percentile) on peak lag from MC trials.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="stela_toolkit.cross_correlation.CrossCorrelation.centroid_lag_ci">centroid_lag_ci</span></code></td>
+            <td>
+                  <code><span title="tuple">tuple</span> or None</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>68% confidence interval on centroid lag from MC trials.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
 
 
@@ -1735,7 +1891,30 @@ centroid_lag_ci : tuple or None
 <span class="normal">414</span>
 <span class="normal">415</span>
 <span class="normal">416</span>
-<span class="normal">417</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">CrossCorrelation</span><span class="p">:</span>
+<span class="normal">417</span>
+<span class="normal">418</span>
+<span class="normal">419</span>
+<span class="normal">420</span>
+<span class="normal">421</span>
+<span class="normal">422</span>
+<span class="normal">423</span>
+<span class="normal">424</span>
+<span class="normal">425</span>
+<span class="normal">426</span>
+<span class="normal">427</span>
+<span class="normal">428</span>
+<span class="normal">429</span>
+<span class="normal">430</span>
+<span class="normal">431</span>
+<span class="normal">432</span>
+<span class="normal">433</span>
+<span class="normal">434</span>
+<span class="normal">435</span>
+<span class="normal">436</span>
+<span class="normal">437</span>
+<span class="normal">438</span>
+<span class="normal">439</span>
+<span class="normal">440</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">CrossCorrelation</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compute the time-domain cross-correlation function (CCF) between two light curves or GP models.</span>
 
@@ -1761,22 +1940,31 @@ centroid_lag_ci : tuple or None
 <span class="sd">    ----------</span>
 <span class="sd">    lc_or_model1 : LightCurve or GaussianProcess</span>
 <span class="sd">        First input light curve or trained GP model.</span>
+
 <span class="sd">    lc_or_model2 : LightCurve or GaussianProcess</span>
 <span class="sd">        Second input light curve or trained GP model.</span>
+
 <span class="sd">    run_monte_carlo : bool, optional</span>
 <span class="sd">        Whether to estimate lag uncertainties using Monte Carlo resampling.</span>
+
 <span class="sd">    n_trials : int, optional</span>
 <span class="sd">        Number of Monte Carlo trials.</span>
+
 <span class="sd">    min_lag : float or &quot;auto&quot;, optional</span>
 <span class="sd">        Minimum lag to evaluate. If &quot;auto&quot;, set to `-duration / 2`.</span>
+
 <span class="sd">    max_lag : float or &quot;auto&quot;, optional</span>
 <span class="sd">        Maximum lag to evaluate. If &quot;auto&quot;, set to `+duration / 2`.</span>
+
 <span class="sd">    dt : float or &quot;auto&quot;, optional</span>
 <span class="sd">        Time step for lag evaluation. If &quot;auto&quot;, set to 1/5 of the mean sampling interval.</span>
+
 <span class="sd">    centroid_threshold : float, optional</span>
 <span class="sd">        Threshold (as a fraction of peak correlation) for defining the centroid lag region.</span>
+
 <span class="sd">    mode : {&quot;regular&quot;, &quot;interp&quot;}, optional</span>
 <span class="sd">        CCF computation mode. Use &quot;regular&quot; for direct shifting, or &quot;interp&quot; for ICCF-based interpolation.</span>
+
 <span class="sd">    rmax_threshold : float, optional</span>
 <span class="sd">        Trials with a maximum correlation (rmax) below this threshold are discarded when using Monte Carlo.</span>
 
@@ -1784,20 +1972,28 @@ centroid_lag_ci : tuple or None
 <span class="sd">    ----------</span>
 <span class="sd">    lags : ndarray</span>
 <span class="sd">        Array of lag values evaluated.</span>
+
 <span class="sd">    ccf : ndarray or None</span>
 <span class="sd">        Cross-correlation coefficients. Not set when both inputs are GP models.</span>
+
 <span class="sd">    peak_lag : float or tuple</span>
 <span class="sd">        Peak lag of the CCF. If using GPs, returns (mean, std) across realizations.</span>
+
 <span class="sd">    centroid_lag : float or tuple</span>
 <span class="sd">        Centroid lag of the high-correlation region. If using GPs, returns (mean, std).</span>
+
 <span class="sd">    rmax : float or tuple</span>
 <span class="sd">        Maximum correlation value. If using GPs, returns (mean, std).</span>
+
 <span class="sd">    peak_lags_mc : ndarray or None</span>
 <span class="sd">        Peak lags from Monte Carlo trials, if enabled.</span>
+
 <span class="sd">    centroid_lags_mc : ndarray or None</span>
 <span class="sd">        Centroid lags from Monte Carlo trials.</span>
+
 <span class="sd">    peak_lag_ci : tuple or None</span>
 <span class="sd">        68% confidence interval (16th–84th percentile) on peak lag from MC trials.</span>
+
 <span class="sd">    centroid_lag_ci : tuple or None</span>
 <span class="sd">        68% confidence interval on centroid lag from MC trials.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -1903,6 +2099,7 @@ centroid_lag_ci : tuple or None
 <span class="sd">        ----------</span>
 <span class="sd">        rates1 : ndarray</span>
 <span class="sd">            First time series.</span>
+
 <span class="sd">        rates2 : ndarray</span>
 <span class="sd">            Second time series.</span>
 
@@ -1910,6 +2107,7 @@ centroid_lag_ci : tuple or None
 <span class="sd">        -------</span>
 <span class="sd">        lags : ndarray</span>
 <span class="sd">            Lag values.</span>
+
 <span class="sd">        ccf : ndarray</span>
 <span class="sd">            Pearson correlation coefficients at each lag.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -1981,6 +2179,7 @@ centroid_lag_ci : tuple or None
 <span class="sd">        ----------</span>
 <span class="sd">        lags : ndarray</span>
 <span class="sd">            Array of lag values (assumed sorted).</span>
+
 <span class="sd">        ccf : ndarray</span>
 <span class="sd">            Cross-correlation values at each lag.</span>
 
@@ -1988,6 +2187,7 @@ centroid_lag_ci : tuple or None
 <span class="sd">        -------</span>
 <span class="sd">        peak_lag : float</span>
 <span class="sd">            Lag corresponding to the maximum correlation.</span>
+
 <span class="sd">        centroid_lag : float or np.nan</span>
 <span class="sd">            Correlation-weighted centroid lag near the peak.</span>
 <span class="sd">            Returns NaN if a valid centroid region cannot be identified.</span>
@@ -2040,6 +2240,7 @@ centroid_lag_ci : tuple or None
 <span class="sd">        -------</span>
 <span class="sd">        peak_lags : ndarray</span>
 <span class="sd">            Peak lag values from all trials.</span>
+
 <span class="sd">        centroid_lags : ndarray</span>
 <span class="sd">            Centroid lag values from all trials.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -2092,6 +2293,7 @@ centroid_lag_ci : tuple or None
 <span class="sd">        ----------</span>
 <span class="sd">        lower_percentile : float</span>
 <span class="sd">            Lower percentile bound (default is 16).</span>
+
 <span class="sd">        upper_percentile : float</span>
 <span class="sd">            Upper percentile bound (default is 84).</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -2173,38 +2375,91 @@ centroid_lag_ci : tuple or None
     <div class="doc doc-contents ">
 
         <p>Compute the cross-correlation function (CCF) via direct shifting.</p>
-<h5 id="stela_toolkit.cross_correlation.CrossCorrelation.compute_ccf--parameters">Parameters<a class="headerlink" href="#stela_toolkit.cross_correlation.CrossCorrelation.compute_ccf--parameters" title="Permanent link">&para;</a></h5>
-<p>rates1 : ndarray
-    First time series.
-rates2 : ndarray
-    Second time series.</p>
-<h5 id="stela_toolkit.cross_correlation.CrossCorrelation.compute_ccf--returns">Returns<a class="headerlink" href="#stela_toolkit.cross_correlation.CrossCorrelation.compute_ccf--returns" title="Permanent link">&para;</a></h5>
-<p>lags : ndarray
-    Lag values.
-ccf : ndarray
-    Pearson correlation coefficients at each lag.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>rates1</code>
+            </td>
+            <td>
+                  <code><span title="ndarray">ndarray</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>First time series.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>rates2</code>
+            </td>
+            <td>
+                  <code><span title="ndarray">ndarray</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Second time series.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+<th>Name</th>          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+<td><code>lags</code></td>            <td>
+                  <code><span title="ndarray">ndarray</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Lag values.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+<td><code>ccf</code></td>            <td>
+                  <code><span title="ndarray">ndarray</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Pearson correlation coefficients at each lag.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
 
             <details class="quote">
               <summary>Source code in <code>stela_toolkit/cross_correlation.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">167</span>
-<span class="normal">168</span>
-<span class="normal">169</span>
-<span class="normal">170</span>
-<span class="normal">171</span>
-<span class="normal">172</span>
-<span class="normal">173</span>
-<span class="normal">174</span>
-<span class="normal">175</span>
-<span class="normal">176</span>
-<span class="normal">177</span>
-<span class="normal">178</span>
-<span class="normal">179</span>
-<span class="normal">180</span>
-<span class="normal">181</span>
-<span class="normal">182</span>
-<span class="normal">183</span>
-<span class="normal">184</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">184</span>
 <span class="normal">185</span>
 <span class="normal">186</span>
 <span class="normal">187</span>
@@ -2227,7 +2482,26 @@ ccf : ndarray
 <span class="normal">204</span>
 <span class="normal">205</span>
 <span class="normal">206</span>
-<span class="normal">207</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">compute_ccf</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rates1</span><span class="p">,</span> <span class="n">rates2</span><span class="p">):</span>
+<span class="normal">207</span>
+<span class="normal">208</span>
+<span class="normal">209</span>
+<span class="normal">210</span>
+<span class="normal">211</span>
+<span class="normal">212</span>
+<span class="normal">213</span>
+<span class="normal">214</span>
+<span class="normal">215</span>
+<span class="normal">216</span>
+<span class="normal">217</span>
+<span class="normal">218</span>
+<span class="normal">219</span>
+<span class="normal">220</span>
+<span class="normal">221</span>
+<span class="normal">222</span>
+<span class="normal">223</span>
+<span class="normal">224</span>
+<span class="normal">225</span>
+<span class="normal">226</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">compute_ccf</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rates1</span><span class="p">,</span> <span class="n">rates2</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compute the cross-correlation function (CCF) via direct shifting.</span>
 
@@ -2235,6 +2509,7 @@ ccf : ndarray
 <span class="sd">    ----------</span>
 <span class="sd">    rates1 : ndarray</span>
 <span class="sd">        First time series.</span>
+
 <span class="sd">    rates2 : ndarray</span>
 <span class="sd">        Second time series.</span>
 
@@ -2242,6 +2517,7 @@ ccf : ndarray
 <span class="sd">    -------</span>
 <span class="sd">    lags : ndarray</span>
 <span class="sd">        Lag values.</span>
+
 <span class="sd">    ccf : ndarray</span>
 <span class="sd">        Pearson correlation coefficients at each lag.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -2286,33 +2562,34 @@ ccf : ndarray
     <div class="doc doc-contents ">
 
         <p>Compute the cross-correlation function using symmetric linear interpolation.</p>
-<h5 id="stela_toolkit.cross_correlation.CrossCorrelation.compute_ccf_interp--returns">Returns<a class="headerlink" href="#stela_toolkit.cross_correlation.CrossCorrelation.compute_ccf_interp--returns" title="Permanent link">&para;</a></h5>
-<p>ccf : ndarray
-    Interpolated cross-correlation values for each lag.</p>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+<th>Name</th>          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+<td><code>ccf</code></td>            <td>
+                  <code><span title="ndarray">ndarray</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Interpolated cross-correlation values for each lag.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
 
             <details class="quote">
               <summary>Source code in <code>stela_toolkit/cross_correlation.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">209</span>
-<span class="normal">210</span>
-<span class="normal">211</span>
-<span class="normal">212</span>
-<span class="normal">213</span>
-<span class="normal">214</span>
-<span class="normal">215</span>
-<span class="normal">216</span>
-<span class="normal">217</span>
-<span class="normal">218</span>
-<span class="normal">219</span>
-<span class="normal">220</span>
-<span class="normal">221</span>
-<span class="normal">222</span>
-<span class="normal">223</span>
-<span class="normal">224</span>
-<span class="normal">225</span>
-<span class="normal">226</span>
-<span class="normal">227</span>
-<span class="normal">228</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">228</span>
 <span class="normal">229</span>
 <span class="normal">230</span>
 <span class="normal">231</span>
@@ -2322,7 +2599,26 @@ ccf : ndarray
 <span class="normal">235</span>
 <span class="normal">236</span>
 <span class="normal">237</span>
-<span class="normal">238</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">compute_ccf_interp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="normal">238</span>
+<span class="normal">239</span>
+<span class="normal">240</span>
+<span class="normal">241</span>
+<span class="normal">242</span>
+<span class="normal">243</span>
+<span class="normal">244</span>
+<span class="normal">245</span>
+<span class="normal">246</span>
+<span class="normal">247</span>
+<span class="normal">248</span>
+<span class="normal">249</span>
+<span class="normal">250</span>
+<span class="normal">251</span>
+<span class="normal">252</span>
+<span class="normal">253</span>
+<span class="normal">254</span>
+<span class="normal">255</span>
+<span class="normal">256</span>
+<span class="normal">257</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">compute_ccf_interp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compute the cross-correlation function using symmetric linear interpolation.</span>
 
@@ -2370,39 +2666,82 @@ ccf : ndarray
     <div class="doc doc-contents ">
 
         <p>Compute percentile-based confidence intervals for Monte Carlo lag distributions.</p>
-<h5 id="stela_toolkit.cross_correlation.CrossCorrelation.compute_confidence_intervals--parameters">Parameters<a class="headerlink" href="#stela_toolkit.cross_correlation.CrossCorrelation.compute_confidence_intervals--parameters" title="Permanent link">&para;</a></h5>
-<p>lower_percentile : float
-    Lower percentile bound (default is 16).
-upper_percentile : float
-    Upper percentile bound (default is 84).</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>lower_percentile</code>
+            </td>
+            <td>
+                  <code><span title="float">float</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Lower percentile bound (default is 16).</p>
+              </div>
+            </td>
+            <td>
+                  <code>16</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>upper_percentile</code>
+            </td>
+            <td>
+                  <code><span title="float">float</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Upper percentile bound (default is 84).</p>
+              </div>
+            </td>
+            <td>
+                  <code>84</code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
 
             <details class="quote">
               <summary>Source code in <code>stela_toolkit/cross_correlation.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">356</span>
-<span class="normal">357</span>
-<span class="normal">358</span>
-<span class="normal">359</span>
-<span class="normal">360</span>
-<span class="normal">361</span>
-<span class="normal">362</span>
-<span class="normal">363</span>
-<span class="normal">364</span>
-<span class="normal">365</span>
-<span class="normal">366</span>
-<span class="normal">367</span>
-<span class="normal">368</span>
-<span class="normal">369</span>
-<span class="normal">370</span>
-<span class="normal">371</span>
-<span class="normal">372</span>
-<span class="normal">373</span>
-<span class="normal">374</span>
-<span class="normal">375</span>
-<span class="normal">376</span>
-<span class="normal">377</span>
-<span class="normal">378</span>
-<span class="normal">379</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">compute_confidence_intervals</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lower_percentile</span><span class="o">=</span><span class="mi">16</span><span class="p">,</span> <span class="n">upper_percentile</span><span class="o">=</span><span class="mi">84</span><span class="p">):</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">378</span>
+<span class="normal">379</span>
+<span class="normal">380</span>
+<span class="normal">381</span>
+<span class="normal">382</span>
+<span class="normal">383</span>
+<span class="normal">384</span>
+<span class="normal">385</span>
+<span class="normal">386</span>
+<span class="normal">387</span>
+<span class="normal">388</span>
+<span class="normal">389</span>
+<span class="normal">390</span>
+<span class="normal">391</span>
+<span class="normal">392</span>
+<span class="normal">393</span>
+<span class="normal">394</span>
+<span class="normal">395</span>
+<span class="normal">396</span>
+<span class="normal">397</span>
+<span class="normal">398</span>
+<span class="normal">399</span>
+<span class="normal">400</span>
+<span class="normal">401</span>
+<span class="normal">402</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">compute_confidence_intervals</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lower_percentile</span><span class="o">=</span><span class="mi">16</span><span class="p">,</span> <span class="n">upper_percentile</span><span class="o">=</span><span class="mi">84</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compute percentile-based confidence intervals for Monte Carlo lag distributions.</span>
 
@@ -2410,6 +2749,7 @@ upper_percentile : float
 <span class="sd">    ----------</span>
 <span class="sd">    lower_percentile : float</span>
 <span class="sd">        Lower percentile bound (default is 16).</span>
+
 <span class="sd">    upper_percentile : float</span>
 <span class="sd">        Upper percentile bound (default is 84).</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -2448,41 +2788,92 @@ upper_percentile : float
 The centroid lag is computed using a weighted average of lag values
 in a contiguous region around the peak where the correlation exceeds
 a fraction of the peak value.</p>
-<h5 id="stela_toolkit.cross_correlation.CrossCorrelation.find_peak_and_centroid--parameters">Parameters<a class="headerlink" href="#stela_toolkit.cross_correlation.CrossCorrelation.find_peak_and_centroid--parameters" title="Permanent link">&para;</a></h5>
-<p>lags : ndarray
-    Array of lag values (assumed sorted).
-ccf : ndarray
-    Cross-correlation values at each lag.</p>
-<h5 id="stela_toolkit.cross_correlation.CrossCorrelation.find_peak_and_centroid--returns">Returns<a class="headerlink" href="#stela_toolkit.cross_correlation.CrossCorrelation.find_peak_and_centroid--returns" title="Permanent link">&para;</a></h5>
-<p>peak_lag : float
-    Lag corresponding to the maximum correlation.
-centroid_lag : float or np.nan
-    Correlation-weighted centroid lag near the peak.
-    Returns NaN if a valid centroid region cannot be identified.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>lags</code>
+            </td>
+            <td>
+                  <code><span title="ndarray">ndarray</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Array of lag values (assumed sorted).</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>ccf</code>
+            </td>
+            <td>
+                  <code><span title="ndarray">ndarray</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Cross-correlation values at each lag.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+<th>Name</th>          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+<td><code>peak_lag</code></td>            <td>
+                  <code><span title="float">float</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Lag corresponding to the maximum correlation.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+<td><code>centroid_lag</code></td>            <td>
+                  <code><span title="float">float</span> or <span title="numpy.nan">nan</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Correlation-weighted centroid lag near the peak.
+Returns NaN if a valid centroid region cannot be identified.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
 
             <details class="quote">
               <summary>Source code in <code>stela_toolkit/cross_correlation.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">240</span>
-<span class="normal">241</span>
-<span class="normal">242</span>
-<span class="normal">243</span>
-<span class="normal">244</span>
-<span class="normal">245</span>
-<span class="normal">246</span>
-<span class="normal">247</span>
-<span class="normal">248</span>
-<span class="normal">249</span>
-<span class="normal">250</span>
-<span class="normal">251</span>
-<span class="normal">252</span>
-<span class="normal">253</span>
-<span class="normal">254</span>
-<span class="normal">255</span>
-<span class="normal">256</span>
-<span class="normal">257</span>
-<span class="normal">258</span>
-<span class="normal">259</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">259</span>
 <span class="normal">260</span>
 <span class="normal">261</span>
 <span class="normal">262</span>
@@ -2521,7 +2912,28 @@ centroid_lag : float or np.nan
 <span class="normal">295</span>
 <span class="normal">296</span>
 <span class="normal">297</span>
-<span class="normal">298</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">find_peak_and_centroid</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lags</span><span class="p">,</span> <span class="n">ccf</span><span class="p">):</span>
+<span class="normal">298</span>
+<span class="normal">299</span>
+<span class="normal">300</span>
+<span class="normal">301</span>
+<span class="normal">302</span>
+<span class="normal">303</span>
+<span class="normal">304</span>
+<span class="normal">305</span>
+<span class="normal">306</span>
+<span class="normal">307</span>
+<span class="normal">308</span>
+<span class="normal">309</span>
+<span class="normal">310</span>
+<span class="normal">311</span>
+<span class="normal">312</span>
+<span class="normal">313</span>
+<span class="normal">314</span>
+<span class="normal">315</span>
+<span class="normal">316</span>
+<span class="normal">317</span>
+<span class="normal">318</span>
+<span class="normal">319</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">find_peak_and_centroid</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lags</span><span class="p">,</span> <span class="n">ccf</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compute the peak and centroid lag of a cross-correlation function.</span>
 
@@ -2534,6 +2946,7 @@ centroid_lag : float or np.nan
 <span class="sd">    ----------</span>
 <span class="sd">    lags : ndarray</span>
 <span class="sd">        Array of lag values (assumed sorted).</span>
+
 <span class="sd">    ccf : ndarray</span>
 <span class="sd">        Cross-correlation values at each lag.</span>
 
@@ -2541,6 +2954,7 @@ centroid_lag : float or np.nan
 <span class="sd">    -------</span>
 <span class="sd">    peak_lag : float</span>
 <span class="sd">        Lag corresponding to the maximum correlation.</span>
+
 <span class="sd">    centroid_lag : float or np.nan</span>
 <span class="sd">        Correlation-weighted centroid lag near the peak.</span>
 <span class="sd">        Returns NaN if a valid centroid region cannot be identified.</span>
@@ -2598,37 +3012,42 @@ centroid_lag : float or np.nan
     <div class="doc doc-contents ">
 
         <p>Plot the cross-correlation function and optional Monte Carlo lag distributions.</p>
-<h5 id="stela_toolkit.cross_correlation.CrossCorrelation.plot--parameters">Parameters<a class="headerlink" href="#stela_toolkit.cross_correlation.CrossCorrelation.plot--parameters" title="Permanent link">&para;</a></h5>
-<p>**kwargs : dict
-    Keyword arguments for customizing the plot.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>**kwargs</code>
+            </td>
+            <td>
+                  <code><span title="dict">dict</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Keyword arguments for customizing the plot.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
 
             <details class="quote">
               <summary>Source code in <code>stela_toolkit/cross_correlation.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">381</span>
-<span class="normal">382</span>
-<span class="normal">383</span>
-<span class="normal">384</span>
-<span class="normal">385</span>
-<span class="normal">386</span>
-<span class="normal">387</span>
-<span class="normal">388</span>
-<span class="normal">389</span>
-<span class="normal">390</span>
-<span class="normal">391</span>
-<span class="normal">392</span>
-<span class="normal">393</span>
-<span class="normal">394</span>
-<span class="normal">395</span>
-<span class="normal">396</span>
-<span class="normal">397</span>
-<span class="normal">398</span>
-<span class="normal">399</span>
-<span class="normal">400</span>
-<span class="normal">401</span>
-<span class="normal">402</span>
-<span class="normal">403</span>
-<span class="normal">404</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">404</span>
 <span class="normal">405</span>
 <span class="normal">406</span>
 <span class="normal">407</span>
@@ -2641,7 +3060,30 @@ centroid_lag : float or np.nan
 <span class="normal">414</span>
 <span class="normal">415</span>
 <span class="normal">416</span>
-<span class="normal">417</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">show_mc</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<span class="normal">417</span>
+<span class="normal">418</span>
+<span class="normal">419</span>
+<span class="normal">420</span>
+<span class="normal">421</span>
+<span class="normal">422</span>
+<span class="normal">423</span>
+<span class="normal">424</span>
+<span class="normal">425</span>
+<span class="normal">426</span>
+<span class="normal">427</span>
+<span class="normal">428</span>
+<span class="normal">429</span>
+<span class="normal">430</span>
+<span class="normal">431</span>
+<span class="normal">432</span>
+<span class="normal">433</span>
+<span class="normal">434</span>
+<span class="normal">435</span>
+<span class="normal">436</span>
+<span class="normal">437</span>
+<span class="normal">438</span>
+<span class="normal">439</span>
+<span class="normal">440</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">show_mc</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Plot the cross-correlation function and optional Monte Carlo lag distributions.</span>
 
@@ -2698,37 +3140,44 @@ centroid_lag : float or np.nan
         <p>Run Monte Carlo simulations to estimate lag uncertainties.</p>
 <p>Perturbs input light curves based on their errors and computes peak and centroid
 lags for each realization.</p>
-<h5 id="stela_toolkit.cross_correlation.CrossCorrelation.run_monte_carlo--returns">Returns<a class="headerlink" href="#stela_toolkit.cross_correlation.CrossCorrelation.run_monte_carlo--returns" title="Permanent link">&para;</a></h5>
-<p>peak_lags : ndarray
-    Peak lag values from all trials.
-centroid_lags : ndarray
-    Centroid lag values from all trials.</p>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+<th>Name</th>          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+<td><code>peak_lags</code></td>            <td>
+                  <code><span title="ndarray">ndarray</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Peak lag values from all trials.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+<td><code>centroid_lags</code></td>            <td>
+                  <code><span title="ndarray">ndarray</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Centroid lag values from all trials.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
 
             <details class="quote">
               <summary>Source code in <code>stela_toolkit/cross_correlation.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">301</span>
-<span class="normal">302</span>
-<span class="normal">303</span>
-<span class="normal">304</span>
-<span class="normal">305</span>
-<span class="normal">306</span>
-<span class="normal">307</span>
-<span class="normal">308</span>
-<span class="normal">309</span>
-<span class="normal">310</span>
-<span class="normal">311</span>
-<span class="normal">312</span>
-<span class="normal">313</span>
-<span class="normal">314</span>
-<span class="normal">315</span>
-<span class="normal">316</span>
-<span class="normal">317</span>
-<span class="normal">318</span>
-<span class="normal">319</span>
-<span class="normal">320</span>
-<span class="normal">321</span>
-<span class="normal">322</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">322</span>
 <span class="normal">323</span>
 <span class="normal">324</span>
 <span class="normal">325</span>
@@ -2760,7 +3209,29 @@ centroid_lags : ndarray
 <span class="normal">351</span>
 <span class="normal">352</span>
 <span class="normal">353</span>
-<span class="normal">354</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">run_monte_carlo</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="normal">354</span>
+<span class="normal">355</span>
+<span class="normal">356</span>
+<span class="normal">357</span>
+<span class="normal">358</span>
+<span class="normal">359</span>
+<span class="normal">360</span>
+<span class="normal">361</span>
+<span class="normal">362</span>
+<span class="normal">363</span>
+<span class="normal">364</span>
+<span class="normal">365</span>
+<span class="normal">366</span>
+<span class="normal">367</span>
+<span class="normal">368</span>
+<span class="normal">369</span>
+<span class="normal">370</span>
+<span class="normal">371</span>
+<span class="normal">372</span>
+<span class="normal">373</span>
+<span class="normal">374</span>
+<span class="normal">375</span>
+<span class="normal">376</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">run_monte_carlo</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Run Monte Carlo simulations to estimate lag uncertainties.</span>
 
@@ -2771,6 +3242,7 @@ centroid_lags : ndarray
 <span class="sd">    -------</span>
 <span class="sd">    peak_lags : ndarray</span>
 <span class="sd">        Peak lag values from all trials.</span>
+
 <span class="sd">    centroid_lags : ndarray</span>
 <span class="sd">        Centroid lag values from all trials.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -2856,6 +3328,12 @@ centroid_lags : ndarray
 <script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
         </div>
         
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
       </main>
       
         <footer class="md-footer">
@@ -2884,7 +3362,7 @@ centroid_lags : ndarray
     
     
       
-      <script id="__config" type="application/json">{"base": "../..", "features": [], "search": "../../assets/javascripts/workers/search.d50fe291.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+      <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.tabs", "navigation.top", "content.code.copy", "navigation.sections", "navigation.expand"], "search": "../../assets/javascripts/workers/search.d50fe291.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
     
     
       <script src="../../assets/javascripts/bundle.13a4f30d.min.js"></script>

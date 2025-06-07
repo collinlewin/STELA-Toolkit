@@ -11,7 +11,7 @@
       
       
       
-        <link rel="prev" href="../plot/">
+        <link rel="prev" href="../lag_frequency_spectrum/">
       
       
         <link rel="next" href="../preprocessing/">
@@ -50,6 +50,8 @@
     
       <link rel="stylesheet" href="../../assets/_mkdocstrings.css">
     
+      <link rel="stylesheet" href="../../styles/custom.css">
+    
     <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
@@ -62,10 +64,12 @@
   
     
     
+      
     
     
     
-    <body dir="ltr" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo">
+    
+    <body dir="ltr" data-md-color-scheme="slate" data-md-color-primary="blue" data-md-color-accent="yellow">
   
     
     <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
@@ -86,9 +90,7 @@
     
       
 
-  
-
-<header class="md-header md-header--shadow" data-md-component="header">
+<header class="md-header" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
     <a href="../.." title="STELA Toolkit" class="md-header__button md-logo" aria-label="STELA Toolkit" data-md-component="logo">
       
@@ -117,7 +119,19 @@
     </div>
     
       
+        <form class="md-header__option" data-md-component="palette">
+  
     
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="blue" data-md-color-accent="yellow"  aria-hidden="true"  type="radio" name="__palette" id="__palette_0">
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
     
     
     
@@ -171,6 +185,132 @@
       
         
           
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../overview/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Overview
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../gaussian_process_intro/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Gaussian Processes
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../installation/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Installation
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../tutorial/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Tutorial
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../coherence/" class="md-tabs__link">
+          
+  
+  
+  Class Reference
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
         
       
       <main class="md-main" data-md-component="main">
@@ -184,8 +324,10 @@
                     
 
 
+  
 
-<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
     <a href="../.." title="STELA Toolkit" class="md-nav__button md-logo" aria-label="STELA Toolkit" data-md-component="logo">
       
@@ -319,20 +461,28 @@
     
     
     
+      
+        
+        
+      
+      
+        
+      
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
       
         
         
         <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" checked>
         
           
-          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="">
             
   
   
   <span class="md-ellipsis">
-    Module Reference
+    Class Reference
     
   </span>
   
@@ -343,7 +493,7 @@
         <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_6">
             <span class="md-nav__icon md-icon"></span>
-            Module Reference
+            Class Reference
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
             
@@ -469,29 +619,6 @@
   
   
     <li class="md-nav__item">
-      <a href="../frequency_binning/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    Frequency Binning
-    
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
       <a href="../gaussian_process/" class="md-nav__link">
         
   
@@ -544,29 +671,6 @@
   
   <span class="md-ellipsis">
     Lag Frequency Spectrum
-    
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../plot/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    Plotting
     
   </span>
   
@@ -653,53 +757,11 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#stela_toolkit.power_spectrum.PowerSpectrum--parameters" class="md-nav__link">
-    <span class="md-ellipsis">
-      Parameters
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#stela_toolkit.power_spectrum.PowerSpectrum--attributes" class="md-nav__link">
-    <span class="md-ellipsis">
-      Attributes
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
   <a href="#stela_toolkit.power_spectrum.PowerSpectrum.compute_power_spectrum" class="md-nav__link">
     <span class="md-ellipsis">
       compute_power_spectrum
     </span>
   </a>
-  
-    <nav class="md-nav" aria-label="compute_power_spectrum">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#stela_toolkit.power_spectrum.PowerSpectrum.compute_power_spectrum--parameters" class="md-nav__link">
-    <span class="md-ellipsis">
-      Parameters
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#stela_toolkit.power_spectrum.PowerSpectrum.compute_power_spectrum--returns" class="md-nav__link">
-    <span class="md-ellipsis">
-      Returns
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
         
@@ -709,30 +771,6 @@
       compute_stacked_power_spectrum
     </span>
   </a>
-  
-    <nav class="md-nav" aria-label="compute_stacked_power_spectrum">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#stela_toolkit.power_spectrum.PowerSpectrum.compute_stacked_power_spectrum--parameters" class="md-nav__link">
-    <span class="md-ellipsis">
-      Parameters
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#stela_toolkit.power_spectrum.PowerSpectrum.compute_stacked_power_spectrum--returns" class="md-nav__link">
-    <span class="md-ellipsis">
-      Returns
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
         
@@ -751,21 +789,6 @@
       plot
     </span>
   </a>
-  
-    <nav class="md-nav" aria-label="plot">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#stela_toolkit.power_spectrum.PowerSpectrum.plot--parameters" class="md-nav__link">
-    <span class="md-ellipsis">
-      Parameters
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
         
@@ -816,15 +839,25 @@
     
     
     
+      
+      
+        
+          
+          
+        
+      
     
-    <li class="md-nav__item md-nav__item--nested">
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6_13" >
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6_11" >
         
           
-          <label class="md-nav__link" for="__nav_6_13" id="__nav_6_13_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_6_11" id="__nav_6_11_label" tabindex="">
             
   
   
@@ -837,12 +870,58 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_6_13_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_6_13">
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_6_11_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6_11">
             <span class="md-nav__icon md-icon"></span>
             Internal
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../frequency_binning/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Frequency Binning
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../plot/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Plotting
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
             
               
                 
@@ -951,53 +1030,11 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#stela_toolkit.power_spectrum.PowerSpectrum--parameters" class="md-nav__link">
-    <span class="md-ellipsis">
-      Parameters
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#stela_toolkit.power_spectrum.PowerSpectrum--attributes" class="md-nav__link">
-    <span class="md-ellipsis">
-      Attributes
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
   <a href="#stela_toolkit.power_spectrum.PowerSpectrum.compute_power_spectrum" class="md-nav__link">
     <span class="md-ellipsis">
       compute_power_spectrum
     </span>
   </a>
-  
-    <nav class="md-nav" aria-label="compute_power_spectrum">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#stela_toolkit.power_spectrum.PowerSpectrum.compute_power_spectrum--parameters" class="md-nav__link">
-    <span class="md-ellipsis">
-      Parameters
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#stela_toolkit.power_spectrum.PowerSpectrum.compute_power_spectrum--returns" class="md-nav__link">
-    <span class="md-ellipsis">
-      Returns
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
         
@@ -1007,30 +1044,6 @@
       compute_stacked_power_spectrum
     </span>
   </a>
-  
-    <nav class="md-nav" aria-label="compute_stacked_power_spectrum">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#stela_toolkit.power_spectrum.PowerSpectrum.compute_stacked_power_spectrum--parameters" class="md-nav__link">
-    <span class="md-ellipsis">
-      Parameters
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#stela_toolkit.power_spectrum.PowerSpectrum.compute_stacked_power_spectrum--returns" class="md-nav__link">
-    <span class="md-ellipsis">
-      Returns
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
         
@@ -1049,21 +1062,6 @@
       plot
     </span>
   </a>
-  
-    <nav class="md-nav" aria-label="plot">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#stela_toolkit.power_spectrum.PowerSpectrum.plot--parameters" class="md-nav__link">
-    <span class="md-ellipsis">
-      Parameters
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
         
@@ -1141,30 +1139,191 @@ and the mean and standard deviation across all samples are returned.</p>
 of squared flux), allowing for direct interpretation in the context of variability
 amplitude and fractional RMS.</p>
 <p>Frequency binning is supported via linear, logarithmic, or user-defined bins.</p>
-<h4 id="stela_toolkit.power_spectrum.PowerSpectrum--parameters">Parameters<a class="headerlink" href="#stela_toolkit.power_spectrum.PowerSpectrum--parameters" title="Permanent link">&para;</a></h4>
-<p>lc_or_model : LightCurve or GaussianProcess
-    Input light curve or trained GP model.
-fmin : float or 'auto', optional
-    Minimum frequency to include. If 'auto', uses the lowest nonzero FFT frequency.
-fmax : float or 'auto', optional
-    Maximum frequency to include. If 'auto', uses the Nyquist frequency.
-num_bins : int, optional
-    Number of frequency bins.
-bin_type : str, optional
-    Binning type: 'log' or 'linear'.
-bin_edges : array-like, optional
-    Custom bin edges (overrides <code>num_bins</code> and <code>bin_type</code>).
-norm : bool, optional
-    Whether to normalize the power spectrum to variance units (i.e., PSD units).</p>
-<h4 id="stela_toolkit.power_spectrum.PowerSpectrum--attributes">Attributes<a class="headerlink" href="#stela_toolkit.power_spectrum.PowerSpectrum--attributes" title="Permanent link">&para;</a></h4>
-<p>freqs : array-like
-    Center frequencies of each bin.
-freq_widths : array-like
-    Bin widths for each frequency bin.
-powers : array-like
-    Power spectrum values (or mean if using GP samples).
-power_errors : array-like
-    Uncertainties in the power spectrum (std across GP samples if applicable).</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>lc_or_model</code>
+            </td>
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="LightCurve (stela_toolkit.data_loader.LightCurve)" href="../data_loader/#stela_toolkit.data_loader.LightCurve">LightCurve</a> or <a class="autorefs autorefs-internal" title="GaussianProcess (stela_toolkit.gaussian_process.GaussianProcess)" href="../gaussian_process/#stela_toolkit.gaussian_process.GaussianProcess">GaussianProcess</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Input light curve or trained GP model.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>fmin</code>
+            </td>
+            <td>
+                  <code><span title="float">float</span> or <span title="auto">auto</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Minimum frequency to include. If 'auto', uses the lowest nonzero FFT frequency.</p>
+              </div>
+            </td>
+            <td>
+                  <code>&#39;auto&#39;</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>fmax</code>
+            </td>
+            <td>
+                  <code><span title="float">float</span> or <span title="auto">auto</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Maximum frequency to include. If 'auto', uses the Nyquist frequency.</p>
+              </div>
+            </td>
+            <td>
+                  <code>&#39;auto&#39;</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>num_bins</code>
+            </td>
+            <td>
+                  <code><span title="int">int</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Number of frequency bins.</p>
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>bin_type</code>
+            </td>
+            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Binning type: 'log' or 'linear'.</p>
+              </div>
+            </td>
+            <td>
+                  <code>&#39;log&#39;</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>bin_edges</code>
+            </td>
+            <td>
+                  <code><span title="array">array</span> - <span title="like">like</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Custom bin edges (overrides <code>num_bins</code> and <code>bin_type</code>).</p>
+              </div>
+            </td>
+            <td>
+                  <code>[]</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>norm</code>
+            </td>
+            <td>
+                  <code><span title="bool">bool</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Whether to normalize the power spectrum to variance units (i.e., PSD units).</p>
+              </div>
+            </td>
+            <td>
+                  <code>True</code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+<p><span class="doc-section-title">Attributes:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td><code><span title="stela_toolkit.power_spectrum.PowerSpectrum.freqs">freqs</span></code></td>
+            <td>
+                  <code><span title="array">array</span> - <span title="like">like</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Center frequencies of each bin.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="stela_toolkit.power_spectrum.PowerSpectrum.freq_widths">freq_widths</span></code></td>
+            <td>
+                  <code><span title="array">array</span> - <span title="like">like</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Bin widths for each frequency bin.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="stela_toolkit.power_spectrum.PowerSpectrum.powers">powers</span></code></td>
+            <td>
+                  <code><span title="array">array</span> - <span title="like">like</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Power spectrum values (or mean if using GP samples).</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="stela_toolkit.power_spectrum.PowerSpectrum.power_errors">power_errors</span></code></td>
+            <td>
+                  <code><span title="array">array</span> - <span title="like">like</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Uncertainties in the power spectrum (std across GP samples if applicable).</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
 
 
@@ -1385,7 +1544,24 @@ power_errors : array-like
 <span class="normal">216</span>
 <span class="normal">217</span>
 <span class="normal">218</span>
-<span class="normal">219</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">PowerSpectrum</span><span class="p">:</span>
+<span class="normal">219</span>
+<span class="normal">220</span>
+<span class="normal">221</span>
+<span class="normal">222</span>
+<span class="normal">223</span>
+<span class="normal">224</span>
+<span class="normal">225</span>
+<span class="normal">226</span>
+<span class="normal">227</span>
+<span class="normal">228</span>
+<span class="normal">229</span>
+<span class="normal">230</span>
+<span class="normal">231</span>
+<span class="normal">232</span>
+<span class="normal">233</span>
+<span class="normal">234</span>
+<span class="normal">235</span>
+<span class="normal">236</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">PowerSpectrum</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compute the power spectrum of a light curve using the FFT.</span>
 
@@ -1408,16 +1584,22 @@ power_errors : array-like
 <span class="sd">    ----------</span>
 <span class="sd">    lc_or_model : LightCurve or GaussianProcess</span>
 <span class="sd">        Input light curve or trained GP model.</span>
+
 <span class="sd">    fmin : float or &#39;auto&#39;, optional</span>
 <span class="sd">        Minimum frequency to include. If &#39;auto&#39;, uses the lowest nonzero FFT frequency.</span>
+
 <span class="sd">    fmax : float or &#39;auto&#39;, optional</span>
 <span class="sd">        Maximum frequency to include. If &#39;auto&#39;, uses the Nyquist frequency.</span>
+
 <span class="sd">    num_bins : int, optional</span>
 <span class="sd">        Number of frequency bins.</span>
+
 <span class="sd">    bin_type : str, optional</span>
 <span class="sd">        Binning type: &#39;log&#39; or &#39;linear&#39;.</span>
+
 <span class="sd">    bin_edges : array-like, optional</span>
 <span class="sd">        Custom bin edges (overrides `num_bins` and `bin_type`).</span>
+
 <span class="sd">    norm : bool, optional</span>
 <span class="sd">        Whether to normalize the power spectrum to variance units (i.e., PSD units).</span>
 
@@ -1425,10 +1607,13 @@ power_errors : array-like
 <span class="sd">    ----------</span>
 <span class="sd">    freqs : array-like</span>
 <span class="sd">        Center frequencies of each bin.</span>
+
 <span class="sd">    freq_widths : array-like</span>
 <span class="sd">        Bin widths for each frequency bin.</span>
+
 <span class="sd">    powers : array-like</span>
 <span class="sd">        Power spectrum values (or mean if using GP samples).</span>
+
 <span class="sd">    power_errors : array-like</span>
 <span class="sd">        Uncertainties in the power spectrum (std across GP samples if applicable).</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -1478,8 +1663,10 @@ power_errors : array-like
 <span class="sd">        ----------</span>
 <span class="sd">        times : array-like, optional</span>
 <span class="sd">            Time array to use (defaults to internal value).</span>
+
 <span class="sd">        rates : array-like, optional</span>
 <span class="sd">            Rate array to use (defaults to internal value).</span>
+
 <span class="sd">        norm : bool, optional</span>
 <span class="sd">            Whether to normalize to variance units.</span>
 
@@ -1487,10 +1674,13 @@ power_errors : array-like
 <span class="sd">        -------</span>
 <span class="sd">        freqs : array-like</span>
 <span class="sd">            Frequencies of the power spectrum.</span>
+
 <span class="sd">        freq_widths : array-like or None</span>
 <span class="sd">            Bin widths (if binned).</span>
+
 <span class="sd">        powers : array-like</span>
 <span class="sd">            Power spectrum values.</span>
+
 <span class="sd">        power_errors : array-like or None</span>
 <span class="sd">            Power spectrum uncertainties (if binned).</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -1546,10 +1736,13 @@ power_errors : array-like
 <span class="sd">        -------</span>
 <span class="sd">        freqs : array-like</span>
 <span class="sd">            Frequencies of the power spectrum.</span>
+
 <span class="sd">        freq_widths : array-like</span>
 <span class="sd">            Widths of frequency bins.</span>
+
 <span class="sd">        power_mean : array-like</span>
 <span class="sd">            Mean power spectrum values.</span>
+
 <span class="sd">        power_std : array-like</span>
 <span class="sd">            Standard deviation of power values across realizations.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -1626,36 +1819,127 @@ power_errors : array-like
         <p>Compute the power spectrum for a single light curve.</p>
 <p>Applies the FFT to the light curve and optionally normalizes the result
 to variance (PSD) units. If binning is enabled, returns binned power.</p>
-<h5 id="stela_toolkit.power_spectrum.PowerSpectrum.compute_power_spectrum--parameters">Parameters<a class="headerlink" href="#stela_toolkit.power_spectrum.PowerSpectrum.compute_power_spectrum--parameters" title="Permanent link">&para;</a></h5>
-<p>times : array-like, optional
-    Time array to use (defaults to internal value).
-rates : array-like, optional
-    Rate array to use (defaults to internal value).
-norm : bool, optional
-    Whether to normalize to variance units.</p>
-<h5 id="stela_toolkit.power_spectrum.PowerSpectrum.compute_power_spectrum--returns">Returns<a class="headerlink" href="#stela_toolkit.power_spectrum.PowerSpectrum.compute_power_spectrum--returns" title="Permanent link">&para;</a></h5>
-<p>freqs : array-like
-    Frequencies of the power spectrum.
-freq_widths : array-like or None
-    Bin widths (if binned).
-powers : array-like
-    Power spectrum values.
-power_errors : array-like or None
-    Power spectrum uncertainties (if binned).</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>times</code>
+            </td>
+            <td>
+                  <code><span title="array">array</span> - <span title="like">like</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Time array to use (defaults to internal value).</p>
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>rates</code>
+            </td>
+            <td>
+                  <code><span title="array">array</span> - <span title="like">like</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Rate array to use (defaults to internal value).</p>
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>norm</code>
+            </td>
+            <td>
+                  <code><span title="bool">bool</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Whether to normalize to variance units.</p>
+              </div>
+            </td>
+            <td>
+                  <code>True</code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+<th>Name</th>          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+<td><code>freqs</code></td>            <td>
+                  <code><span title="array">array</span> - <span title="like">like</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Frequencies of the power spectrum.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+<td><code>freq_widths</code></td>            <td>
+                  <code><span title="array">array</span> - <span title="like">like</span> or None</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Bin widths (if binned).</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+<td><code>powers</code></td>            <td>
+                  <code><span title="array">array</span> - <span title="like">like</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Power spectrum values.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+<td><code>power_errors</code></td>            <td>
+                  <code><span title="array">array</span> - <span title="like">like</span> or None</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Power spectrum uncertainties (if binned).</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
 
             <details class="quote">
               <summary>Source code in <code>stela_toolkit/power_spectrum.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 90</span>
-<span class="normal"> 91</span>
-<span class="normal"> 92</span>
-<span class="normal"> 93</span>
-<span class="normal"> 94</span>
-<span class="normal"> 95</span>
-<span class="normal"> 96</span>
-<span class="normal"> 97</span>
-<span class="normal"> 98</span>
-<span class="normal"> 99</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 99</span>
 <span class="normal">100</span>
 <span class="normal">101</span>
 <span class="normal">102</span>
@@ -1709,7 +1993,21 @@ power_errors : array-like or None
 <span class="normal">150</span>
 <span class="normal">151</span>
 <span class="normal">152</span>
-<span class="normal">153</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">compute_power_spectrum</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">times</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">rates</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">norm</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<span class="normal">153</span>
+<span class="normal">154</span>
+<span class="normal">155</span>
+<span class="normal">156</span>
+<span class="normal">157</span>
+<span class="normal">158</span>
+<span class="normal">159</span>
+<span class="normal">160</span>
+<span class="normal">161</span>
+<span class="normal">162</span>
+<span class="normal">163</span>
+<span class="normal">164</span>
+<span class="normal">165</span>
+<span class="normal">166</span>
+<span class="normal">167</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">compute_power_spectrum</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">times</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">rates</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">norm</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compute the power spectrum for a single light curve.</span>
 
@@ -1720,8 +2018,10 @@ power_errors : array-like or None
 <span class="sd">    ----------</span>
 <span class="sd">    times : array-like, optional</span>
 <span class="sd">        Time array to use (defaults to internal value).</span>
+
 <span class="sd">    rates : array-like, optional</span>
 <span class="sd">        Rate array to use (defaults to internal value).</span>
+
 <span class="sd">    norm : bool, optional</span>
 <span class="sd">        Whether to normalize to variance units.</span>
 
@@ -1729,10 +2029,13 @@ power_errors : array-like or None
 <span class="sd">    -------</span>
 <span class="sd">    freqs : array-like</span>
 <span class="sd">        Frequencies of the power spectrum.</span>
+
 <span class="sd">    freq_widths : array-like or None</span>
 <span class="sd">        Bin widths (if binned).</span>
+
 <span class="sd">    powers : array-like</span>
 <span class="sd">        Power spectrum values.</span>
+
 <span class="sd">    power_errors : array-like or None</span>
 <span class="sd">        Power spectrum uncertainties (if binned).</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -1792,37 +2095,95 @@ power_errors : array-like or None
 
         <p>Compute power spectrum for each GP sample and return the mean and std.
 This method is used automatically when a GP model with samples is passed.</p>
-<h5 id="stela_toolkit.power_spectrum.PowerSpectrum.compute_stacked_power_spectrum--parameters">Parameters<a class="headerlink" href="#stela_toolkit.power_spectrum.PowerSpectrum.compute_stacked_power_spectrum--parameters" title="Permanent link">&para;</a></h5>
-<p>norm : bool, optional
-    Whether to normalize to variance units.</p>
-<h5 id="stela_toolkit.power_spectrum.PowerSpectrum.compute_stacked_power_spectrum--returns">Returns<a class="headerlink" href="#stela_toolkit.power_spectrum.PowerSpectrum.compute_stacked_power_spectrum--returns" title="Permanent link">&para;</a></h5>
-<p>freqs : array-like
-    Frequencies of the power spectrum.
-freq_widths : array-like
-    Widths of frequency bins.
-power_mean : array-like
-    Mean power spectrum values.
-power_std : array-like
-    Standard deviation of power values across realizations.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>norm</code>
+            </td>
+            <td>
+                  <code><span title="bool">bool</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Whether to normalize to variance units.</p>
+              </div>
+            </td>
+            <td>
+                  <code>True</code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+<th>Name</th>          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+<td><code>freqs</code></td>            <td>
+                  <code><span title="array">array</span> - <span title="like">like</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Frequencies of the power spectrum.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+<td><code>freq_widths</code></td>            <td>
+                  <code><span title="array">array</span> - <span title="like">like</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Widths of frequency bins.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+<td><code>power_mean</code></td>            <td>
+                  <code><span title="array">array</span> - <span title="like">like</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Mean power spectrum values.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+<td><code>power_std</code></td>            <td>
+                  <code><span title="array">array</span> - <span title="like">like</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Standard deviation of power values across realizations.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
 
             <details class="quote">
               <summary>Source code in <code>stela_toolkit/power_spectrum.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">155</span>
-<span class="normal">156</span>
-<span class="normal">157</span>
-<span class="normal">158</span>
-<span class="normal">159</span>
-<span class="normal">160</span>
-<span class="normal">161</span>
-<span class="normal">162</span>
-<span class="normal">163</span>
-<span class="normal">164</span>
-<span class="normal">165</span>
-<span class="normal">166</span>
-<span class="normal">167</span>
-<span class="normal">168</span>
-<span class="normal">169</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">169</span>
 <span class="normal">170</span>
 <span class="normal">171</span>
 <span class="normal">172</span>
@@ -1841,7 +2202,24 @@ power_std : array-like
 <span class="normal">185</span>
 <span class="normal">186</span>
 <span class="normal">187</span>
-<span class="normal">188</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">compute_stacked_power_spectrum</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">norm</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<span class="normal">188</span>
+<span class="normal">189</span>
+<span class="normal">190</span>
+<span class="normal">191</span>
+<span class="normal">192</span>
+<span class="normal">193</span>
+<span class="normal">194</span>
+<span class="normal">195</span>
+<span class="normal">196</span>
+<span class="normal">197</span>
+<span class="normal">198</span>
+<span class="normal">199</span>
+<span class="normal">200</span>
+<span class="normal">201</span>
+<span class="normal">202</span>
+<span class="normal">203</span>
+<span class="normal">204</span>
+<span class="normal">205</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">compute_stacked_power_spectrum</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">norm</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compute power spectrum for each GP sample and return the mean and std.</span>
 <span class="sd">    This method is used automatically when a GP model with samples is passed.</span>
@@ -1855,10 +2233,13 @@ power_std : array-like
 <span class="sd">    -------</span>
 <span class="sd">    freqs : array-like</span>
 <span class="sd">        Frequencies of the power spectrum.</span>
+
 <span class="sd">    freq_widths : array-like</span>
 <span class="sd">        Widths of frequency bins.</span>
+
 <span class="sd">    power_mean : array-like</span>
 <span class="sd">        Mean power spectrum values.</span>
+
 <span class="sd">    power_std : array-like</span>
 <span class="sd">        Standard deviation of power values across realizations.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -1898,15 +2279,15 @@ Wrapper method to use FrequencyBinning.count_frequencies_in_bins with class attr
 
             <details class="quote">
               <summary>Source code in <code>stela_toolkit/power_spectrum.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">211</span>
-<span class="normal">212</span>
-<span class="normal">213</span>
-<span class="normal">214</span>
-<span class="normal">215</span>
-<span class="normal">216</span>
-<span class="normal">217</span>
-<span class="normal">218</span>
-<span class="normal">219</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">count_frequencies_in_bins</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fmin</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">fmax</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">num_bins</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">bin_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">bin_edges</span><span class="o">=</span><span class="p">[]):</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">228</span>
+<span class="normal">229</span>
+<span class="normal">230</span>
+<span class="normal">231</span>
+<span class="normal">232</span>
+<span class="normal">233</span>
+<span class="normal">234</span>
+<span class="normal">235</span>
+<span class="normal">236</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">count_frequencies_in_bins</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fmin</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">fmax</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">num_bins</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">bin_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">bin_edges</span><span class="o">=</span><span class="p">[]):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Counts the number of frequencies in each frequency bin.</span>
 <span class="sd">    Wrapper method to use FrequencyBinning.count_frequencies_in_bins with class attributes.</span>
@@ -1933,33 +2314,61 @@ Wrapper method to use FrequencyBinning.count_frequencies_in_bins with class attr
     <div class="doc doc-contents ">
 
         <p>Plot the power spectrum.</p>
-<h5 id="stela_toolkit.power_spectrum.PowerSpectrum.plot--parameters">Parameters<a class="headerlink" href="#stela_toolkit.power_spectrum.PowerSpectrum.plot--parameters" title="Permanent link">&para;</a></h5>
-<p>**kwargs : dict
-    Custom plotting options (xlabel, yscale, etc.).</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>**kwargs</code>
+            </td>
+            <td>
+                  <code><span title="dict">dict</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Custom plotting options (xlabel, yscale, etc.).</p>
+              </div>
+            </td>
+            <td>
+                  <code>{}</code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
 
             <details class="quote">
               <summary>Source code in <code>stela_toolkit/power_spectrum.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">190</span>
-<span class="normal">191</span>
-<span class="normal">192</span>
-<span class="normal">193</span>
-<span class="normal">194</span>
-<span class="normal">195</span>
-<span class="normal">196</span>
-<span class="normal">197</span>
-<span class="normal">198</span>
-<span class="normal">199</span>
-<span class="normal">200</span>
-<span class="normal">201</span>
-<span class="normal">202</span>
-<span class="normal">203</span>
-<span class="normal">204</span>
-<span class="normal">205</span>
-<span class="normal">206</span>
-<span class="normal">207</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">207</span>
 <span class="normal">208</span>
-<span class="normal">209</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">freqs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">freq_widths</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">powers</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">power_errors</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="normal">209</span>
+<span class="normal">210</span>
+<span class="normal">211</span>
+<span class="normal">212</span>
+<span class="normal">213</span>
+<span class="normal">214</span>
+<span class="normal">215</span>
+<span class="normal">216</span>
+<span class="normal">217</span>
+<span class="normal">218</span>
+<span class="normal">219</span>
+<span class="normal">220</span>
+<span class="normal">221</span>
+<span class="normal">222</span>
+<span class="normal">223</span>
+<span class="normal">224</span>
+<span class="normal">225</span>
+<span class="normal">226</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">freqs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">freq_widths</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">powers</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">power_errors</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Plot the power spectrum.</span>
 
@@ -2021,6 +2430,12 @@ Wrapper method to use FrequencyBinning.count_frequencies_in_bins with class attr
 <script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
         </div>
         
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
       </main>
       
         <footer class="md-footer">
@@ -2049,7 +2464,7 @@ Wrapper method to use FrequencyBinning.count_frequencies_in_bins with class attr
     
     
       
-      <script id="__config" type="application/json">{"base": "../..", "features": [], "search": "../../assets/javascripts/workers/search.d50fe291.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+      <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.tabs", "navigation.top", "content.code.copy", "navigation.sections", "navigation.expand"], "search": "../../assets/javascripts/workers/search.d50fe291.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
     
     
       <script src="../../assets/javascripts/bundle.13a4f30d.min.js"></script>

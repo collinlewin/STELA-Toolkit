@@ -1,0 +1,12 @@
+.md-header__button.md-logo img {
+    height: 36px;
+}
+
+.md-container {
+    background-color: #000E1A;
+}
+
+.md-header__title {
+    font-size: 1.2rem;   /* Default is ~1rem */
+    font-weight: 600;
+}

@@ -50,6 +50,8 @@
     
       <link rel="stylesheet" href="../assets/_mkdocstrings.css">
     
+      <link rel="stylesheet" href="../styles/custom.css">
+    
     <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
@@ -62,10 +64,12 @@
   
     
     
+      
     
     
     
-    <body dir="ltr" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo">
+    
+    <body dir="ltr" data-md-color-scheme="slate" data-md-color-primary="blue" data-md-color-accent="yellow">
   
     
     <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
@@ -86,9 +90,7 @@
     
       
 
-  
-
-<header class="md-header md-header--shadow" data-md-component="header">
+<header class="md-header" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
     <a href=".." title="STELA Toolkit" class="md-header__button md-logo" aria-label="STELA Toolkit" data-md-component="logo">
       
@@ -117,7 +119,19 @@
     </div>
     
       
+        <form class="md-header__option" data-md-component="palette">
+  
     
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="blue" data-md-color-accent="yellow"  aria-hidden="true"  type="radio" name="__palette" id="__palette_0">
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
     
     
     
@@ -171,6 +185,132 @@
       
         
           
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href=".." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../overview/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Overview
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    <li class="md-tabs__item md-tabs__item--active">
+      <a href="./" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Gaussian Processes
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../installation/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Installation
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../tutorial/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Tutorial
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../reference/coherence/" class="md-tabs__link">
+          
+  
+  
+  Class Reference
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
         
       
       <main class="md-main" data-md-component="main">
@@ -184,8 +324,10 @@
                     
 
 
+  
 
-<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
     <a href=".." title="STELA Toolkit" class="md-nav__button md-logo" aria-label="STELA Toolkit" data-md-component="logo">
       
@@ -307,22 +449,37 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#1-from-parametric-models-to-function-distributions" class="md-nav__link">
+  <a href="#1-from-parametric-to-nonparametric-models" class="md-nav__link">
     <span class="md-ellipsis">
-      1. From Parametric Models to Function Distributions
+      1. From Parametric to Nonparametric Models
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="1. From Parametric to Nonparametric Models">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#gaussian-processes-a-nonparametric-prior" class="md-nav__link">
+    <span class="md-ellipsis">
+      Gaussian Processes: A Nonparametric Prior
     </span>
   </a>
   
 </li>
+        
+      </ul>
+    </nav>
+  
+</li>
       
         <li class="md-nav__item">
-  <a href="#2-gp-specification-mean-and-covariance-functions" class="md-nav__link">
+  <a href="#2-mean-and-covariancekernel-functions" class="md-nav__link">
     <span class="md-ellipsis">
-      2. GP Specification: Mean and Covariance Functions
+      2. Mean and Covariance/Kernel Functions
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="2. GP Specification: Mean and Covariance Functions">
+    <nav class="md-nav" aria-label="2. Mean and Covariance/Kernel Functions">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -340,13 +497,13 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#3-kernel-functions-the-heart-of-the-gp" class="md-nav__link">
+  <a href="#3-kernel-functions" class="md-nav__link">
     <span class="md-ellipsis">
-      3. Kernel Functions: The Heart of the GP
+      3. Kernel Functions
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="3. Kernel Functions: The Heart of the GP">
+    <nav class="md-nav" aria-label="3. Kernel Functions">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -364,9 +521,9 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#5-training-the-gp-marginal-likelihood" class="md-nav__link">
+  <a href="#5-training-the-gp" class="md-nav__link">
     <span class="md-ellipsis">
-      5. Training the GP: Marginal Likelihood
+      5. Training the GP
     </span>
   </a>
   
@@ -467,12 +624,19 @@
     
     
     
+      
+      
+        
+      
+    
     
     <li class="md-nav__item md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6" >
         
           
           <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
@@ -480,7 +644,7 @@
   
   
   <span class="md-ellipsis">
-    Module Reference
+    Class Reference
     
   </span>
   
@@ -491,7 +655,7 @@
         <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_6">
             <span class="md-nav__icon md-icon"></span>
-            Module Reference
+            Class Reference
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
             
@@ -617,29 +781,6 @@
   
   
     <li class="md-nav__item">
-      <a href="../reference/frequency_binning/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    Frequency Binning
-    
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
       <a href="../reference/gaussian_process/" class="md-nav__link">
         
   
@@ -709,29 +850,6 @@
   
   
     <li class="md-nav__item">
-      <a href="../reference/plot/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    Plotting
-    
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
       <a href="../reference/power_spectrum/" class="md-nav__link">
         
   
@@ -781,15 +899,22 @@
     
     
     
+      
+      
+        
+      
+    
     
     <li class="md-nav__item md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6_13" >
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6_11" >
         
           
-          <label class="md-nav__link" for="__nav_6_13" id="__nav_6_13_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_6_11" id="__nav_6_11_label" tabindex="0">
             
   
   
@@ -802,12 +927,58 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_6_13_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_6_13">
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_6_11_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6_11">
             <span class="md-nav__icon md-icon"></span>
             Internal
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/frequency_binning/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Frequency Binning
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/plot/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Plotting
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
             
               
                 
@@ -906,22 +1077,37 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#1-from-parametric-models-to-function-distributions" class="md-nav__link">
+  <a href="#1-from-parametric-to-nonparametric-models" class="md-nav__link">
     <span class="md-ellipsis">
-      1. From Parametric Models to Function Distributions
+      1. From Parametric to Nonparametric Models
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="1. From Parametric to Nonparametric Models">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#gaussian-processes-a-nonparametric-prior" class="md-nav__link">
+    <span class="md-ellipsis">
+      Gaussian Processes: A Nonparametric Prior
     </span>
   </a>
   
 </li>
+        
+      </ul>
+    </nav>
+  
+</li>
       
         <li class="md-nav__item">
-  <a href="#2-gp-specification-mean-and-covariance-functions" class="md-nav__link">
+  <a href="#2-mean-and-covariancekernel-functions" class="md-nav__link">
     <span class="md-ellipsis">
-      2. GP Specification: Mean and Covariance Functions
+      2. Mean and Covariance/Kernel Functions
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="2. GP Specification: Mean and Covariance Functions">
+    <nav class="md-nav" aria-label="2. Mean and Covariance/Kernel Functions">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -939,13 +1125,13 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#3-kernel-functions-the-heart-of-the-gp" class="md-nav__link">
+  <a href="#3-kernel-functions" class="md-nav__link">
     <span class="md-ellipsis">
-      3. Kernel Functions: The Heart of the GP
+      3. Kernel Functions
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="3. Kernel Functions: The Heart of the GP">
+    <nav class="md-nav" aria-label="3. Kernel Functions">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -963,9 +1149,9 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#5-training-the-gp-marginal-likelihood" class="md-nav__link">
+  <a href="#5-training-the-gp" class="md-nav__link">
     <span class="md-ellipsis">
-      5. Training the GP: Marginal Likelihood
+      5. Training the GP
     </span>
   </a>
   
@@ -1022,41 +1208,50 @@
 
 <h1 id="introduction-to-gaussian-processes">Introduction to Gaussian Processes<a class="headerlink" href="#introduction-to-gaussian-processes" title="Permanent link">&para;</a></h1>
 <h2 id="a-gaussian-process-gp-is-one-of-the-most-powerful-tools-in-bayesian-statistics-for-modeling-functions-in-stela-we-use-gps-to-interpolate-noisy-irregularly-sampled-light-curves-in-order-to-generate-frequency-resolved-data-products-using-fourier-techniques">A <strong>Gaussian Process (GP)</strong> is one of the most powerful tools in Bayesian statistics for modeling functions. In STELA, we use GPs to interpolate noisy, irregularly sampled light curves in order to generate frequency-resolved data products using Fourier techniques.<a class="headerlink" href="#a-gaussian-process-gp-is-one-of-the-most-powerful-tools-in-bayesian-statistics-for-modeling-functions-in-stela-we-use-gps-to-interpolate-noisy-irregularly-sampled-light-curves-in-order-to-generate-frequency-resolved-data-products-using-fourier-techniques" title="Permanent link">&para;</a></h2>
-<h2 id="1-from-parametric-models-to-function-distributions">1. From Parametric Models to Function Distributions<a class="headerlink" href="#1-from-parametric-models-to-function-distributions" title="Permanent link">&para;</a></h2>
-<p>In classical modeling you may be more familiar with, including linear regression, we assume:</p>
+<h2 id="1-from-parametric-to-nonparametric-models">1. From Parametric to Nonparametric Models<a class="headerlink" href="#1-from-parametric-to-nonparametric-models" title="Permanent link">&para;</a></h2>
+<p>In classical modeling approaches—like linear regression—we assume a specific functional form:</p>
 <div class="arithmatex">\[
 y = X \beta + \epsilon
 \]</div>
-<p>This assumes a <strong>parametric form</strong>, where a line or polynomial has a finite number of parameters like <span class="arithmatex">\( \beta \)</span>. But what if we don't know the form of the function?</p>
-<p>A <strong>Gaussian Process</strong> is a <strong>distribution over functions</strong>.</p>
-<p>Instead of picking a specific formula, we say:</p>
+<p>This is a <strong>parametric model</strong>, where the function is fully described by a finite set of parameters such as <span class="arithmatex">\( \beta \)</span>. But what if we don’t know the correct form of the function? What if the variability is too complex to capture with some formula of y = f(X)?</p>
+<h3 id="gaussian-processes-a-nonparametric-prior">Gaussian Processes: A Nonparametric Prior<a class="headerlink" href="#gaussian-processes-a-nonparametric-prior" title="Permanent link">&para;</a></h3>
+<p>A <strong>Gaussian Process (GP)</strong> is a <strong>nonparametric Bayesian model</strong>: instead of defining a formula with a small number of parameters, it places a prior directly over functions themselves, instead letting the data inform the shape of the function.</p>
+<p>A GP defines a distribution such that...</p>
 <blockquote>
-<p>"Any set of values from this unknown function should follow a multivariate normal distribution."</p>
+<p><strong>Any finite collection of function values should follow a multivariate normal distribution.</strong></p>
 </blockquote>
 <p>This means:</p>
 <ul>
-<li>Every time point <span class="arithmatex">\( t \)</span> is a random variable <span class="arithmatex">\( f(t) \)</span></li>
-<li>Any collection <span class="arithmatex">\( [f(t_1), ..., f(t_n)] \)</span> is jointly Gaussian</li>
+<li>Each time point <span class="arithmatex">\( t \)</span> corresponds to a random variable <span class="arithmatex">\( f(t) \)</span></li>
+<li>Any set <span class="arithmatex">\( [f(t_1), \dots, f(t_n)] \)</span> is jointly Gaussian</li>
+<li>The function's behavior is therefore, like any Gaussian, entirely determined by its mean and covariance</li>
 </ul>
-<p>As such, checking that our data is normally distributed is important for this assumption to be reasonable. STELA includes a Box-Cox transformation that can make our data more normal for the GP, and then we undo the transformation on the fluxes produced by the GP.</p>
+<p>This flexibility allows the GP to capture complex trends and variability directly from the data.</p>
+<p>Because the GP framework assumes normally distributed data, it's important that the observed fluxes approximate Gaussianity. STELA includes both hypothesis testing to check this assumption, as well as a <strong>Box-Cox transformation</strong> to help normalize the data before modeling. After inference, we invert the transformation so that predictions are returned in the original flux units.</p>
 <hr />
-<h2 id="2-gp-specification-mean-and-covariance-functions">2. GP Specification: Mean and Covariance Functions<a class="headerlink" href="#2-gp-specification-mean-and-covariance-functions" title="Permanent link">&para;</a></h2>
+<h2 id="2-mean-and-covariancekernel-functions">2. Mean and Covariance/Kernel Functions<a class="headerlink" href="#2-mean-and-covariancekernel-functions" title="Permanent link">&para;</a></h2>
 <p>A GP is fully defined by:</p>
 <ul>
-<li>A <strong>mean function</strong> <span class="arithmatex">\( m(t) = \mathbb{E}[f(t)] \)</span></li>
-<li>A <strong>covariance function</strong> <span class="arithmatex">\( k(t, t') = \text{Cov}(f(t), f(t')) \)</span></li>
+<li>A <strong>mean function</strong>:<br />
+<span class="arithmatex">\( m(t) = \mathbb{E}[f(t)] \)</span></li>
+<li>A <strong>covariance function</strong> (or kernel):<br />
+<span class="arithmatex">\( k(t, t') = \text{Cov}(f(t), f(t')) \)</span></li>
 </ul>
-<p>We write this as:</p>
+<p>This is written as:</p>
 <div class="arithmatex">\[
 f(t) \sim \mathcal{GP}(m(t), k(t, t'))
 \]</div>
 <h3 id="in-stela">In STELA:<a class="headerlink" href="#in-stela" title="Permanent link">&para;</a></h3>
 <ul>
-<li>We assume <span class="arithmatex">\( m(t) = 0 \)</span> after standardizing the data.</li>
-<li>The covariance function is called the <strong>kernel</strong>, which determines the shape, smoothness, and periodicity of the model.</li>
+<li>We assume <span class="arithmatex">\( m(t) = 0 \)</span> by standardizing the light curve data before modeling.</li>
+<li>The covariance structure is encoded via a <strong>kernel</strong>, which determines the shape, smoothness, and periodicity of the model. Different kernels encode different assumptions:</li>
+<li>Smooth trends (e.g. RBF)</li>
+<li>Quasi-periodic variability (e.g. Spectral Mixture)</li>
+<li>Long- and short-term variability (e.g. Rational Quadratic)</li>
 </ul>
+<p>This combination of nonparametric flexibility and probabilistic structure is what enables STELA to robustly interpolate, sample, and propagate uncertainty across all downstream Fourier analyses.</p>
 <hr />
-<h2 id="3-kernel-functions-the-heart-of-the-gp">3. Kernel Functions: The Heart of the GP<a class="headerlink" href="#3-kernel-functions-the-heart-of-the-gp" title="Permanent link">&para;</a></h2>
+<h2 id="3-kernel-functions">3. Kernel Functions<a class="headerlink" href="#3-kernel-functions" title="Permanent link">&para;</a></h2>
 <p>The kernel defines the relationship between any two inputs. Common kernels include:</p>
 <ul>
 <li><strong>RBF (Squared Exponential)</strong></li>
@@ -1084,7 +1279,7 @@ f(t) \sim \mathcal{GP}(m(t), k(t, t'))
 </ul>
 <p>Adds a diagonal term <span class="arithmatex">\( \sigma_w^2 I \)</span> to the kernel for unaccounted stochastic noise on top of the uncertainties (homoscedastic noise).</p>
 <hr />
-<h2 id="5-training-the-gp-marginal-likelihood">5. Training the GP: Marginal Likelihood<a class="headerlink" href="#5-training-the-gp-marginal-likelihood" title="Permanent link">&para;</a></h2>
+<h2 id="5-training-the-gp">5. Training the GP<a class="headerlink" href="#5-training-the-gp" title="Permanent link">&para;</a></h2>
 <p>We don’t sample hyperparameters, we <strong>optimize ("train") them</strong> by maximizing the <strong>marginal likelihood</strong>:</p>
 <div class="arithmatex">\[
 p(\mathbf{y} \mid \theta) = \mathcal{N}(0, K_\theta + \sigma_n^2 I)
@@ -1125,19 +1320,15 @@ K_* &amp; K_{**}
 </ul>
 <h3 id="posterior-prediction-vs-samples">Posterior Prediction vs. Samples<a class="headerlink" href="#posterior-prediction-vs-samples" title="Permanent link">&para;</a></h3>
 <p>In our GP framework, we distinguish between the <strong>posterior prediction</strong> (via <code>.predict</code>) and <strong>posterior samples</strong> (via <code>.sample</code>). Both are derived from the GP posterior but serve different purposes:</p>
-<ol>
-<li><strong>Prediction (<code>predict</code>)</strong> computes the <em>posterior mean</em> and <em>covariance</em> of the function at new time points:</li>
-</ol>
-<p>$$
-  \mathbb{E}[f_<em>] = K_</em>^\top (K + \sigma_n^2 I)^{-1} \mathbf{y}
-  $$</p>
-<p>$$
-  \text{Cov}[f_<em>] = K_{**} - K_</em>^\top (K + \sigma_n^2 I)^{-1} K_*
-  $$</p>
+<p><strong>Prediction (<code>predict</code>)</strong> computes the <em>posterior mean</em> and <em>covariance</em> of the function at new time points:</p>
+<div class="arithmatex">\[
+\mathbb{E}[f_*] = K_*^\top (K + \sigma_n^2 I)^{-1} \mathbf{y}
+\]</div>
+<div class="arithmatex">\[
+\text{Cov}[f_*] = K_{**} - K_*^\top (K + \sigma_n^2 I)^{-1} K_*
+\]</div>
 <p>This provides a Gaussian distribution over function values at the desired points, with uncertainty encoded in the posterior covariance.</p>
-<ol>
-<li><strong>Samples (<code>sample</code>)</strong> draw individual function realizations from this posterior distribution. These are full, self-consistent samples of the latent function, incorporating both the posterior mean and covariance structure.</li>
-</ol>
+<p><strong>Samples (<code>sample</code>)</strong> draw individual function realizations from this posterior distribution. These are full, self-consistent samples of the latent function, incorporating both the posterior mean and covariance structure.</p>
 <p>In our use case, we use samples to compute the Fourier-domain products such as power spectra, cross-spectra, and frequency-resolved time lags. This allows for propagating the uncertainty in the modeling through to the downstream quantities of interest in a fully Bayesian manner.</p>
 
 
@@ -1158,6 +1349,12 @@ K_* &amp; K_{**}
           
 <script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
         </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
         
       </main>
       
@@ -1187,7 +1384,7 @@ K_* &amp; K_{**}
     
     
       
-      <script id="__config" type="application/json">{"base": "..", "features": [], "search": "../assets/javascripts/workers/search.d50fe291.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+      <script id="__config" type="application/json">{"base": "..", "features": ["navigation.tabs", "navigation.top", "content.code.copy", "navigation.sections", "navigation.expand"], "search": "../assets/javascripts/workers/search.d50fe291.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
     
     
       <script src="../assets/javascripts/bundle.13a4f30d.min.js"></script>

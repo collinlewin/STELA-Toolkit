@@ -14,7 +14,7 @@
         <link rel="prev" href="../power_spectrum/">
       
       
-        <link rel="next" href="../check_inputs/">
+        <link rel="next" href="../frequency_binning/">
       
       
       <link rel="icon" href="../../assets/stela_logo_sq.png">
@@ -50,6 +50,8 @@
     
       <link rel="stylesheet" href="../../assets/_mkdocstrings.css">
     
+      <link rel="stylesheet" href="../../styles/custom.css">
+    
     <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
@@ -62,10 +64,12 @@
   
     
     
+      
     
     
     
-    <body dir="ltr" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo">
+    
+    <body dir="ltr" data-md-color-scheme="slate" data-md-color-primary="blue" data-md-color-accent="yellow">
   
     
     <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
@@ -86,9 +90,7 @@
     
       
 
-  
-
-<header class="md-header md-header--shadow" data-md-component="header">
+<header class="md-header" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
     <a href="../.." title="STELA Toolkit" class="md-header__button md-logo" aria-label="STELA Toolkit" data-md-component="logo">
       
@@ -117,7 +119,19 @@
     </div>
     
       
+        <form class="md-header__option" data-md-component="palette">
+  
     
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="blue" data-md-color-accent="yellow"  aria-hidden="true"  type="radio" name="__palette" id="__palette_0">
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
     
     
     
@@ -171,6 +185,132 @@
       
         
           
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../overview/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Overview
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../gaussian_process_intro/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Gaussian Processes
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../installation/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Installation
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../tutorial/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Tutorial
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../coherence/" class="md-tabs__link">
+          
+  
+  
+  Class Reference
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
         
       
       <main class="md-main" data-md-component="main">
@@ -184,8 +324,10 @@
                     
 
 
+  
 
-<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
     <a href="../.." title="STELA Toolkit" class="md-nav__button md-logo" aria-label="STELA Toolkit" data-md-component="logo">
       
@@ -319,20 +461,28 @@
     
     
     
+      
+        
+        
+      
+      
+        
+      
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
       
         
         
         <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" checked>
         
           
-          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="">
             
   
   
   <span class="md-ellipsis">
-    Module Reference
+    Class Reference
     
   </span>
   
@@ -343,7 +493,7 @@
         <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_6">
             <span class="md-nav__icon md-icon"></span>
-            Module Reference
+            Class Reference
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
             
@@ -469,29 +619,6 @@
   
   
     <li class="md-nav__item">
-      <a href="../frequency_binning/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    Frequency Binning
-    
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
       <a href="../gaussian_process/" class="md-nav__link">
         
   
@@ -544,29 +671,6 @@
   
   <span class="md-ellipsis">
     Lag Frequency Spectrum
-    
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../plot/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    Plotting
     
   </span>
   
@@ -682,21 +786,6 @@
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="boxcox_transform">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#stela_toolkit.preprocessing.Preprocessing.boxcox_transform--parameters" class="md-nav__link">
-    <span class="md-ellipsis">
-      Parameters
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
 </li>
         
           <li class="md-nav__item">
@@ -705,30 +794,6 @@
       check_boxcox_normal
     </span>
   </a>
-  
-    <nav class="md-nav" aria-label="check_boxcox_normal">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#stela_toolkit.preprocessing.Preprocessing.check_boxcox_normal--parameters" class="md-nav__link">
-    <span class="md-ellipsis">
-      Parameters
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#stela_toolkit.preprocessing.Preprocessing.check_boxcox_normal--returns" class="md-nav__link">
-    <span class="md-ellipsis">
-      Returns
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
         
@@ -739,30 +804,6 @@
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="check_normal">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#stela_toolkit.preprocessing.Preprocessing.check_normal--parameters" class="md-nav__link">
-    <span class="md-ellipsis">
-      Parameters
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#stela_toolkit.preprocessing.Preprocessing.check_normal--returns" class="md-nav__link">
-    <span class="md-ellipsis">
-      Returns
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
 </li>
         
           <li class="md-nav__item">
@@ -771,21 +812,6 @@
       generate_qq_plot
     </span>
   </a>
-  
-    <nav class="md-nav" aria-label="generate_qq_plot">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#stela_toolkit.preprocessing.Preprocessing.generate_qq_plot--parameters" class="md-nav__link">
-    <span class="md-ellipsis">
-      Parameters
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
         
@@ -796,30 +822,6 @@
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="polynomial_detrend">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#stela_toolkit.preprocessing.Preprocessing.polynomial_detrend--parameters" class="md-nav__link">
-    <span class="md-ellipsis">
-      Parameters
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#stela_toolkit.preprocessing.Preprocessing.polynomial_detrend--returns" class="md-nav__link">
-    <span class="md-ellipsis">
-      Returns
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
 </li>
         
           <li class="md-nav__item">
@@ -828,21 +830,6 @@
       remove_nans
     </span>
   </a>
-  
-    <nav class="md-nav" aria-label="remove_nans">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#stela_toolkit.preprocessing.Preprocessing.remove_nans--parameters" class="md-nav__link">
-    <span class="md-ellipsis">
-      Parameters
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
         
@@ -853,21 +840,6 @@
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="remove_outliers">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#stela_toolkit.preprocessing.Preprocessing.remove_outliers--parameters" class="md-nav__link">
-    <span class="md-ellipsis">
-      Parameters
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
 </li>
         
           <li class="md-nav__item">
@@ -876,21 +848,6 @@
       reverse_boxcox_transform
     </span>
   </a>
-  
-    <nav class="md-nav" aria-label="reverse_boxcox_transform">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#stela_toolkit.preprocessing.Preprocessing.reverse_boxcox_transform--parameters" class="md-nav__link">
-    <span class="md-ellipsis">
-      Parameters
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
         
@@ -909,21 +866,6 @@
       trim_time_segment
     </span>
   </a>
-  
-    <nav class="md-nav" aria-label="trim_time_segment">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#stela_toolkit.preprocessing.Preprocessing.trim_time_segment--parameters" class="md-nav__link">
-    <span class="md-ellipsis">
-      Parameters
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
         
@@ -960,15 +902,25 @@
     
     
     
+      
+      
+        
+          
+          
+        
+      
     
-    <li class="md-nav__item md-nav__item--nested">
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6_13" >
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6_11" >
         
           
-          <label class="md-nav__link" for="__nav_6_13" id="__nav_6_13_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_6_11" id="__nav_6_11_label" tabindex="">
             
   
   
@@ -981,12 +933,58 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_6_13_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_6_13">
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_6_11_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6_11">
             <span class="md-nav__icon md-icon"></span>
             Internal
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../frequency_binning/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Frequency Binning
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../plot/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Plotting
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
             
               
                 
@@ -1101,21 +1099,6 @@
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="boxcox_transform">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#stela_toolkit.preprocessing.Preprocessing.boxcox_transform--parameters" class="md-nav__link">
-    <span class="md-ellipsis">
-      Parameters
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
 </li>
         
           <li class="md-nav__item">
@@ -1124,30 +1107,6 @@
       check_boxcox_normal
     </span>
   </a>
-  
-    <nav class="md-nav" aria-label="check_boxcox_normal">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#stela_toolkit.preprocessing.Preprocessing.check_boxcox_normal--parameters" class="md-nav__link">
-    <span class="md-ellipsis">
-      Parameters
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#stela_toolkit.preprocessing.Preprocessing.check_boxcox_normal--returns" class="md-nav__link">
-    <span class="md-ellipsis">
-      Returns
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
         
@@ -1158,30 +1117,6 @@
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="check_normal">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#stela_toolkit.preprocessing.Preprocessing.check_normal--parameters" class="md-nav__link">
-    <span class="md-ellipsis">
-      Parameters
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#stela_toolkit.preprocessing.Preprocessing.check_normal--returns" class="md-nav__link">
-    <span class="md-ellipsis">
-      Returns
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
 </li>
         
           <li class="md-nav__item">
@@ -1190,21 +1125,6 @@
       generate_qq_plot
     </span>
   </a>
-  
-    <nav class="md-nav" aria-label="generate_qq_plot">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#stela_toolkit.preprocessing.Preprocessing.generate_qq_plot--parameters" class="md-nav__link">
-    <span class="md-ellipsis">
-      Parameters
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
         
@@ -1215,30 +1135,6 @@
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="polynomial_detrend">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#stela_toolkit.preprocessing.Preprocessing.polynomial_detrend--parameters" class="md-nav__link">
-    <span class="md-ellipsis">
-      Parameters
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#stela_toolkit.preprocessing.Preprocessing.polynomial_detrend--returns" class="md-nav__link">
-    <span class="md-ellipsis">
-      Returns
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
 </li>
         
           <li class="md-nav__item">
@@ -1247,21 +1143,6 @@
       remove_nans
     </span>
   </a>
-  
-    <nav class="md-nav" aria-label="remove_nans">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#stela_toolkit.preprocessing.Preprocessing.remove_nans--parameters" class="md-nav__link">
-    <span class="md-ellipsis">
-      Parameters
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
         
@@ -1272,21 +1153,6 @@
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="remove_outliers">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#stela_toolkit.preprocessing.Preprocessing.remove_outliers--parameters" class="md-nav__link">
-    <span class="md-ellipsis">
-      Parameters
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
 </li>
         
           <li class="md-nav__item">
@@ -1295,21 +1161,6 @@
       reverse_boxcox_transform
     </span>
   </a>
-  
-    <nav class="md-nav" aria-label="reverse_boxcox_transform">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#stela_toolkit.preprocessing.Preprocessing.reverse_boxcox_transform--parameters" class="md-nav__link">
-    <span class="md-ellipsis">
-      Parameters
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
         
@@ -1328,21 +1179,6 @@
       trim_time_segment
     </span>
   </a>
-  
-    <nav class="md-nav" aria-label="trim_time_segment">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#stela_toolkit.preprocessing.Preprocessing.trim_time_segment--parameters" class="md-nav__link">
-    <span class="md-ellipsis">
-      Parameters
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
         
@@ -1982,7 +1818,28 @@ on the LightCurve object for later reversal.</p>
 <span class="normal">544</span>
 <span class="normal">545</span>
 <span class="normal">546</span>
-<span class="normal">547</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">Preprocessing</span><span class="p">:</span>
+<span class="normal">547</span>
+<span class="normal">548</span>
+<span class="normal">549</span>
+<span class="normal">550</span>
+<span class="normal">551</span>
+<span class="normal">552</span>
+<span class="normal">553</span>
+<span class="normal">554</span>
+<span class="normal">555</span>
+<span class="normal">556</span>
+<span class="normal">557</span>
+<span class="normal">558</span>
+<span class="normal">559</span>
+<span class="normal">560</span>
+<span class="normal">561</span>
+<span class="normal">562</span>
+<span class="normal">563</span>
+<span class="normal">564</span>
+<span class="normal">565</span>
+<span class="normal">566</span>
+<span class="normal">567</span>
+<span class="normal">568</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">Preprocessing</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Utility functions for cleaning and transforming light curves.</span>
 
@@ -2069,6 +1926,7 @@ on the LightCurve object for later reversal.</p>
 <span class="sd">        ----------</span>
 <span class="sd">        lightcurve : LightCurve, optional</span>
 <span class="sd">            Light curve to extract rates from.</span>
+
 <span class="sd">        rates : array-like, optional</span>
 <span class="sd">            Direct rate values if not using a LightCurve.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -2110,12 +1968,16 @@ on the LightCurve object for later reversal.</p>
 <span class="sd">        ----------</span>
 <span class="sd">        lightcurve : LightCurve, optional</span>
 <span class="sd">            The light curve object containing the rates to test.</span>
+
 <span class="sd">        rates : array-like, optional</span>
 <span class="sd">            Direct rate values if not using a LightCurve.</span>
+
 <span class="sd">        plot : bool, optional</span>
 <span class="sd">            Whether to display a Q-Q plot.</span>
+
 <span class="sd">        _boxcox : bool, optional</span>
 <span class="sd">            Whether this check is being called internally after Box-Cox (affects messaging only).</span>
+
 <span class="sd">        verbose : bool, optional</span>
 <span class="sd">            Whether to generate print statements.</span>
 
@@ -2123,6 +1985,7 @@ on the LightCurve object for later reversal.</p>
 <span class="sd">        -------</span>
 <span class="sd">        is_normal : bool</span>
 <span class="sd">            True if the data appears normally distributed (p &gt; 0.05).</span>
+
 <span class="sd">        pvalue : float</span>
 <span class="sd">            The p-value from the chosen normality test.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -2182,6 +2045,7 @@ on the LightCurve object for later reversal.</p>
 <span class="sd">        ----------</span>
 <span class="sd">        lightcurve : LightCurve</span>
 <span class="sd">            The input light curve.</span>
+
 <span class="sd">        save : bool</span>
 <span class="sd">            Whether to modify the light curve in place.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -2254,6 +2118,7 @@ on the LightCurve object for later reversal.</p>
 <span class="sd">        ----------</span>
 <span class="sd">        lightcurve : LightCurve</span>
 <span class="sd">            The input light curve containing flux values.</span>
+
 <span class="sd">        plot : bool, optional</span>
 <span class="sd">            Whether to show a Q-Q plot comparing original and Box-Cox transformed distributions.</span>
 
@@ -2261,6 +2126,7 @@ on the LightCurve object for later reversal.</p>
 <span class="sd">        -------</span>
 <span class="sd">        is_normal : bool</span>
 <span class="sd">            True if the Box-Cox transformed data appears normally distributed (p &gt; 0.05).</span>
+
 <span class="sd">        pvalue : float</span>
 <span class="sd">            The p-value from the normality test applied to the transformed data.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -2308,10 +2174,13 @@ on the LightCurve object for later reversal.</p>
 <span class="sd">        ----------</span>
 <span class="sd">        start_time : float, optional</span>
 <span class="sd">            Lower time bound.</span>
+
 <span class="sd">        end_time : float, optional</span>
 <span class="sd">            Upper time bound.</span>
+
 <span class="sd">        plot : bool</span>
 <span class="sd">            Whether to plot before/after trimming.</span>
+
 <span class="sd">        save : bool</span>
 <span class="sd">            Whether to modify the light curve in place.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -2360,6 +2229,7 @@ on the LightCurve object for later reversal.</p>
 <span class="sd">        ----------</span>
 <span class="sd">        lightcurve : LightCurve</span>
 <span class="sd">            Light curve to clean.</span>
+
 <span class="sd">        verbose : bool</span>
 <span class="sd">            Whether to print how many NaNs were removed.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -2389,14 +2259,19 @@ on the LightCurve object for later reversal.</p>
 <span class="sd">        ----------</span>
 <span class="sd">        lightcurve : LightCurve</span>
 <span class="sd">            The input light curve.</span>
+
 <span class="sd">        threshold : float</span>
 <span class="sd">            IQR multiplier.</span>
+
 <span class="sd">        rolling_window : int, optional</span>
 <span class="sd">            Size of local window (if local filtering is desired).</span>
+
 <span class="sd">        plot : bool</span>
 <span class="sd">            Whether to visualize removed points.</span>
+
 <span class="sd">        save : bool</span>
 <span class="sd">            Whether to modify the light curve in place.</span>
+
 <span class="sd">        verbose : bool</span>
 <span class="sd">            Whether to print how many points were removed.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -2477,10 +2352,13 @@ on the LightCurve object for later reversal.</p>
 <span class="sd">        ----------</span>
 <span class="sd">        lightcurve : LightCurve</span>
 <span class="sd">            The input light curve.</span>
+
 <span class="sd">        degree : int</span>
 <span class="sd">            Degree of the polynomial (default is 1).</span>
+
 <span class="sd">        plot : bool</span>
 <span class="sd">            Whether to show the trend removal visually.</span>
+
 <span class="sd">        save : bool</span>
 <span class="sd">            Whether to apply the change to the light curve.</span>
 
@@ -2555,22 +2433,58 @@ on the LightCurve object for later reversal.</p>
         <p>Apply a Box-Cox transformation to normalize the flux distribution.</p>
 <p>Also adjusts errors using the delta method. Stores the transformation
 parameter lambda and sets a flag for reversal.</p>
-<h5 id="stela_toolkit.preprocessing.Preprocessing.boxcox_transform--parameters">Parameters<a class="headerlink" href="#stela_toolkit.preprocessing.Preprocessing.boxcox_transform--parameters" title="Permanent link">&para;</a></h5>
-<p>lightcurve : LightCurve
-    The input light curve.
-save : bool
-    Whether to modify the light curve in place.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>lightcurve</code>
+            </td>
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="LightCurve (stela_toolkit.power_spectrum.LightCurve)" href="../data_loader/#stela_toolkit.data_loader.LightCurve">LightCurve</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>The input light curve.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>save</code>
+            </td>
+            <td>
+                  <code><span title="bool">bool</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Whether to modify the light curve in place.</p>
+              </div>
+            </td>
+            <td>
+                  <code>True</code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
 
             <details class="quote">
               <summary>Source code in <code>stela_toolkit/preprocessing.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">196</span>
-<span class="normal">197</span>
-<span class="normal">198</span>
-<span class="normal">199</span>
-<span class="normal">200</span>
-<span class="normal">201</span>
-<span class="normal">202</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">202</span>
 <span class="normal">203</span>
 <span class="normal">204</span>
 <span class="normal">205</span>
@@ -2598,7 +2512,14 @@ save : bool
 <span class="normal">227</span>
 <span class="normal">228</span>
 <span class="normal">229</span>
-<span class="normal">230</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@staticmethod</span>
+<span class="normal">230</span>
+<span class="normal">231</span>
+<span class="normal">232</span>
+<span class="normal">233</span>
+<span class="normal">234</span>
+<span class="normal">235</span>
+<span class="normal">236</span>
+<span class="normal">237</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@staticmethod</span>
 <span class="k">def</span> <span class="nf">boxcox_transform</span><span class="p">(</span><span class="n">lightcurve</span><span class="p">,</span> <span class="n">save</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Apply a Box-Cox transformation to normalize the flux distribution.</span>
@@ -2610,6 +2531,7 @@ save : bool
 <span class="sd">    ----------</span>
 <span class="sd">    lightcurve : LightCurve</span>
 <span class="sd">        The input light curve.</span>
+
 <span class="sd">    save : bool</span>
 <span class="sd">        Whether to modify the light curve in place.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -2658,28 +2580,91 @@ save : bool
 <p>This method compares the normality of the original flux distribution to its Box-Cox transformed version,
 using either the Shapiro-Wilk or Lilliefors test depending on sample size. If <code>plot=True</code>, a Q-Q plot
 is generated showing both the original and transformed data.</p>
-<h5 id="stela_toolkit.preprocessing.Preprocessing.check_boxcox_normal--parameters">Parameters<a class="headerlink" href="#stela_toolkit.preprocessing.Preprocessing.check_boxcox_normal--parameters" title="Permanent link">&para;</a></h5>
-<p>lightcurve : LightCurve
-    The input light curve containing flux values.
-plot : bool, optional
-    Whether to show a Q-Q plot comparing original and Box-Cox transformed distributions.</p>
-<h5 id="stela_toolkit.preprocessing.Preprocessing.check_boxcox_normal--returns">Returns<a class="headerlink" href="#stela_toolkit.preprocessing.Preprocessing.check_boxcox_normal--returns" title="Permanent link">&para;</a></h5>
-<p>is_normal : bool
-    True if the Box-Cox transformed data appears normally distributed (p &gt; 0.05).
-pvalue : float
-    The p-value from the normality test applied to the transformed data.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>lightcurve</code>
+            </td>
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="LightCurve (stela_toolkit.power_spectrum.LightCurve)" href="../data_loader/#stela_toolkit.data_loader.LightCurve">LightCurve</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>The input light curve containing flux values.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>plot</code>
+            </td>
+            <td>
+                  <code><span title="bool">bool</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Whether to show a Q-Q plot comparing original and Box-Cox transformed distributions.</p>
+              </div>
+            </td>
+            <td>
+                  <code>True</code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+<th>Name</th>          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+<td><code>is_normal</code></td>            <td>
+                  <code><span title="bool">bool</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>True if the Box-Cox transformed data appears normally distributed (p &gt; 0.05).</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+<td><code>pvalue</code></td>            <td>
+                  <code><span title="float">float</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>The p-value from the normality test applied to the transformed data.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
 
             <details class="quote">
               <summary>Source code in <code>stela_toolkit/preprocessing.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">267</span>
-<span class="normal">268</span>
-<span class="normal">269</span>
-<span class="normal">270</span>
-<span class="normal">271</span>
-<span class="normal">272</span>
-<span class="normal">273</span>
-<span class="normal">274</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">274</span>
 <span class="normal">275</span>
 <span class="normal">276</span>
 <span class="normal">277</span>
@@ -2727,7 +2712,16 @@ pvalue : float
 <span class="normal">319</span>
 <span class="normal">320</span>
 <span class="normal">321</span>
-<span class="normal">322</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@staticmethod</span>
+<span class="normal">322</span>
+<span class="normal">323</span>
+<span class="normal">324</span>
+<span class="normal">325</span>
+<span class="normal">326</span>
+<span class="normal">327</span>
+<span class="normal">328</span>
+<span class="normal">329</span>
+<span class="normal">330</span>
+<span class="normal">331</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@staticmethod</span>
 <span class="k">def</span> <span class="nf">check_boxcox_normal</span><span class="p">(</span><span class="n">lightcurve</span><span class="p">,</span> <span class="n">plot</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Apply a Box-Cox transformation and re-test for normality using the appropriate statistical test.</span>
@@ -2740,6 +2734,7 @@ pvalue : float
 <span class="sd">    ----------</span>
 <span class="sd">    lightcurve : LightCurve</span>
 <span class="sd">        The input light curve containing flux values.</span>
+
 <span class="sd">    plot : bool, optional</span>
 <span class="sd">        Whether to show a Q-Q plot comparing original and Box-Cox transformed distributions.</span>
 
@@ -2747,6 +2742,7 @@ pvalue : float
 <span class="sd">    -------</span>
 <span class="sd">    is_normal : bool</span>
 <span class="sd">        True if the Box-Cox transformed data appears normally distributed (p &gt; 0.05).</span>
+
 <span class="sd">    pvalue : float</span>
 <span class="sd">        The p-value from the normality test applied to the transformed data.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -2810,28 +2806,139 @@ it uses the Lilliefors version of the Kolmogorov-Smirnov test. Results are print
 with an interpretation of the strength of evidence against normality.</p>
 <p>If <code>plot=True</code>, a Q-Q plot of the distribution is shown. This function supports either
 a full LightCurve object or a raw array of flux values.</p>
-<h5 id="stela_toolkit.preprocessing.Preprocessing.check_normal--parameters">Parameters<a class="headerlink" href="#stela_toolkit.preprocessing.Preprocessing.check_normal--parameters" title="Permanent link">&para;</a></h5>
-<p>lightcurve : LightCurve, optional
-    The light curve object containing the rates to test.
-rates : array-like, optional
-    Direct rate values if not using a LightCurve.
-plot : bool, optional
-    Whether to display a Q-Q plot.
-_boxcox : bool, optional
-    Whether this check is being called internally after Box-Cox (affects messaging only).
-verbose : bool, optional
-    Whether to generate print statements.</p>
-<h5 id="stela_toolkit.preprocessing.Preprocessing.check_normal--returns">Returns<a class="headerlink" href="#stela_toolkit.preprocessing.Preprocessing.check_normal--returns" title="Permanent link">&para;</a></h5>
-<p>is_normal : bool
-    True if the data appears normally distributed (p &gt; 0.05).
-pvalue : float
-    The p-value from the chosen normality test.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>lightcurve</code>
+            </td>
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="LightCurve (stela_toolkit.power_spectrum.LightCurve)" href="../data_loader/#stela_toolkit.data_loader.LightCurve">LightCurve</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>The light curve object containing the rates to test.</p>
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>rates</code>
+            </td>
+            <td>
+                  <code><span title="array">array</span> - <span title="like">like</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Direct rate values if not using a LightCurve.</p>
+              </div>
+            </td>
+            <td>
+                  <code>[]</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>plot</code>
+            </td>
+            <td>
+                  <code><span title="bool">bool</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Whether to display a Q-Q plot.</p>
+              </div>
+            </td>
+            <td>
+                  <code>True</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>_boxcox</code>
+            </td>
+            <td>
+                  <code><span title="bool">bool</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Whether this check is being called internally after Box-Cox (affects messaging only).</p>
+              </div>
+            </td>
+            <td>
+                  <code>False</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>verbose</code>
+            </td>
+            <td>
+                  <code><span title="bool">bool</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Whether to generate print statements.</p>
+              </div>
+            </td>
+            <td>
+                  <code>True</code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+<th>Name</th>          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+<td><code>is_normal</code></td>            <td>
+                  <code><span title="bool">bool</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>True if the data appears normally distributed (p &gt; 0.05).</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+<td><code>pvalue</code></td>            <td>
+                  <code><span title="float">float</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>The p-value from the chosen normality test.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
 
             <details class="quote">
               <summary>Source code in <code>stela_toolkit/preprocessing.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">120</span>
-<span class="normal">121</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">121</span>
 <span class="normal">122</span>
 <span class="normal">123</span>
 <span class="normal">124</span>
@@ -2903,7 +3010,13 @@ pvalue : float
 <span class="normal">190</span>
 <span class="normal">191</span>
 <span class="normal">192</span>
-<span class="normal">193</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@staticmethod</span>
+<span class="normal">193</span>
+<span class="normal">194</span>
+<span class="normal">195</span>
+<span class="normal">196</span>
+<span class="normal">197</span>
+<span class="normal">198</span>
+<span class="normal">199</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@staticmethod</span>
 <span class="k">def</span> <span class="nf">check_normal</span><span class="p">(</span><span class="n">lightcurve</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">rates</span><span class="o">=</span><span class="p">[],</span> <span class="n">plot</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">_boxcox</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Test for normality using an appropriate statistical test based on sample size.</span>
@@ -2919,12 +3032,16 @@ pvalue : float
 <span class="sd">    ----------</span>
 <span class="sd">    lightcurve : LightCurve, optional</span>
 <span class="sd">        The light curve object containing the rates to test.</span>
+
 <span class="sd">    rates : array-like, optional</span>
 <span class="sd">        Direct rate values if not using a LightCurve.</span>
+
 <span class="sd">    plot : bool, optional</span>
 <span class="sd">        Whether to display a Q-Q plot.</span>
+
 <span class="sd">    _boxcox : bool, optional</span>
 <span class="sd">        Whether this check is being called internally after Box-Cox (affects messaging only).</span>
+
 <span class="sd">    verbose : bool, optional</span>
 <span class="sd">        Whether to generate print statements.</span>
 
@@ -2932,6 +3049,7 @@ pvalue : float
 <span class="sd">    -------</span>
 <span class="sd">    is_normal : bool</span>
 <span class="sd">        True if the data appears normally distributed (p &gt; 0.05).</span>
+
 <span class="sd">    pvalue : float</span>
 <span class="sd">        The p-value from the chosen normality test.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -2999,11 +3117,53 @@ pvalue : float
     <div class="doc doc-contents ">
 
         <p>Generate a Q-Q plot to visually assess normality.</p>
-<h5 id="stela_toolkit.preprocessing.Preprocessing.generate_qq_plot--parameters">Parameters<a class="headerlink" href="#stela_toolkit.preprocessing.Preprocessing.generate_qq_plot--parameters" title="Permanent link">&para;</a></h5>
-<p>lightcurve : LightCurve, optional
-    Light curve to extract rates from.
-rates : array-like, optional
-    Direct rate values if not using a LightCurve.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>lightcurve</code>
+            </td>
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="LightCurve (stela_toolkit.power_spectrum.LightCurve)" href="../data_loader/#stela_toolkit.data_loader.LightCurve">LightCurve</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Light curve to extract rates from.</p>
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>rates</code>
+            </td>
+            <td>
+                  <code><span title="array">array</span> - <span title="like">like</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Direct rate values if not using a LightCurve.</p>
+              </div>
+            </td>
+            <td>
+                  <code>[]</code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
 
             <details class="quote">
@@ -3040,7 +3200,8 @@ rates : array-like, optional
 <span class="normal">115</span>
 <span class="normal">116</span>
 <span class="normal">117</span>
-<span class="normal">118</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@staticmethod</span>
+<span class="normal">118</span>
+<span class="normal">119</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@staticmethod</span>
 <span class="k">def</span> <span class="nf">generate_qq_plot</span><span class="p">(</span><span class="n">lightcurve</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">rates</span><span class="o">=</span><span class="p">[]):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Generate a Q-Q plot to visually assess normality.</span>
@@ -3049,6 +3210,7 @@ rates : array-like, optional
 <span class="sd">    ----------</span>
 <span class="sd">    lightcurve : LightCurve, optional</span>
 <span class="sd">        Light curve to extract rates from.</span>
+
 <span class="sd">    rates : array-like, optional</span>
 <span class="sd">        Direct rate values if not using a LightCurve.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -3096,41 +3258,113 @@ rates : array-like, optional
 
         <p>Remove a polynomial trend from the light curve.</p>
 <p>Fits and subtracts a polynomial. Optionally modifies in place.</p>
-<h5 id="stela_toolkit.preprocessing.Preprocessing.polynomial_detrend--parameters">Parameters<a class="headerlink" href="#stela_toolkit.preprocessing.Preprocessing.polynomial_detrend--parameters" title="Permanent link">&para;</a></h5>
-<p>lightcurve : LightCurve
-    The input light curve.
-degree : int
-    Degree of the polynomial (default is 1).
-plot : bool
-    Whether to show the trend removal visually.
-save : bool
-    Whether to apply the change to the light curve.</p>
-<h5 id="stela_toolkit.preprocessing.Preprocessing.polynomial_detrend--returns">Returns<a class="headerlink" href="#stela_toolkit.preprocessing.Preprocessing.polynomial_detrend--returns" title="Permanent link">&para;</a></h5>
-<p>detrended_rates : ndarray, optional
-    Only returned if <code>save=False</code>.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>lightcurve</code>
+            </td>
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="LightCurve (stela_toolkit.power_spectrum.LightCurve)" href="../data_loader/#stela_toolkit.data_loader.LightCurve">LightCurve</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>The input light curve.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>degree</code>
+            </td>
+            <td>
+                  <code><span title="int">int</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Degree of the polynomial (default is 1).</p>
+              </div>
+            </td>
+            <td>
+                  <code>1</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>plot</code>
+            </td>
+            <td>
+                  <code><span title="bool">bool</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Whether to show the trend removal visually.</p>
+              </div>
+            </td>
+            <td>
+                  <code>False</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>save</code>
+            </td>
+            <td>
+                  <code><span title="bool">bool</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Whether to apply the change to the light curve.</p>
+              </div>
+            </td>
+            <td>
+                  <code>True</code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+<th>Name</th>          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+<td><code>detrended_rates</code></td>            <td>
+                  <code>(<span title="ndarray">ndarray</span>, <span title="optional">optional</span>)</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Only returned if <code>save=False</code>.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
 
             <details class="quote">
               <summary>Source code in <code>stela_toolkit/preprocessing.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">492</span>
-<span class="normal">493</span>
-<span class="normal">494</span>
-<span class="normal">495</span>
-<span class="normal">496</span>
-<span class="normal">497</span>
-<span class="normal">498</span>
-<span class="normal">499</span>
-<span class="normal">500</span>
-<span class="normal">501</span>
-<span class="normal">502</span>
-<span class="normal">503</span>
-<span class="normal">504</span>
-<span class="normal">505</span>
-<span class="normal">506</span>
-<span class="normal">507</span>
-<span class="normal">508</span>
-<span class="normal">509</span>
-<span class="normal">510</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">510</span>
 <span class="normal">511</span>
 <span class="normal">512</span>
 <span class="normal">513</span>
@@ -3167,7 +3401,28 @@ save : bool
 <span class="normal">544</span>
 <span class="normal">545</span>
 <span class="normal">546</span>
-<span class="normal">547</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@staticmethod</span>
+<span class="normal">547</span>
+<span class="normal">548</span>
+<span class="normal">549</span>
+<span class="normal">550</span>
+<span class="normal">551</span>
+<span class="normal">552</span>
+<span class="normal">553</span>
+<span class="normal">554</span>
+<span class="normal">555</span>
+<span class="normal">556</span>
+<span class="normal">557</span>
+<span class="normal">558</span>
+<span class="normal">559</span>
+<span class="normal">560</span>
+<span class="normal">561</span>
+<span class="normal">562</span>
+<span class="normal">563</span>
+<span class="normal">564</span>
+<span class="normal">565</span>
+<span class="normal">566</span>
+<span class="normal">567</span>
+<span class="normal">568</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@staticmethod</span>
 <span class="k">def</span> <span class="nf">polynomial_detrend</span><span class="p">(</span><span class="n">lightcurve</span><span class="p">,</span> <span class="n">degree</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">plot</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">save</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Remove a polynomial trend from the light curve.</span>
@@ -3178,10 +3433,13 @@ save : bool
 <span class="sd">    ----------</span>
 <span class="sd">    lightcurve : LightCurve</span>
 <span class="sd">        The input light curve.</span>
+
 <span class="sd">    degree : int</span>
 <span class="sd">        Degree of the polynomial (default is 1).</span>
+
 <span class="sd">    plot : bool</span>
 <span class="sd">        Whether to show the trend removal visually.</span>
+
 <span class="sd">    save : bool</span>
 <span class="sd">        Whether to apply the change to the light curve.</span>
 
@@ -3245,28 +3503,58 @@ save : bool
     <div class="doc doc-contents ">
 
         <p>Remove time, rate, or error entries that are NaN.</p>
-<h5 id="stela_toolkit.preprocessing.Preprocessing.remove_nans--parameters">Parameters<a class="headerlink" href="#stela_toolkit.preprocessing.Preprocessing.remove_nans--parameters" title="Permanent link">&para;</a></h5>
-<p>lightcurve : LightCurve
-    Light curve to clean.
-verbose : bool
-    Whether to print how many NaNs were removed.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>lightcurve</code>
+            </td>
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="LightCurve (stela_toolkit.power_spectrum.LightCurve)" href="../data_loader/#stela_toolkit.data_loader.LightCurve">LightCurve</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Light curve to clean.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>verbose</code>
+            </td>
+            <td>
+                  <code><span title="bool">bool</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Whether to print how many NaNs were removed.</p>
+              </div>
+            </td>
+            <td>
+                  <code>True</code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
 
             <details class="quote">
               <summary>Source code in <code>stela_toolkit/preprocessing.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">377</span>
-<span class="normal">378</span>
-<span class="normal">379</span>
-<span class="normal">380</span>
-<span class="normal">381</span>
-<span class="normal">382</span>
-<span class="normal">383</span>
-<span class="normal">384</span>
-<span class="normal">385</span>
-<span class="normal">386</span>
-<span class="normal">387</span>
-<span class="normal">388</span>
-<span class="normal">389</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">389</span>
 <span class="normal">390</span>
 <span class="normal">391</span>
 <span class="normal">392</span>
@@ -3281,7 +3569,20 @@ verbose : bool
 <span class="normal">401</span>
 <span class="normal">402</span>
 <span class="normal">403</span>
-<span class="normal">404</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@staticmethod</span>
+<span class="normal">404</span>
+<span class="normal">405</span>
+<span class="normal">406</span>
+<span class="normal">407</span>
+<span class="normal">408</span>
+<span class="normal">409</span>
+<span class="normal">410</span>
+<span class="normal">411</span>
+<span class="normal">412</span>
+<span class="normal">413</span>
+<span class="normal">414</span>
+<span class="normal">415</span>
+<span class="normal">416</span>
+<span class="normal">417</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@staticmethod</span>
 <span class="k">def</span> <span class="nf">remove_nans</span><span class="p">(</span><span class="n">lightcurve</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Remove time, rate, or error entries that are NaN.</span>
@@ -3290,6 +3591,7 @@ verbose : bool
 <span class="sd">    ----------</span>
 <span class="sd">    lightcurve : LightCurve</span>
 <span class="sd">        Light curve to clean.</span>
+
 <span class="sd">    verbose : bool</span>
 <span class="sd">        Whether to print how many NaNs were removed.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -3331,37 +3633,122 @@ verbose : bool
     <div class="doc doc-contents ">
 
         <p>Remove outliers using the IQR method, globally or locally.</p>
-<h5 id="stela_toolkit.preprocessing.Preprocessing.remove_outliers--parameters">Parameters<a class="headerlink" href="#stela_toolkit.preprocessing.Preprocessing.remove_outliers--parameters" title="Permanent link">&para;</a></h5>
-<p>lightcurve : LightCurve
-    The input light curve.
-threshold : float
-    IQR multiplier.
-rolling_window : int, optional
-    Size of local window (if local filtering is desired).
-plot : bool
-    Whether to visualize removed points.
-save : bool
-    Whether to modify the light curve in place.
-verbose : bool
-    Whether to print how many points were removed.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>lightcurve</code>
+            </td>
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="LightCurve (stela_toolkit.power_spectrum.LightCurve)" href="../data_loader/#stela_toolkit.data_loader.LightCurve">LightCurve</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>The input light curve.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>threshold</code>
+            </td>
+            <td>
+                  <code><span title="float">float</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>IQR multiplier.</p>
+              </div>
+            </td>
+            <td>
+                  <code>1.5</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>rolling_window</code>
+            </td>
+            <td>
+                  <code><span title="int">int</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Size of local window (if local filtering is desired).</p>
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>plot</code>
+            </td>
+            <td>
+                  <code><span title="bool">bool</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Whether to visualize removed points.</p>
+              </div>
+            </td>
+            <td>
+                  <code>True</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>save</code>
+            </td>
+            <td>
+                  <code><span title="bool">bool</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Whether to modify the light curve in place.</p>
+              </div>
+            </td>
+            <td>
+                  <code>True</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>verbose</code>
+            </td>
+            <td>
+                  <code><span title="bool">bool</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Whether to print how many points were removed.</p>
+              </div>
+            </td>
+            <td>
+                  <code>True</code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
 
             <details class="quote">
               <summary>Source code in <code>stela_toolkit/preprocessing.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">406</span>
-<span class="normal">407</span>
-<span class="normal">408</span>
-<span class="normal">409</span>
-<span class="normal">410</span>
-<span class="normal">411</span>
-<span class="normal">412</span>
-<span class="normal">413</span>
-<span class="normal">414</span>
-<span class="normal">415</span>
-<span class="normal">416</span>
-<span class="normal">417</span>
-<span class="normal">418</span>
-<span class="normal">419</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">419</span>
 <span class="normal">420</span>
 <span class="normal">421</span>
 <span class="normal">422</span>
@@ -3432,7 +3819,25 @@ verbose : bool
 <span class="normal">487</span>
 <span class="normal">488</span>
 <span class="normal">489</span>
-<span class="normal">490</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@staticmethod</span>
+<span class="normal">490</span>
+<span class="normal">491</span>
+<span class="normal">492</span>
+<span class="normal">493</span>
+<span class="normal">494</span>
+<span class="normal">495</span>
+<span class="normal">496</span>
+<span class="normal">497</span>
+<span class="normal">498</span>
+<span class="normal">499</span>
+<span class="normal">500</span>
+<span class="normal">501</span>
+<span class="normal">502</span>
+<span class="normal">503</span>
+<span class="normal">504</span>
+<span class="normal">505</span>
+<span class="normal">506</span>
+<span class="normal">507</span>
+<span class="normal">508</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@staticmethod</span>
 <span class="k">def</span> <span class="nf">remove_outliers</span><span class="p">(</span><span class="n">lightcurve</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="mf">1.5</span><span class="p">,</span> <span class="n">rolling_window</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">plot</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">save</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Remove outliers using the IQR method, globally or locally.</span>
@@ -3441,14 +3846,19 @@ verbose : bool
 <span class="sd">    ----------</span>
 <span class="sd">    lightcurve : LightCurve</span>
 <span class="sd">        The input light curve.</span>
+
 <span class="sd">    threshold : float</span>
 <span class="sd">        IQR multiplier.</span>
+
 <span class="sd">    rolling_window : int, optional</span>
 <span class="sd">        Size of local window (if local filtering is desired).</span>
+
 <span class="sd">    plot : bool</span>
 <span class="sd">        Whether to visualize removed points.</span>
+
 <span class="sd">    save : bool</span>
 <span class="sd">        Whether to modify the light curve in place.</span>
+
 <span class="sd">    verbose : bool</span>
 <span class="sd">        Whether to print how many points were removed.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -3539,21 +3949,42 @@ verbose : bool
     <div class="doc doc-contents ">
 
         <p>Reverse a previously applied Box-Cox transformation.</p>
-<h5 id="stela_toolkit.preprocessing.Preprocessing.reverse_boxcox_transform--parameters">Parameters<a class="headerlink" href="#stela_toolkit.preprocessing.Preprocessing.reverse_boxcox_transform--parameters" title="Permanent link">&para;</a></h5>
-<p>lightcurve : LightCurve
-    The transformed light curve.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>lightcurve</code>
+            </td>
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="LightCurve (stela_toolkit.power_spectrum.LightCurve)" href="../data_loader/#stela_toolkit.data_loader.LightCurve">LightCurve</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>The transformed light curve.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
 
             <details class="quote">
               <summary>Source code in <code>stela_toolkit/preprocessing.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">232</span>
-<span class="normal">233</span>
-<span class="normal">234</span>
-<span class="normal">235</span>
-<span class="normal">236</span>
-<span class="normal">237</span>
-<span class="normal">238</span>
-<span class="normal">239</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">239</span>
 <span class="normal">240</span>
 <span class="normal">241</span>
 <span class="normal">242</span>
@@ -3579,7 +4010,14 @@ verbose : bool
 <span class="normal">262</span>
 <span class="normal">263</span>
 <span class="normal">264</span>
-<span class="normal">265</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@staticmethod</span>
+<span class="normal">265</span>
+<span class="normal">266</span>
+<span class="normal">267</span>
+<span class="normal">268</span>
+<span class="normal">269</span>
+<span class="normal">270</span>
+<span class="normal">271</span>
+<span class="normal">272</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@staticmethod</span>
 <span class="k">def</span> <span class="nf">reverse_boxcox_transform</span><span class="p">(</span><span class="n">lightcurve</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Reverse a previously applied Box-Cox transformation.</span>
@@ -3711,29 +4149,90 @@ verbose : bool
     <div class="doc doc-contents ">
 
         <p>Trim the light curve to a given time range.</p>
-<h5 id="stela_toolkit.preprocessing.Preprocessing.trim_time_segment--parameters">Parameters<a class="headerlink" href="#stela_toolkit.preprocessing.Preprocessing.trim_time_segment--parameters" title="Permanent link">&para;</a></h5>
-<p>start_time : float, optional
-    Lower time bound.
-end_time : float, optional
-    Upper time bound.
-plot : bool
-    Whether to plot before/after trimming.
-save : bool
-    Whether to modify the light curve in place.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>start_time</code>
+            </td>
+            <td>
+                  <code><span title="float">float</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Lower time bound.</p>
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>end_time</code>
+            </td>
+            <td>
+                  <code><span title="float">float</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Upper time bound.</p>
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>plot</code>
+            </td>
+            <td>
+                  <code><span title="bool">bool</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Whether to plot before/after trimming.</p>
+              </div>
+            </td>
+            <td>
+                  <code>False</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>save</code>
+            </td>
+            <td>
+                  <code><span title="bool">bool</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Whether to modify the light curve in place.</p>
+              </div>
+            </td>
+            <td>
+                  <code>True</code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
 
             <details class="quote">
               <summary>Source code in <code>stela_toolkit/preprocessing.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">325</span>
-<span class="normal">326</span>
-<span class="normal">327</span>
-<span class="normal">328</span>
-<span class="normal">329</span>
-<span class="normal">330</span>
-<span class="normal">331</span>
-<span class="normal">332</span>
-<span class="normal">333</span>
-<span class="normal">334</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">334</span>
 <span class="normal">335</span>
 <span class="normal">336</span>
 <span class="normal">337</span>
@@ -3774,7 +4273,19 @@ save : bool
 <span class="normal">372</span>
 <span class="normal">373</span>
 <span class="normal">374</span>
-<span class="normal">375</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@staticmethod</span>
+<span class="normal">375</span>
+<span class="normal">376</span>
+<span class="normal">377</span>
+<span class="normal">378</span>
+<span class="normal">379</span>
+<span class="normal">380</span>
+<span class="normal">381</span>
+<span class="normal">382</span>
+<span class="normal">383</span>
+<span class="normal">384</span>
+<span class="normal">385</span>
+<span class="normal">386</span>
+<span class="normal">387</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@staticmethod</span>
 <span class="k">def</span> <span class="nf">trim_time_segment</span><span class="p">(</span><span class="n">lightcurve</span><span class="p">,</span> <span class="n">start_time</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">end_time</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">plot</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">save</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Trim the light curve to a given time range.</span>
@@ -3783,10 +4294,13 @@ save : bool
 <span class="sd">    ----------</span>
 <span class="sd">    start_time : float, optional</span>
 <span class="sd">        Lower time bound.</span>
+
 <span class="sd">    end_time : float, optional</span>
 <span class="sd">        Upper time bound.</span>
+
 <span class="sd">    plot : bool</span>
 <span class="sd">        Whether to plot before/after trimming.</span>
+
 <span class="sd">    save : bool</span>
 <span class="sd">        Whether to modify the light curve in place.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -3947,6 +4461,12 @@ save : bool
 <script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
         </div>
         
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
       </main>
       
         <footer class="md-footer">
@@ -3975,7 +4495,7 @@ save : bool
     
     
       
-      <script id="__config" type="application/json">{"base": "../..", "features": [], "search": "../../assets/javascripts/workers/search.d50fe291.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+      <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.tabs", "navigation.top", "content.code.copy", "navigation.sections", "navigation.expand"], "search": "../../assets/javascripts/workers/search.d50fe291.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
     
     
       <script src="../../assets/javascripts/bundle.13a4f30d.min.js"></script>
