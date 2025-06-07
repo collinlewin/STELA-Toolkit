@@ -125,11 +125,23 @@ class CrossCorrelation:
             if self.is_model1 and self.is_model2:
                 if self.rates1.shape[0] != self.rates2.shape[0]:
                     raise ValueError("Model sample shapes do not match.")
-                self.ccf = np.mean([
-                    self.compute_ccf(self.rates1[i], self.rates2[i])[1]
-                    for i in range(self.rates1.shape[0])
-                ], axis=0)
+                
+                peak_lags, centroid_lags, rmaxs = [], [], []
 
+                # Compute ccf and lags for each pair of realizations
+                for i in range(self.rates1.shape[0]):
+                    ccf = self.compute_ccf(self.rates1[i], self.rates2[i])
+                    peak_lag, centroid_lag = self.find_peak_and_centroid(self.lags, ccf)
+                    rmax = np.max(ccf)
+
+                    peak_lags.append(peak_lag)
+                    centroid_lags.append(centroid_lag)
+                    rmaxs.append(rmax)
+
+                self.peak_lag = (np.mean(peak_lags), np.std(peak_lags))
+                self.centroid_lag = (np.mean(centroid_lags), np.std(centroid_lags))
+                self.rmax = (np.mean(rmaxs), np.std(rmaxs))
+                    
             else:
                 self.ccf = self.compute_ccf(self.rates1, self.rates2)
 
@@ -137,9 +149,9 @@ class CrossCorrelation:
             self.dt = np.mean(np.diff(self.times)) / 5 if dt=="auto" else dt
             self.lags = np.arange(self.min_lag, self.max_lag + self.dt, self.dt)
             self.ccf = self.compute_ccf_interp()
-        
-        self.rmax = np.max(self.ccf)
-        self.peak_lag, self.centroid_lag = self.find_peak_and_centroid(self.lags, self.ccf)
+
+            self.rmax = np.max(self.ccf)
+            self.peak_lag, self.centroid_lag = self.find_peak_and_centroid(self.lags, self.ccf)
 
         self.peak_lags_mc = None
         self.centroid_lags_mc = None
