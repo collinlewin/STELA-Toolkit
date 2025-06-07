@@ -1,20 +1,17 @@
 # Introduction to Gaussian Processes
 
-A **Gaussian Process (GP)** is one of the most powerful tools in Bayesian statistics for modeling functions. In STELA, we use GPs to interpolate AGN light curves — enabling advanced time and frequency analyses even with noisy, irregularly sampled data.
-
-This page serves as both a conceptual and practical introduction to GPs, with an emphasis on **Bayesian foundations**, **statistical structure**, and how this model supports the goals of time-domain astronomy.
-
+A **Gaussian Process (GP)** is one of the most powerful tools in Bayesian statistics for modeling functions. In STELA, we use GPs to interpolate noisy, irregularly sampled light curves in order to generate frequency-resolved data products using Fourier techniques.
 ---
 
 ## 1. From Parametric Models to Function Distributions
 
-In classical modeling, such as linear regression, we assume:
+In classical modeling you may be more familiar with, including linear regression, we assume:
 
 $$
 y = X \beta + \epsilon
 $$
 
-This assumes a **parametric form** — a line or polynomial — and estimates parameters like \( \beta \). But what if we don't know the form of the function?
+This assumes a **parametric form**, where a line or polynomial has a finite number of parameters like \( \beta \). But what if we don't know the form of the function?
 
 A **Gaussian Process** is a **distribution over functions**.
 
@@ -26,6 +23,8 @@ This means:
 
 - Every time point \( t \) is a random variable \( f(t) \)
 - Any collection \( [f(t_1), ..., f(t_n)] \) is jointly Gaussian
+
+As such, checking that our data is normally distributed is important for this assumption to be reasonable. STELA includes a Box-Cox transformation that can make our data more normal for the GP, and then we undo the transformation on the fluxes produced by the GP.
 
 ---
 
@@ -71,7 +70,44 @@ Each kernel has **hyperparameters**:
 
 ---
 
-## 4. Bayesian Inference and GP Predictions
+### 4. Noise Handling
+
+STELA handles noise in two ways:
+
+- **Explicit error bars** on light curve points (heteroscedastic noise).
+- **White noise model**:
+
+  Adds a diagonal term \( \sigma_w^2 I \) to the kernel for unaccounted stochastic noise on top of the uncertainties (homoscedastic noise).
+
+---
+
+## 5. Training the GP: Marginal Likelihood
+
+We don’t sample hyperparameters, we **optimize ("train") them** by maximizing the **marginal likelihood**:
+
+$$
+p(\mathbf{y} \mid \theta) = \mathcal{N}(0, K_\theta + \sigma_n^2 I)
+$$
+
+Its log form:
+
+$$
+\log p(\mathbf{y}) = -\frac{1}{2} \mathbf{y}^\top K^{-1} \mathbf{y}
+- \frac{1}{2} \log |K|
+- \frac{n}{2} \log(2\pi)
+$$
+
+The three terms correspond to different aspects of model performance, respectively:
+
+- **Data fit**: how well the model explains the data
+- **Complexity penalty**: penalizes overfitting
+- **Normalization** of the Gaussian
+
+STELA **minimizes the Negative Log Marginal Likelihood (NLML)** using the Adam optimizer. The step size and number of steps to take (number of iterations) can be varied to ensure convergence of the final kernel hyperparameters. Use `plot_training=True` and/or `verbose=True` to check for convergence.
+
+---
+
+## 6. Bayesian Inference and GP Predictions
 
 ### Goal:
 
@@ -96,72 +132,22 @@ Where:
 - \( K_{**} \): covariance of test points
 - \( \sigma_n^2 \): noise variance
 
-### Posterior prediction:
+### Posterior Prediction vs. Samples
 
-$$
-\mathbb{E}[f_*] = K_*^\top (K + \sigma_n^2 I)^{-1} \mathbf{y}
-$$
+In our GP framework, we distinguish between the **posterior prediction** (via `.predict`) and **posterior samples** (via `.sample`). Both are derived from the GP posterior but serve different purposes:
 
-$$
-\text{Cov}[f_*] = K_{**} - K_*^\top (K + \sigma_n^2 I)^{-1} K_*
-$$
+- **Prediction (`predict`)** computes the *posterior mean* and *covariance* of the function at new time points:
 
----
+  $$
+  \mathbb{E}[f_*] = K_*^\top (K + \sigma_n^2 I)^{-1} \mathbf{y}
+  $$
 
-## 5. Noise Handling in STELA
+  $$
+  \text{Cov}[f_*] = K_{**} - K_*^\top (K + \sigma_n^2 I)^{-1} K_*
+  $$
 
-STELA handles noise in two ways:
+  This provides a Gaussian distribution over function values at the desired points, with uncertainty encoded in the posterior covariance.
 
-- **Explicit error bars** on light curve points
-- **White noise model**:
+- **Samples (`sample`)** draw individual function realizations from this posterior distribution. These are full, self-consistent samples of the latent function, incorporating both the posterior mean and covariance structure.
 
-  Adds a diagonal term \( \sigma_w^2 I \) to the kernel for unaccounted stochastic noise
-
----
-
-## 6. Training the GP: Marginal Likelihood
-
-We don’t sample hyperparameters — we **optimize them** by maximizing the **marginal likelihood**:
-
-$$
-p(\mathbf{y} \mid \theta) = \mathcal{N}(0, K_\theta + \sigma_n^2 I)
-$$
-
-Its log form:
-
-$$
-\log p(\mathbf{y}) = -\frac{1}{2} \mathbf{y}^\top K^{-1} \mathbf{y}
-- \frac{1}{2} \log |K|
-- \frac{n}{2} \log(2\pi)
-$$
-
-Each term has an interpretation:
-
-- **Data fit**: how well the model explains the data
-- **Complexity penalty**: penalizes overfitting
-- **Normalization**: adjusts for scale
-
-STELA **minimizes the Negative Log Marginal Likelihood (NLML)** using the Adam optimizer.
-
----
-
-## 7. Sampling from the Posterior
-
-STELA allows you to:
-
-- Sample multiple **posterior realizations**
-- Feed each into time or frequency-domain tools
-- Propagate uncertainty to downstream metrics
-
----
-
-## 8. Summary
-
-GPs offer:
-
-- Flexibility: no fixed model form
-- Interpretability: kernel tells you about variability
-- Uncertainty: quantified at every prediction
-- Consistency: grounded in Bayesian statistics
-
-They form the mathematical foundation for STELA’s light curve modeling and variability analysis.
+In our use case, we use samples to compute the Fourier-domain products such as power spectra, cross-spectra, and frequency-resolved time lags. This allows for propagating the uncertainty in the modeling through to the downstream quantities of interest in a fully Bayesian manner.
