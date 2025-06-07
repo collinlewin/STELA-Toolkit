@@ -3,39 +3,46 @@
 A **Gaussian Process (GP)** is one of the most powerful tools in Bayesian statistics for modeling functions. In STELA, we use GPs to interpolate noisy, irregularly sampled light curves in order to generate frequency-resolved data products using Fourier techniques.
 ---
 
-## 1. From Parametric Models to Function Distributions
+## 1. From Parametric to Nonparametric Models
 
-In classical modeling you may be more familiar with, including linear regression, we assume:
+In classical modeling approaches—like linear regression—we assume a specific functional form:
 
 $$
 y = X \beta + \epsilon
 $$
 
-This assumes a **parametric form**, where a line or polynomial has a finite number of parameters like \( \beta \). But what if we don't know the form of the function?
+This is a **parametric model**, where the function is fully described by a finite set of parameters such as \( \beta \). But what if we don’t know the correct form of the function? What if the variability is too complex to capture with some formula of y = f(X)?
 
-A **Gaussian Process** is a **distribution over functions**.
+### Gaussian Processes: A Nonparametric Prior
 
-Instead of picking a specific formula, we say:
+A **Gaussian Process (GP)** is a **nonparametric Bayesian model**: instead of defining a formula with a small number of parameters, it places a prior directly over functions themselves, instead letting the data inform the shape of the function.
 
-> "Any set of values from this unknown function should follow a multivariate normal distribution."
+A GP defines a distribution such that...
+
+> **Any finite collection of function values should follow a multivariate normal distribution.**
 
 This means:
 
-- Every time point \( t \) is a random variable \( f(t) \)
-- Any collection \( [f(t_1), ..., f(t_n)] \) is jointly Gaussian
+- Each time point \( t \) corresponds to a random variable \( f(t) \)
+- Any set \( [f(t_1), \dots, f(t_n)] \) is jointly Gaussian
+- The function's behavior is therefore, like any Gaussian, entirely determined by its mean and covariance
 
-As such, checking that our data is normally distributed is important for this assumption to be reasonable. STELA includes a Box-Cox transformation that can make our data more normal for the GP, and then we undo the transformation on the fluxes produced by the GP.
+This flexibility allows the GP to capture complex trends and variability directly from the data.
+
+Because the GP framework assumes normally distributed data, it's important that the observed fluxes approximate Gaussianity. STELA includes both hypothesis testing to check this assumption, as well as a **Box-Cox transformation** to help normalize the data before modeling. After inference, we invert the transformation so that predictions are returned in the original flux units.
 
 ---
 
-## 2. GP Specification: Mean and Covariance Functions
+## 2. Mean and Covariance/Kernel Functions
 
 A GP is fully defined by:
 
-- A **mean function** \( m(t) = \mathbb{E}[f(t)] \)
-- A **covariance function** \( k(t, t') = \text{Cov}(f(t), f(t')) \)
+- A **mean function**:  
+  \( m(t) = \mathbb{E}[f(t)] \)
+- A **covariance function** (or kernel):  
+  \( k(t, t') = \text{Cov}(f(t), f(t')) \)
 
-We write this as:
+This is written as:
 
 $$
 f(t) \sim \mathcal{GP}(m(t), k(t, t'))
@@ -43,12 +50,17 @@ $$
 
 ### In STELA:
 
-- We assume \( m(t) = 0 \) after standardizing the data.
-- The covariance function is called the **kernel**, which determines the shape, smoothness, and periodicity of the model.
+- We assume \( m(t) = 0 \) by standardizing the light curve data before modeling.
+- The covariance structure is encoded via a **kernel**, which determines the shape, smoothness, and periodicity of the model. Different kernels encode different assumptions:
+  - Smooth trends (e.g. RBF)
+  - Quasi-periodic variability (e.g. Spectral Mixture)
+  - Long- and short-term variability (e.g. Rational Quadratic)
+
+This combination of nonparametric flexibility and probabilistic structure is what enables STELA to robustly interpolate, sample, and propagate uncertainty across all downstream Fourier analyses.
 
 ---
 
-## 3. Kernel Functions: The Heart of the GP
+## 3. Kernel Functions
 
 The kernel defines the relationship between any two inputs. Common kernels include:
 
@@ -81,7 +93,7 @@ STELA handles noise in two ways:
 
 ---
 
-## 5. Training the GP: Marginal Likelihood
+## 5. Training the GP
 
 We don’t sample hyperparameters, we **optimize ("train") them** by maximizing the **marginal likelihood**:
 
@@ -136,18 +148,19 @@ Where:
 
 In our GP framework, we distinguish between the **posterior prediction** (via `.predict`) and **posterior samples** (via `.sample`). Both are derived from the GP posterior but serve different purposes:
 
-- **Prediction (`predict`)** computes the *posterior mean* and *covariance* of the function at new time points:
+**Prediction (`predict`)** computes the *posterior mean* and *covariance* of the function at new time points:
 
-  $$
-  \mathbb{E}[f_*] = K_*^\top (K + \sigma_n^2 I)^{-1} \mathbf{y}
-  $$
+$$
+\mathbb{E}[f_*] = K_*^\top (K + \sigma_n^2 I)^{-1} \mathbf{y}
+$$
 
-  $$
-  \text{Cov}[f_*] = K_{**} - K_*^\top (K + \sigma_n^2 I)^{-1} K_*
-  $$
+$$
+\text{Cov}[f_*] = K_{**} - K_*^\top (K + \sigma_n^2 I)^{-1} K_*
+$$
 
-  This provides a Gaussian distribution over function values at the desired points, with uncertainty encoded in the posterior covariance.
+This provides a Gaussian distribution over function values at the desired points, with uncertainty encoded in the posterior covariance.
 
-- **Samples (`sample`)** draw individual function realizations from this posterior distribution. These are full, self-consistent samples of the latent function, incorporating both the posterior mean and covariance structure.
 
-In our use case, we use samples to compute the Fourier-domain products such as power spectra, cross-spectra, and frequency-resolved time lags. This allows for propagating the uncertainty in the modeling through to the downstream quantities of interest in a fully Bayesian manner.
+**Samples (`sample`)** draw individual function realizations from this posterior distribution. These are full, self-consistent samples of the latent function, incorporating both the posterior mean and covariance structure.
+
+  In our use case, we use samples to compute the Fourier-domain products such as power spectra, cross-spectra, and frequency-resolved time lags. This allows for propagating the uncertainty in the modeling through to the downstream quantities of interest in a fully Bayesian manner.
