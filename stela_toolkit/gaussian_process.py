@@ -42,25 +42,35 @@ class GaussianProcess:
     ----------
     lightcurve : LightCurve
         The input light curve to model.
+    
     kernel_form : str or list, optional
         Kernel type to use (e.g., 'Matern32', 'RBF', 'SpectralMixture, N'), or list of types for auto-selection.
         If 'auto', we try several and choose the best using AIC.
+    
     white_noise : bool, optional
         Whether to include a white noise component in addition to measurement errors.
+    
     enforce_normality : bool, optional
         Whether to apply a Box-Cox transformation to make the flux distribution more Gaussian.
+    
     run_training : bool, optional
         Whether to train the GP model on initialization.
+    
     plot_training : bool, optional
         Whether to plot the training loss during optimization.
+    
     num_iter : int, optional
         Number of iterations for GP training.
+    
     learn_rate : float, optional
         Learning rate for the optimizer.
+    
     sample_time_grid : array-like, optional
         Time grid on which to draw posterior samples after training.
+    
     num_samples : int, optional
         Number of GP samples to draw from the posterior.
+    
     verbose : bool, optional
         Whether to print model selection, training progress, and sampling diagnostics.
 
@@ -68,18 +78,25 @@ class GaussianProcess:
     ----------
     model : gpytorch.models.ExactGP
         The trained GP model used for prediction and sampling.
+    
     likelihood : gpytorch.likelihoods.Likelihood
         The likelihood model used (e.g., Gaussian with or without fixed noise).
+    
     train_times : torch.Tensor
         Time points used for training the GP.
+    
     train_rates : torch.Tensor
         Rate values used for training.
+    
     train_errors : torch.Tensor
         Measurement uncertainties (empty if not provided).
+    
     samples : ndarray
         Posterior samples drawn after training (used by downstream STELA modules).
+    
     pred_times : torch.Tensor
         Time grid on which posterior samples were drawn.
+    
     kernel_form : str
         Name of the kernel used in the final trained model.
     """
