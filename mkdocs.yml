@@ -31,7 +31,7 @@ plugins:
             docstring_style: numpy
           paths: [stela_toolkit]
   - mkdocs-jupyter:
-      execute: False
+      execute: True
 
 nav:
   - Home: index.md
