@@ -1,3 +1,5 @@
+__version__ = "0.1.0"
+
 from .coherence import *
 from .cross_correlation import *
 from .cross_spectrum import *
