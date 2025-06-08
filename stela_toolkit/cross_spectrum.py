@@ -1,6 +1,5 @@
 import numpy as np
 from ._check_inputs import _CheckInputs
-from .plot import Plotter
 from .frequency_binning import FrequencyBinning
 from .data_loader import LightCurve
 
