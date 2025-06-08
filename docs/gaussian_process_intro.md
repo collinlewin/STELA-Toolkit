@@ -74,6 +74,8 @@ The kernel defines the relationship between any two inputs. Common kernels inclu
 - **Rational Quadratic**
 - **Spectral Mixture**
 
+The functional forms for the kernels, including additional kernels, can be found on the [GPyTorch kernel documentation](https://docs.gpytorch.ai/en/latest/kernels.html). Let me know if you would like more kernels added to STELA!
+
 Each kernel has **hyperparameters**:
 
 - \( \ell \): length scale
