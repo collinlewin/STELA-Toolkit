@@ -1,6 +1,5 @@
-![Python](https://img.shields.io/pypi/pyversions/stela-toolkit)
+![Python](https://img.shields.io/pypi/pyversions/stela-toolkit?cacheSeconds=3600)
 [![PyPI](https://img.shields.io/pypi/v/stela-toolkit)](https://pypi.org/project/stela-toolkit/)
-
 ![IMG_7099 (1)](https://github.com/user-attachments/assets/55d66b16-e91c-4d8a-a3b9-047002945dc1)
 
 <p align="right" style="font-size: 0.9em;">
