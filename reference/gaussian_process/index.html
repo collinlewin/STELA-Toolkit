@@ -1309,30 +1309,39 @@
     <div class="doc doc-contents ">
 
 
-        <p>Fit and sample from a Gaussian Process (GP) model for light curve data.</p>
-<p>This class allows you to model a light curve as a continuous, probabilistic function using a Gaussian Process.
-You provide a LightCurve object, and the model will fit a smooth function to the observed rates,
-incorporating measurement uncertainties and capturing the underlying variability with flexible kernel choices.</p>
-<p>By default, the model will try to make things easy for you:</p>
+        <p>Fit and sample from a Gaussian Process (GP) model for light curve interpolation.</p>
+<p>This class models light curve data as stochastic processes governed by a Gaussian Process prior.
+Given a LightCurve object with time, rate, and, optionally, errors, the GP learns the, 
+covariance structure between all the data points in the set, including measurement uncertainty
+and the underlying, empirical variability.</p>
+<p>Key preprocessing and modeling features:</p>
 <ul>
-<li>If the flux distribution is not normally distributed, we can apply a Box-Cox transformation to make it more Gaussian.</li>
-<li>The data is standardized (zero mean, unit variance) before training to improve numerical stability.</li>
-<li>A white noise term can be added to account for extra variance not captured by measurement errors.</li>
-<li>If you don’t specify a kernel, the model will try several standard ones and pick the best using AIC.</li>
+<li>If the flux distribution is non-Gaussian, an optional Box-Cox transformation can be applied.</li>
+<li>Data is standardized (zero mean, unit variance) prior to training for numerical stability.</li>
+<li>You can model measurement uncertainties directly or optionally include a learned white noise component.</li>
+<li>If you don’t specify a kernel, the model will automatically try several and select the best one using AIC.</li>
 </ul>
-<p>Once trained, the model allows you to generate samples from the posterior predictive distribution—
-these are realizations of what the light curve <em>could</em> look like, given the data and uncertainties.
-These samples are central to downstream STELA analyses like coherence, cross-spectrum, and lag measurements,
-which will automatically use the most recently generated GP samples if a model is passed in.</p>
-<p>If you haven’t generated any samples yet, don’t worry—those modules will do it for you using default settings.</p>
-<p>Noise handling is flexible:</p>
+<p>Once trained, the model can generate posterior samples from the predictive distribution—
+these are realistic realizations of what the light curve <em>could</em> look like, given your data and uncertainties.
+These samples are used downstream in STELA for computing frequency-domain products like power spectra,
+coherence, cross-spectra, and lags.</p>
+<p>Kernel selection is highly flexible:</p>
 <ul>
-<li>If your light curve has error bars, they’re passed directly into the GP as a fixed noise model.</li>
-<li>If not, you can still include a learned white noise term to capture unmodeled variability.</li>
-<li>You can control whether the model uses just your errors, or also learns extra noise.</li>
+<li>You can pass a simple string like 'RBF', 'Matern32', or 'SpectralMixture, 6'</li>
+<li>Or define arbitrary compositions using + and * operators, e.g.:<ul>
+<li>'RBF + Periodic * RQ'</li>
+<li>'(Matern32 + Periodic) * RQ'</li>
 </ul>
-<p>Model training uses exact inference with GPyTorch and is done via gradient descent.
-You can control the number of iterations, the optimizer learning rate, and whether to plot the training progress.</p>
+</li>
+<li>Composite kernels are parsed using Python syntax and safely evaluated into GPyTorch objects.</li>
+</ul>
+<p>Noise handling:</p>
+<ul>
+<li>If your light curve includes error bars, they are treated as fixed noise.</li>
+<li>If not, or if you want to include extra variability, you can learn a white noise term.</li>
+</ul>
+<p>Training is performed using exact inference via GPyTorch and gradient descent.
+You can configure the number of optimization steps, learning rate, and whether to visualize training loss.</p>
 
 
 <p><span class="doc-section-title">Parameters:</span></p>
@@ -1371,8 +1380,12 @@ You can control the number of iterations, the optimizer learning rate, and wheth
             </td>
             <td>
               <div class="doc-md-description">
-                <p>Kernel type to use (e.g., 'Matern32', 'RBF', 'SpectralMixture, N'), or list of types for auto-selection.
-If 'auto', we try several and choose the best using AIC.</p>
+                <p>Kernel expression or list of candidate kernel names.
+Examples include:
+- 'Matern32'
+- 'SpectralMixture, 4'
+- '(Periodic + RBF) * RQ'
+- If 'auto', the model tries several standard kernels and selects the best using AIC.</p>
               </div>
             </td>
             <td>
@@ -1388,7 +1401,7 @@ If 'auto', we try several and choose the best using AIC.</p>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>Whether to include a white noise component in addition to measurement errors.</p>
+                <p>Whether to include a learned white noise component in addition to measurement errors.</p>
               </div>
             </td>
             <td>
@@ -1420,7 +1433,7 @@ If 'auto', we try several and choose the best using AIC.</p>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>Whether to train the GP model on initialization.</p>
+                <p>Whether to train the GP model immediately upon initialization.</p>
               </div>
             </td>
             <td>
@@ -1436,7 +1449,7 @@ If 'auto', we try several and choose the best using AIC.</p>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>Whether to plot the training loss during optimization.</p>
+                <p>Whether to plot the training loss as optimization progresses.</p>
               </div>
             </td>
             <td>
@@ -1452,7 +1465,7 @@ If 'auto', we try several and choose the best using AIC.</p>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>Number of iterations for GP training.</p>
+                <p>Number of training iterations for gradient descent.</p>
               </div>
             </td>
             <td>
@@ -1484,7 +1497,7 @@ If 'auto', we try several and choose the best using AIC.</p>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>Time grid on which to draw posterior samples after training.</p>
+                <p>Time grid on which to generate posterior samples after training.</p>
               </div>
             </td>
             <td>
@@ -1500,7 +1513,7 @@ If 'auto', we try several and choose the best using AIC.</p>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>Number of GP samples to draw from the posterior.</p>
+                <p>Number of posterior samples to draw from the trained GP.</p>
               </div>
             </td>
             <td>
@@ -1516,7 +1529,7 @@ If 'auto', we try several and choose the best using AIC.</p>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>Whether to print model selection, training progress, and sampling diagnostics.</p>
+                <p>Whether to print diagnostic information about training, sampling, and kernel selection.</p>
               </div>
             </td>
             <td>
@@ -1544,7 +1557,7 @@ If 'auto', we try several and choose the best using AIC.</p>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>The trained GP model used for prediction and sampling.</p>
+                <p>The trained GP model used for inference and sampling.</p>
               </div>
             </td>
           </tr>
@@ -1555,7 +1568,7 @@ If 'auto', we try several and choose the best using AIC.</p>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>The likelihood model used (e.g., Gaussian with or without fixed noise).</p>
+                <p>The likelihood object (fixed or learnable noise) used during training.</p>
               </div>
             </td>
           </tr>
@@ -1566,7 +1579,7 @@ If 'auto', we try several and choose the best using AIC.</p>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>Time points used for training the GP.</p>
+                <p>The training time grid (from the input light curve).</p>
               </div>
             </td>
           </tr>
@@ -1577,7 +1590,7 @@ If 'auto', we try several and choose the best using AIC.</p>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>Rate values used for training.</p>
+                <p>The training rate values (preprocessed and standardized).</p>
               </div>
             </td>
           </tr>
@@ -1588,7 +1601,7 @@ If 'auto', we try several and choose the best using AIC.</p>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>Measurement uncertainties (empty if not provided).</p>
+                <p>The measurement error bars (or empty if not provided).</p>
               </div>
             </td>
           </tr>
@@ -1599,7 +1612,7 @@ If 'auto', we try several and choose the best using AIC.</p>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>Posterior samples drawn after training (used by downstream STELA modules).</p>
+                <p>Posterior GP samples drawn after training (used in downstream STELA modules).</p>
               </div>
             </td>
           </tr>
@@ -1610,7 +1623,7 @@ If 'auto', we try several and choose the best using AIC.</p>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>Time grid on which posterior samples were drawn.</p>
+                <p>The time grid over which posterior samples were drawn.</p>
               </div>
             </td>
           </tr>
@@ -1621,7 +1634,7 @@ If 'auto', we try several and choose the best using AIC.</p>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>Name of the kernel used in the final trained model.</p>
+                <p>The user-provided or auto-selected kernel expression used in the final model.</p>
               </div>
             </td>
           </tr>
@@ -2427,36 +2440,97 @@ If 'auto', we try several and choose the best using AIC.</p>
 <span class="normal">800</span>
 <span class="normal">801</span>
 <span class="normal">802</span>
-<span class="normal">803</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">GaussianProcess</span><span class="p">:</span>
+<span class="normal">803</span>
+<span class="normal">804</span>
+<span class="normal">805</span>
+<span class="normal">806</span>
+<span class="normal">807</span>
+<span class="normal">808</span>
+<span class="normal">809</span>
+<span class="normal">810</span>
+<span class="normal">811</span>
+<span class="normal">812</span>
+<span class="normal">813</span>
+<span class="normal">814</span>
+<span class="normal">815</span>
+<span class="normal">816</span>
+<span class="normal">817</span>
+<span class="normal">818</span>
+<span class="normal">819</span>
+<span class="normal">820</span>
+<span class="normal">821</span>
+<span class="normal">822</span>
+<span class="normal">823</span>
+<span class="normal">824</span>
+<span class="normal">825</span>
+<span class="normal">826</span>
+<span class="normal">827</span>
+<span class="normal">828</span>
+<span class="normal">829</span>
+<span class="normal">830</span>
+<span class="normal">831</span>
+<span class="normal">832</span>
+<span class="normal">833</span>
+<span class="normal">834</span>
+<span class="normal">835</span>
+<span class="normal">836</span>
+<span class="normal">837</span>
+<span class="normal">838</span>
+<span class="normal">839</span>
+<span class="normal">840</span>
+<span class="normal">841</span>
+<span class="normal">842</span>
+<span class="normal">843</span>
+<span class="normal">844</span>
+<span class="normal">845</span>
+<span class="normal">846</span>
+<span class="normal">847</span>
+<span class="normal">848</span>
+<span class="normal">849</span>
+<span class="normal">850</span>
+<span class="normal">851</span>
+<span class="normal">852</span>
+<span class="normal">853</span>
+<span class="normal">854</span>
+<span class="normal">855</span>
+<span class="normal">856</span>
+<span class="normal">857</span>
+<span class="normal">858</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">GaussianProcess</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Fit and sample from a Gaussian Process (GP) model for light curve data.</span>
+<span class="sd">    Fit and sample from a Gaussian Process (GP) model for light curve interpolation.</span>
 
-<span class="sd">    This class allows you to model a light curve as a continuous, probabilistic function using a Gaussian Process.</span>
-<span class="sd">    You provide a LightCurve object, and the model will fit a smooth function to the observed rates,</span>
-<span class="sd">    incorporating measurement uncertainties and capturing the underlying variability with flexible kernel choices.</span>
+<span class="sd">    This class models light curve data as stochastic processes governed by a Gaussian Process prior.</span>
+<span class="sd">    Given a LightCurve object with time, rate, and, optionally, errors, the GP learns the, </span>
+<span class="sd">    covariance structure between all the data points in the set, including measurement uncertainty</span>
+<span class="sd">    and the underlying, empirical variability.</span>
 
-<span class="sd">    By default, the model will try to make things easy for you:</span>
+<span class="sd">    Key preprocessing and modeling features:</span>
 
-<span class="sd">    - If the flux distribution is not normally distributed, we can apply a Box-Cox transformation to make it more Gaussian.</span>
-<span class="sd">    - The data is standardized (zero mean, unit variance) before training to improve numerical stability.</span>
-<span class="sd">    - A white noise term can be added to account for extra variance not captured by measurement errors.</span>
-<span class="sd">    - If you don’t specify a kernel, the model will try several standard ones and pick the best using AIC.</span>
+<span class="sd">    - If the flux distribution is non-Gaussian, an optional Box-Cox transformation can be applied.</span>
+<span class="sd">    - Data is standardized (zero mean, unit variance) prior to training for numerical stability.</span>
+<span class="sd">    - You can model measurement uncertainties directly or optionally include a learned white noise component.</span>
+<span class="sd">    - If you don’t specify a kernel, the model will automatically try several and select the best one using AIC.</span>
 
-<span class="sd">    Once trained, the model allows you to generate samples from the posterior predictive distribution—</span>
-<span class="sd">    these are realizations of what the light curve *could* look like, given the data and uncertainties.</span>
-<span class="sd">    These samples are central to downstream STELA analyses like coherence, cross-spectrum, and lag measurements,</span>
-<span class="sd">    which will automatically use the most recently generated GP samples if a model is passed in.</span>
+<span class="sd">    Once trained, the model can generate posterior samples from the predictive distribution—</span>
+<span class="sd">    these are realistic realizations of what the light curve *could* look like, given your data and uncertainties.</span>
+<span class="sd">    These samples are used downstream in STELA for computing frequency-domain products like power spectra,</span>
+<span class="sd">    coherence, cross-spectra, and lags.</span>
 
-<span class="sd">    If you haven’t generated any samples yet, don’t worry—those modules will do it for you using default settings.</span>
+<span class="sd">    Kernel selection is highly flexible:</span>
 
-<span class="sd">    Noise handling is flexible:</span>
+<span class="sd">    - You can pass a simple string like &#39;RBF&#39;, &#39;Matern32&#39;, or &#39;SpectralMixture, 6&#39;</span>
+<span class="sd">    - Or define arbitrary compositions using + and * operators, e.g.:</span>
+<span class="sd">        - &#39;RBF + Periodic * RQ&#39;</span>
+<span class="sd">        - &#39;(Matern32 + Periodic) * RQ&#39;</span>
+<span class="sd">    - Composite kernels are parsed using Python syntax and safely evaluated into GPyTorch objects.</span>
 
-<span class="sd">    - If your light curve has error bars, they’re passed directly into the GP as a fixed noise model.</span>
-<span class="sd">    - If not, you can still include a learned white noise term to capture unmodeled variability.</span>
-<span class="sd">    - You can control whether the model uses just your errors, or also learns extra noise.</span>
+<span class="sd">    Noise handling:</span>
 
-<span class="sd">    Model training uses exact inference with GPyTorch and is done via gradient descent.</span>
-<span class="sd">    You can control the number of iterations, the optimizer learning rate, and whether to plot the training progress.</span>
+<span class="sd">    - If your light curve includes error bars, they are treated as fixed noise.</span>
+<span class="sd">    - If not, or if you want to include extra variability, you can learn a white noise term.</span>
+
+<span class="sd">    Training is performed using exact inference via GPyTorch and gradient descent.</span>
+<span class="sd">    You can configure the number of optimization steps, learning rate, and whether to visualize training loss.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -2464,61 +2538,65 @@ If 'auto', we try several and choose the best using AIC.</p>
 <span class="sd">        The input light curve to model.</span>
 
 <span class="sd">    kernel_form : str or list, optional</span>
-<span class="sd">        Kernel type to use (e.g., &#39;Matern32&#39;, &#39;RBF&#39;, &#39;SpectralMixture, N&#39;), or list of types for auto-selection.</span>
-<span class="sd">        If &#39;auto&#39;, we try several and choose the best using AIC.</span>
+<span class="sd">        Kernel expression or list of candidate kernel names.</span>
+<span class="sd">        Examples include:</span>
+<span class="sd">        - &#39;Matern32&#39;</span>
+<span class="sd">        - &#39;SpectralMixture, 4&#39;</span>
+<span class="sd">        - &#39;(Periodic + RBF) * RQ&#39;</span>
+<span class="sd">        - If &#39;auto&#39;, the model tries several standard kernels and selects the best using AIC.</span>
 
 <span class="sd">    white_noise : bool, optional</span>
-<span class="sd">        Whether to include a white noise component in addition to measurement errors.</span>
+<span class="sd">        Whether to include a learned white noise component in addition to measurement errors.</span>
 
 <span class="sd">    enforce_normality : bool, optional</span>
 <span class="sd">        Whether to apply a Box-Cox transformation to make the flux distribution more Gaussian.</span>
 
 <span class="sd">    run_training : bool, optional</span>
-<span class="sd">        Whether to train the GP model on initialization.</span>
+<span class="sd">        Whether to train the GP model immediately upon initialization.</span>
 
 <span class="sd">    plot_training : bool, optional</span>
-<span class="sd">        Whether to plot the training loss during optimization.</span>
+<span class="sd">        Whether to plot the training loss as optimization progresses.</span>
 
 <span class="sd">    num_iter : int, optional</span>
-<span class="sd">        Number of iterations for GP training.</span>
+<span class="sd">        Number of training iterations for gradient descent.</span>
 
 <span class="sd">    learn_rate : float, optional</span>
 <span class="sd">        Learning rate for the optimizer.</span>
 
 <span class="sd">    sample_time_grid : array-like, optional</span>
-<span class="sd">        Time grid on which to draw posterior samples after training.</span>
+<span class="sd">        Time grid on which to generate posterior samples after training.</span>
 
 <span class="sd">    num_samples : int, optional</span>
-<span class="sd">        Number of GP samples to draw from the posterior.</span>
+<span class="sd">        Number of posterior samples to draw from the trained GP.</span>
 
 <span class="sd">    verbose : bool, optional</span>
-<span class="sd">        Whether to print model selection, training progress, and sampling diagnostics.</span>
+<span class="sd">        Whether to print diagnostic information about training, sampling, and kernel selection.</span>
 
 <span class="sd">    Attributes</span>
 <span class="sd">    ----------</span>
 <span class="sd">    model : gpytorch.models.ExactGP</span>
-<span class="sd">        The trained GP model used for prediction and sampling.</span>
+<span class="sd">        The trained GP model used for inference and sampling.</span>
 
 <span class="sd">    likelihood : gpytorch.likelihoods.Likelihood</span>
-<span class="sd">        The likelihood model used (e.g., Gaussian with or without fixed noise).</span>
+<span class="sd">        The likelihood object (fixed or learnable noise) used during training.</span>
 
 <span class="sd">    train_times : torch.Tensor</span>
-<span class="sd">        Time points used for training the GP.</span>
+<span class="sd">        The training time grid (from the input light curve).</span>
 
 <span class="sd">    train_rates : torch.Tensor</span>
-<span class="sd">        Rate values used for training.</span>
+<span class="sd">        The training rate values (preprocessed and standardized).</span>
 
 <span class="sd">    train_errors : torch.Tensor</span>
-<span class="sd">        Measurement uncertainties (empty if not provided).</span>
+<span class="sd">        The measurement error bars (or empty if not provided).</span>
 
 <span class="sd">    samples : ndarray</span>
-<span class="sd">        Posterior samples drawn after training (used by downstream STELA modules).</span>
+<span class="sd">        Posterior GP samples drawn after training (used in downstream STELA modules).</span>
 
 <span class="sd">    pred_times : torch.Tensor</span>
-<span class="sd">        Time grid on which posterior samples were drawn.</span>
+<span class="sd">        The time grid over which posterior samples were drawn.</span>
 
 <span class="sd">    kernel_form : str</span>
-<span class="sd">        Name of the kernel used in the final trained model.</span>
+<span class="sd">        The user-provided or auto-selected kernel expression used in the final model.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
@@ -2710,35 +2788,34 @@ If 'auto', we try several and choose the best using AIC.</p>
         <span class="c1"># initialize noise parameter at the variance of the data</span>
         <span class="k">return</span> <span class="n">likelihood</span>
 
-    <span class="k">def</span> <span class="nf">set_kernel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">kernel_form</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">set_kernel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">kernel_expr</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Set the GP kernel (covariance function) based on user input.</span>
+<span class="sd">        Set the GP kernel (covariance function) using a simple kernel form string, or a composite expression.</span>
+<span class="sd">        Compositions are created by using &#39;+&#39;, &#39;*&#39;, and parentheses. Also handles &#39;SpectralMixture, N&#39;.</span>
 
-<span class="sd">        Handles spectral mixture, Matern, RBF, and other kernel types supported by GPyTorch.</span>
-<span class="sd">        Applies reasonable defaults for lengthscale initialization.</span>
-
+<span class="sd">        All kernels are wrapped in a ScaleKernel at the end, multiplying the overall covariance by a constant.</span>
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">        kernel_form : str</span>
-<span class="sd">            Name of the kernel, or &#39;SpectralMixture, N&#39; to set the number of components.</span>
+<span class="sd">        kernel_expr : str</span>
+<span class="sd">            A string expression like &#39;RBF + Periodic * RQ&#39; or &#39;SpectralMixture, 6&#39;.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        covar_module : gpytorch.kernels.Kernel</span>
+<span class="sd">            Final kernel.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
-        <span class="n">kernel_form</span> <span class="o">=</span> <span class="n">kernel_form</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
-        <span class="k">if</span> <span class="s1">&#39;SpectralMixture&#39;</span> <span class="ow">in</span> <span class="n">kernel_form</span><span class="p">:</span>
-            <span class="k">if</span> <span class="s1">&#39;,&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">kernel_form</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                    <span class="s2">&quot;Invalid Spectral Mixture kernel format (use &#39;SpectralMixture, N&#39;).</span><span class="se">\n</span><span class="s2">&quot;</span>
-                    <span class="s2">&quot;N=4 is a good starting point.&quot;</span>
-                <span class="p">)</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">kernel_form</span><span class="p">,</span> <span class="n">num_mixtures_str</span> <span class="o">=</span> <span class="n">kernel_form</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">)</span>
-                <span class="n">num_mixtures</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">num_mixtures_str</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span>
+        <span class="n">kernel_expr</span> <span class="o">=</span> <span class="n">kernel_expr</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+
+        <span class="c1"># Handle SpectralMixture, N syntax</span>
+        <span class="k">if</span> <span class="s1">&#39;SpectralMixture&#39;</span> <span class="ow">in</span> <span class="n">kernel_expr</span><span class="p">:</span>
+            <span class="k">if</span> <span class="s1">&#39;,&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">kernel_expr</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Use &#39;SpectralMixture, N&#39; to specify number of components.&quot;</span><span class="p">)</span>
+            <span class="n">base</span><span class="p">,</span> <span class="n">n</span> <span class="o">=</span> <span class="n">kernel_expr</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">)</span>
+            <span class="n">kernel_expr</span> <span class="o">=</span> <span class="s1">&#39;SpectralMixture&#39;</span>
+            <span class="n">num_mixtures</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">n</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">num_mixtures</span> <span class="o">=</span> <span class="mi">4</span>  <span class="c1"># set num_mixtures for kernel_mapping when Spectral Mixture kernel not used</span>
+            <span class="n">num_mixtures</span> <span class="o">=</span> <span class="mi">4</span>
 
         <span class="n">kernel_mapping</span> <span class="o">=</span> <span class="p">{</span>
             <span class="s1">&#39;Matern12&#39;</span><span class="p">:</span> <span class="n">gpytorch</span><span class="o">.</span><span class="n">kernels</span><span class="o">.</span><span class="n">MaternKernel</span><span class="p">(</span><span class="n">nu</span><span class="o">=</span><span class="mf">0.5</span><span class="p">),</span>
@@ -2746,28 +2823,27 @@ If 'auto', we try several and choose the best using AIC.</p>
             <span class="s1">&#39;Matern52&#39;</span><span class="p">:</span> <span class="n">gpytorch</span><span class="o">.</span><span class="n">kernels</span><span class="o">.</span><span class="n">MaternKernel</span><span class="p">(</span><span class="n">nu</span><span class="o">=</span><span class="mf">2.5</span><span class="p">),</span>
             <span class="s1">&#39;RQ&#39;</span><span class="p">:</span> <span class="n">gpytorch</span><span class="o">.</span><span class="n">kernels</span><span class="o">.</span><span class="n">RQKernel</span><span class="p">(),</span>
             <span class="s1">&#39;RBF&#39;</span><span class="p">:</span> <span class="n">gpytorch</span><span class="o">.</span><span class="n">kernels</span><span class="o">.</span><span class="n">RBFKernel</span><span class="p">(),</span>
+            <span class="s1">&#39;Periodic&#39;</span><span class="p">:</span> <span class="n">gpytorch</span><span class="o">.</span><span class="n">kernels</span><span class="o">.</span><span class="n">PeriodicKernel</span><span class="p">(),</span>
             <span class="s1">&#39;SpectralMixture&#39;</span><span class="p">:</span> <span class="n">gpytorch</span><span class="o">.</span><span class="n">kernels</span><span class="o">.</span><span class="n">SpectralMixtureKernel</span><span class="p">(</span><span class="n">num_mixtures</span><span class="o">=</span><span class="n">num_mixtures</span><span class="p">),</span>
-            <span class="s1">&#39;Periodic&#39;</span><span class="p">:</span> <span class="n">gpytorch</span><span class="o">.</span><span class="n">kernels</span><span class="o">.</span><span class="n">PeriodicKernel</span><span class="p">()</span>
         <span class="p">}</span>
 
-        <span class="c1"># Assign kernel if type is valid</span>
-        <span class="k">if</span> <span class="n">kernel_form</span> <span class="ow">in</span> <span class="n">kernel_mapping</span><span class="p">:</span>
-            <span class="n">kernel</span> <span class="o">=</span> <span class="n">kernel_mapping</span><span class="p">[</span><span class="n">kernel_form</span><span class="p">]</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;Invalid kernel functional form &#39;</span><span class="si">{</span><span class="n">kernel_form</span><span class="si">}</span><span class="s2">&#39;. Choose from </span><span class="si">{</span><span class="nb">list</span><span class="p">(</span><span class="n">kernel_mapping</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+        <span class="c1"># Parse and evaluate the expression</span>
+        <span class="n">expr_ast</span> <span class="o">=</span> <span class="n">ast</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">kernel_expr</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;eval&#39;</span><span class="p">)</span>
+        <span class="n">kernel_obj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_eval_kernel_ast</span><span class="p">(</span><span class="n">expr_ast</span><span class="o">.</span><span class="n">body</span><span class="p">,</span> <span class="n">kernel_mapping</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="n">kernel_form</span> <span class="o">==</span> <span class="s1">&#39;SpectralMixture&#39;</span><span class="p">:</span>
-            <span class="n">kernel</span><span class="o">.</span><span class="n">initialize_from_data</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">train_times</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">train_rates</span><span class="p">)</span>
+        <span class="c1"># Initialize SpectralMixture if used</span>
+        <span class="k">if</span> <span class="s1">&#39;SpectralMixture&#39;</span> <span class="ow">in</span> <span class="n">kernel_expr</span><span class="p">:</span>
+            <span class="n">kernel_obj</span><span class="o">.</span><span class="n">initialize_from_data</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">train_times</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">train_rates</span><span class="p">)</span>
+
         <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># Set initial lengthscale for base kernels</span>
             <span class="n">init_lengthscale</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">train_times</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">train_times</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">/</span> <span class="mi">10</span>
-            <span class="n">kernel</span><span class="o">.</span><span class="n">lengthscale</span> <span class="o">=</span> <span class="n">init_lengthscale</span>
+            <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">kernel</span> <span class="ow">in</span> <span class="n">kernel_mapping</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">kernel</span><span class="p">,</span> <span class="s1">&#39;has_lengthscale&#39;</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span>
+                    <span class="n">kernel</span><span class="o">.</span><span class="n">lengthscale</span> <span class="o">=</span> <span class="n">init_lengthscale</span>
 
-        <span class="c1"># Scale the kernel by a constant</span>
-        <span class="n">covar_module</span> <span class="o">=</span> <span class="n">gpytorch</span><span class="o">.</span><span class="n">kernels</span><span class="o">.</span><span class="n">ScaleKernel</span><span class="p">(</span><span class="n">kernel</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">kernel_form</span> <span class="o">=</span> <span class="n">kernel_form</span>
-
-        <span class="k">return</span> <span class="n">covar_module</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">kernel_form</span> <span class="o">=</span> <span class="n">kernel_expr</span>
+        <span class="k">return</span> <span class="n">gpytorch</span><span class="o">.</span><span class="n">kernels</span><span class="o">.</span><span class="n">ScaleKernel</span><span class="p">(</span><span class="n">kernel_obj</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">train</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">num_iter</span><span class="o">=</span><span class="mi">500</span><span class="p">,</span> <span class="n">learn_rate</span><span class="o">=</span><span class="mf">1e-1</span><span class="p">,</span> <span class="n">plot</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -3219,6 +3295,53 @@ If 'auto', we try several and choose the best using AIC.</p>
 
         <span class="n">array</span> <span class="o">=</span> <span class="n">array</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">lc_std</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">lc_mean</span>
         <span class="k">return</span> <span class="n">array</span>
+
+    <span class="k">def</span> <span class="nf">_eval_kernel_ast</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">,</span> <span class="n">kernel_mapping</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Recursively to build the composite kernels using an abstract tree.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        node : ast.AST</span>
+<span class="sd">            A node in the tree.</span>
+
+<span class="sd">        kernel_mapping : dict</span>
+<span class="sd">            Maps kernel names (e.g., &#39;RBF&#39;) to GPyTorch kernel objects.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        gpytorch.kernels.Kernel</span>
+<span class="sd">            The composed kernel object.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Check if node is a binary operation (+ or *)</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">ast</span><span class="o">.</span><span class="n">BinOp</span><span class="p">):</span>
+            <span class="c1"># Traverse</span>
+            <span class="n">left</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_eval_kernel_ast</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">left</span><span class="p">,</span> <span class="n">kernel_mapping</span><span class="p">)</span>
+            <span class="n">right</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_eval_kernel_ast</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">right</span><span class="p">,</span> <span class="n">kernel_mapping</span><span class="p">)</span>
+
+            <span class="c1"># Perform addition or multiplication on the kernel objects</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">op</span><span class="p">,</span> <span class="n">ast</span><span class="o">.</span><span class="n">Add</span><span class="p">):</span>
+                <span class="k">return</span> <span class="n">left</span> <span class="o">+</span> <span class="n">right</span>
+            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">op</span><span class="p">,</span> <span class="n">ast</span><span class="o">.</span><span class="n">Mult</span><span class="p">):</span>
+                <span class="k">return</span> <span class="n">left</span> <span class="o">*</span> <span class="n">right</span>
+            <span class="c1"># Tell users that we only support * and +</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unsupported operator: </span><span class="si">{</span><span class="n">ast</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">op</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Otherwise check if node is just the kernel name</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">ast</span><span class="o">.</span><span class="n">Name</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">node</span><span class="o">.</span><span class="n">id</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">kernel_mapping</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unknown kernel: </span><span class="si">{</span><span class="n">node</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">kernel_mapping</span><span class="p">[</span><span class="n">node</span><span class="o">.</span><span class="n">id</span><span class="p">]</span>
+
+        <span class="c1"># If the node is a full expression (not just a name), evaluate the contained </span>
+        <span class="c1"># expression recursively</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">ast</span><span class="o">.</span><span class="n">Expr</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_eval_kernel_ast</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">kernel_mapping</span><span class="p">)</span>
+
+        <span class="c1"># Unsupported something found</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unsupported expression: </span><span class="si">{</span><span class="n">ast</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">node</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
               </details>
 
@@ -3273,15 +3396,7 @@ If 'auto', we try several and choose the best using AIC.</p>
 
             <details class="quote">
               <summary>Source code in <code>stela_toolkit/gaussian_process.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">599</span>
-<span class="normal">600</span>
-<span class="normal">601</span>
-<span class="normal">602</span>
-<span class="normal">603</span>
-<span class="normal">604</span>
-<span class="normal">605</span>
-<span class="normal">606</span>
-<span class="normal">607</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">607</span>
 <span class="normal">608</span>
 <span class="normal">609</span>
 <span class="normal">610</span>
@@ -3291,7 +3406,15 @@ If 'auto', we try several and choose the best using AIC.</p>
 <span class="normal">614</span>
 <span class="normal">615</span>
 <span class="normal">616</span>
-<span class="normal">617</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">aic</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="normal">617</span>
+<span class="normal">618</span>
+<span class="normal">619</span>
+<span class="normal">620</span>
+<span class="normal">621</span>
+<span class="normal">622</span>
+<span class="normal">623</span>
+<span class="normal">624</span>
+<span class="normal">625</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">aic</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compute the Akaike Information Criterion (AIC) for the trained model.</span>
 
@@ -3355,15 +3478,7 @@ If 'auto', we try several and choose the best using AIC.</p>
 
             <details class="quote">
               <summary>Source code in <code>stela_toolkit/gaussian_process.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">578</span>
-<span class="normal">579</span>
-<span class="normal">580</span>
-<span class="normal">581</span>
-<span class="normal">582</span>
-<span class="normal">583</span>
-<span class="normal">584</span>
-<span class="normal">585</span>
-<span class="normal">586</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">586</span>
 <span class="normal">587</span>
 <span class="normal">588</span>
 <span class="normal">589</span>
@@ -3374,7 +3489,15 @@ If 'auto', we try several and choose the best using AIC.</p>
 <span class="normal">594</span>
 <span class="normal">595</span>
 <span class="normal">596</span>
-<span class="normal">597</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">bic</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="normal">597</span>
+<span class="normal">598</span>
+<span class="normal">599</span>
+<span class="normal">600</span>
+<span class="normal">601</span>
+<span class="normal">602</span>
+<span class="normal">603</span>
+<span class="normal">604</span>
+<span class="normal">605</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">bic</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compute the Bayesian Information Criterion (BIC) for the trained model.</span>
 
@@ -3486,17 +3609,7 @@ If 'auto', we try several and choose the best using AIC.</p>
 
             <details class="quote">
               <summary>Source code in <code>stela_toolkit/gaussian_process.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">216</span>
-<span class="normal">217</span>
-<span class="normal">218</span>
-<span class="normal">219</span>
-<span class="normal">220</span>
-<span class="normal">221</span>
-<span class="normal">222</span>
-<span class="normal">223</span>
-<span class="normal">224</span>
-<span class="normal">225</span>
-<span class="normal">226</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">226</span>
 <span class="normal">227</span>
 <span class="normal">228</span>
 <span class="normal">229</span>
@@ -3515,7 +3628,17 @@ If 'auto', we try several and choose the best using AIC.</p>
 <span class="normal">242</span>
 <span class="normal">243</span>
 <span class="normal">244</span>
-<span class="normal">245</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">create_gp_model</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">likelihood</span><span class="p">,</span> <span class="n">kernel_form</span><span class="p">):</span>
+<span class="normal">245</span>
+<span class="normal">246</span>
+<span class="normal">247</span>
+<span class="normal">248</span>
+<span class="normal">249</span>
+<span class="normal">250</span>
+<span class="normal">251</span>
+<span class="normal">252</span>
+<span class="normal">253</span>
+<span class="normal">254</span>
+<span class="normal">255</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">create_gp_model</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">likelihood</span><span class="p">,</span> <span class="n">kernel_form</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Build a GP model with the specified likelihood and kernel.</span>
 
@@ -3570,17 +3693,7 @@ selects the most appropriate test (Shapiro-Wilk or Lilliefors) based on sample s
 
             <details class="quote">
               <summary>Source code in <code>stela_toolkit/gaussian_process.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">181</span>
-<span class="normal">182</span>
-<span class="normal">183</span>
-<span class="normal">184</span>
-<span class="normal">185</span>
-<span class="normal">186</span>
-<span class="normal">187</span>
-<span class="normal">188</span>
-<span class="normal">189</span>
-<span class="normal">190</span>
-<span class="normal">191</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">191</span>
 <span class="normal">192</span>
 <span class="normal">193</span>
 <span class="normal">194</span>
@@ -3602,7 +3715,17 @@ selects the most appropriate test (Shapiro-Wilk or Lilliefors) based on sample s
 <span class="normal">210</span>
 <span class="normal">211</span>
 <span class="normal">212</span>
-<span class="normal">213</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">enforce_normality</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="normal">213</span>
+<span class="normal">214</span>
+<span class="normal">215</span>
+<span class="normal">216</span>
+<span class="normal">217</span>
+<span class="normal">218</span>
+<span class="normal">219</span>
+<span class="normal">220</span>
+<span class="normal">221</span>
+<span class="normal">222</span>
+<span class="normal">223</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">enforce_normality</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Check normality of the input data and apply a Box-Cox transformation if needed.</span>
 
@@ -3771,15 +3894,7 @@ and returns the model with the lowest value.</p>
 
             <details class="quote">
               <summary>Source code in <code>stela_toolkit/gaussian_process.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">467</span>
-<span class="normal">468</span>
-<span class="normal">469</span>
-<span class="normal">470</span>
-<span class="normal">471</span>
-<span class="normal">472</span>
-<span class="normal">473</span>
-<span class="normal">474</span>
-<span class="normal">475</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">475</span>
 <span class="normal">476</span>
 <span class="normal">477</span>
 <span class="normal">478</span>
@@ -3831,7 +3946,15 @@ and returns the model with the lowest value.</p>
 <span class="normal">524</span>
 <span class="normal">525</span>
 <span class="normal">526</span>
-<span class="normal">527</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">find_best_kernel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">kernel_list</span><span class="p">,</span> <span class="n">num_iter</span><span class="o">=</span><span class="mi">500</span><span class="p">,</span> <span class="n">learn_rate</span><span class="o">=</span><span class="mf">1e-1</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="normal">527</span>
+<span class="normal">528</span>
+<span class="normal">529</span>
+<span class="normal">530</span>
+<span class="normal">531</span>
+<span class="normal">532</span>
+<span class="normal">533</span>
+<span class="normal">534</span>
+<span class="normal">535</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">find_best_kernel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">kernel_list</span><span class="p">,</span> <span class="n">num_iter</span><span class="o">=</span><span class="mi">500</span><span class="p">,</span> <span class="n">learn_rate</span><span class="o">=</span><span class="mf">1e-1</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Search over a list of kernels and return the best one by AIC.</span>
 
@@ -3939,15 +4062,7 @@ and returns the model with the lowest value.</p>
 
             <details class="quote">
               <summary>Source code in <code>stela_toolkit/gaussian_process.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">529</span>
-<span class="normal">530</span>
-<span class="normal">531</span>
-<span class="normal">532</span>
-<span class="normal">533</span>
-<span class="normal">534</span>
-<span class="normal">535</span>
-<span class="normal">536</span>
-<span class="normal">537</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">537</span>
 <span class="normal">538</span>
 <span class="normal">539</span>
 <span class="normal">540</span>
@@ -3986,7 +4101,15 @@ and returns the model with the lowest value.</p>
 <span class="normal">573</span>
 <span class="normal">574</span>
 <span class="normal">575</span>
-<span class="normal">576</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">get_hyperparameters</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="normal">576</span>
+<span class="normal">577</span>
+<span class="normal">578</span>
+<span class="normal">579</span>
+<span class="normal">580</span>
+<span class="normal">581</span>
+<span class="normal">582</span>
+<span class="normal">583</span>
+<span class="normal">584</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">get_hyperparameters</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return the learned GP hyperparameters (lengthscale, noise, weights, etc.).</span>
 
@@ -4114,15 +4237,7 @@ and returns the model with the lowest value.</p>
 
             <details class="quote">
               <summary>Source code in <code>stela_toolkit/gaussian_process.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">760</span>
-<span class="normal">761</span>
-<span class="normal">762</span>
-<span class="normal">763</span>
-<span class="normal">764</span>
-<span class="normal">765</span>
-<span class="normal">766</span>
-<span class="normal">767</span>
-<span class="normal">768</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">768</span>
 <span class="normal">769</span>
 <span class="normal">770</span>
 <span class="normal">771</span>
@@ -4133,7 +4248,15 @@ and returns the model with the lowest value.</p>
 <span class="normal">776</span>
 <span class="normal">777</span>
 <span class="normal">778</span>
-<span class="normal">779</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@staticmethod</span>
+<span class="normal">779</span>
+<span class="normal">780</span>
+<span class="normal">781</span>
+<span class="normal">782</span>
+<span class="normal">783</span>
+<span class="normal">784</span>
+<span class="normal">785</span>
+<span class="normal">786</span>
+<span class="normal">787</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@staticmethod</span>
 <span class="k">def</span> <span class="nf">load</span><span class="p">(</span><span class="n">file_path</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Load a saved GaussianProcess model from file.</span>
@@ -4206,15 +4329,7 @@ and returns the model with the lowest value.</p>
 
             <details class="quote">
               <summary>Source code in <code>stela_toolkit/gaussian_process.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">707</span>
-<span class="normal">708</span>
-<span class="normal">709</span>
-<span class="normal">710</span>
-<span class="normal">711</span>
-<span class="normal">712</span>
-<span class="normal">713</span>
-<span class="normal">714</span>
-<span class="normal">715</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">715</span>
 <span class="normal">716</span>
 <span class="normal">717</span>
 <span class="normal">718</span>
@@ -4243,7 +4358,15 @@ and returns the model with the lowest value.</p>
 <span class="normal">741</span>
 <span class="normal">742</span>
 <span class="normal">743</span>
-<span class="normal">744</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pred_times</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="normal">744</span>
+<span class="normal">745</span>
+<span class="normal">746</span>
+<span class="normal">747</span>
+<span class="normal">748</span>
+<span class="normal">749</span>
+<span class="normal">750</span>
+<span class="normal">751</span>
+<span class="normal">752</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pred_times</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Plot the GP fit including mean, confidence intervals, one posterior sample, and data.</span>
 
@@ -4357,15 +4480,7 @@ and returns the model with the lowest value.</p>
 
             <details class="quote">
               <summary>Source code in <code>stela_toolkit/gaussian_process.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">671</span>
-<span class="normal">672</span>
-<span class="normal">673</span>
-<span class="normal">674</span>
-<span class="normal">675</span>
-<span class="normal">676</span>
-<span class="normal">677</span>
-<span class="normal">678</span>
-<span class="normal">679</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">679</span>
 <span class="normal">680</span>
 <span class="normal">681</span>
 <span class="normal">682</span>
@@ -4391,7 +4506,15 @@ and returns the model with the lowest value.</p>
 <span class="normal">702</span>
 <span class="normal">703</span>
 <span class="normal">704</span>
-<span class="normal">705</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">predict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pred_times</span><span class="p">):</span>
+<span class="normal">705</span>
+<span class="normal">706</span>
+<span class="normal">707</span>
+<span class="normal">708</span>
+<span class="normal">709</span>
+<span class="normal">710</span>
+<span class="normal">711</span>
+<span class="normal">712</span>
+<span class="normal">713</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">predict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pred_times</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compute the posterior mean and 2-sigma confidence intervals at specified times.</span>
 
@@ -4552,15 +4675,7 @@ by the coherence, power spectrum, and lag modules when a GP model is passed in.<
 
             <details class="quote">
               <summary>Source code in <code>stela_toolkit/gaussian_process.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">619</span>
-<span class="normal">620</span>
-<span class="normal">621</span>
-<span class="normal">622</span>
-<span class="normal">623</span>
-<span class="normal">624</span>
-<span class="normal">625</span>
-<span class="normal">626</span>
-<span class="normal">627</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">627</span>
 <span class="normal">628</span>
 <span class="normal">629</span>
 <span class="normal">630</span>
@@ -4602,7 +4717,15 @@ by the coherence, power spectrum, and lag modules when a GP model is passed in.<
 <span class="normal">666</span>
 <span class="normal">667</span>
 <span class="normal">668</span>
-<span class="normal">669</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">sample</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pred_times</span><span class="p">,</span> <span class="n">num_samples</span><span class="p">,</span> <span class="n">save_path</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">_save_to_state</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<span class="normal">669</span>
+<span class="normal">670</span>
+<span class="normal">671</span>
+<span class="normal">672</span>
+<span class="normal">673</span>
+<span class="normal">674</span>
+<span class="normal">675</span>
+<span class="normal">676</span>
+<span class="normal">677</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">sample</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pred_times</span><span class="p">,</span> <span class="n">num_samples</span><span class="p">,</span> <span class="n">save_path</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">_save_to_state</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Generate posterior samples from the trained GP model.</span>
 
@@ -4706,19 +4829,19 @@ by the coherence, power spectrum, and lag modules when a GP model is passed in.<
 
             <details class="quote">
               <summary>Source code in <code>stela_toolkit/gaussian_process.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">746</span>
-<span class="normal">747</span>
-<span class="normal">748</span>
-<span class="normal">749</span>
-<span class="normal">750</span>
-<span class="normal">751</span>
-<span class="normal">752</span>
-<span class="normal">753</span>
-<span class="normal">754</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">754</span>
 <span class="normal">755</span>
 <span class="normal">756</span>
 <span class="normal">757</span>
-<span class="normal">758</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_path</span><span class="p">):</span>
+<span class="normal">758</span>
+<span class="normal">759</span>
+<span class="normal">760</span>
+<span class="normal">761</span>
+<span class="normal">762</span>
+<span class="normal">763</span>
+<span class="normal">764</span>
+<span class="normal">765</span>
+<span class="normal">766</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_path</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Save the trained GP model to a file using pickle.</span>
 
@@ -4741,16 +4864,16 @@ by the coherence, power spectrum, and lag modules when a GP model is passed in.<
 
 
 <h3 id="stela_toolkit.gaussian_process.GaussianProcess.set_kernel" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">set_kernel</span><span class="p">(</span><span class="n">kernel_form</span><span class="p">)</span></code>
+            <code class="highlight language-python"><span class="n">set_kernel</span><span class="p">(</span><span class="n">kernel_expr</span><span class="p">)</span></code>
 
 <a href="#stela_toolkit.gaussian_process.GaussianProcess.set_kernel" class="headerlink" title="Permanent link">&para;</a></h3>
 
 
     <div class="doc doc-contents ">
 
-        <p>Set the GP kernel (covariance function) based on user input.</p>
-<p>Handles spectral mixture, Matern, RBF, and other kernel types supported by GPyTorch.
-Applies reasonable defaults for lengthscale initialization.</p>
+        <p>Set the GP kernel (covariance function) using a simple kernel form string, or a composite expression.
+Compositions are created by using '+', '*', and parentheses. Also handles 'SpectralMixture, N'.</p>
+<p>All kernels are wrapped in a ScaleKernel at the end, multiplying the overall covariance by a constant.</p>
 
 
 <p><span class="doc-section-title">Parameters:</span></p>
@@ -4766,14 +4889,14 @@ Applies reasonable defaults for lengthscale initialization.</p>
       <tbody>
           <tr class="doc-section-item">
             <td>
-                <code>kernel_form</code>
+                <code>kernel_expr</code>
             </td>
             <td>
                   <code><span title="str">str</span></code>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>Name of the kernel, or 'SpectralMixture, N' to set the number of components.</p>
+                <p>A string expression like 'RBF + Periodic * RQ' or 'SpectralMixture, 6'.</p>
               </div>
             </td>
             <td>
@@ -4799,7 +4922,7 @@ Applies reasonable defaults for lengthscale initialization.</p>
             </td>
             <td>
               <div class="doc-md-description">
-                
+                <p>Final kernel.</p>
               </div>
             </td>
           </tr>
@@ -4809,17 +4932,7 @@ Applies reasonable defaults for lengthscale initialization.</p>
 
             <details class="quote">
               <summary>Source code in <code>stela_toolkit/gaussian_process.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">295</span>
-<span class="normal">296</span>
-<span class="normal">297</span>
-<span class="normal">298</span>
-<span class="normal">299</span>
-<span class="normal">300</span>
-<span class="normal">301</span>
-<span class="normal">302</span>
-<span class="normal">303</span>
-<span class="normal">304</span>
-<span class="normal">305</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">305</span>
 <span class="normal">306</span>
 <span class="normal">307</span>
 <span class="normal">308</span>
@@ -4866,35 +4979,42 @@ Applies reasonable defaults for lengthscale initialization.</p>
 <span class="normal">349</span>
 <span class="normal">350</span>
 <span class="normal">351</span>
-<span class="normal">352</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">set_kernel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">kernel_form</span><span class="p">):</span>
+<span class="normal">352</span>
+<span class="normal">353</span>
+<span class="normal">354</span>
+<span class="normal">355</span>
+<span class="normal">356</span>
+<span class="normal">357</span>
+<span class="normal">358</span>
+<span class="normal">359</span>
+<span class="normal">360</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">set_kernel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">kernel_expr</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Set the GP kernel (covariance function) based on user input.</span>
+<span class="sd">    Set the GP kernel (covariance function) using a simple kernel form string, or a composite expression.</span>
+<span class="sd">    Compositions are created by using &#39;+&#39;, &#39;*&#39;, and parentheses. Also handles &#39;SpectralMixture, N&#39;.</span>
 
-<span class="sd">    Handles spectral mixture, Matern, RBF, and other kernel types supported by GPyTorch.</span>
-<span class="sd">    Applies reasonable defaults for lengthscale initialization.</span>
-
+<span class="sd">    All kernels are wrapped in a ScaleKernel at the end, multiplying the overall covariance by a constant.</span>
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    kernel_form : str</span>
-<span class="sd">        Name of the kernel, or &#39;SpectralMixture, N&#39; to set the number of components.</span>
+<span class="sd">    kernel_expr : str</span>
+<span class="sd">        A string expression like &#39;RBF + Periodic * RQ&#39; or &#39;SpectralMixture, 6&#39;.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    covar_module : gpytorch.kernels.Kernel</span>
+<span class="sd">        Final kernel.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">kernel_form</span> <span class="o">=</span> <span class="n">kernel_form</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
-    <span class="k">if</span> <span class="s1">&#39;SpectralMixture&#39;</span> <span class="ow">in</span> <span class="n">kernel_form</span><span class="p">:</span>
-        <span class="k">if</span> <span class="s1">&#39;,&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">kernel_form</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="s2">&quot;Invalid Spectral Mixture kernel format (use &#39;SpectralMixture, N&#39;).</span><span class="se">\n</span><span class="s2">&quot;</span>
-                <span class="s2">&quot;N=4 is a good starting point.&quot;</span>
-            <span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">kernel_form</span><span class="p">,</span> <span class="n">num_mixtures_str</span> <span class="o">=</span> <span class="n">kernel_form</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">)</span>
-            <span class="n">num_mixtures</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">num_mixtures_str</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span>
+    <span class="n">kernel_expr</span> <span class="o">=</span> <span class="n">kernel_expr</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+
+    <span class="c1"># Handle SpectralMixture, N syntax</span>
+    <span class="k">if</span> <span class="s1">&#39;SpectralMixture&#39;</span> <span class="ow">in</span> <span class="n">kernel_expr</span><span class="p">:</span>
+        <span class="k">if</span> <span class="s1">&#39;,&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">kernel_expr</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Use &#39;SpectralMixture, N&#39; to specify number of components.&quot;</span><span class="p">)</span>
+        <span class="n">base</span><span class="p">,</span> <span class="n">n</span> <span class="o">=</span> <span class="n">kernel_expr</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">)</span>
+        <span class="n">kernel_expr</span> <span class="o">=</span> <span class="s1">&#39;SpectralMixture&#39;</span>
+        <span class="n">num_mixtures</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">n</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">num_mixtures</span> <span class="o">=</span> <span class="mi">4</span>  <span class="c1"># set num_mixtures for kernel_mapping when Spectral Mixture kernel not used</span>
+        <span class="n">num_mixtures</span> <span class="o">=</span> <span class="mi">4</span>
 
     <span class="n">kernel_mapping</span> <span class="o">=</span> <span class="p">{</span>
         <span class="s1">&#39;Matern12&#39;</span><span class="p">:</span> <span class="n">gpytorch</span><span class="o">.</span><span class="n">kernels</span><span class="o">.</span><span class="n">MaternKernel</span><span class="p">(</span><span class="n">nu</span><span class="o">=</span><span class="mf">0.5</span><span class="p">),</span>
@@ -4902,28 +5022,27 @@ Applies reasonable defaults for lengthscale initialization.</p>
         <span class="s1">&#39;Matern52&#39;</span><span class="p">:</span> <span class="n">gpytorch</span><span class="o">.</span><span class="n">kernels</span><span class="o">.</span><span class="n">MaternKernel</span><span class="p">(</span><span class="n">nu</span><span class="o">=</span><span class="mf">2.5</span><span class="p">),</span>
         <span class="s1">&#39;RQ&#39;</span><span class="p">:</span> <span class="n">gpytorch</span><span class="o">.</span><span class="n">kernels</span><span class="o">.</span><span class="n">RQKernel</span><span class="p">(),</span>
         <span class="s1">&#39;RBF&#39;</span><span class="p">:</span> <span class="n">gpytorch</span><span class="o">.</span><span class="n">kernels</span><span class="o">.</span><span class="n">RBFKernel</span><span class="p">(),</span>
+        <span class="s1">&#39;Periodic&#39;</span><span class="p">:</span> <span class="n">gpytorch</span><span class="o">.</span><span class="n">kernels</span><span class="o">.</span><span class="n">PeriodicKernel</span><span class="p">(),</span>
         <span class="s1">&#39;SpectralMixture&#39;</span><span class="p">:</span> <span class="n">gpytorch</span><span class="o">.</span><span class="n">kernels</span><span class="o">.</span><span class="n">SpectralMixtureKernel</span><span class="p">(</span><span class="n">num_mixtures</span><span class="o">=</span><span class="n">num_mixtures</span><span class="p">),</span>
-        <span class="s1">&#39;Periodic&#39;</span><span class="p">:</span> <span class="n">gpytorch</span><span class="o">.</span><span class="n">kernels</span><span class="o">.</span><span class="n">PeriodicKernel</span><span class="p">()</span>
     <span class="p">}</span>
 
-    <span class="c1"># Assign kernel if type is valid</span>
-    <span class="k">if</span> <span class="n">kernel_form</span> <span class="ow">in</span> <span class="n">kernel_mapping</span><span class="p">:</span>
-        <span class="n">kernel</span> <span class="o">=</span> <span class="n">kernel_mapping</span><span class="p">[</span><span class="n">kernel_form</span><span class="p">]</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;Invalid kernel functional form &#39;</span><span class="si">{</span><span class="n">kernel_form</span><span class="si">}</span><span class="s2">&#39;. Choose from </span><span class="si">{</span><span class="nb">list</span><span class="p">(</span><span class="n">kernel_mapping</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+    <span class="c1"># Parse and evaluate the expression</span>
+    <span class="n">expr_ast</span> <span class="o">=</span> <span class="n">ast</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">kernel_expr</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;eval&#39;</span><span class="p">)</span>
+    <span class="n">kernel_obj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_eval_kernel_ast</span><span class="p">(</span><span class="n">expr_ast</span><span class="o">.</span><span class="n">body</span><span class="p">,</span> <span class="n">kernel_mapping</span><span class="p">)</span>
 
-    <span class="k">if</span> <span class="n">kernel_form</span> <span class="o">==</span> <span class="s1">&#39;SpectralMixture&#39;</span><span class="p">:</span>
-        <span class="n">kernel</span><span class="o">.</span><span class="n">initialize_from_data</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">train_times</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">train_rates</span><span class="p">)</span>
+    <span class="c1"># Initialize SpectralMixture if used</span>
+    <span class="k">if</span> <span class="s1">&#39;SpectralMixture&#39;</span> <span class="ow">in</span> <span class="n">kernel_expr</span><span class="p">:</span>
+        <span class="n">kernel_obj</span><span class="o">.</span><span class="n">initialize_from_data</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">train_times</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">train_rates</span><span class="p">)</span>
+
     <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># Set initial lengthscale for base kernels</span>
         <span class="n">init_lengthscale</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">train_times</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">train_times</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">/</span> <span class="mi">10</span>
-        <span class="n">kernel</span><span class="o">.</span><span class="n">lengthscale</span> <span class="o">=</span> <span class="n">init_lengthscale</span>
+        <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">kernel</span> <span class="ow">in</span> <span class="n">kernel_mapping</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">kernel</span><span class="p">,</span> <span class="s1">&#39;has_lengthscale&#39;</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span>
+                <span class="n">kernel</span><span class="o">.</span><span class="n">lengthscale</span> <span class="o">=</span> <span class="n">init_lengthscale</span>
 
-    <span class="c1"># Scale the kernel by a constant</span>
-    <span class="n">covar_module</span> <span class="o">=</span> <span class="n">gpytorch</span><span class="o">.</span><span class="n">kernels</span><span class="o">.</span><span class="n">ScaleKernel</span><span class="p">(</span><span class="n">kernel</span><span class="p">)</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">kernel_form</span> <span class="o">=</span> <span class="n">kernel_form</span>
-
-    <span class="k">return</span> <span class="n">covar_module</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">kernel_form</span> <span class="o">=</span> <span class="n">kernel_expr</span>
+    <span class="k">return</span> <span class="n">gpytorch</span><span class="o">.</span><span class="n">kernels</span><span class="o">.</span><span class="n">ScaleKernel</span><span class="p">(</span><span class="n">kernel_obj</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>
@@ -5019,17 +5138,7 @@ is initialized based on Poisson statistics or variance in the data.</p>
 
             <details class="quote">
               <summary>Source code in <code>stela_toolkit/gaussian_process.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">247</span>
-<span class="normal">248</span>
-<span class="normal">249</span>
-<span class="normal">250</span>
-<span class="normal">251</span>
-<span class="normal">252</span>
-<span class="normal">253</span>
-<span class="normal">254</span>
-<span class="normal">255</span>
-<span class="normal">256</span>
-<span class="normal">257</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">257</span>
 <span class="normal">258</span>
 <span class="normal">259</span>
 <span class="normal">260</span>
@@ -5065,7 +5174,17 @@ is initialized based on Poisson statistics or variance in the data.</p>
 <span class="normal">290</span>
 <span class="normal">291</span>
 <span class="normal">292</span>
-<span class="normal">293</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">set_likelihood</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">white_noise</span><span class="p">,</span> <span class="n">train_errors</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">([])):</span>
+<span class="normal">293</span>
+<span class="normal">294</span>
+<span class="normal">295</span>
+<span class="normal">296</span>
+<span class="normal">297</span>
+<span class="normal">298</span>
+<span class="normal">299</span>
+<span class="normal">300</span>
+<span class="normal">301</span>
+<span class="normal">302</span>
+<span class="normal">303</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">set_likelihood</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">white_noise</span><span class="p">,</span> <span class="n">train_errors</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">([])):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Set up the GP likelihood model based on user input and data characteristics.</span>
 
@@ -5215,15 +5334,7 @@ This function is typically called after initialization unless <code>run_training
 
             <details class="quote">
               <summary>Source code in <code>stela_toolkit/gaussian_process.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">354</span>
-<span class="normal">355</span>
-<span class="normal">356</span>
-<span class="normal">357</span>
-<span class="normal">358</span>
-<span class="normal">359</span>
-<span class="normal">360</span>
-<span class="normal">361</span>
-<span class="normal">362</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">362</span>
 <span class="normal">363</span>
 <span class="normal">364</span>
 <span class="normal">365</span>
@@ -5326,7 +5437,15 @@ This function is typically called after initialization unless <code>run_training
 <span class="normal">462</span>
 <span class="normal">463</span>
 <span class="normal">464</span>
-<span class="normal">465</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">train</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">num_iter</span><span class="o">=</span><span class="mi">500</span><span class="p">,</span> <span class="n">learn_rate</span><span class="o">=</span><span class="mf">1e-1</span><span class="p">,</span> <span class="n">plot</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="normal">465</span>
+<span class="normal">466</span>
+<span class="normal">467</span>
+<span class="normal">468</span>
+<span class="normal">469</span>
+<span class="normal">470</span>
+<span class="normal">471</span>
+<span class="normal">472</span>
+<span class="normal">473</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">train</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">num_iter</span><span class="o">=</span><span class="mi">500</span><span class="p">,</span> <span class="n">learn_rate</span><span class="o">=</span><span class="mf">1e-1</span><span class="p">,</span> <span class="n">plot</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Train the GP model using the Adam optimizer to minimize the negative log marginal likelihood (NLML).</span>
 

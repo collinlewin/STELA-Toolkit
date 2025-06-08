@@ -509,6 +509,24 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#composing-kernels" class="md-nav__link">
+    <span class="md-ellipsis">
+      Composing Kernels
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#comparing-kernel-models" class="md-nav__link">
+    <span class="md-ellipsis">
+      Comparing Kernel Models
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#4-noise-handling" class="md-nav__link">
     <span class="md-ellipsis">
       4. Noise Handling
@@ -1137,6 +1155,24 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#composing-kernels" class="md-nav__link">
+    <span class="md-ellipsis">
+      Composing Kernels
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#comparing-kernel-models" class="md-nav__link">
+    <span class="md-ellipsis">
+      Comparing Kernel Models
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#4-noise-handling" class="md-nav__link">
     <span class="md-ellipsis">
       4. Noise Handling
@@ -1254,25 +1290,59 @@ f(t) \sim \mathcal{GP}(m(t), k(t, t'))
 <p>This combination of nonparametric flexibility and probabilistic structure is what enables STELA to robustly interpolate, sample, and propagate uncertainty across all downstream Fourier analyses.</p>
 <hr />
 <h2 id="3-kernel-functions">3. Kernel Functions<a class="headerlink" href="#3-kernel-functions" title="Permanent link">&para;</a></h2>
-<p>The kernel defines the relationship between any two inputs. Common kernels include:</p>
+<p>The kernel defines the relationship between any two inputs in time. It encodes assumptions about smoothness, periodicity, and structure in the underlying variability. STELA supports several widely used kernels:</p>
+<ol>
+<li><strong>Radial Basis Function (RBF)</strong>: very smooth and widely used.</li>
+<li><strong>Rational Quadratic (RQ)</strong>: similar to RBF, but allows for varying smoothness.</li>
+<li><strong>Matern kernels</strong>: less smooth than RBF; roughness controlled by the fixed parameter ν:</li>
+<li><code>Matern12</code> (ν = &frac12;)</li>
+<li><code>Matern32</code> (ν = 3/2)</li>
+<li><code>Matern52</code> (ν = 5/2)</li>
+<li><strong>Periodic</strong>: captures repeated patterns with fixed or learned periodicity.</li>
+<li><strong>Spectral Mixture</strong>: fits a weighted mixture of Gaussians in the frequency domain to model rich stationary processes.  </li>
+<li>Can learn periodic, quasi-periodic, and multi-scale behavior from data.  </li>
+<li>Syntax: <code>"SpectralMixture, N"</code> sets the number of mixtures to <code>N</code>, e.g., <code>"SpectralMixture, 4"</code>.</li>
+</ol>
+<p>The functional forms for these kernels—and others—can be found in the <a href="https://docs.gpytorch.ai/en/latest/kernels.html">GPyTorch kernel documentation</a>. Let me know if there’s another kernel you'd like added to STELA!</p>
+<p>Each kernel comes with <strong>hyperparameters</strong>, including:</p>
 <ul>
-<li><strong>RBF (Squared Exponential)</strong></li>
+<li><span class="arithmatex">\( \ell \)</span>: length scale  </li>
+<li><span class="arithmatex">\( \sigma^2 \)</span>: output variance  </li>
+<li>For spectral mixtures: mixture weights, frequencies, and variances</li>
 </ul>
-<p>$$
-  k(t, t') = \sigma^2 \exp\left(-\frac{(t - t')^2}{2\ell^2}\right)
-  $$</p>
+<blockquote>
+<p>If <code>kernel_form='auto'</code>, STELA will try a list of standard kernels (like <code>RBF</code>, <code>RQ</code>, <code>Matern</code>, <code>SpectralMixture</code>) and select the best one using AIC.</p>
+</blockquote>
+<hr />
+<h3 id="composing-kernels"><strong>Composing Kernels</strong><a class="headerlink" href="#composing-kernels" title="Permanent link">&para;</a></h3>
+<p>You can define <strong>custom combinations of kernels</strong> using arithmetic expressions:</p>
 <ul>
-<li><strong>Matern</strong> (&frac12;, 3/2, 5/2)</li>
-<li><strong>Rational Quadratic</strong></li>
-<li><strong>Spectral Mixture</strong></li>
+<li><code>+</code> adds two kernels (e.g., <code>RBF + Periodic</code> models smooth variation plus periodic behavior)</li>
+<li><code>*</code> multiplies kernels to form modulated or quasi-periodic behavior</li>
+<li>Use parentheses for grouping expressions as needed</li>
 </ul>
-<p>The functional forms for the kernels, including additional kernels, can be found on the <a href="https://docs.gpytorch.ai/en/latest/kernels.html">GPyTorch kernel documentation</a>. Let me know if you would like more kernels added to STELA!</p>
-<p>Each kernel has <strong>hyperparameters</strong>:</p>
+<p><strong>Examples:</strong></p>
 <ul>
-<li><span class="arithmatex">\( \ell \)</span>: length scale</li>
-<li><span class="arithmatex">\( \sigma \)</span>: output variance</li>
-<li>For spectral: mixture weights, frequencies</li>
+<li><code>'RBF + Periodic'</code>: smooth baseline with superimposed periodic component  </li>
+<li><code>'(Matern32 + Periodic) * RQ'</code>: quasi-periodic behavior with moderate roughness  </li>
+<li><code>'SpectralMixture, 6'</code>: flexible stationary model with six frequency components</li>
 </ul>
+<p>Composite expressions are parsed and evaluated safely into valid kernel objects using GPyTorch’s backend.</p>
+<hr />
+<h3 id="comparing-kernel-models"><strong>Comparing Kernel Models</strong><a class="headerlink" href="#comparing-kernel-models" title="Permanent link">&para;</a></h3>
+<p>After training, you can compare different kernel models using:</p>
+<ul>
+<li><strong>AIC</strong>: Akaike Information Criterion  </li>
+<li><strong>BIC</strong>: Bayesian Information Criterion  </li>
+</ul>
+<p>Both are available via the <code>.aic()</code> and <code>.bic()</code> methods on a trained <code>GaussianProcess</code> model. Lower values indicate a better balance between model fit and complexity. Comparing AIC/BIC helps avoid overfitting when trying increasingly expressive kernels.</p>
+<ul>
+<li><strong>Use AIC</strong> when your priority is accurate prediction or capturing all meaningful variability, especially with noisy or undersampled light curves.</li>
+<li><strong>Use BIC</strong> when you want to favor simpler models or are concerned about overfitting due to small sample sizes or correlated noise.</li>
+</ul>
+<blockquote>
+<p>Tip: Try simple kernels first, then build up with composite ones. Let the data justify added complexity.</p>
+</blockquote>
 <hr />
 <h3 id="4-noise-handling">4. Noise Handling<a class="headerlink" href="#4-noise-handling" title="Permanent link">&para;</a></h3>
 <p>STELA handles noise in two ways:</p>
