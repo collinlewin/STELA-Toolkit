@@ -62,25 +62,60 @@ This combination of nonparametric flexibility and probabilistic structure is wha
 
 ## 3. Kernel Functions
 
-The kernel defines the relationship between any two inputs. Common kernels include:
+The kernel defines the relationship between any two inputs in time. It encodes assumptions about smoothness, periodicity, and structure in the underlying variability. STELA supports several widely used kernels:
 
-- **RBF (Squared Exponential)**
+1. **Radial Basis Function (RBF)**: very smooth and widely used.
+2. **Rational Quadratic (RQ)**: similar to RBF, but allows for varying smoothness.
+3. **Matern kernels**: less smooth than RBF; roughness controlled by the fixed parameter ν:
+   - `Matern12` (ν = 1/2)
+   - `Matern32` (ν = 3/2)
+   - `Matern52` (ν = 5/2)
+4. **Periodic**: captures repeated patterns with fixed or learned periodicity.
+5. **Spectral Mixture**: fits a weighted mixture of Gaussians in the frequency domain to model rich stationary processes.  
+   - Can learn periodic, quasi-periodic, and multi-scale behavior from data.  
+   - Syntax: `"SpectralMixture, N"` sets the number of mixtures to `N`, e.g., `"SpectralMixture, 4"`.
 
-  $$
-  k(t, t') = \sigma^2 \exp\left(-\frac{(t - t')^2}{2\ell^2}\right)
-  $$
+The functional forms for these kernels—and others—can be found in the [GPyTorch kernel documentation](https://docs.gpytorch.ai/en/latest/kernels.html). Let me know if there’s another kernel you'd like added to STELA!
 
-- **Matern** (1/2, 3/2, 5/2)
-- **Rational Quadratic**
-- **Spectral Mixture**
+Each kernel comes with **hyperparameters**, including:
 
-The functional forms for the kernels, including additional kernels, can be found on the [GPyTorch kernel documentation](https://docs.gpytorch.ai/en/latest/kernels.html). Let me know if you would like more kernels added to STELA!
+- \( \ell \): length scale  
+- \( \sigma^2 \): output variance  
+- For spectral mixtures: mixture weights, frequencies, and variances
 
-Each kernel has **hyperparameters**:
+> If `kernel_form='auto'`, STELA will try a list of standard kernels (like `RBF`, `RQ`, `Matern`, `SpectralMixture`) and select the best one using AIC.
 
-- \( \ell \): length scale
-- \( \sigma \): output variance
-- For spectral: mixture weights, frequencies
+---
+
+### **Composing Kernels**
+You can define **custom combinations of kernels** using arithmetic expressions:
+
+- `+` adds two kernels (e.g., `RBF + Periodic` models smooth variation plus periodic behavior)
+- `*` multiplies kernels to form modulated or quasi-periodic behavior
+- Use parentheses for grouping expressions as needed
+
+**Examples:**
+
+- `'RBF + Periodic'`: smooth baseline with superimposed periodic component  
+- `'(Matern32 + Periodic) * RQ'`: quasi-periodic behavior with moderate roughness  
+- `'SpectralMixture, 6'`: flexible stationary model with six frequency components
+
+Composite expressions are parsed and evaluated safely into valid kernel objects using GPyTorch’s backend.
+
+---
+
+### **Comparing Kernel Models**
+After training, you can compare different kernel models using:
+
+- **AIC**: Akaike Information Criterion  
+- **BIC**: Bayesian Information Criterion  
+
+Both are available via the `.aic()` and `.bic()` methods on a trained `GaussianProcess` model. Lower values indicate a better balance between model fit and complexity. Comparing AIC/BIC helps avoid overfitting when trying increasingly expressive kernels.
+
+- **Use AIC** when your priority is accurate prediction or capturing all meaningful variability, especially with noisy or undersampled light curves.
+- **Use BIC** when you want to favor simpler models or are concerned about overfitting due to small sample sizes or correlated noise.
+
+> Tip: Try simple kernels first, then build up with composite ones. Let the data justify added complexity.
 
 ---
 

@@ -1,106 +1,116 @@
 from copy import deepcopy
+import ast
+import pickle
 import torch
 import gpytorch
-import pickle
 import numpy as np
 import matplotlib.pyplot as plt
-
 from ._check_inputs import _CheckInputs
 from .preprocessing import Preprocessing
 
 
 class GaussianProcess:
     """
-    Fit and sample from a Gaussian Process (GP) model for light curve data.
+    Fit and sample from a Gaussian Process (GP) model for light curve interpolation.
 
-    This class allows you to model a light curve as a continuous, probabilistic function using a Gaussian Process.
-    You provide a LightCurve object, and the model will fit a smooth function to the observed rates,
-    incorporating measurement uncertainties and capturing the underlying variability with flexible kernel choices.
+    This class models light curve data as stochastic processes governed by a Gaussian Process prior.
+    Given a LightCurve object with time, rate, and, optionally, errors, the GP learns the, 
+    covariance structure between all the data points in the set, including measurement uncertainty
+    and the underlying, empirical variability.
 
-    By default, the model will try to make things easy for you:
+    Key preprocessing and modeling features:
     
-    - If the flux distribution is not normally distributed, we can apply a Box-Cox transformation to make it more Gaussian.
-    - The data is standardized (zero mean, unit variance) before training to improve numerical stability.
-    - A white noise term can be added to account for extra variance not captured by measurement errors.
-    - If you don’t specify a kernel, the model will try several standard ones and pick the best using AIC.
+    - If the flux distribution is non-Gaussian, an optional Box-Cox transformation can be applied.
+    - Data is standardized (zero mean, unit variance) prior to training for numerical stability.
+    - You can model measurement uncertainties directly or optionally include a learned white noise component.
+    - If you don’t specify a kernel, the model will automatically try several and select the best one using AIC.
 
-    Once trained, the model allows you to generate samples from the posterior predictive distribution—
-    these are realizations of what the light curve *could* look like, given the data and uncertainties.
-    These samples are central to downstream STELA analyses like coherence, cross-spectrum, and lag measurements,
-    which will automatically use the most recently generated GP samples if a model is passed in.
+    Once trained, the model can generate posterior samples from the predictive distribution—
+    these are realistic realizations of what the light curve *could* look like, given your data and uncertainties.
+    These samples are used downstream in STELA for computing frequency-domain products like power spectra,
+    coherence, cross-spectra, and lags.
 
-    If you haven’t generated any samples yet, don’t worry—those modules will do it for you using default settings.
+    Kernel selection is highly flexible:
 
-    Noise handling is flexible:
-    
-    - If your light curve has error bars, they’re passed directly into the GP as a fixed noise model.
-    - If not, you can still include a learned white noise term to capture unmodeled variability.
-    - You can control whether the model uses just your errors, or also learns extra noise.
+    - You can pass a simple string like 'RBF', 'Matern32', or 'SpectralMixture, 6'
+    - Or define arbitrary compositions using + and * operators, e.g.:
+        - 'RBF + Periodic * RQ'
+        - '(Matern32 + Periodic) * RQ'
+    - Composite kernels are parsed using Python syntax and safely evaluated into GPyTorch objects.
 
-    Model training uses exact inference with GPyTorch and is done via gradient descent.
-    You can control the number of iterations, the optimizer learning rate, and whether to plot the training progress.
+    Noise handling:
+
+    - If your light curve includes error bars, they are treated as fixed noise.
+    - If not, or if you want to include extra variability, you can learn a white noise term.
+
+    Training is performed using exact inference via GPyTorch and gradient descent.
+    You can configure the number of optimization steps, learning rate, and whether to visualize training loss.
 
     Parameters
     ----------
     lightcurve : LightCurve
         The input light curve to model.
-    
+
     kernel_form : str or list, optional
-        Kernel type to use (e.g., 'Matern32', 'RBF', 'SpectralMixture, N'), or list of types for auto-selection.
-        If 'auto', we try several and choose the best using AIC.
-    
+        Kernel expression or list of candidate kernel names.
+        Examples include:
+        - 'Matern32'
+        - 'SpectralMixture, 4'
+        - '(Periodic + RBF) * RQ'
+        - If 'auto', the model tries several standard kernels and selects the best using AIC.
+
     white_noise : bool, optional
-        Whether to include a white noise component in addition to measurement errors.
-    
+        Whether to include a learned white noise component in addition to measurement errors.
+
     enforce_normality : bool, optional
         Whether to apply a Box-Cox transformation to make the flux distribution more Gaussian.
-    
+
     run_training : bool, optional
-        Whether to train the GP model on initialization.
-    
+        Whether to train the GP model immediately upon initialization.
+
     plot_training : bool, optional
-        Whether to plot the training loss during optimization.
-    
+        Whether to plot the training loss as optimization progresses.
+
     num_iter : int, optional
-        Number of iterations for GP training.
-    
+        Number of training iterations for gradient descent.
+
     learn_rate : float, optional
         Learning rate for the optimizer.
-    
+
     sample_time_grid : array-like, optional
-        Time grid on which to draw posterior samples after training.
-    
+        Time grid on which to generate posterior samples after training.
+
     num_samples : int, optional
-        Number of GP samples to draw from the posterior.
-    
+        Number of posterior samples to draw from the trained GP.
+
     verbose : bool, optional
-        Whether to print model selection, training progress, and sampling diagnostics.
+        Whether to print diagnostic information about training, sampling, and kernel selection.
 
     Attributes
     ----------
     model : gpytorch.models.ExactGP
-        The trained GP model used for prediction and sampling.
-    
+        The trained GP model used for inference and sampling.
+
     likelihood : gpytorch.likelihoods.Likelihood
-        The likelihood model used (e.g., Gaussian with or without fixed noise).
-    
+        The likelihood object (fixed or learnable noise) used during training.
+
     train_times : torch.Tensor
-        Time points used for training the GP.
-    
+        The training time grid (from the input light curve).
+
     train_rates : torch.Tensor
-        Rate values used for training.
-    
+        The training rate values (preprocessed and standardized).
+
     train_errors : torch.Tensor
-        Measurement uncertainties (empty if not provided).
-    
+        The measurement error bars (or empty if not provided).
+
     samples : ndarray
-        Posterior samples drawn after training (used by downstream STELA modules).
-    
+        Posterior GP samples drawn after training (used in downstream STELA modules).
+
     pred_times : torch.Tensor
-        Time grid on which posterior samples were drawn.
-    
+        The time grid over which posterior samples were drawn.
+
     kernel_form : str
-        Name of the kernel used in the final trained model.
+        The user-provided or auto-selected kernel expression used in the final model.
     """
 
     def __init__(self,
@@ -292,35 +302,34 @@ class GaussianProcess:
         # initialize noise parameter at the variance of the data
         return likelihood
 
-    def set_kernel(self, kernel_form):
+    def set_kernel(self, kernel_expr):
         """
-        Set the GP kernel (covariance function) based on user input.
+        Set the GP kernel (covariance function) using a simple kernel form string, or a composite expression.
+        Compositions are created by using '+', '*', and parentheses. Also handles 'SpectralMixture, N'.
 
-        Handles spectral mixture, Matern, RBF, and other kernel types supported by GPyTorch.
-        Applies reasonable defaults for lengthscale initialization.
-
+        All kernels are wrapped in a ScaleKernel at the end, multiplying the overall covariance by a constant.
         Parameters
         ----------
-        kernel_form : str
-            Name of the kernel, or 'SpectralMixture, N' to set the number of components.
+        kernel_expr : str
+            A string expression like 'RBF + Periodic * RQ' or 'SpectralMixture, 6'.
 
         Returns
         -------
         covar_module : gpytorch.kernels.Kernel
+            Final kernel.
         """
 
-        kernel_form = kernel_form.strip()
-        if 'SpectralMixture' in kernel_form:
-            if ',' not in kernel_form:
-                raise ValueError(
-                    "Invalid Spectral Mixture kernel format (use 'SpectralMixture, N').\n"
-                    "N=4 is a good starting point."
-                )
-            else:
-                kernel_form, num_mixtures_str = kernel_form.split(',')
-                num_mixtures = int(num_mixtures_str.strip())
+        kernel_expr = kernel_expr.strip()
+
+        # Handle SpectralMixture, N syntax
+        if 'SpectralMixture' in kernel_expr:
+            if ',' not in kernel_expr:
+                raise ValueError("Use 'SpectralMixture, N' to specify number of components.")
+            base, n = kernel_expr.split(',')
+            kernel_expr = 'SpectralMixture'
+            num_mixtures = int(n.strip())
         else:
-            num_mixtures = 4  # set num_mixtures for kernel_mapping when Spectral Mixture kernel not used
+            num_mixtures = 4
 
         kernel_mapping = {
             'Matern12': gpytorch.kernels.MaternKernel(nu=0.5),
@@ -328,28 +337,27 @@ class GaussianProcess:
             'Matern52': gpytorch.kernels.MaternKernel(nu=2.5),
             'RQ': gpytorch.kernels.RQKernel(),
             'RBF': gpytorch.kernels.RBFKernel(),
+            'Periodic': gpytorch.kernels.PeriodicKernel(),
             'SpectralMixture': gpytorch.kernels.SpectralMixtureKernel(num_mixtures=num_mixtures),
-            'Periodic': gpytorch.kernels.PeriodicKernel()
         }
 
-        # Assign kernel if type is valid
-        if kernel_form in kernel_mapping:
-            kernel = kernel_mapping[kernel_form]
-        else:
-            raise ValueError(
-                f"Invalid kernel functional form '{kernel_form}'. Choose from {list(kernel_mapping.keys())}.")
+        # Parse and evaluate the expression
+        expr_ast = ast.parse(kernel_expr, mode='eval')
+        kernel_obj = self._eval_kernel_ast(expr_ast.body, kernel_mapping)
 
-        if kernel_form == 'SpectralMixture':
-            kernel.initialize_from_data(self.train_times, self.train_rates)
+        # Initialize SpectralMixture if used
+        if 'SpectralMixture' in kernel_expr:
+            kernel_obj.initialize_from_data(self.train_times, self.train_rates)
+
         else:
+            # Set initial lengthscale for base kernels
             init_lengthscale = (self.train_times[-1] - self.train_times[0]) / 10
-            kernel.lengthscale = init_lengthscale
+            for name, kernel in kernel_mapping.items():
+                if getattr(kernel, 'has_lengthscale', False):
+                    kernel.lengthscale = init_lengthscale
 
-        # Scale the kernel by a constant
-        covar_module = gpytorch.kernels.ScaleKernel(kernel)
-        self.kernel_form = kernel_form
-
-        return covar_module
+        self.kernel_form = kernel_expr
+        return gpytorch.kernels.ScaleKernel(kernel_obj)
 
     def train(self, num_iter=500, learn_rate=1e-1, plot=False, verbose=False):
         """
@@ -801,3 +809,50 @@ class GaussianProcess:
 
         array = array * self.lc_std + self.lc_mean
         return array
+    
+    def _eval_kernel_ast(self, node, kernel_mapping):
+        """
+        Recursively to build the composite kernels using an abstract tree.
+
+        Parameters
+        ----------
+        node : ast.AST
+            A node in the tree.
+        
+        kernel_mapping : dict
+            Maps kernel names (e.g., 'RBF') to GPyTorch kernel objects.
+
+        Returns
+        -------
+        gpytorch.kernels.Kernel
+            The composed kernel object.
+        """
+        # Check if node is a binary operation (+ or *)
+        if isinstance(node, ast.BinOp):
+            # Traverse
+            left = self._eval_kernel_ast(node.left, kernel_mapping)
+            right = self._eval_kernel_ast(node.right, kernel_mapping)
+
+            # Perform addition or multiplication on the kernel objects
+            if isinstance(node.op, ast.Add):
+                return left + right
+            elif isinstance(node.op, ast.Mult):
+                return left * right
+            # Tell users that we only support * and +
+            else:
+                raise ValueError(f"Unsupported operator: {ast.dump(node.op)}")
+
+        # Otherwise check if node is just the kernel name
+        elif isinstance(node, ast.Name):
+            if node.id not in kernel_mapping:
+                raise ValueError(f"Unknown kernel: {node.id}")
+            return kernel_mapping[node.id]
+
+        # If the node is a full expression (not just a name), evaluate the contained 
+        # expression recursively
+        elif isinstance(node, ast.Expr):
+            return self._eval_kernel_ast(node.value, kernel_mapping)
+
+        # Unsupported something found
+        else:
+            raise ValueError(f"Unsupported expression: {ast.dump(node)}")
