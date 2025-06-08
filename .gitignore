@@ -1,2 +1,4 @@
 .DS_Store
 stela_toolkit/__pycache__site/
+*.egg-info/
+stela_toolkit/__pycache__/
