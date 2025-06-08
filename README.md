@@ -52,7 +52,7 @@ You can install all dependencies automatically when installing the package (see 
 
 ---
 
-## Installing STELA Toolkit
+## Installation
 
 You can install the package using pip:
 
@@ -67,8 +67,6 @@ git clone https://github.com/collinlewin/STELA-Toolkit.git
 cd STELA-Toolkit
 pip install .
 ```
-
-### Verifying Your Installation
 
 You can verify the installation by running:
 
