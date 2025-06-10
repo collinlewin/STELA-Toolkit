@@ -183,7 +183,7 @@ class Coherence:
         cohs = (np.abs(cs) ** 2 - bias) / (ps1 * ps2)
 
         M = self.count_frequencies_in_bins()
-        coh_errors = np.sqrt(2 / M) * cohs * (1 - cohs)
+        coh_errors = np.sqrt((1 - cohs) / (2 * cohs * M))
 
         return power_spectrum1.freqs, power_spectrum1.freq_widths, cohs, coh_errors
 
