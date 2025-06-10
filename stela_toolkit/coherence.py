@@ -180,8 +180,12 @@ class Coherence:
         else:
             bias = 0
 
-        coherence = (np.abs(cs) ** 2 - bias) / (ps1 * ps2)
-        return power_spectrum1.freqs, power_spectrum1.freq_widths, coherence, None
+        cohs = (np.abs(cs) ** 2 - bias) / (ps1 * ps2)
+
+        M = self.count_frequencies_in_bins()
+        coh_errors = np.sqrt(2 / M) * cohs * (1 - cohs)
+
+        return power_spectrum1.freqs, power_spectrum1.freq_widths, cohs, coh_errors
 
     def compute_stacked_coherence(self):
         """
