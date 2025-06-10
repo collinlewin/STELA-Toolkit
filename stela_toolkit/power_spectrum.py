@@ -207,7 +207,7 @@ class PowerSpectrum:
 
         return freqs, freq_widths, power_mean, power_std
     
-    def fit(self, model_type='powerlaw', initial_params=None, lr=1e-3, max_iter=5000, tol=1e-8):
+    def fit(self, model_type='powerlaw', initial_params=None, lr=1e-3, max_iter=5000, tol=1e-6):
         """
         Fit the binned power spectrum using a maximum likelihood approach based on the Gamma distribution.
 
@@ -233,6 +233,15 @@ class PowerSpectrum:
 
         initial_params : list of float, optional
             Initial guess for the model parameters. If None, reasonable defaults are chosen.
+
+        lr : float, optional
+            Learning rate for the PyTorch Adam optimizer (default: 1e-3).
+
+        max_iter : int, optional
+            Maximum number of gradient descent steps to run (default: 5000).
+
+        tol : float, optional
+            Convergence tolerance on the change in negative log-likelihood (default: 1e-8).
 
         Returns
         ---------
