@@ -251,10 +251,12 @@ class PowerSpectrum:
         powers = torch.tensor(self.powers, dtype=torch.float64)
         k = torch.tensor(dof / 2, dtype=torch.float64)
 
+        if initial_params is None:
+            alpha_init = 2
+            N_init = self.powers[0] / self.freqs[0] ** (-alpha_init)
+
         if model_type == 'powerlaw':
             if initial_params is None:
-                alpha_init = 2.0
-                N_init = 0.1 * self.powers[0] / self.freqs[0] ** (-alpha_init)
                 initial_params = [N_init, alpha_init]
 
             log_N = torch.tensor(np.log(initial_params[0]), dtype=torch.float64, requires_grad=True)
@@ -263,8 +265,6 @@ class PowerSpectrum:
 
         elif model_type == 'powerlaw_lorentzian':
             if initial_params is None:
-                alpha_init = 2.0
-                N_init = 0.1 * self.powers[0] / self.freqs[0] ** (-alpha_init)
                 R_init = np.std(self.powers)
                 f0_init = np.median(self.freqs)
                 delta_init = 0.1 * f0_init
