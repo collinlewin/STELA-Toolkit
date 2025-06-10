@@ -207,7 +207,7 @@ class PowerSpectrum:
 
         return freqs, freq_widths, power_mean, power_std
     
-    def fit(self, model_type='powerlaw', initial_params=None, lr=1e-3, max_iter=5000, tol=1e-6):
+    def fit(self, model_type='powerlaw', initial_params=None, lr=1e-3, max_iter=5000, tol=1e-8):
         """
         Fit the binned power spectrum using a maximum likelihood approach based on the Gamma distribution.
 
