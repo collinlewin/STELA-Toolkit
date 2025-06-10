@@ -1,23 +1,16 @@
-Essential before release:
-- Test GP functionalities
-- Tutorial
-- Documentation
-- Errors in simulations
+Bug reports:
+- Numpy functionality for v.>2
+- Long import times (check against anaconda import)
 
-Next/first actions:
+- "it would be fab if your pre-made plots had some units (e.g. power spectrum so i don’t have to look and see if norm=True means that things are in the (rms/mean)^2 Hz^-1 scaling)"
+- can you make the unbinned PSDs step functions? idk how many people will really care about this but i’m so used to looking at step functions that it’s hard to look at unbinned PSDs any other way. and in this example, i might totally miss the QPO at ~2.5 mHz that is more obvious in the step function plot. ofc a choice, so could be a toggle too!
+
+- Add analytic coherence error bars
+
+Next actions:
 - Create methods for multiple light curves
-- Allow the user to make composite kernels.
 
-Second actions:
+Secondary actions:
 - Detection for training convergence, etc.
 - Detection for learning rate, iterations
 - Method for saving data products
-- GPU parallelization for GPs
-
-Testing:
-- Distribution testing
-- Transformations, including in GaussianProcess
-- Coherences for different types of input data 
-    - how does GP noise parameter contrast to noise level of PSD and to the approximations made in coherence.py?
-    * the value that is fit is the variance of the white noise at each point, which we expect to be ~counts
-- Periodic kernel 
