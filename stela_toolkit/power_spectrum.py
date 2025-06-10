@@ -1,7 +1,10 @@
 import numpy as np
+import matplotlib.pyplot as plt
+from scipy.special import gammaln
+import torch
+import torch.optim as optim
 from ._check_inputs import _CheckInputs
 from .frequency_binning import FrequencyBinning
-from .plot import Plotter
 from .data_loader import LightCurve
 
 
@@ -83,10 +86,10 @@ class PowerSpectrum:
         self.dt = np.diff(self.times)[0]
         self.fmin = np.fft.rfftfreq(len(self.rates), d=self.dt)[1] if fmin == 'auto' else fmin
         self.fmax = np.fft.rfftfreq(len(self.rates), d=self.dt)[-1] if fmax == 'auto' else fmax  # nyquist frequency
-
         self.num_bins = num_bins
         self.bin_type = bin_type
         self.bin_edges = bin_edges
+        self.norm = norm
 
         # if multiple light curve are provided, compute the stacked power spectrum
         if len(self.rates.shape) == 2:
@@ -203,27 +206,193 @@ class PowerSpectrum:
         power_std = np.std(powers, axis=0)
 
         return freqs, freq_widths, power_mean, power_std
-
-    def plot(self, freqs=None, freq_widths=None, powers=None, power_errors=None, **kwargs):
+    
+    def fit(self, model_type='powerlaw', initial_params=None, lr=1e-3, max_iter=5000, tol=1e-6):
         """
-        Plot the power spectrum.
+        Fit the binned power spectrum using a maximum likelihood approach based on the Gamma distribution.
+
+        This method assumes that each binned PSD value represents the average of M independent
+        chi-squared-distributed powers (DOF=2), resulting in a Gamma distribution (DOF=2 chi-squared
+        is an exponential, which is a Gamma, and the sum of exponentials is also a Gamma). 
+        The fit is performed by maximizing the corresponding Gamma likelihood.
+
+        Supported models:
+        - 'powerlaw': P(f) = N * f^(-alpha)
+        - 'powerlaw_lorentzian': P(f) = N * f^(-alpha) + Lorentzian(f)
+
+        The best-fit model type and parameters are stored as class attributes:
+        - self.model_type : str
+            Name of the fitted model ('powerlaw' or 'powerlaw_lorentzian')
+        - self.model_params : array-like
+            Optimized model parameters corresponding to the fitted model
 
         Parameters
         ----------
-        **kwargs : dict
-            Custom plotting options (xlabel, yscale, etc.).
+        model_type : str, optional
+            Type of model to fit: 'powerlaw' or 'powerlaw_lorentzian' (default: 'powerlaw').
+
+        initial_params : list of float, optional
+            Initial guess for the model parameters. If None, reasonable defaults are chosen.
+
+        Returns
+        ---------
+        result : dict
+            Dictionary with the following keys:
+            - 'params': array-like, best-fit model parameters
+            - 'log_likelihood': float, maximum log-likelihood value at the solution
         """
 
-        freqs = self.freqs if freqs is None else freqs
-        freq_widths = self.freq_widths if freq_widths is None else freq_widths
-        powers = self.powers if powers is None else powers
-        power_errors = self.power_errors if power_errors is None else power_errors
+        if self.freq_widths is not None:
+            dof = 2 * self.count_frequencies_in_bins()
+        else:
+            dof = 2 * np.ones_like(self.freqs)
 
-        kwargs.setdefault('xlabel', 'Frequency')
-        kwargs.setdefault('ylabel', 'Power')
-        kwargs.setdefault('xscale', 'log')
-        kwargs.setdefault('yscale', 'log')
-        Plotter.plot(x=freqs, y=powers, xerr=freq_widths, yerr=power_errors, **kwargs)
+        freqs = torch.tensor(self.freqs, dtype=torch.float64)
+        powers = torch.tensor(self.powers, dtype=torch.float64)
+        k = torch.tensor(dof / 2, dtype=torch.float64)
+
+        if model_type == 'powerlaw':
+            if initial_params is None:
+                alpha_init = 2.0
+                N_init = 0.1 * self.powers[0] / self.freqs[0] ** (-alpha_init)
+                initial_params = [N_init, alpha_init]
+
+            log_N = torch.tensor(np.log(initial_params[0]), dtype=torch.float64, requires_grad=True)
+            alpha = torch.tensor(initial_params[1], dtype=torch.float64, requires_grad=True)
+            params = [log_N, alpha]
+
+        elif model_type == 'powerlaw_lorentzian':
+            if initial_params is None:
+                alpha_init = 2.0
+                N_init = 0.1 * self.powers[0] / self.freqs[0] ** (-alpha_init)
+                R_init = np.std(self.powers)
+                f0_init = np.median(self.freqs)
+                delta_init = 0.1 * f0_init
+                initial_params = [N_init, alpha_init, R_init, f0_init, delta_init]
+
+            log_N = torch.tensor(np.log(initial_params[0]), dtype=torch.float64, requires_grad=True)
+            alpha = torch.tensor(initial_params[1], dtype=torch.float64, requires_grad=True)
+            log_R = torch.tensor(np.log(initial_params[2]), dtype=torch.float64, requires_grad=True)
+            f0 = torch.tensor(initial_params[3], dtype=torch.float64, requires_grad=True)
+            log_delta = torch.tensor(np.log(initial_params[4]), dtype=torch.float64, requires_grad=True)
+            params = [log_N, alpha, log_R, f0, log_delta]
+
+        else:
+            raise ValueError(f"Unsupported model type '{model_type}'.")
+
+        optimizer = optim.Adam(params, lr=lr)
+        prev_loss = None
+
+        for _ in range(max_iter):
+            optimizer.zero_grad()
+
+            N = torch.exp(log_N)
+            mu = N * freqs ** (-alpha)
+
+            if model_type == 'powerlaw_lorentzian':
+                R = torch.exp(log_R)
+                delta = torch.exp(log_delta)
+                lorentz = (R**2 * delta / np.pi) / ((freqs - f0)**2 + delta**2)
+                mu = mu + lorentz
+
+            mu = torch.clamp(mu, min=1e-12)
+
+            logL = (
+                k * torch.log(k / mu)
+                + (k - 1) * torch.log(powers)
+                - (k * powers / mu)
+                - torch.tensor(gammaln(dof / 2), dtype=torch.float64)
+            )
+            loss = -torch.sum(logL)
+            loss.backward()
+            optimizer.step()
+
+            if prev_loss is not None and abs(prev_loss - loss.item()) < tol:
+                break
+            prev_loss = loss.item()
+
+        self.model_type = model_type
+        if model_type == 'powerlaw':
+            self.model_params = [torch.exp(log_N).item(), alpha.item()]
+        else:
+            self.model_params = [
+                torch.exp(log_N).item(),
+                alpha.item(),
+                torch.exp(log_R).item(),
+                f0.item(),
+                torch.exp(log_delta).item()
+            ]
+
+        return {
+            'params': self.model_params,
+            'log_likelihood': -loss.item()
+        }
+ 
+    def plot(self, step=False):
+        """
+        Plot the PSD and (if available) the best-fit model.
+
+        Parameters
+        ----------
+        step : bool, optional
+            If True, plot the unbinned PSD as a step function instead of points (default: False).
+
+        Uses current class attributes:
+        - self.freqs
+        - self.powers
+        - self.power_errors
+        - self.freq_widths
+        - self.model_type
+        - self.model_params
+        """
+
+        fig, ax = plt.subplots(figsize=(8, 4.5))
+
+        if step:
+            # Construct step function manually
+            f = self.freqs
+            p = self.powers
+            f_step = np.repeat(f, 2)[1:]
+            p_step = np.repeat(p, 2)[:-1]
+            ax.plot(f_step, p_step, drawstyle='steps-pre', color='black', lw=1.5)
+        else:
+            ax.errorbar(
+                self.freqs, self.powers,
+                xerr=self.freq_widths,
+                yerr=self.power_errors,
+                fmt='o', ms=3, lw=1.5,
+                color='black',
+            )
+
+        # Overlay best-fit model if user previously ran .fit()
+        if hasattr(self, 'model_type') and hasattr(self, 'model_params'):
+            freqs = np.linspace(self.freqs[0], self.freqs[-1], 1000)
+            params = self.model_params
+
+            if self.model_type == 'powerlaw':
+                N, alpha = params
+                model_vals = N * freqs**(-alpha)
+
+            elif self.model_type == 'powerlaw_lorentzian':
+                N, alpha, R, f0, delta = params
+                lorentz = (R**2 * delta / np.pi) / ((freqs - f0)**2 + delta**2)
+                model_vals = N * freqs**(-alpha) + lorentz
+
+            ax.plot(freqs, model_vals, linestyle='--', color='orange')
+
+        ax.set_xscale('log')
+        ax.set_yscale('log')
+        ax.set_xlabel('Frequency', fontsize=12)
+
+        ylabel = r"Power [$(\mathrm{rms}/\mathrm{mean})^2\,\mathrm{freq}^{-1}$]" \
+            if self.norm else r"Power [$\mathrm{flux}^2\,\mathrm{freq}^{-1}$]"
+        ax.set_ylabel(ylabel, fontsize=12)
+        ax.grid(True, linestyle='--', linewidth=0.5, alpha=0.7)
+        ax.tick_params(
+            which='both', direction='in', length=6,
+            width=1, top=True, right=True, labelsize=12
+        )
+        plt.show()
 
     def count_frequencies_in_bins(self, fmin=None, fmax=None, num_bins=None, bin_type=None, bin_edges=[]):
         """
