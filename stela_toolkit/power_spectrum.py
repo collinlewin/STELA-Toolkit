@@ -354,14 +354,6 @@ class PowerSpectrum:
         ----------
         step : bool, optional
             If True, plot the unbinned PSD as a step function instead of points (default: False).
-
-        Uses current class attributes:
-        - self.freqs
-        - self.powers
-        - self.power_errors
-        - self.freq_widths
-        - self.model_type
-        - self.model_params
         """
 
         fig, ax = plt.subplots(figsize=(8, 4.5))
