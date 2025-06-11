@@ -52,7 +52,7 @@ After training, you can generate posterior samples or predictions at any times o
 
 Taking inputs of either a trained GP model, or evenly-sampled data defined using the `LightCurve` class, STELA can compute:
 
-- **Power Spectrum**: Measures the amount of variability/power at different frequencies (normalized periodogram).
+- **Power Spectrum**: Measures the amount of variability/power at different frequencies (normalized periodogram). Includes support for fitting analytic models (e.g. power laws or power law + Lorentzian) to the PSD using a maximum likelihood approach.
 - **Cross Spectrum**: Measures the relationship between two light curves via both real and imaginary parts
 - **Lag-Frequency Spectrum**: Time delay as a function of frequency, from the phase of the cross spectrum
 - **Lag-Energy Spectrum**: Time lag across energy bands
