@@ -213,41 +213,50 @@ class PowerSpectrum:
 
         This method assumes that each binned PSD value represents the average of M independent
         chi-squared-distributed powers (DOF=2), resulting in a Gamma distribution (DOF=2 chi-squared
-        is an exponential, which is a Gamma, and the sum of exponentials is also a Gamma). 
+        is an exponential, which is a Gamma, and the sum of exponentials is also a Gamma).
         The fit is performed by maximizing the corresponding Gamma likelihood.
 
         Supported models:
-        - 'powerlaw': P(f) = N * f^(-alpha)
-        - 'powerlaw_lorentzian': P(f) = N * f^(-alpha) + Lorentzian(f)
+        - 'powerlaw':  
+          $$
+          P(f) = N \\cdot f^{-\\alpha}
+          $$
+
+        - 'powerlaw_lorentzian':  
+          $$
+          P(f) = N \\cdot f^{-\\alpha} + \\frac{R^2 \\cdot \\Delta / \\pi}{(f - f_0)^2 + \\Delta^2}
+          $$  
+          where \( R \) is the fractional rms amplitude of the QPO, \( f_0 \) is the central frequency,
+          and \( \\Delta \) is the half-width at half-maximum (HWHM) of the Lorentzian.
 
         The best-fit model type and parameters are stored as class attributes:
-        - self.model_type : str
+        - self.model_type : str  
             Name of the fitted model ('powerlaw' or 'powerlaw_lorentzian')
-        - self.model_params : array-like
-            Optimized model parameters corresponding to the fitted model
+        - self.model_params : array-like  
+            Optimized model parameters.
 
         Parameters
         ----------
-        model_type : str, optional
+        model_type : str, optional  
             Type of model to fit: 'powerlaw' or 'powerlaw_lorentzian' (default: 'powerlaw').
 
-        initial_params : list of float, optional
+        initial_params : list of float, optional  
             Initial guess for the model parameters. If None, reasonable defaults are chosen.
 
-        lr : float, optional
+        lr : float, optional  
             Learning rate for the PyTorch Adam optimizer (default: 1e-3).
 
-        max_iter : int, optional
+        max_iter : int, optional  
             Maximum number of gradient descent steps to run (default: 5000).
 
-        tol : float, optional
+        tol : float, optional  
             Convergence tolerance on the change in negative log-likelihood (default: 1e-8).
 
         Returns
-        ---------
-        result : dict
+        -------
+        result : dict  
             Dictionary with the following keys:
-            - 'params': array-like, best-fit model parameters
+            - 'params': array-like, best-fit model parameters  
             - 'log_likelihood': float, maximum log-likelihood value at the solution
         """
 
