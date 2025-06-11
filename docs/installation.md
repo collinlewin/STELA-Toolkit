@@ -12,7 +12,7 @@ STELA Toolkit requires:
 
 | Package       | Minimum Version |
 |---------------|-----------------|
-| numpy         | 1.21            |
+| numpy         | 1.21 (<2.0)     |
 | scipy         | 1.7             |
 | matplotlib    | 3.5             |
 | astropy       | 5.0             |

@@ -39,7 +39,7 @@ The documentation includes:
 
 STELA Toolkit requires Python ≥ 3.8 and the following core packages:
 
-- numpy ≥ 2.0
+- numpy ≥ 1.20, <2.0
 - scipy ≥ 1.7
 - matplotlib ≥ 3.5
 - astropy ≥ 5.0
