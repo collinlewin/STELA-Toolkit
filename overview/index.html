@@ -1202,7 +1202,7 @@
 <h3 id="2-frequency-domain-tools">2. Frequency-Domain Tools<a class="headerlink" href="#2-frequency-domain-tools" title="Permanent link">&para;</a></h3>
 <p>Taking inputs of either a trained GP model, or evenly-sampled data defined using the <code>LightCurve</code> class, STELA can compute:</p>
 <ul>
-<li><strong>Power Spectrum</strong>: Measures the amount of variability/power at different frequencies (normalized periodogram).</li>
+<li><strong>Power Spectrum</strong>: Measures the amount of variability/power at different frequencies (normalized periodogram). Includes support for fitting analytic models (e.g. power laws or power law + Lorentzian) to the PSD using a maximum likelihood approach.</li>
 <li><strong>Cross Spectrum</strong>: Measures the relationship between two light curves via both real and imaginary parts</li>
 <li><strong>Lag-Frequency Spectrum</strong>: Time delay as a function of frequency, from the phase of the cross spectrum</li>
 <li><strong>Lag-Energy Spectrum</strong>: Time lag across energy bands</li>
