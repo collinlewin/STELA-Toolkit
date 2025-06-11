@@ -1,5 +1,4 @@
 Bug reports:
-- Numpy functionality for v.>2
 - Long import times (check against anaconda import)
 
 Next actions:
