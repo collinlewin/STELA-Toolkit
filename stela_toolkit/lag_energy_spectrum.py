@@ -18,7 +18,7 @@ class LagEnergySpectrum:
     the lag-energy spectrum.
 
     A **positive lag** means that the time series in `lcs_or_models1` is **lagging behind**
-    the corresponding series in `lcs_or_models2`.
+    the common reference band `lcs_or_models2`.
 
     Coherence values are also computed for each energy bin to assess correlation strength,
     and noise bias correction can be applied to the coherence before estimating uncertainties.
@@ -29,8 +29,10 @@ class LagEnergySpectrum:
         First set of inputs, one per energy bin.
     
     lcs_or_models2 : list of LightCurve or GaussianProcess
-        Second set of inputs, matched to `lcs_or_models1`.
-   
+        Input light curve or trained GP model for shared reference band.
+        List will typically contain a single object, except for the case of a broad reference band
+        where each object is a model trained for the (reference band - band of interest).
+
     fmin : float
         Minimum frequency to include when integrating.
     
@@ -42,6 +44,14 @@ class LagEnergySpectrum:
     
     subtract_coh_bias : bool, optional
         Whether to subtract the coherence noise bias before estimating lag uncertainties.
+
+    subtract_from_ref : bool, optional 
+        Whether to subtract each band of interest from the common reference band.
+        Use to remove shared variability when the reference band is a broad
+        band that includes each of the bands of interest.
+        
+        - Use only for regular sampled input light curves and not a model. A model 
+        should be trained on each instance 
 
     Attributes
     ----------
@@ -70,12 +80,17 @@ class LagEnergySpectrum:
                  fmin,
                  fmax,
                  bin_edges=[],
-                 subtract_coh_bias=True):
+                 subtract_coh_bias=True,
+                 subtract_from_ref=False):
         
         # leave main input check to LagFrequencySpectrum, check same input dimensions for now.
         if len(lcs_or_models1) != len(lcs_or_models2):
             raise ValueError("The lightcurves_or_models arrays must contain the sane number of lightcurve/model objects.")
 
+        if subtract_from_ref and type(lcs_or_models2[0]).__name__ != "LightCurve":
+            raise AttributeError("Subtract_from_ref=True only works for regularly sampled data! " \
+            "Separate GP models should be trained on the common reference band - each band of interest first.")
+        
         self.data_models1 = lcs_or_models1
         self.data_models2 = lcs_or_models2
 
@@ -83,10 +98,12 @@ class LagEnergySpectrum:
         self.energy_widths = np.diff(bin_edges) / 2
 
         self.fmin, self.fmax = fmin, fmax
-        lag_spectrum = self.compute_lag_spectrum(subtract_coh_bias=subtract_coh_bias)
+        lag_spectrum = self.compute_lag_spectrum(subtract_coh_bias=subtract_coh_bias,
+                                                 subtract_from_ref=subtract_from_ref
+                                                )
         self.lags, self.lag_errors, self.cohs, self. coh_errors = lag_spectrum
 
-    def compute_lag_spectrum(self, subtract_coh_bias):
+    def compute_lag_spectrum(self, subtract_coh_bias, subtract_from_ref):
         """
         Compute the lag and coherence for each energy bin.
 
@@ -95,6 +112,11 @@ class LagEnergySpectrum:
         subtract_coh_bias : bool
             Whether to subtract Poisson noise bias from the coherence.
 
+        subtract_from_ref : bool, optional 
+            Whether to subtract each band of interest from the common reference band.
+            Use to remove shared variability when the reference band is a broad
+            band that includes each of the bands of interest.
+            
         Returns
         -------
         lags : list
@@ -112,8 +134,13 @@ class LagEnergySpectrum:
 
         lags, lag_errors, cohs, coh_errors = [], [], [], []
         for i in range(len(self.data_models1)):
+            ref = self.data_models2[i] if len(self.data_models2) > 1 else self.data_models2
+
+            if subtract_from_ref:
+                ref =- self.data_models1[i]
+
             lfs = LagFrequencySpectrum(self.data_models1[i],
-                                       self.data_models2[i],
+                                       ref,
                                        fmin=self.fmin,
                                        fmax=self.fmax,
                                        num_bins=1,
