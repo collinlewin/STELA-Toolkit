@@ -1119,7 +1119,7 @@ If no samples are found, 1000 realizations will be generated on a 1000-point gri
 cross-spectrum over a specified frequency range. This yields one lag per energy bin, forming
 the lag-energy spectrum.</p>
 <p>A <strong>positive lag</strong> means that the time series in <code>lcs_or_models1</code> is <strong>lagging behind</strong>
-the corresponding series in <code>lcs_or_models2</code>.</p>
+the common reference band <code>lcs_or_models2</code>.</p>
 <p>Coherence values are also computed for each energy bin to assess correlation strength,
 and noise bias correction can be applied to the coherence before estimating uncertainties.</p>
 
@@ -1160,7 +1160,9 @@ and noise bias correction can be applied to the coherence before estimating unce
             </td>
             <td>
               <div class="doc-md-description">
-                <p>Second set of inputs, matched to <code>lcs_or_models1</code>.</p>
+                <p>Input light curve or trained GP model for shared reference band.
+List will typically contain a single object, except for the case of a broad reference band
+where each object is a model trained for the (reference band - band of interest).</p>
               </div>
             </td>
             <td>
@@ -1229,6 +1231,28 @@ and noise bias correction can be applied to the coherence before estimating unce
             </td>
             <td>
                   <code>True</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>subtract_from_ref</code>
+            </td>
+            <td>
+                  <code>(<span title="bool">bool</span>, <span title="optional">optional</span>)</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Whether to subtract each band of interest from the common reference band.
+Use to remove shared variability when the reference band is a broad
+band that includes each of the bands of interest.</p>
+<ul>
+<li>Use only for regular sampled input light curves and not a model. A model 
+should be trained on each instance</li>
+</ul>
+              </div>
+            </td>
+            <td>
+                  <code>False</code>
             </td>
           </tr>
       </tbody>
@@ -1496,7 +1520,34 @@ and noise bias correction can be applied to the coherence before estimating unce
 <span class="normal">179</span>
 <span class="normal">180</span>
 <span class="normal">181</span>
-<span class="normal">182</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">LagEnergySpectrum</span><span class="p">:</span>
+<span class="normal">182</span>
+<span class="normal">183</span>
+<span class="normal">184</span>
+<span class="normal">185</span>
+<span class="normal">186</span>
+<span class="normal">187</span>
+<span class="normal">188</span>
+<span class="normal">189</span>
+<span class="normal">190</span>
+<span class="normal">191</span>
+<span class="normal">192</span>
+<span class="normal">193</span>
+<span class="normal">194</span>
+<span class="normal">195</span>
+<span class="normal">196</span>
+<span class="normal">197</span>
+<span class="normal">198</span>
+<span class="normal">199</span>
+<span class="normal">200</span>
+<span class="normal">201</span>
+<span class="normal">202</span>
+<span class="normal">203</span>
+<span class="normal">204</span>
+<span class="normal">205</span>
+<span class="normal">206</span>
+<span class="normal">207</span>
+<span class="normal">208</span>
+<span class="normal">209</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">LagEnergySpectrum</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compute the time lag as a function of energy between two sets of light curves or GP models.</span>
 
@@ -1509,7 +1560,7 @@ and noise bias correction can be applied to the coherence before estimating unce
 <span class="sd">    the lag-energy spectrum.</span>
 
 <span class="sd">    A **positive lag** means that the time series in `lcs_or_models1` is **lagging behind**</span>
-<span class="sd">    the corresponding series in `lcs_or_models2`.</span>
+<span class="sd">    the common reference band `lcs_or_models2`.</span>
 
 <span class="sd">    Coherence values are also computed for each energy bin to assess correlation strength,</span>
 <span class="sd">    and noise bias correction can be applied to the coherence before estimating uncertainties.</span>
@@ -1520,7 +1571,9 @@ and noise bias correction can be applied to the coherence before estimating unce
 <span class="sd">        First set of inputs, one per energy bin.</span>
 
 <span class="sd">    lcs_or_models2 : list of LightCurve or GaussianProcess</span>
-<span class="sd">        Second set of inputs, matched to `lcs_or_models1`.</span>
+<span class="sd">        Input light curve or trained GP model for shared reference band.</span>
+<span class="sd">        List will typically contain a single object, except for the case of a broad reference band</span>
+<span class="sd">        where each object is a model trained for the (reference band - band of interest).</span>
 
 <span class="sd">    fmin : float</span>
 <span class="sd">        Minimum frequency to include when integrating.</span>
@@ -1533,6 +1586,14 @@ and noise bias correction can be applied to the coherence before estimating unce
 
 <span class="sd">    subtract_coh_bias : bool, optional</span>
 <span class="sd">        Whether to subtract the coherence noise bias before estimating lag uncertainties.</span>
+
+<span class="sd">    subtract_from_ref : bool, optional </span>
+<span class="sd">        Whether to subtract each band of interest from the common reference band.</span>
+<span class="sd">        Use to remove shared variability when the reference band is a broad</span>
+<span class="sd">        band that includes each of the bands of interest.</span>
+
+<span class="sd">        - Use only for regular sampled input light curves and not a model. A model </span>
+<span class="sd">        should be trained on each instance </span>
 
 <span class="sd">    Attributes</span>
 <span class="sd">    ----------</span>
@@ -1561,11 +1622,16 @@ and noise bias correction can be applied to the coherence before estimating unce
                  <span class="n">fmin</span><span class="p">,</span>
                  <span class="n">fmax</span><span class="p">,</span>
                  <span class="n">bin_edges</span><span class="o">=</span><span class="p">[],</span>
-                 <span class="n">subtract_coh_bias</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+                 <span class="n">subtract_coh_bias</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                 <span class="n">subtract_from_ref</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 
         <span class="c1"># leave main input check to LagFrequencySpectrum, check same input dimensions for now.</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">lcs_or_models1</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">lcs_or_models2</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;The lightcurves_or_models arrays must contain the sane number of lightcurve/model objects.&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">subtract_from_ref</span> <span class="ow">and</span> <span class="nb">type</span><span class="p">(</span><span class="n">lcs_or_models2</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">.</span><span class="vm">__name__</span> <span class="o">!=</span> <span class="s2">&quot;LightCurve&quot;</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="s2">&quot;Subtract_from_ref=True only works for regularly sampled data! &quot;</span> \
+            <span class="s2">&quot;Separate GP models should be trained on the common reference band - each band of interest first.&quot;</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">data_models1</span> <span class="o">=</span> <span class="n">lcs_or_models1</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">data_models2</span> <span class="o">=</span> <span class="n">lcs_or_models2</span>
@@ -1574,10 +1640,12 @@ and noise bias correction can be applied to the coherence before estimating unce
         <span class="bp">self</span><span class="o">.</span><span class="n">energy_widths</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">bin_edges</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">fmin</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">fmax</span> <span class="o">=</span> <span class="n">fmin</span><span class="p">,</span> <span class="n">fmax</span>
-        <span class="n">lag_spectrum</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">compute_lag_spectrum</span><span class="p">(</span><span class="n">subtract_coh_bias</span><span class="o">=</span><span class="n">subtract_coh_bias</span><span class="p">)</span>
+        <span class="n">lag_spectrum</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">compute_lag_spectrum</span><span class="p">(</span><span class="n">subtract_coh_bias</span><span class="o">=</span><span class="n">subtract_coh_bias</span><span class="p">,</span>
+                                                 <span class="n">subtract_from_ref</span><span class="o">=</span><span class="n">subtract_from_ref</span>
+                                                <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">lags</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">lag_errors</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">cohs</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span> <span class="n">coh_errors</span> <span class="o">=</span> <span class="n">lag_spectrum</span>
 
-    <span class="k">def</span> <span class="nf">compute_lag_spectrum</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">subtract_coh_bias</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">compute_lag_spectrum</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">subtract_coh_bias</span><span class="p">,</span> <span class="n">subtract_from_ref</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Compute the lag and coherence for each energy bin.</span>
 
@@ -1585,6 +1653,11 @@ and noise bias correction can be applied to the coherence before estimating unce
 <span class="sd">        ----------</span>
 <span class="sd">        subtract_coh_bias : bool</span>
 <span class="sd">            Whether to subtract Poisson noise bias from the coherence.</span>
+
+<span class="sd">        subtract_from_ref : bool, optional </span>
+<span class="sd">            Whether to subtract each band of interest from the common reference band.</span>
+<span class="sd">            Use to remove shared variability when the reference band is a broad</span>
+<span class="sd">            band that includes each of the bands of interest.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
@@ -1603,8 +1676,13 @@ and noise bias correction can be applied to the coherence before estimating unce
 
         <span class="n">lags</span><span class="p">,</span> <span class="n">lag_errors</span><span class="p">,</span> <span class="n">cohs</span><span class="p">,</span> <span class="n">coh_errors</span> <span class="o">=</span> <span class="p">[],</span> <span class="p">[],</span> <span class="p">[],</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data_models1</span><span class="p">)):</span>
+            <span class="n">ref</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_models2</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data_models2</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_models2</span>
+
+            <span class="k">if</span> <span class="n">subtract_from_ref</span><span class="p">:</span>
+                <span class="n">ref</span> <span class="o">-=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_models1</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+
             <span class="n">lfs</span> <span class="o">=</span> <span class="n">LagFrequencySpectrum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data_models1</span><span class="p">[</span><span class="n">i</span><span class="p">],</span>
-                                       <span class="bp">self</span><span class="o">.</span><span class="n">data_models2</span><span class="p">[</span><span class="n">i</span><span class="p">],</span>
+                                       <span class="n">ref</span><span class="p">,</span>
                                        <span class="n">fmin</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">fmin</span><span class="p">,</span>
                                        <span class="n">fmax</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">fmax</span><span class="p">,</span>
                                        <span class="n">num_bins</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
@@ -1690,7 +1768,7 @@ and noise bias correction can be applied to the coherence before estimating unce
 
 
 <h3 id="stela_toolkit.lag_energy_spectrum.LagEnergySpectrum.compute_lag_spectrum" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">compute_lag_spectrum</span><span class="p">(</span><span class="n">subtract_coh_bias</span><span class="p">)</span></code>
+            <code class="highlight language-python"><span class="n">compute_lag_spectrum</span><span class="p">(</span><span class="n">subtract_coh_bias</span><span class="p">,</span> <span class="n">subtract_from_ref</span><span class="p">)</span></code>
 
 <a href="#stela_toolkit.lag_energy_spectrum.LagEnergySpectrum.compute_lag_spectrum" class="headerlink" title="Permanent link">&para;</a></h3>
 
@@ -1721,6 +1799,24 @@ and noise bias correction can be applied to the coherence before estimating unce
             <td>
               <div class="doc-md-description">
                 <p>Whether to subtract Poisson noise bias from the coherence.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>subtract_from_ref</code>
+            </td>
+            <td>
+                  <code>(<span title="bool">bool</span>, <span title="optional">optional</span>)</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Whether to subtract each band of interest from the common reference band.
+Use to remove shared variability when the reference band is a broad
+band that includes each of the bands of interest.</p>
               </div>
             </td>
             <td>
@@ -1786,24 +1882,7 @@ and noise bias correction can be applied to the coherence before estimating unce
 
             <details class="quote">
               <summary>Source code in <code>stela_toolkit/lag_energy_spectrum.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 89</span>
-<span class="normal"> 90</span>
-<span class="normal"> 91</span>
-<span class="normal"> 92</span>
-<span class="normal"> 93</span>
-<span class="normal"> 94</span>
-<span class="normal"> 95</span>
-<span class="normal"> 96</span>
-<span class="normal"> 97</span>
-<span class="normal"> 98</span>
-<span class="normal"> 99</span>
-<span class="normal">100</span>
-<span class="normal">101</span>
-<span class="normal">102</span>
-<span class="normal">103</span>
-<span class="normal">104</span>
-<span class="normal">105</span>
-<span class="normal">106</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">106</span>
 <span class="normal">107</span>
 <span class="normal">108</span>
 <span class="normal">109</span>
@@ -1824,7 +1903,34 @@ and noise bias correction can be applied to the coherence before estimating unce
 <span class="normal">124</span>
 <span class="normal">125</span>
 <span class="normal">126</span>
-<span class="normal">127</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">compute_lag_spectrum</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">subtract_coh_bias</span><span class="p">):</span>
+<span class="normal">127</span>
+<span class="normal">128</span>
+<span class="normal">129</span>
+<span class="normal">130</span>
+<span class="normal">131</span>
+<span class="normal">132</span>
+<span class="normal">133</span>
+<span class="normal">134</span>
+<span class="normal">135</span>
+<span class="normal">136</span>
+<span class="normal">137</span>
+<span class="normal">138</span>
+<span class="normal">139</span>
+<span class="normal">140</span>
+<span class="normal">141</span>
+<span class="normal">142</span>
+<span class="normal">143</span>
+<span class="normal">144</span>
+<span class="normal">145</span>
+<span class="normal">146</span>
+<span class="normal">147</span>
+<span class="normal">148</span>
+<span class="normal">149</span>
+<span class="normal">150</span>
+<span class="normal">151</span>
+<span class="normal">152</span>
+<span class="normal">153</span>
+<span class="normal">154</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">compute_lag_spectrum</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">subtract_coh_bias</span><span class="p">,</span> <span class="n">subtract_from_ref</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compute the lag and coherence for each energy bin.</span>
 
@@ -1832,6 +1938,11 @@ and noise bias correction can be applied to the coherence before estimating unce
 <span class="sd">    ----------</span>
 <span class="sd">    subtract_coh_bias : bool</span>
 <span class="sd">        Whether to subtract Poisson noise bias from the coherence.</span>
+
+<span class="sd">    subtract_from_ref : bool, optional </span>
+<span class="sd">        Whether to subtract each band of interest from the common reference band.</span>
+<span class="sd">        Use to remove shared variability when the reference band is a broad</span>
+<span class="sd">        band that includes each of the bands of interest.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -1850,8 +1961,13 @@ and noise bias correction can be applied to the coherence before estimating unce
 
     <span class="n">lags</span><span class="p">,</span> <span class="n">lag_errors</span><span class="p">,</span> <span class="n">cohs</span><span class="p">,</span> <span class="n">coh_errors</span> <span class="o">=</span> <span class="p">[],</span> <span class="p">[],</span> <span class="p">[],</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data_models1</span><span class="p">)):</span>
+        <span class="n">ref</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_models2</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data_models2</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_models2</span>
+
+        <span class="k">if</span> <span class="n">subtract_from_ref</span><span class="p">:</span>
+            <span class="n">ref</span> <span class="o">-=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_models1</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+
         <span class="n">lfs</span> <span class="o">=</span> <span class="n">LagFrequencySpectrum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data_models1</span><span class="p">[</span><span class="n">i</span><span class="p">],</span>
-                                   <span class="bp">self</span><span class="o">.</span><span class="n">data_models2</span><span class="p">[</span><span class="n">i</span><span class="p">],</span>
+                                   <span class="n">ref</span><span class="p">,</span>
                                    <span class="n">fmin</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">fmin</span><span class="p">,</span>
                                    <span class="n">fmax</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">fmax</span><span class="p">,</span>
                                    <span class="n">num_bins</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
@@ -1886,15 +2002,15 @@ Wrapper method to use FrequencyBinning.count_frequencies_in_bins with class attr
 
             <details class="quote">
               <summary>Source code in <code>stela_toolkit/lag_energy_spectrum.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">174</span>
-<span class="normal">175</span>
-<span class="normal">176</span>
-<span class="normal">177</span>
-<span class="normal">178</span>
-<span class="normal">179</span>
-<span class="normal">180</span>
-<span class="normal">181</span>
-<span class="normal">182</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">count_frequencies_in_bins</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fmin</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">fmax</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">num_bins</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">bin_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">bin_edges</span><span class="o">=</span><span class="p">[]):</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">201</span>
+<span class="normal">202</span>
+<span class="normal">203</span>
+<span class="normal">204</span>
+<span class="normal">205</span>
+<span class="normal">206</span>
+<span class="normal">207</span>
+<span class="normal">208</span>
+<span class="normal">209</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">count_frequencies_in_bins</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fmin</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">fmax</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">num_bins</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">bin_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">bin_edges</span><span class="o">=</span><span class="p">[]):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Counts the number of frequencies in each frequency bin.</span>
 <span class="sd">    Wrapper method to use FrequencyBinning.count_frequencies_in_bins with class attributes.</span>
@@ -1956,34 +2072,7 @@ Wrapper method to use FrequencyBinning.count_frequencies_in_bins with class attr
 
             <details class="quote">
               <summary>Source code in <code>stela_toolkit/lag_energy_spectrum.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">129</span>
-<span class="normal">130</span>
-<span class="normal">131</span>
-<span class="normal">132</span>
-<span class="normal">133</span>
-<span class="normal">134</span>
-<span class="normal">135</span>
-<span class="normal">136</span>
-<span class="normal">137</span>
-<span class="normal">138</span>
-<span class="normal">139</span>
-<span class="normal">140</span>
-<span class="normal">141</span>
-<span class="normal">142</span>
-<span class="normal">143</span>
-<span class="normal">144</span>
-<span class="normal">145</span>
-<span class="normal">146</span>
-<span class="normal">147</span>
-<span class="normal">148</span>
-<span class="normal">149</span>
-<span class="normal">150</span>
-<span class="normal">151</span>
-<span class="normal">152</span>
-<span class="normal">153</span>
-<span class="normal">154</span>
-<span class="normal">155</span>
-<span class="normal">156</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">156</span>
 <span class="normal">157</span>
 <span class="normal">158</span>
 <span class="normal">159</span>
@@ -1999,7 +2088,34 @@ Wrapper method to use FrequencyBinning.count_frequencies_in_bins with class attr
 <span class="normal">169</span>
 <span class="normal">170</span>
 <span class="normal">171</span>
-<span class="normal">172</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">energies</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">energy_widths</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">lags</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">lag_errors</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">cohs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">coh_errors</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="normal">172</span>
+<span class="normal">173</span>
+<span class="normal">174</span>
+<span class="normal">175</span>
+<span class="normal">176</span>
+<span class="normal">177</span>
+<span class="normal">178</span>
+<span class="normal">179</span>
+<span class="normal">180</span>
+<span class="normal">181</span>
+<span class="normal">182</span>
+<span class="normal">183</span>
+<span class="normal">184</span>
+<span class="normal">185</span>
+<span class="normal">186</span>
+<span class="normal">187</span>
+<span class="normal">188</span>
+<span class="normal">189</span>
+<span class="normal">190</span>
+<span class="normal">191</span>
+<span class="normal">192</span>
+<span class="normal">193</span>
+<span class="normal">194</span>
+<span class="normal">195</span>
+<span class="normal">196</span>
+<span class="normal">197</span>
+<span class="normal">198</span>
+<span class="normal">199</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">energies</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">energy_widths</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">lags</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">lag_errors</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">cohs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">coh_errors</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Plot the lag-energy spectrum and associated coherence values.</span>
 
