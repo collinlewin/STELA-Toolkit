@@ -19,7 +19,8 @@ class LagFrequencySpectrum:
     If GP models are passed as inputs, the most recently generated samples are used.
     If none exist, the toolkit will generate 1000 samples on a 1000-point grid by default.
 
-    A **positive lag** means that the first input (`lc_or_model1`) lags behind the second (`lc_or_model2`).
+    A **positive lag** means that the first input (`lc_or_model1`) lags behind the 
+    second/reference band (`lc_or_model2`).
 
     Uncertainties are estimated using:
     - **Analytical propagation** from coherence if inputs are light curves.
@@ -28,10 +29,10 @@ class LagFrequencySpectrum:
     Parameters
     ----------
     lc_or_model1 : LightCurve or GaussianProcess
-        First light curve or GP model (can be single or stacked).
+        First light curve or GP model.
 
     lc_or_model2 : LightCurve or GaussianProcess
-        Second light curve or GP model (must match shape of `lc_or_model1`).
+        Second/reference light curve or GP model (must match shape of `lc_or_model1`).
 
     fmin : float or 'auto', optional
         Minimum frequency for the lag spectrum. If 'auto', uses the lowest nonzero FFT frequency.
