@@ -128,17 +128,18 @@ class SimulateLightCurve:
             rates_lagged = None
 
         errors = np.zeros(len(rates))
-        if add_noise.lower() == "poisson":
-            rates, errors = self.add_poisson_noise(rates, self.time_grid, bkg_rate=self.bkg_rate)
-                                                
-            if rates_lagged is not None:
-                rates_lagged, _ = self.add_poisson_noise(rates_lagged, self.time_grid,
-                                                        bkg_rate=self.bkg_rate)
+        if add_noise is not None:
+            if add_noise == "poisson":
+                rates, errors = self.add_poisson_noise(rates, self.time_grid, bkg_rate=self.bkg_rate)
+                                                    
+                if rates_lagged is not None:
+                    rates_lagged, _ = self.add_poisson_noise(rates_lagged, self.time_grid,
+                                                            bkg_rate=self.bkg_rate)
 
-        elif add_noise.lower() == "gaussian":
-            rates, errors = self.add_gaussian_noise(rates, frac_err=gaussian_frac_err)
-            if rates_lagged is not None:
-                rates_lagged, _ = self.add_gaussian_noise(rates_lagged, frac_err=gaussian_frac_err)
+            elif add_noise.lower() == "gaussian":
+                rates, errors = self.add_gaussian_noise(rates, frac_err=gaussian_frac_err)
+                if rates_lagged is not None:
+                    rates_lagged, _ = self.add_gaussian_noise(rates_lagged, frac_err=gaussian_frac_err)
 
         self.rates = rates
         self.errors = errors
