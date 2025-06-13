@@ -152,7 +152,7 @@ class CrossSpectrum:
         freqs, fft1 = LightCurve(times=times1, rates=rates1).fft()
         _, fft2 = LightCurve(times=times2, rates=rates2).fft()
 
-        cross_spectrum = np.conj(fft2) * fft1
+        cross_spectrum = np.conj(fft1) * fft2
 
         # Filter frequencies within [fmin, fmax]
         valid_mask = (freqs >= self.fmin) & (freqs <= self.fmax)
