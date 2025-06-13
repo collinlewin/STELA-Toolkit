@@ -163,12 +163,7 @@ class CrossSpectrum:
         if norm:
             length = len(rates1)
             norm_factor = length * np.mean(rates1) * np.mean(rates2) / (2 * self.dt)
-            cross_spectrum /= norm_factor
-
-            # negative norm factor shifts the phase by pi
-            if norm_factor < 0:
-                phase = np.angle(cross_spectrum)
-                cross_spectrum = np.abs(cross_spectrum) * np.exp(1j * phase)
+            cross_spectrum /= np.abs(norm_factor)
 
         # Apply binning
         if self.num_bins or self.bin_edges:
