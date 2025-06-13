@@ -116,7 +116,7 @@ class LagEnergySpectrum:
             Whether to subtract each band of interest from the common reference band.
             Use to remove shared variability when the reference band is a broad
             band that includes each of the bands of interest.
-            
+
         Returns
         -------
         lags : list
@@ -137,7 +137,7 @@ class LagEnergySpectrum:
             ref = self.data_models2[i] if len(self.data_models2) > 1 else self.data_models2
 
             if subtract_from_ref:
-                ref =- self.data_models1[i]
+                ref -= self.data_models1[i]
 
             lfs = LagFrequencySpectrum(self.data_models1[i],
                                        ref,
