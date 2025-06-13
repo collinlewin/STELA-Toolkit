@@ -83,10 +83,6 @@ class LagEnergySpectrum:
                  subtract_coh_bias=True,
                  subtract_from_ref=False):
         
-        # leave main input check to LagFrequencySpectrum, check same input dimensions for now.
-        if len(lcs_or_models1) != len(lcs_or_models2):
-            raise ValueError("The lightcurves_or_models arrays must contain the sane number of lightcurve/model objects.")
-
         if subtract_from_ref and type(lcs_or_models2[0]).__name__ != "LightCurve":
             raise AttributeError("Subtract_from_ref=True only works for regularly sampled data! " \
             "Separate GP models should be trained on the common reference band - each band of interest first.")
@@ -94,7 +90,8 @@ class LagEnergySpectrum:
         self.data_models1 = lcs_or_models1
         self.data_models2 = lcs_or_models2
 
-        self.energies = [np.mean(bin_edges[i], bin_edges[i+1]) for i in range(len(bin_edges[:-1]))]
+        self.energies = [np.mean([bin_edges[i], bin_edges[i+1]]) for i in range(len(bin_edges[:-1]))]
+        self.energies = np.array(self.energies)
         self.energy_widths = np.diff(bin_edges) / 2
 
         self.fmin, self.fmax = fmin, fmax
