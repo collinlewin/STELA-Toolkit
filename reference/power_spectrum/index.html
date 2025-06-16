@@ -1757,7 +1757,40 @@ amplitude and fractional RMS.</p>
 <span class="normal">412</span>
 <span class="normal">413</span>
 <span class="normal">414</span>
-<span class="normal">415</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">PowerSpectrum</span><span class="p">:</span>
+<span class="normal">415</span>
+<span class="normal">416</span>
+<span class="normal">417</span>
+<span class="normal">418</span>
+<span class="normal">419</span>
+<span class="normal">420</span>
+<span class="normal">421</span>
+<span class="normal">422</span>
+<span class="normal">423</span>
+<span class="normal">424</span>
+<span class="normal">425</span>
+<span class="normal">426</span>
+<span class="normal">427</span>
+<span class="normal">428</span>
+<span class="normal">429</span>
+<span class="normal">430</span>
+<span class="normal">431</span>
+<span class="normal">432</span>
+<span class="normal">433</span>
+<span class="normal">434</span>
+<span class="normal">435</span>
+<span class="normal">436</span>
+<span class="normal">437</span>
+<span class="normal">438</span>
+<span class="normal">439</span>
+<span class="normal">440</span>
+<span class="normal">441</span>
+<span class="normal">442</span>
+<span class="normal">443</span>
+<span class="normal">444</span>
+<span class="normal">445</span>
+<span class="normal">446</span>
+<span class="normal">447</span>
+<span class="normal">448</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">PowerSpectrum</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compute the power spectrum of a light curve using the FFT.</span>
 
@@ -1967,27 +2000,32 @@ amplitude and fractional RMS.</p>
 
 <span class="sd">        Supported models:</span>
 <span class="sd">        - &#39;powerlaw&#39;:  </span>
-<span class="sd">          $$</span>
-<span class="sd">          P(f) = N \\cdot f^{-\\alpha}</span>
-<span class="sd">          $$</span>
+<span class="sd">        $$</span>
+<span class="sd">        P(f) = N \\cdot f^{-\\alpha}</span>
+<span class="sd">        $$</span>
 
 <span class="sd">        - &#39;powerlaw_lorentzian&#39;:  </span>
-<span class="sd">          $$</span>
-<span class="sd">          P(f) = N \\cdot f^{-\\alpha} + \\frac{R^2 \\cdot \\Delta / \\pi}{(f - f_0)^2 + \\Delta^2}</span>
-<span class="sd">          $$  </span>
-<span class="sd">          where \( R \) is the fractional rms amplitude of the QPO, \( f_0 \) is the central frequency,</span>
-<span class="sd">          and \( \\Delta \) is the half-width at half-maximum (HWHM) of the Lorentzian.</span>
+<span class="sd">        $$</span>
+<span class="sd">        P(f) = N \\cdot f^{-\\alpha} + \\frac{R^2 \\cdot \\Delta / \\pi}{(f - f_0)^2 + \\Delta^2}</span>
+<span class="sd">        $$  </span>
+<span class="sd">        where \( R \) is the fractional rms amplitude of the QPO, \( f_0 \) is the central frequency,</span>
+<span class="sd">        and \( \\Delta \) is the half-width at half-maximum (HWHM) of the Lorentzian.</span>
+
+<span class="sd">        - &#39;bending_powerlaw&#39;:  </span>
+<span class="sd">        $$</span>
+<span class="sd">        P(f) = N \left[1 + \left(\frac{f}{f_{\\text{bend}}}\\right)^{\\alpha_{\\text{high}} - \\alpha_{\\text{low}}} \\right]^{-1} f^{-\\alpha_{\\text{low}}}</span>
+<span class="sd">        $$</span>
 
 <span class="sd">        The best-fit model type and parameters are stored as class attributes:</span>
 <span class="sd">        - self.model_type : str  </span>
-<span class="sd">            Name of the fitted model (&#39;powerlaw&#39; or &#39;powerlaw_lorentzian&#39;)</span>
+<span class="sd">            Name of the fitted model.</span>
 <span class="sd">        - self.model_params : array-like  </span>
 <span class="sd">            Optimized model parameters.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        model_type : str, optional  </span>
-<span class="sd">            Type of model to fit: &#39;powerlaw&#39; or &#39;powerlaw_lorentzian&#39; (default: &#39;powerlaw&#39;).</span>
+<span class="sd">            Type of model to fit: &#39;powerlaw&#39;, &#39;powerlaw_lorentzian&#39;, or &#39;bending_powerlaw&#39; (default: &#39;powerlaw&#39;).</span>
 
 <span class="sd">        initial_params : list of float, optional  </span>
 <span class="sd">            Initial guess for the model parameters. If None, reasonable defaults are chosen.</span>
@@ -1999,7 +2037,7 @@ amplitude and fractional RMS.</p>
 <span class="sd">            Maximum number of gradient descent steps to run (default: 5000).</span>
 
 <span class="sd">        tol : float, optional  </span>
-<span class="sd">            Convergence tolerance on the change in negative log-likelihood (default: 1e-8).</span>
+<span class="sd">            Convergence tolerance on the change in negative log-likelihood (default: 1e-6).</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
@@ -2008,7 +2046,6 @@ amplitude and fractional RMS.</p>
 <span class="sd">            - &#39;params&#39;: array-like, best-fit model parameters  </span>
 <span class="sd">            - &#39;log_likelihood&#39;: float, maximum log-likelihood value at the solution</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">freq_widths</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">dof</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">count_frequencies_in_bins</span><span class="p">()</span>
         <span class="k">else</span><span class="p">:</span>
@@ -2044,6 +2081,19 @@ amplitude and fractional RMS.</p>
             <span class="n">log_delta</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">initial_params</span><span class="p">[</span><span class="mi">4</span><span class="p">]),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float64</span><span class="p">,</span> <span class="n">requires_grad</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
             <span class="n">params</span> <span class="o">=</span> <span class="p">[</span><span class="n">log_N</span><span class="p">,</span> <span class="n">alpha</span><span class="p">,</span> <span class="n">log_R</span><span class="p">,</span> <span class="n">f0</span><span class="p">,</span> <span class="n">log_delta</span><span class="p">]</span>
 
+        <span class="k">elif</span> <span class="n">model_type</span> <span class="o">==</span> <span class="s1">&#39;bending_powerlaw&#39;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">initial_params</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">alpha_low_init</span> <span class="o">=</span> <span class="mf">1.5</span>
+                <span class="n">alpha_high_init</span> <span class="o">=</span> <span class="mf">2.5</span>
+                <span class="n">fbend_init</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">median</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">freqs</span><span class="p">)</span>
+                <span class="n">initial_params</span> <span class="o">=</span> <span class="p">[</span><span class="n">N_init</span><span class="p">,</span> <span class="n">alpha_low_init</span><span class="p">,</span> <span class="n">alpha_high_init</span><span class="p">,</span> <span class="n">fbend_init</span><span class="p">]</span>
+
+            <span class="n">log_N</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">initial_params</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float64</span><span class="p">,</span> <span class="n">requires_grad</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="n">alpha_low</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">initial_params</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float64</span><span class="p">,</span> <span class="n">requires_grad</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="n">alpha_high</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">initial_params</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float64</span><span class="p">,</span> <span class="n">requires_grad</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="n">log_fbend</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">initial_params</span><span class="p">[</span><span class="mi">3</span><span class="p">]),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float64</span><span class="p">,</span> <span class="n">requires_grad</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="n">params</span> <span class="o">=</span> <span class="p">[</span><span class="n">log_N</span><span class="p">,</span> <span class="n">alpha_low</span><span class="p">,</span> <span class="n">alpha_high</span><span class="p">,</span> <span class="n">log_fbend</span><span class="p">]</span>
+
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unsupported model type &#39;</span><span class="si">{</span><span class="n">model_type</span><span class="si">}</span><span class="s2">&#39;.&quot;</span><span class="p">)</span>
 
@@ -2052,17 +2102,21 @@ amplitude and fractional RMS.</p>
 
         <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">max_iter</span><span class="p">):</span>
             <span class="n">optimizer</span><span class="o">.</span><span class="n">zero_grad</span><span class="p">()</span>
-
             <span class="n">N</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">log_N</span><span class="p">)</span>
-            <span class="n">mu</span> <span class="o">=</span> <span class="n">N</span> <span class="o">*</span> <span class="n">freqs</span> <span class="o">**</span> <span class="p">(</span><span class="o">-</span><span class="n">alpha</span><span class="p">)</span>
 
-            <span class="k">if</span> <span class="n">model_type</span> <span class="o">==</span> <span class="s1">&#39;powerlaw_lorentzian&#39;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">model_type</span> <span class="o">==</span> <span class="s1">&#39;powerlaw&#39;</span><span class="p">:</span>
+                <span class="n">mu</span> <span class="o">=</span> <span class="n">N</span> <span class="o">*</span> <span class="n">freqs</span> <span class="o">**</span> <span class="p">(</span><span class="o">-</span><span class="n">alpha</span><span class="p">)</span>
+
+            <span class="k">elif</span> <span class="n">model_type</span> <span class="o">==</span> <span class="s1">&#39;powerlaw_lorentzian&#39;</span><span class="p">:</span>
                 <span class="n">R</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">log_R</span><span class="p">)</span>
                 <span class="n">delta</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">log_delta</span><span class="p">)</span>
                 <span class="n">lorentz</span> <span class="o">=</span> <span class="p">(</span><span class="n">R</span><span class="o">**</span><span class="mi">2</span> <span class="o">*</span> <span class="n">delta</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">)</span> <span class="o">/</span> <span class="p">((</span><span class="n">freqs</span> <span class="o">-</span> <span class="n">f0</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">delta</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
-                <span class="n">mu</span> <span class="o">=</span> <span class="n">mu</span> <span class="o">+</span> <span class="n">lorentz</span>
+                <span class="n">mu</span> <span class="o">=</span> <span class="n">N</span> <span class="o">*</span> <span class="n">freqs</span> <span class="o">**</span> <span class="p">(</span><span class="o">-</span><span class="n">alpha</span><span class="p">)</span> <span class="o">+</span> <span class="n">lorentz</span>
 
-            <span class="n">mu</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">clamp</span><span class="p">(</span><span class="n">mu</span><span class="p">,</span> <span class="nb">min</span><span class="o">=</span><span class="mf">1e-12</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">model_type</span> <span class="o">==</span> <span class="s1">&#39;bending_powerlaw&#39;</span><span class="p">:</span>
+                <span class="n">fbend</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">log_fbend</span><span class="p">)</span>
+                <span class="n">bend_factor</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="p">(</span><span class="n">freqs</span> <span class="o">/</span> <span class="n">fbend</span><span class="p">)</span> <span class="o">**</span> <span class="p">(</span><span class="n">alpha_high</span> <span class="o">-</span> <span class="n">alpha_low</span><span class="p">))</span> <span class="o">**</span> <span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+                <span class="n">mu</span> <span class="o">=</span> <span class="n">N</span> <span class="o">*</span> <span class="n">bend_factor</span> <span class="o">*</span> <span class="n">freqs</span> <span class="o">**</span> <span class="p">(</span><span class="o">-</span><span class="n">alpha_low</span><span class="p">)</span>
 
             <span class="n">logL</span> <span class="o">=</span> <span class="p">(</span>
                 <span class="n">k</span> <span class="o">*</span> <span class="n">torch</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">k</span> <span class="o">/</span> <span class="n">mu</span><span class="p">)</span>
@@ -2081,13 +2135,20 @@ amplitude and fractional RMS.</p>
         <span class="bp">self</span><span class="o">.</span><span class="n">model_type</span> <span class="o">=</span> <span class="n">model_type</span>
         <span class="k">if</span> <span class="n">model_type</span> <span class="o">==</span> <span class="s1">&#39;powerlaw&#39;</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">model_params</span> <span class="o">=</span> <span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">log_N</span><span class="p">)</span><span class="o">.</span><span class="n">item</span><span class="p">(),</span> <span class="n">alpha</span><span class="o">.</span><span class="n">item</span><span class="p">()]</span>
-        <span class="k">else</span><span class="p">:</span>
+        <span class="k">elif</span> <span class="n">model_type</span> <span class="o">==</span> <span class="s1">&#39;powerlaw_lorentzian&#39;</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">model_params</span> <span class="o">=</span> <span class="p">[</span>
                 <span class="n">torch</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">log_N</span><span class="p">)</span><span class="o">.</span><span class="n">item</span><span class="p">(),</span>
                 <span class="n">alpha</span><span class="o">.</span><span class="n">item</span><span class="p">(),</span>
                 <span class="n">torch</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">log_R</span><span class="p">)</span><span class="o">.</span><span class="n">item</span><span class="p">(),</span>
                 <span class="n">f0</span><span class="o">.</span><span class="n">item</span><span class="p">(),</span>
                 <span class="n">torch</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">log_delta</span><span class="p">)</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>
+            <span class="p">]</span>
+        <span class="k">elif</span> <span class="n">model_type</span> <span class="o">==</span> <span class="s1">&#39;bending_powerlaw&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">model_params</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="n">torch</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">log_N</span><span class="p">)</span><span class="o">.</span><span class="n">item</span><span class="p">(),</span>
+                <span class="n">alpha_low</span><span class="o">.</span><span class="n">item</span><span class="p">(),</span>
+                <span class="n">alpha_high</span><span class="o">.</span><span class="n">item</span><span class="p">(),</span>
+                <span class="n">torch</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">log_fbend</span><span class="p">)</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>
             <span class="p">]</span>
 
         <span class="k">return</span> <span class="p">{</span>
@@ -2136,6 +2197,11 @@ amplitude and fractional RMS.</p>
                 <span class="n">N</span><span class="p">,</span> <span class="n">alpha</span><span class="p">,</span> <span class="n">R</span><span class="p">,</span> <span class="n">f0</span><span class="p">,</span> <span class="n">delta</span> <span class="o">=</span> <span class="n">params</span>
                 <span class="n">lorentz</span> <span class="o">=</span> <span class="p">(</span><span class="n">R</span><span class="o">**</span><span class="mi">2</span> <span class="o">*</span> <span class="n">delta</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">)</span> <span class="o">/</span> <span class="p">((</span><span class="n">freqs</span> <span class="o">-</span> <span class="n">f0</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">delta</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
                 <span class="n">model_vals</span> <span class="o">=</span> <span class="n">N</span> <span class="o">*</span> <span class="n">freqs</span><span class="o">**</span><span class="p">(</span><span class="o">-</span><span class="n">alpha</span><span class="p">)</span> <span class="o">+</span> <span class="n">lorentz</span>
+
+            <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">model_type</span> <span class="o">==</span> <span class="s1">&#39;bending_powerlaw&#39;</span><span class="p">:</span>
+                <span class="n">N</span><span class="p">,</span> <span class="n">alpha_low</span><span class="p">,</span> <span class="n">alpha_high</span><span class="p">,</span> <span class="n">fbend</span> <span class="o">=</span> <span class="n">params</span>
+                <span class="n">bend_factor</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="p">(</span><span class="n">freqs</span> <span class="o">/</span> <span class="n">fbend</span><span class="p">)</span><span class="o">**</span><span class="p">(</span><span class="n">alpha_high</span> <span class="o">-</span> <span class="n">alpha_low</span><span class="p">))</span><span class="o">**</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+                <span class="n">model_vals</span> <span class="o">=</span> <span class="n">N</span> <span class="o">*</span> <span class="n">bend_factor</span> <span class="o">*</span> <span class="n">freqs</span><span class="o">**</span><span class="p">(</span><span class="o">-</span><span class="n">alpha_low</span><span class="p">)</span>
 
             <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">freqs</span><span class="p">,</span> <span class="n">model_vals</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;--&#39;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;orange&#39;</span><span class="p">)</span>
 
@@ -2651,15 +2717,15 @@ Wrapper method to use FrequencyBinning.count_frequencies_in_bins with class attr
 
             <details class="quote">
               <summary>Source code in <code>stela_toolkit/power_spectrum.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">407</span>
-<span class="normal">408</span>
-<span class="normal">409</span>
-<span class="normal">410</span>
-<span class="normal">411</span>
-<span class="normal">412</span>
-<span class="normal">413</span>
-<span class="normal">414</span>
-<span class="normal">415</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">count_frequencies_in_bins</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fmin</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">fmax</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">num_bins</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">bin_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">bin_edges</span><span class="o">=</span><span class="p">[]):</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">440</span>
+<span class="normal">441</span>
+<span class="normal">442</span>
+<span class="normal">443</span>
+<span class="normal">444</span>
+<span class="normal">445</span>
+<span class="normal">446</span>
+<span class="normal">447</span>
+<span class="normal">448</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">count_frequencies_in_bins</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fmin</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">fmax</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">num_bins</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">bin_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">bin_edges</span><span class="o">=</span><span class="p">[]):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Counts the number of frequencies in each frequency bin.</span>
 <span class="sd">    Wrapper method to use FrequencyBinning.count_frequencies_in_bins with class attributes.</span>
@@ -2692,20 +2758,28 @@ is an exponential, which is a Gamma, and the sum of exponentials is also a Gamma
 The fit is performed by maximizing the corresponding Gamma likelihood.</p>
 <p>Supported models:
 - 'powerlaw':<br />
-  $$
-  P(f) = N \cdot f^{-\alpha}
-  $$</p>
+$$
+P(f) = N \cdot f^{-\alpha}
+$$</p>
 <ul>
-<li>'powerlaw_lorentzian':<br />
-  $$
-  P(f) = N \cdot f^{-\alpha} + \frac{R^2 \cdot \Delta / \pi}{(f - f_0)^2 + \Delta^2}
-  $$<br />
-  where <span class="arithmatex">\( R \)</span> is the fractional rms amplitude of the QPO, <span class="arithmatex">\( f_0 \)</span> is the central frequency,
-  and <span class="arithmatex">\( \\Delta \)</span> is the half-width at half-maximum (HWHM) of the Lorentzian.</li>
+<li>
+<p>'powerlaw_lorentzian':<br />
+$$
+P(f) = N \cdot f^{-\alpha} + \frac{R^2 \cdot \Delta / \pi}{(f - f_0)^2 + \Delta^2}
+$$<br />
+where <span class="arithmatex">\( R \)</span> is the fractional rms amplitude of the QPO, <span class="arithmatex">\( f_0 \)</span> is the central frequency,
+and <span class="arithmatex">\( \\Delta \)</span> is the half-width at half-maximum (HWHM) of the Lorentzian.</p>
+</li>
+<li>
+<p>'bending_powerlaw':<br />
+$$
+P(f) = N \left[1 + \left(\frac{f}{f_{\text{bend}}}\right)^{\alpha_{\text{high}} - \alpha_{\text{low}}} \right]^{-1} f^{-\alpha_{\text{low}}}
+$$</p>
+</li>
 </ul>
 <p>The best-fit model type and parameters are stored as class attributes:
 - self.model_type : str<br />
-    Name of the fitted model ('powerlaw' or 'powerlaw_lorentzian')
+    Name of the fitted model.
 - self.model_params : array-like<br />
     Optimized model parameters.</p>
 
@@ -2730,7 +2804,7 @@ The fit is performed by maximizing the corresponding Gamma likelihood.</p>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>Type of model to fit: 'powerlaw' or 'powerlaw_lorentzian' (default: 'powerlaw').</p>
+                <p>Type of model to fit: 'powerlaw', 'powerlaw_lorentzian', or 'bending_powerlaw' (default: 'powerlaw').</p>
               </div>
             </td>
             <td>
@@ -2794,7 +2868,7 @@ The fit is performed by maximizing the corresponding Gamma likelihood.</p>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>Convergence tolerance on the change in negative log-likelihood (default: 1e-8).</p>
+                <p>Convergence tolerance on the change in negative log-likelihood (default: 1e-6).</p>
               </div>
             </td>
             <td>
@@ -2969,7 +3043,35 @@ The fit is performed by maximizing the corresponding Gamma likelihood.</p>
 <span class="normal">344</span>
 <span class="normal">345</span>
 <span class="normal">346</span>
-<span class="normal">347</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model_type</span><span class="o">=</span><span class="s1">&#39;powerlaw&#39;</span><span class="p">,</span> <span class="n">initial_params</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">lr</span><span class="o">=</span><span class="mf">1e-3</span><span class="p">,</span> <span class="n">max_iter</span><span class="o">=</span><span class="mi">5000</span><span class="p">,</span> <span class="n">tol</span><span class="o">=</span><span class="mf">1e-6</span><span class="p">):</span>
+<span class="normal">347</span>
+<span class="normal">348</span>
+<span class="normal">349</span>
+<span class="normal">350</span>
+<span class="normal">351</span>
+<span class="normal">352</span>
+<span class="normal">353</span>
+<span class="normal">354</span>
+<span class="normal">355</span>
+<span class="normal">356</span>
+<span class="normal">357</span>
+<span class="normal">358</span>
+<span class="normal">359</span>
+<span class="normal">360</span>
+<span class="normal">361</span>
+<span class="normal">362</span>
+<span class="normal">363</span>
+<span class="normal">364</span>
+<span class="normal">365</span>
+<span class="normal">366</span>
+<span class="normal">367</span>
+<span class="normal">368</span>
+<span class="normal">369</span>
+<span class="normal">370</span>
+<span class="normal">371</span>
+<span class="normal">372</span>
+<span class="normal">373</span>
+<span class="normal">374</span>
+<span class="normal">375</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model_type</span><span class="o">=</span><span class="s1">&#39;powerlaw&#39;</span><span class="p">,</span> <span class="n">initial_params</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">lr</span><span class="o">=</span><span class="mf">1e-3</span><span class="p">,</span> <span class="n">max_iter</span><span class="o">=</span><span class="mi">5000</span><span class="p">,</span> <span class="n">tol</span><span class="o">=</span><span class="mf">1e-6</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Fit the binned power spectrum using a maximum likelihood approach based on the Gamma distribution.</span>
 
@@ -2980,27 +3082,32 @@ The fit is performed by maximizing the corresponding Gamma likelihood.</p>
 
 <span class="sd">    Supported models:</span>
 <span class="sd">    - &#39;powerlaw&#39;:  </span>
-<span class="sd">      $$</span>
-<span class="sd">      P(f) = N \\cdot f^{-\\alpha}</span>
-<span class="sd">      $$</span>
+<span class="sd">    $$</span>
+<span class="sd">    P(f) = N \\cdot f^{-\\alpha}</span>
+<span class="sd">    $$</span>
 
 <span class="sd">    - &#39;powerlaw_lorentzian&#39;:  </span>
-<span class="sd">      $$</span>
-<span class="sd">      P(f) = N \\cdot f^{-\\alpha} + \\frac{R^2 \\cdot \\Delta / \\pi}{(f - f_0)^2 + \\Delta^2}</span>
-<span class="sd">      $$  </span>
-<span class="sd">      where \( R \) is the fractional rms amplitude of the QPO, \( f_0 \) is the central frequency,</span>
-<span class="sd">      and \( \\Delta \) is the half-width at half-maximum (HWHM) of the Lorentzian.</span>
+<span class="sd">    $$</span>
+<span class="sd">    P(f) = N \\cdot f^{-\\alpha} + \\frac{R^2 \\cdot \\Delta / \\pi}{(f - f_0)^2 + \\Delta^2}</span>
+<span class="sd">    $$  </span>
+<span class="sd">    where \( R \) is the fractional rms amplitude of the QPO, \( f_0 \) is the central frequency,</span>
+<span class="sd">    and \( \\Delta \) is the half-width at half-maximum (HWHM) of the Lorentzian.</span>
+
+<span class="sd">    - &#39;bending_powerlaw&#39;:  </span>
+<span class="sd">    $$</span>
+<span class="sd">    P(f) = N \left[1 + \left(\frac{f}{f_{\\text{bend}}}\\right)^{\\alpha_{\\text{high}} - \\alpha_{\\text{low}}} \\right]^{-1} f^{-\\alpha_{\\text{low}}}</span>
+<span class="sd">    $$</span>
 
 <span class="sd">    The best-fit model type and parameters are stored as class attributes:</span>
 <span class="sd">    - self.model_type : str  </span>
-<span class="sd">        Name of the fitted model (&#39;powerlaw&#39; or &#39;powerlaw_lorentzian&#39;)</span>
+<span class="sd">        Name of the fitted model.</span>
 <span class="sd">    - self.model_params : array-like  </span>
 <span class="sd">        Optimized model parameters.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    model_type : str, optional  </span>
-<span class="sd">        Type of model to fit: &#39;powerlaw&#39; or &#39;powerlaw_lorentzian&#39; (default: &#39;powerlaw&#39;).</span>
+<span class="sd">        Type of model to fit: &#39;powerlaw&#39;, &#39;powerlaw_lorentzian&#39;, or &#39;bending_powerlaw&#39; (default: &#39;powerlaw&#39;).</span>
 
 <span class="sd">    initial_params : list of float, optional  </span>
 <span class="sd">        Initial guess for the model parameters. If None, reasonable defaults are chosen.</span>
@@ -3012,7 +3119,7 @@ The fit is performed by maximizing the corresponding Gamma likelihood.</p>
 <span class="sd">        Maximum number of gradient descent steps to run (default: 5000).</span>
 
 <span class="sd">    tol : float, optional  </span>
-<span class="sd">        Convergence tolerance on the change in negative log-likelihood (default: 1e-8).</span>
+<span class="sd">        Convergence tolerance on the change in negative log-likelihood (default: 1e-6).</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -3021,7 +3128,6 @@ The fit is performed by maximizing the corresponding Gamma likelihood.</p>
 <span class="sd">        - &#39;params&#39;: array-like, best-fit model parameters  </span>
 <span class="sd">        - &#39;log_likelihood&#39;: float, maximum log-likelihood value at the solution</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-
     <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">freq_widths</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">dof</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">count_frequencies_in_bins</span><span class="p">()</span>
     <span class="k">else</span><span class="p">:</span>
@@ -3057,6 +3163,19 @@ The fit is performed by maximizing the corresponding Gamma likelihood.</p>
         <span class="n">log_delta</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">initial_params</span><span class="p">[</span><span class="mi">4</span><span class="p">]),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float64</span><span class="p">,</span> <span class="n">requires_grad</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="n">params</span> <span class="o">=</span> <span class="p">[</span><span class="n">log_N</span><span class="p">,</span> <span class="n">alpha</span><span class="p">,</span> <span class="n">log_R</span><span class="p">,</span> <span class="n">f0</span><span class="p">,</span> <span class="n">log_delta</span><span class="p">]</span>
 
+    <span class="k">elif</span> <span class="n">model_type</span> <span class="o">==</span> <span class="s1">&#39;bending_powerlaw&#39;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">initial_params</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">alpha_low_init</span> <span class="o">=</span> <span class="mf">1.5</span>
+            <span class="n">alpha_high_init</span> <span class="o">=</span> <span class="mf">2.5</span>
+            <span class="n">fbend_init</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">median</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">freqs</span><span class="p">)</span>
+            <span class="n">initial_params</span> <span class="o">=</span> <span class="p">[</span><span class="n">N_init</span><span class="p">,</span> <span class="n">alpha_low_init</span><span class="p">,</span> <span class="n">alpha_high_init</span><span class="p">,</span> <span class="n">fbend_init</span><span class="p">]</span>
+
+        <span class="n">log_N</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">initial_params</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float64</span><span class="p">,</span> <span class="n">requires_grad</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">alpha_low</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">initial_params</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float64</span><span class="p">,</span> <span class="n">requires_grad</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">alpha_high</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">initial_params</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float64</span><span class="p">,</span> <span class="n">requires_grad</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">log_fbend</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">initial_params</span><span class="p">[</span><span class="mi">3</span><span class="p">]),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float64</span><span class="p">,</span> <span class="n">requires_grad</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">params</span> <span class="o">=</span> <span class="p">[</span><span class="n">log_N</span><span class="p">,</span> <span class="n">alpha_low</span><span class="p">,</span> <span class="n">alpha_high</span><span class="p">,</span> <span class="n">log_fbend</span><span class="p">]</span>
+
     <span class="k">else</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unsupported model type &#39;</span><span class="si">{</span><span class="n">model_type</span><span class="si">}</span><span class="s2">&#39;.&quot;</span><span class="p">)</span>
 
@@ -3065,17 +3184,21 @@ The fit is performed by maximizing the corresponding Gamma likelihood.</p>
 
     <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">max_iter</span><span class="p">):</span>
         <span class="n">optimizer</span><span class="o">.</span><span class="n">zero_grad</span><span class="p">()</span>
-
         <span class="n">N</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">log_N</span><span class="p">)</span>
-        <span class="n">mu</span> <span class="o">=</span> <span class="n">N</span> <span class="o">*</span> <span class="n">freqs</span> <span class="o">**</span> <span class="p">(</span><span class="o">-</span><span class="n">alpha</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="n">model_type</span> <span class="o">==</span> <span class="s1">&#39;powerlaw_lorentzian&#39;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">model_type</span> <span class="o">==</span> <span class="s1">&#39;powerlaw&#39;</span><span class="p">:</span>
+            <span class="n">mu</span> <span class="o">=</span> <span class="n">N</span> <span class="o">*</span> <span class="n">freqs</span> <span class="o">**</span> <span class="p">(</span><span class="o">-</span><span class="n">alpha</span><span class="p">)</span>
+
+        <span class="k">elif</span> <span class="n">model_type</span> <span class="o">==</span> <span class="s1">&#39;powerlaw_lorentzian&#39;</span><span class="p">:</span>
             <span class="n">R</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">log_R</span><span class="p">)</span>
             <span class="n">delta</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">log_delta</span><span class="p">)</span>
             <span class="n">lorentz</span> <span class="o">=</span> <span class="p">(</span><span class="n">R</span><span class="o">**</span><span class="mi">2</span> <span class="o">*</span> <span class="n">delta</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">)</span> <span class="o">/</span> <span class="p">((</span><span class="n">freqs</span> <span class="o">-</span> <span class="n">f0</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">delta</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
-            <span class="n">mu</span> <span class="o">=</span> <span class="n">mu</span> <span class="o">+</span> <span class="n">lorentz</span>
+            <span class="n">mu</span> <span class="o">=</span> <span class="n">N</span> <span class="o">*</span> <span class="n">freqs</span> <span class="o">**</span> <span class="p">(</span><span class="o">-</span><span class="n">alpha</span><span class="p">)</span> <span class="o">+</span> <span class="n">lorentz</span>
 
-        <span class="n">mu</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">clamp</span><span class="p">(</span><span class="n">mu</span><span class="p">,</span> <span class="nb">min</span><span class="o">=</span><span class="mf">1e-12</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">model_type</span> <span class="o">==</span> <span class="s1">&#39;bending_powerlaw&#39;</span><span class="p">:</span>
+            <span class="n">fbend</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">log_fbend</span><span class="p">)</span>
+            <span class="n">bend_factor</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="p">(</span><span class="n">freqs</span> <span class="o">/</span> <span class="n">fbend</span><span class="p">)</span> <span class="o">**</span> <span class="p">(</span><span class="n">alpha_high</span> <span class="o">-</span> <span class="n">alpha_low</span><span class="p">))</span> <span class="o">**</span> <span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+            <span class="n">mu</span> <span class="o">=</span> <span class="n">N</span> <span class="o">*</span> <span class="n">bend_factor</span> <span class="o">*</span> <span class="n">freqs</span> <span class="o">**</span> <span class="p">(</span><span class="o">-</span><span class="n">alpha_low</span><span class="p">)</span>
 
         <span class="n">logL</span> <span class="o">=</span> <span class="p">(</span>
             <span class="n">k</span> <span class="o">*</span> <span class="n">torch</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">k</span> <span class="o">/</span> <span class="n">mu</span><span class="p">)</span>
@@ -3094,13 +3217,20 @@ The fit is performed by maximizing the corresponding Gamma likelihood.</p>
     <span class="bp">self</span><span class="o">.</span><span class="n">model_type</span> <span class="o">=</span> <span class="n">model_type</span>
     <span class="k">if</span> <span class="n">model_type</span> <span class="o">==</span> <span class="s1">&#39;powerlaw&#39;</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">model_params</span> <span class="o">=</span> <span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">log_N</span><span class="p">)</span><span class="o">.</span><span class="n">item</span><span class="p">(),</span> <span class="n">alpha</span><span class="o">.</span><span class="n">item</span><span class="p">()]</span>
-    <span class="k">else</span><span class="p">:</span>
+    <span class="k">elif</span> <span class="n">model_type</span> <span class="o">==</span> <span class="s1">&#39;powerlaw_lorentzian&#39;</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">model_params</span> <span class="o">=</span> <span class="p">[</span>
             <span class="n">torch</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">log_N</span><span class="p">)</span><span class="o">.</span><span class="n">item</span><span class="p">(),</span>
             <span class="n">alpha</span><span class="o">.</span><span class="n">item</span><span class="p">(),</span>
             <span class="n">torch</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">log_R</span><span class="p">)</span><span class="o">.</span><span class="n">item</span><span class="p">(),</span>
             <span class="n">f0</span><span class="o">.</span><span class="n">item</span><span class="p">(),</span>
             <span class="n">torch</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">log_delta</span><span class="p">)</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>
+        <span class="p">]</span>
+    <span class="k">elif</span> <span class="n">model_type</span> <span class="o">==</span> <span class="s1">&#39;bending_powerlaw&#39;</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">model_params</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">torch</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">log_N</span><span class="p">)</span><span class="o">.</span><span class="n">item</span><span class="p">(),</span>
+            <span class="n">alpha_low</span><span class="o">.</span><span class="n">item</span><span class="p">(),</span>
+            <span class="n">alpha_high</span><span class="o">.</span><span class="n">item</span><span class="p">(),</span>
+            <span class="n">torch</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">log_fbend</span><span class="p">)</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>
         <span class="p">]</span>
 
     <span class="k">return</span> <span class="p">{</span>
@@ -3160,35 +3290,7 @@ The fit is performed by maximizing the corresponding Gamma likelihood.</p>
 
             <details class="quote">
               <summary>Source code in <code>stela_toolkit/power_spectrum.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">349</span>
-<span class="normal">350</span>
-<span class="normal">351</span>
-<span class="normal">352</span>
-<span class="normal">353</span>
-<span class="normal">354</span>
-<span class="normal">355</span>
-<span class="normal">356</span>
-<span class="normal">357</span>
-<span class="normal">358</span>
-<span class="normal">359</span>
-<span class="normal">360</span>
-<span class="normal">361</span>
-<span class="normal">362</span>
-<span class="normal">363</span>
-<span class="normal">364</span>
-<span class="normal">365</span>
-<span class="normal">366</span>
-<span class="normal">367</span>
-<span class="normal">368</span>
-<span class="normal">369</span>
-<span class="normal">370</span>
-<span class="normal">371</span>
-<span class="normal">372</span>
-<span class="normal">373</span>
-<span class="normal">374</span>
-<span class="normal">375</span>
-<span class="normal">376</span>
-<span class="normal">377</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">377</span>
 <span class="normal">378</span>
 <span class="normal">379</span>
 <span class="normal">380</span>
@@ -3216,7 +3318,40 @@ The fit is performed by maximizing the corresponding Gamma likelihood.</p>
 <span class="normal">402</span>
 <span class="normal">403</span>
 <span class="normal">404</span>
-<span class="normal">405</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="normal">405</span>
+<span class="normal">406</span>
+<span class="normal">407</span>
+<span class="normal">408</span>
+<span class="normal">409</span>
+<span class="normal">410</span>
+<span class="normal">411</span>
+<span class="normal">412</span>
+<span class="normal">413</span>
+<span class="normal">414</span>
+<span class="normal">415</span>
+<span class="normal">416</span>
+<span class="normal">417</span>
+<span class="normal">418</span>
+<span class="normal">419</span>
+<span class="normal">420</span>
+<span class="normal">421</span>
+<span class="normal">422</span>
+<span class="normal">423</span>
+<span class="normal">424</span>
+<span class="normal">425</span>
+<span class="normal">426</span>
+<span class="normal">427</span>
+<span class="normal">428</span>
+<span class="normal">429</span>
+<span class="normal">430</span>
+<span class="normal">431</span>
+<span class="normal">432</span>
+<span class="normal">433</span>
+<span class="normal">434</span>
+<span class="normal">435</span>
+<span class="normal">436</span>
+<span class="normal">437</span>
+<span class="normal">438</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Plot the PSD and (if available) the best-fit model.</span>
 
@@ -3257,6 +3392,11 @@ The fit is performed by maximizing the corresponding Gamma likelihood.</p>
             <span class="n">N</span><span class="p">,</span> <span class="n">alpha</span><span class="p">,</span> <span class="n">R</span><span class="p">,</span> <span class="n">f0</span><span class="p">,</span> <span class="n">delta</span> <span class="o">=</span> <span class="n">params</span>
             <span class="n">lorentz</span> <span class="o">=</span> <span class="p">(</span><span class="n">R</span><span class="o">**</span><span class="mi">2</span> <span class="o">*</span> <span class="n">delta</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">)</span> <span class="o">/</span> <span class="p">((</span><span class="n">freqs</span> <span class="o">-</span> <span class="n">f0</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">delta</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
             <span class="n">model_vals</span> <span class="o">=</span> <span class="n">N</span> <span class="o">*</span> <span class="n">freqs</span><span class="o">**</span><span class="p">(</span><span class="o">-</span><span class="n">alpha</span><span class="p">)</span> <span class="o">+</span> <span class="n">lorentz</span>
+
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">model_type</span> <span class="o">==</span> <span class="s1">&#39;bending_powerlaw&#39;</span><span class="p">:</span>
+            <span class="n">N</span><span class="p">,</span> <span class="n">alpha_low</span><span class="p">,</span> <span class="n">alpha_high</span><span class="p">,</span> <span class="n">fbend</span> <span class="o">=</span> <span class="n">params</span>
+            <span class="n">bend_factor</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="p">(</span><span class="n">freqs</span> <span class="o">/</span> <span class="n">fbend</span><span class="p">)</span><span class="o">**</span><span class="p">(</span><span class="n">alpha_high</span> <span class="o">-</span> <span class="n">alpha_low</span><span class="p">))</span><span class="o">**</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+            <span class="n">model_vals</span> <span class="o">=</span> <span class="n">N</span> <span class="o">*</span> <span class="n">bend_factor</span> <span class="o">*</span> <span class="n">freqs</span><span class="o">**</span><span class="p">(</span><span class="o">-</span><span class="n">alpha_low</span><span class="p">)</span>
 
         <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">freqs</span><span class="p">,</span> <span class="n">model_vals</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;--&#39;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;orange&#39;</span><span class="p">)</span>
 

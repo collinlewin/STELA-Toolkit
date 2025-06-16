@@ -1544,10 +1544,7 @@ should be trained on each instance</li>
 <span class="normal">203</span>
 <span class="normal">204</span>
 <span class="normal">205</span>
-<span class="normal">206</span>
-<span class="normal">207</span>
-<span class="normal">208</span>
-<span class="normal">209</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">LagEnergySpectrum</span><span class="p">:</span>
+<span class="normal">206</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">LagEnergySpectrum</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compute the time lag as a function of energy between two sets of light curves or GP models.</span>
 
@@ -1625,10 +1622,6 @@ should be trained on each instance</li>
                  <span class="n">subtract_coh_bias</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
                  <span class="n">subtract_from_ref</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 
-        <span class="c1"># leave main input check to LagFrequencySpectrum, check same input dimensions for now.</span>
-        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">lcs_or_models1</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">lcs_or_models2</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;The lightcurves_or_models arrays must contain the sane number of lightcurve/model objects.&quot;</span><span class="p">)</span>
-
         <span class="k">if</span> <span class="n">subtract_from_ref</span> <span class="ow">and</span> <span class="nb">type</span><span class="p">(</span><span class="n">lcs_or_models2</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">.</span><span class="vm">__name__</span> <span class="o">!=</span> <span class="s2">&quot;LightCurve&quot;</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="s2">&quot;Subtract_from_ref=True only works for regularly sampled data! &quot;</span> \
             <span class="s2">&quot;Separate GP models should be trained on the common reference band - each band of interest first.&quot;</span><span class="p">)</span>
@@ -1636,7 +1629,8 @@ should be trained on each instance</li>
         <span class="bp">self</span><span class="o">.</span><span class="n">data_models1</span> <span class="o">=</span> <span class="n">lcs_or_models1</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">data_models2</span> <span class="o">=</span> <span class="n">lcs_or_models2</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">energies</span> <span class="o">=</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">bin_edges</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">bin_edges</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">])</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">bin_edges</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]))]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">energies</span> <span class="o">=</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">([</span><span class="n">bin_edges</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">bin_edges</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">]])</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">bin_edges</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]))]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">energies</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">energies</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">energy_widths</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">bin_edges</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">fmin</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">fmax</span> <span class="o">=</span> <span class="n">fmin</span><span class="p">,</span> <span class="n">fmax</span>
@@ -1882,7 +1876,10 @@ band that includes each of the bands of interest.</p>
 
             <details class="quote">
               <summary>Source code in <code>stela_toolkit/lag_energy_spectrum.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">106</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">103</span>
+<span class="normal">104</span>
+<span class="normal">105</span>
+<span class="normal">106</span>
 <span class="normal">107</span>
 <span class="normal">108</span>
 <span class="normal">109</span>
@@ -1927,10 +1924,7 @@ band that includes each of the bands of interest.</p>
 <span class="normal">148</span>
 <span class="normal">149</span>
 <span class="normal">150</span>
-<span class="normal">151</span>
-<span class="normal">152</span>
-<span class="normal">153</span>
-<span class="normal">154</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">compute_lag_spectrum</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">subtract_coh_bias</span><span class="p">,</span> <span class="n">subtract_from_ref</span><span class="p">):</span>
+<span class="normal">151</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">compute_lag_spectrum</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">subtract_coh_bias</span><span class="p">,</span> <span class="n">subtract_from_ref</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compute the lag and coherence for each energy bin.</span>
 
@@ -2002,15 +1996,15 @@ Wrapper method to use FrequencyBinning.count_frequencies_in_bins with class attr
 
             <details class="quote">
               <summary>Source code in <code>stela_toolkit/lag_energy_spectrum.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">201</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">198</span>
+<span class="normal">199</span>
+<span class="normal">200</span>
+<span class="normal">201</span>
 <span class="normal">202</span>
 <span class="normal">203</span>
 <span class="normal">204</span>
 <span class="normal">205</span>
-<span class="normal">206</span>
-<span class="normal">207</span>
-<span class="normal">208</span>
-<span class="normal">209</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">count_frequencies_in_bins</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fmin</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">fmax</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">num_bins</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">bin_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">bin_edges</span><span class="o">=</span><span class="p">[]):</span>
+<span class="normal">206</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">count_frequencies_in_bins</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fmin</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">fmax</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">num_bins</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">bin_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">bin_edges</span><span class="o">=</span><span class="p">[]):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Counts the number of frequencies in each frequency bin.</span>
 <span class="sd">    Wrapper method to use FrequencyBinning.count_frequencies_in_bins with class attributes.</span>
@@ -2072,7 +2066,10 @@ Wrapper method to use FrequencyBinning.count_frequencies_in_bins with class attr
 
             <details class="quote">
               <summary>Source code in <code>stela_toolkit/lag_energy_spectrum.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">156</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">153</span>
+<span class="normal">154</span>
+<span class="normal">155</span>
+<span class="normal">156</span>
 <span class="normal">157</span>
 <span class="normal">158</span>
 <span class="normal">159</span>
@@ -2112,10 +2109,7 @@ Wrapper method to use FrequencyBinning.count_frequencies_in_bins with class attr
 <span class="normal">193</span>
 <span class="normal">194</span>
 <span class="normal">195</span>
-<span class="normal">196</span>
-<span class="normal">197</span>
-<span class="normal">198</span>
-<span class="normal">199</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">energies</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">energy_widths</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">lags</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">lag_errors</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">cohs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">coh_errors</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="normal">196</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">energies</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">energy_widths</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">lags</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">lag_errors</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">cohs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">coh_errors</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Plot the lag-energy spectrum and associated coherence values.</span>
 

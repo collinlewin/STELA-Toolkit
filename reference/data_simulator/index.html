@@ -1975,7 +1975,8 @@ Poisson or Gaussian noise models.</p>
 <span class="normal">492</span>
 <span class="normal">493</span>
 <span class="normal">494</span>
-<span class="normal">495</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">SimulateLightCurve</span><span class="p">:</span>
+<span class="normal">495</span>
+<span class="normal">496</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">SimulateLightCurve</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Simulates light curves with a specified power spectral density (PSD) and optional lag injection</span>
 <span class="sd">    via an impulse response function (IRF), using the Timmer &amp; Koenig (1995) method.</span>
@@ -2099,17 +2100,18 @@ Poisson or Gaussian noise models.</p>
             <span class="n">rates_lagged</span> <span class="o">=</span> <span class="kc">None</span>
 
         <span class="n">errors</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">rates</span><span class="p">))</span>
-        <span class="k">if</span> <span class="n">add_noise</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;poisson&quot;</span><span class="p">:</span>
-            <span class="n">rates</span><span class="p">,</span> <span class="n">errors</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_poisson_noise</span><span class="p">(</span><span class="n">rates</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">time_grid</span><span class="p">,</span> <span class="n">bkg_rate</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">bkg_rate</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">add_noise</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">add_noise</span> <span class="o">==</span> <span class="s2">&quot;poisson&quot;</span><span class="p">:</span>
+                <span class="n">rates</span><span class="p">,</span> <span class="n">errors</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_poisson_noise</span><span class="p">(</span><span class="n">rates</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">time_grid</span><span class="p">,</span> <span class="n">bkg_rate</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">bkg_rate</span><span class="p">)</span>
 
-            <span class="k">if</span> <span class="n">rates_lagged</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="n">rates_lagged</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_poisson_noise</span><span class="p">(</span><span class="n">rates_lagged</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">time_grid</span><span class="p">,</span>
-                                                        <span class="n">bkg_rate</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">bkg_rate</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">rates_lagged</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">rates_lagged</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_poisson_noise</span><span class="p">(</span><span class="n">rates_lagged</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">time_grid</span><span class="p">,</span>
+                                                            <span class="n">bkg_rate</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">bkg_rate</span><span class="p">)</span>
 
-        <span class="k">elif</span> <span class="n">add_noise</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;gaussian&quot;</span><span class="p">:</span>
-            <span class="n">rates</span><span class="p">,</span> <span class="n">errors</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_gaussian_noise</span><span class="p">(</span><span class="n">rates</span><span class="p">,</span> <span class="n">frac_err</span><span class="o">=</span><span class="n">gaussian_frac_err</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">rates_lagged</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="n">rates_lagged</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_gaussian_noise</span><span class="p">(</span><span class="n">rates_lagged</span><span class="p">,</span> <span class="n">frac_err</span><span class="o">=</span><span class="n">gaussian_frac_err</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">add_noise</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;gaussian&quot;</span><span class="p">:</span>
+                <span class="n">rates</span><span class="p">,</span> <span class="n">errors</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_gaussian_noise</span><span class="p">(</span><span class="n">rates</span><span class="p">,</span> <span class="n">frac_err</span><span class="o">=</span><span class="n">gaussian_frac_err</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">rates_lagged</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">rates_lagged</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_gaussian_noise</span><span class="p">(</span><span class="n">rates_lagged</span><span class="p">,</span> <span class="n">frac_err</span><span class="o">=</span><span class="n">gaussian_frac_err</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">rates</span> <span class="o">=</span> <span class="n">rates</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">errors</span> <span class="o">=</span> <span class="n">errors</span>
@@ -2591,8 +2593,7 @@ Poisson or Gaussian noise models.</p>
 
             <details class="quote">
               <summary>Source code in <code>stela_toolkit/data_simulator.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">299</span>
-<span class="normal">300</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">300</span>
 <span class="normal">301</span>
 <span class="normal">302</span>
 <span class="normal">303</span>
@@ -2618,7 +2619,8 @@ Poisson or Gaussian noise models.</p>
 <span class="normal">323</span>
 <span class="normal">324</span>
 <span class="normal">325</span>
-<span class="normal">326</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">add_gaussian_noise</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lc</span><span class="p">,</span> <span class="n">frac_err</span><span class="o">=</span><span class="mf">0.05</span><span class="p">,</span> <span class="n">min_error_floor</span><span class="o">=</span><span class="mf">1e-10</span><span class="p">):</span>
+<span class="normal">326</span>
+<span class="normal">327</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">add_gaussian_noise</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lc</span><span class="p">,</span> <span class="n">frac_err</span><span class="o">=</span><span class="mf">0.05</span><span class="p">,</span> <span class="n">min_error_floor</span><span class="o">=</span><span class="mf">1e-10</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Add Gaussian noise to a simulated light curve in flux units.</span>
 
@@ -2797,8 +2799,7 @@ to approximate integration time per bin.</p>
 
             <details class="quote">
               <summary>Source code in <code>stela_toolkit/data_simulator.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">231</span>
-<span class="normal">232</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">232</span>
 <span class="normal">233</span>
 <span class="normal">234</span>
 <span class="normal">235</span>
@@ -2863,7 +2864,8 @@ to approximate integration time per bin.</p>
 <span class="normal">294</span>
 <span class="normal">295</span>
 <span class="normal">296</span>
-<span class="normal">297</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">add_poisson_noise</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lc</span><span class="p">,</span> <span class="n">time_grid</span><span class="p">,</span> <span class="n">bkg_rate</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">exposure_times</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">min_error_floor</span><span class="o">=</span><span class="mf">1e-10</span><span class="p">):</span>
+<span class="normal">297</span>
+<span class="normal">298</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">add_poisson_noise</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lc</span><span class="p">,</span> <span class="n">time_grid</span><span class="p">,</span> <span class="n">bkg_rate</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">exposure_times</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">min_error_floor</span><span class="o">=</span><span class="mf">1e-10</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Add Poisson noise to a simulated light curve.</span>
 
@@ -3054,8 +3056,7 @@ to approximate integration time per bin.</p>
 
             <details class="quote">
               <summary>Source code in <code>stela_toolkit/data_simulator.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">329</span>
-<span class="normal">330</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">330</span>
 <span class="normal">331</span>
 <span class="normal">332</span>
 <span class="normal">333</span>
@@ -3086,7 +3087,8 @@ to approximate integration time per bin.</p>
 <span class="normal">358</span>
 <span class="normal">359</span>
 <span class="normal">360</span>
-<span class="normal">361</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">add_regular_gaps</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lc</span><span class="p">,</span> <span class="n">time_grid</span><span class="p">,</span> <span class="n">gap_period</span><span class="p">,</span> <span class="n">gap_duration</span><span class="p">):</span>
+<span class="normal">361</span>
+<span class="normal">362</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">add_regular_gaps</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lc</span><span class="p">,</span> <span class="n">time_grid</span><span class="p">,</span> <span class="n">gap_period</span><span class="p">,</span> <span class="n">gap_duration</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Simulate regular gaps in the light curve.</span>
 
@@ -3195,8 +3197,7 @@ to approximate integration time per bin.</p>
 
             <details class="quote">
               <summary>Source code in <code>stela_toolkit/data_simulator.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">363</span>
-<span class="normal">364</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">364</span>
 <span class="normal">365</span>
 <span class="normal">366</span>
 <span class="normal">367</span>
@@ -3235,7 +3236,8 @@ to approximate integration time per bin.</p>
 <span class="normal">400</span>
 <span class="normal">401</span>
 <span class="normal">402</span>
-<span class="normal">403</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">create_psd</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">freq</span><span class="p">):</span>
+<span class="normal">403</span>
+<span class="normal">404</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">create_psd</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">freq</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Construct the PSD array based on the selected type and parameters.</span>
 
@@ -3364,8 +3366,7 @@ If lag injection is enabled, convolves with a response function.</p>
 
             <details class="quote">
               <summary>Source code in <code>stela_toolkit/data_simulator.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">151</span>
-<span class="normal">152</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">152</span>
 <span class="normal">153</span>
 <span class="normal">154</span>
 <span class="normal">155</span>
@@ -3442,7 +3443,8 @@ If lag injection is enabled, convolves with a response function.</p>
 <span class="normal">226</span>
 <span class="normal">227</span>
 <span class="normal">228</span>
-<span class="normal">229</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">generate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">time_grid</span><span class="p">):</span>
+<span class="normal">229</span>
+<span class="normal">230</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">generate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">time_grid</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Generate the clean (noise-free) light curve.</span>
 
@@ -3543,8 +3545,7 @@ If lag injection is enabled, convolves with a response function.</p>
 
             <details class="quote">
               <summary>Source code in <code>stela_toolkit/data_simulator.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">405</span>
-<span class="normal">406</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">406</span>
 <span class="normal">407</span>
 <span class="normal">408</span>
 <span class="normal">409</span>
@@ -3570,7 +3571,8 @@ If lag injection is enabled, convolves with a response function.</p>
 <span class="normal">429</span>
 <span class="normal">430</span>
 <span class="normal">431</span>
-<span class="normal">432</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">plot</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="normal">432</span>
+<span class="normal">433</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">plot</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Plot the simulated light curve/s. Shows both the original and lagged data (if available).</span>
 <span class="sd">    &quot;&quot;&quot;</span>
