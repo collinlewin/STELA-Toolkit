@@ -1,6 +1,5 @@
 import numpy as np
 import matplotlib.pyplot as plt
-from scipy.interpolate import interp1d
 from ._check_inputs import _CheckInputs
 
 
@@ -337,7 +336,7 @@ class CrossCorrelation:
             Whether to show lag distributions from GP samples or Monte Carlo trials.
         """
         # Plot the CCF
-        fig_ccf, ax = plt.subplots(figsize=(8, 5))
+        fig, ax = plt.subplots(figsize=(8, 5))
         ax.plot(self.lags, self.ccf, label="CCF", color='black')
 
         if self.is_model1 and self.is_model2:
@@ -357,14 +356,7 @@ class CrossCorrelation:
         ax.axvline(centroid_lag, color='blue', linestyle=':',
                 label=f"Centroid lag = {centroid_lag:.2f}")
 
-        ax.set_xlabel("Time Lag")
-        ax.set_ylabel("Correlation Coefficient")
-        ax.grid(True)
-        ax.legend()
-        fig_ccf.tight_layout()
-        fig_ccf.show()
-
-        # Separate distribution plot
+        # Overlay lag distributions on same plot
         if show_mc:
             peak_data = None
             centroid_data = None
@@ -379,20 +371,16 @@ class CrossCorrelation:
                 peak_data = self.peak_lags
                 centroid_data = self.centroid_lags
 
-            if peak_data is not None or centroid_data is not None:
-                fig_dist, ax_dist = plt.subplots(1, 2, figsize=(8, 5), sharey=True)
-                if peak_data is not None:
-                    ax_dist[0].hist(peak_data, bins=30, density=True, color='orange', alpha=0.5)
-                    ax_dist[0].set_title(f"Peak Lag Dist{label_suffix}\nσ={peak_std:.2f}")
-                    ax_dist[0].set_xlabel("Lag")
-                    ax_dist[0].grid(True)
-                if centroid_data is not None:
-                    ax_dist[1].hist(centroid_data, bins=30, density=True, color='blue', alpha=0.5)
-                    ax_dist[1].set_title(f"Centroid Lag Dist{label_suffix}\nσ={centroid_std:.2f}")
-                    ax_dist[1].set_xlabel("Lag")
-                    ax_dist[1].grid(True)
+            if peak_data is not None:
+                ax.hist(peak_data, bins=30, density=True, color='orange', alpha=0.3,
+                        label=f"Peak lag dist{label_suffix}, σ={peak_std:.2f}", zorder=1)
+            if centroid_data is not None:
+                ax.hist(centroid_data, bins=30, density=True, color='blue', alpha=0.3,
+                        label=f"Centroid lag dist{label_suffix}, σ={centroid_std:.2f}", zorder=1)
 
-                fig_dist.suptitle("Lag Distributions")
-                fig_dist.tight_layout()
-                fig_dist.subplots_adjust(top=0.85)
-                fig_dist.show()
+        ax.set_xlabel("Time Lag")
+        ax.set_ylabel("Correlation Coefficient / Density")
+        ax.grid(True)
+        ax.legend()
+        plt.tight_layout()
+        plt.show()
