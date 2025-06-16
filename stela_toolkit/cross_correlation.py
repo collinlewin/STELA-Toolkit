@@ -52,8 +52,8 @@ class CrossCorrelation:
     centroid_threshold : float, optional
         Threshold (as a fraction of peak correlation) for defining the centroid lag region.
     
-    mode : {"regular", "interp"}, optional
-        CCF computation mode. Use "regular" for direct shifting, or "interp" for ICCF-based interpolation.
+    mode : {"regular", "lin_interp"}, optional
+        CCF computation mode. Use "regular" for direct shifting, or "lin_interp" for ICCF-based interpolation.
     
     rmax_threshold : float, optional
         Trials with a maximum correlation (rmax) below this threshold are discarded when using Monte Carlo.
@@ -108,7 +108,7 @@ class CrossCorrelation:
         if data1['type'] == 'model':
             if not hasattr(lc_or_model1, 'samples'):
                 raise ValueError("Model 1 must have generated samples via GP.sample().")
-            self.times = lc_or_model1.pred_times.numpy()
+            self.times = lc_or_model1.pred_times
             self.rates1 = lc_or_model1.samples
             self.is_model1 = True
         else:
@@ -118,7 +118,7 @@ class CrossCorrelation:
         if data2['type'] == 'model':
             if not hasattr(lc_or_model2, 'samples'):
                 raise ValueError("Model 2 must have generated samples via GP.sample().")
-            self.times = lc_or_model2.pred_times.numpy()
+            self.times = lc_or_model2.pred_times
             self.rates2 = lc_or_model2.samples
             self.is_model2 = True
         else:
@@ -142,7 +142,7 @@ class CrossCorrelation:
                 if self.rates1.shape[0] != self.rates2.shape[0]:
                     raise ValueError("Model sample shapes do not match.")
                 
-                peak_lags, centroid_lags, rmaxs = [], [], []
+                ccfs, self.peak_lags, self.centroid_lags, self.rmaxs = [], [], [], []
 
                 # Compute ccf and lags for each pair of realizations
                 for i in range(self.rates1.shape[0]):
@@ -150,13 +150,15 @@ class CrossCorrelation:
                     peak_lag, centroid_lag = self.find_peak_and_centroid(self.lags, ccf)
                     rmax = np.max(ccf)
 
-                    peak_lags.append(peak_lag)
-                    centroid_lags.append(centroid_lag)
-                    rmaxs.append(rmax)
+                    ccfs.append(ccf)
+                    self.peak_lags.append(peak_lag)
+                    self.centroid_lags.append(centroid_lag)
+                    self.rmaxs.append(rmax)
 
-                self.peak_lag = (np.mean(peak_lags), np.std(peak_lags))
-                self.centroid_lag = (np.mean(centroid_lags), np.std(centroid_lags))
-                self.rmax = (np.mean(rmaxs), np.std(rmaxs))
+                self.ccf = np.mean(ccfs, axis=0)
+                self.peak_lag = (np.mean(self.peak_lags), np.std(self.peak_lags))
+                self.centroid_lag = (np.mean(self.centroid_lags), np.std(self.centroid_lags))
+                self.rmax = (np.mean(self.rmaxs), np.std(self.rmaxs))
                     
             else:
                 self.ccf = self.compute_ccf(self.rates1, self.rates2)
@@ -342,7 +344,7 @@ class CrossCorrelation:
             r1_pert = np.random.normal(self.rates1, self.errors1)
             r2_pert = np.random.normal(self.rates2, self.errors2)
 
-            if self.mode == "interp":
+            if self.mode == "lin_interp":
                 interp1 = interp1d(self.times, r1_pert, bounds_error=False, fill_value=0.0)
                 interp2 = interp1d(self.times, r2_pert, bounds_error=False, fill_value=0.0)
                 ccf = []
@@ -403,38 +405,59 @@ class CrossCorrelation:
 
     def plot(self, show_mc=True):
         """
-        Plot the cross-correlation function and optional Monte Carlo lag distributions.
+        Plot the cross-correlation function and optional lag distributions.
 
-        Arguments
+        Parameters
         ----------
         show_mc : bool
-            Plots results of Monte Carlo peak and centroid lag distributions.
+            Whether to show lag distributions from GP samples or Monte Carlo trials.
         """
-
-        fig, ax = plt.subplots(1, 1, figsize=(7, 4))
+        fig, ax = plt.subplots(figsize=(8, 5))
         ax.plot(self.lags, self.ccf, label="CCF", color='black')
-        ax.axvline(self.peak_lag, color='red', linestyle='--',
-                   label=f"Peak lag = {self.peak_lag:.2f}")
-        ax.axvline(self.centroid_lag, color='blue', linestyle=':',
-                   label=f"Centroid lag = {self.centroid_lag:.2f}")
-        ax.set_xlabel("Lag (same unit as input)")
-        ax.set_ylabel("Correlation coefficient")
+
+        if self.is_model1 and self.is_model2:
+            peak_lag = self.peak_lag[0]
+            peak_std = self.peak_lag[1]
+            centroid_lag = self.centroid_lag[0]
+            centroid_std = self.centroid_lag[1]
+            label_suffix = " (GP samples)"
+        else:
+            peak_lag = self.peak_lag
+            centroid_lag = self.centroid_lag
+            peak_std = centroid_std = None
+            label_suffix = ""
+
+        ax.axvline(peak_lag, color='orange', linestyle='--',
+                label=f"Peak lag = {peak_lag:.2f}")
+        ax.axvline(centroid_lag, color='blue', linestyle=':',
+                label=f"Centroid lag = {centroid_lag:.2f}")
+
+        ax.set_xlabel("Time Lag")
+        ax.set_ylabel("Correlation Coefficient")
         ax.grid(True)
+
+        # Overlay lag distributions
+        if show_mc:
+            peak_data = None
+            centroid_data = None
+
+            if self.peak_lags_mc is not None:
+                peak_data = self.peak_lags_mc
+                centroid_data = self.centroid_lags_mc
+                label_suffix = " (MC)"
+                peak_std = np.std(peak_data)
+                centroid_std = np.std(centroid_data)
+            elif self.is_model1 and self.is_model2:
+                peak_data = self.peak_lags
+                centroid_data = self.centroid_lags
+
+            if peak_data is not None:
+                ax.hist(peak_data, bins=30, density=True, color='orange', alpha=0.35,
+                        label=f"Peak lag dist{label_suffix}, σ={peak_std:.2f}", zorder=1)
+            if centroid_data is not None:
+                ax.hist(centroid_data, bins=30, density=True, color='blue', alpha=0.3,
+                        label=f"Centroid lag dist{label_suffix}, σ={centroid_std:.2f}", zorder=1)
+
         ax.legend()
-
-        if show_mc and self.peak_lags_mc is not None:
-            fig_mc, ax_mc = plt.subplots(1, 2, figsize=(10, 4))
-            ax_mc[0].hist(self.peak_lags_mc, bins=30, color='red', alpha=0.7)
-            ax_mc[0].set_title("Peak Lag Distribution (MC)")
-            ax_mc[0].set_xlabel("Lag")
-            ax_mc[0].set_ylabel("Count")
-            ax_mc[0].grid(True)
-
-            ax_mc[1].hist(self.centroid_lags_mc, bins=30, color='blue', alpha=0.7)
-            ax_mc[1].set_title("Centroid Lag Distribution (MC)")
-            ax_mc[1].set_xlabel("Lag")
-            ax_mc[1].set_ylabel("Count")
-            ax_mc[1].grid(True)
-
         plt.tight_layout()
         plt.show()
