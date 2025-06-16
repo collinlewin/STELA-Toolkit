@@ -218,27 +218,32 @@ class PowerSpectrum:
 
         Supported models:
         - 'powerlaw':  
-          $$
-          P(f) = N \\cdot f^{-\\alpha}
-          $$
+        $$
+        P(f) = N \\cdot f^{-\\alpha}
+        $$
 
         - 'powerlaw_lorentzian':  
-          $$
-          P(f) = N \\cdot f^{-\\alpha} + \\frac{R^2 \\cdot \\Delta / \\pi}{(f - f_0)^2 + \\Delta^2}
-          $$  
-          where \( R \) is the fractional rms amplitude of the QPO, \( f_0 \) is the central frequency,
-          and \( \\Delta \) is the half-width at half-maximum (HWHM) of the Lorentzian.
+        $$
+        P(f) = N \\cdot f^{-\\alpha} + \\frac{R^2 \\cdot \\Delta / \\pi}{(f - f_0)^2 + \\Delta^2}
+        $$  
+        where \( R \) is the fractional rms amplitude of the QPO, \( f_0 \) is the central frequency,
+        and \( \\Delta \) is the half-width at half-maximum (HWHM) of the Lorentzian.
+
+        - 'bending_powerlaw':  
+        $$
+        P(f) = N \left[1 + \left(\frac{f}{f_{\\text{bend}}}\\right)^{\\alpha_{\\text{high}} - \\alpha_{\\text{low}}} \\right]^{-1} f^{-\\alpha_{\\text{low}}}
+        $$
 
         The best-fit model type and parameters are stored as class attributes:
         - self.model_type : str  
-            Name of the fitted model ('powerlaw' or 'powerlaw_lorentzian')
+            Name of the fitted model.
         - self.model_params : array-like  
             Optimized model parameters.
 
         Parameters
         ----------
         model_type : str, optional  
-            Type of model to fit: 'powerlaw' or 'powerlaw_lorentzian' (default: 'powerlaw').
+            Type of model to fit: 'powerlaw', 'powerlaw_lorentzian', or 'bending_powerlaw' (default: 'powerlaw').
 
         initial_params : list of float, optional  
             Initial guess for the model parameters. If None, reasonable defaults are chosen.
@@ -250,7 +255,7 @@ class PowerSpectrum:
             Maximum number of gradient descent steps to run (default: 5000).
 
         tol : float, optional  
-            Convergence tolerance on the change in negative log-likelihood (default: 1e-8).
+            Convergence tolerance on the change in negative log-likelihood (default: 1e-6).
 
         Returns
         -------
@@ -259,7 +264,6 @@ class PowerSpectrum:
             - 'params': array-like, best-fit model parameters  
             - 'log_likelihood': float, maximum log-likelihood value at the solution
         """
-
         if self.freq_widths is not None:
             dof = 2 * self.count_frequencies_in_bins()
         else:
@@ -295,6 +299,19 @@ class PowerSpectrum:
             log_delta = torch.tensor(np.log(initial_params[4]), dtype=torch.float64, requires_grad=True)
             params = [log_N, alpha, log_R, f0, log_delta]
 
+        elif model_type == 'bending_powerlaw':
+            if initial_params is None:
+                alpha_low_init = 1.5
+                alpha_high_init = 2.5
+                fbend_init = np.median(self.freqs)
+                initial_params = [N_init, alpha_low_init, alpha_high_init, fbend_init]
+
+            log_N = torch.tensor(np.log(initial_params[0]), dtype=torch.float64, requires_grad=True)
+            alpha_low = torch.tensor(initial_params[1], dtype=torch.float64, requires_grad=True)
+            alpha_high = torch.tensor(initial_params[2], dtype=torch.float64, requires_grad=True)
+            log_fbend = torch.tensor(np.log(initial_params[3]), dtype=torch.float64, requires_grad=True)
+            params = [log_N, alpha_low, alpha_high, log_fbend]
+
         else:
             raise ValueError(f"Unsupported model type '{model_type}'.")
 
@@ -303,17 +320,21 @@ class PowerSpectrum:
 
         for _ in range(max_iter):
             optimizer.zero_grad()
-
             N = torch.exp(log_N)
-            mu = N * freqs ** (-alpha)
 
-            if model_type == 'powerlaw_lorentzian':
+            if model_type == 'powerlaw':
+                mu = N * freqs ** (-alpha)
+
+            elif model_type == 'powerlaw_lorentzian':
                 R = torch.exp(log_R)
                 delta = torch.exp(log_delta)
                 lorentz = (R**2 * delta / np.pi) / ((freqs - f0)**2 + delta**2)
-                mu = mu + lorentz
+                mu = N * freqs ** (-alpha) + lorentz
 
-            mu = torch.clamp(mu, min=1e-12)
+            elif model_type == 'bending_powerlaw':
+                fbend = torch.exp(log_fbend)
+                bend_factor = (1 + (freqs / fbend) ** (alpha_high - alpha_low)) ** (-1)
+                mu = N * bend_factor * freqs ** (-alpha_low)
 
             logL = (
                 k * torch.log(k / mu)
@@ -332,13 +353,20 @@ class PowerSpectrum:
         self.model_type = model_type
         if model_type == 'powerlaw':
             self.model_params = [torch.exp(log_N).item(), alpha.item()]
-        else:
+        elif model_type == 'powerlaw_lorentzian':
             self.model_params = [
                 torch.exp(log_N).item(),
                 alpha.item(),
                 torch.exp(log_R).item(),
                 f0.item(),
                 torch.exp(log_delta).item()
+            ]
+        elif model_type == 'bending_powerlaw':
+            self.model_params = [
+                torch.exp(log_N).item(),
+                alpha_low.item(),
+                alpha_high.item(),
+                torch.exp(log_fbend).item()
             ]
 
         return {
@@ -387,6 +415,11 @@ class PowerSpectrum:
                 N, alpha, R, f0, delta = params
                 lorentz = (R**2 * delta / np.pi) / ((freqs - f0)**2 + delta**2)
                 model_vals = N * freqs**(-alpha) + lorentz
+            
+            elif self.model_type == 'bending_powerlaw':
+                N, alpha_low, alpha_high, fbend = params
+                bend_factor = (1 + (freqs / fbend)**(alpha_high - alpha_low))**(-1)
+                model_vals = N * bend_factor * freqs**(-alpha_low)
 
             ax.plot(freqs, model_vals, linestyle='--', color='orange')
 
