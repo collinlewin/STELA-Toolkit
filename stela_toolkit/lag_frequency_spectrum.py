@@ -282,6 +282,7 @@ class LagFrequencySpectrum:
         # Lag-frequency spectrum
         ax1.errorbar(self.freqs, self.lags, xerr=self.freq_widths, yerr=self.lag_errors,
                     fmt='o', color='black', ms=3, lw=1.5)
+        ax1.axhline(y=0, color='black', linestyle='--', linewidth=1)
         ax1.set_xscale(xscale)
         ax1.set_yscale(yscale)
         ax1.set_ylabel(ylabel, fontsize=12)
