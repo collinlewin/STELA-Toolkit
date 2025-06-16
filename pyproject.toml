@@ -1,6 +1,6 @@
 [project]
 name = "stela-toolkit"
-version = "0.4.2"
+version = "0.4.3"
 description = "A Python package for interpolating astrophysical light curves using Gaussian Processes (more ML models to come!) in order to compute frequency-domain and standard time domain data products."
 authors = [
     { name = "Collin Lewin", email = "clewin@mit.edu" }
