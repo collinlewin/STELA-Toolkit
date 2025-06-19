@@ -1287,8 +1287,8 @@ Poisson or Gaussian noise models.</p>
               <div class="doc-md-description">
                 <p>Type of noise to add. Options are:</p>
 <ul>
-<li>"Poisson": adds Poisson-distributed noise with optional background</li>
-<li>"Gaussian": adds Gaussian noise using <code>gaussian_frac_err</code></li>
+<li>"poisson": adds Poisson-distributed noise with optional background</li>
+<li>"gaussian": adds Gaussian noise using <code>gaussian_frac_err</code></li>
 <li>None: no noise is added</li>
 </ul>
               </div>
@@ -1306,7 +1306,7 @@ Poisson or Gaussian noise models.</p>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>Fractional error to use when <code>add_noise="Gaussian"</code>.</p>
+                <p>Fractional error to use when <code>add_noise="gaussian"</code>.</p>
               </div>
             </td>
             <td>
@@ -2018,12 +2018,12 @@ Poisson or Gaussian noise models.</p>
 <span class="sd">    add_noise : str or None, optional</span>
 <span class="sd">        Type of noise to add. Options are:</span>
 
-<span class="sd">        - &quot;Poisson&quot;: adds Poisson-distributed noise with optional background</span>
-<span class="sd">        - &quot;Gaussian&quot;: adds Gaussian noise using `gaussian_frac_err`</span>
+<span class="sd">        - &quot;poisson&quot;: adds Poisson-distributed noise with optional background</span>
+<span class="sd">        - &quot;gaussian&quot;: adds Gaussian noise using `gaussian_frac_err`</span>
 <span class="sd">        - None: no noise is added</span>
 
 <span class="sd">    gaussian_frac_err : float or None, optional</span>
-<span class="sd">        Fractional error to use when `add_noise=&quot;Gaussian&quot;`.</span>
+<span class="sd">        Fractional error to use when `add_noise=&quot;gaussian&quot;`.</span>
 
 <span class="sd">    bkg_rate : float, optional</span>
 <span class="sd">        Background count rate (used in Poisson noise simulation). Default is 0.</span>
@@ -2108,7 +2108,7 @@ Poisson or Gaussian noise models.</p>
                     <span class="n">rates_lagged</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_poisson_noise</span><span class="p">(</span><span class="n">rates_lagged</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">time_grid</span><span class="p">,</span>
                                                             <span class="n">bkg_rate</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">bkg_rate</span><span class="p">)</span>
 
-            <span class="k">elif</span> <span class="n">add_noise</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;gaussian&quot;</span><span class="p">:</span>
+            <span class="k">elif</span> <span class="n">add_noise</span> <span class="o">==</span> <span class="s2">&quot;gaussian&quot;</span><span class="p">:</span>
                 <span class="n">rates</span><span class="p">,</span> <span class="n">errors</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_gaussian_noise</span><span class="p">(</span><span class="n">rates</span><span class="p">,</span> <span class="n">frac_err</span><span class="o">=</span><span class="n">gaussian_frac_err</span><span class="p">)</span>
                 <span class="k">if</span> <span class="n">rates_lagged</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                     <span class="n">rates_lagged</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_gaussian_noise</span><span class="p">(</span><span class="n">rates_lagged</span><span class="p">,</span> <span class="n">frac_err</span><span class="o">=</span><span class="n">gaussian_frac_err</span><span class="p">)</span>
