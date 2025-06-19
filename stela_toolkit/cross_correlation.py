@@ -137,31 +137,31 @@ class CrossCorrelation:
             self.dt = np.diff(self.times)[0] / 2 if dt=="auto" else dt
             self.lags = np.arange(self.min_lag, self.max_lag + self.dt, self.dt)
 
-        if self.is_model1 and self.is_model2:
-            # Need to check further pipeline to see if this is actually needed
-            if self.rates1.shape[0] != self.rates2.shape[0]:
-                raise ValueError("Model sample shapes do not match.")
-            
-            ccfs, self.peak_lags, self.centroid_lags, self.rmaxs = [], [], [], []
-
-            # Compute ccf and lags for each pair of realizations
-            for i in range(self.rates1.shape[0]):
-                ccf = self.compute_ccf(self.rates1[i], self.rates2[i])
-                peak_lag, centroid_lag = self.find_peak_and_centroid(self.lags, ccf)
-                rmax = np.max(ccf)
-
-                ccfs.append(ccf)
-                self.peak_lags.append(peak_lag)
-                self.centroid_lags.append(centroid_lag)
-                self.rmaxs.append(rmax)
-
-            # Consider use of CIs
-            self.ccf = np.mean(ccfs, axis=0)
-            self.peak_lag = (np.mean(self.peak_lags), np.std(self.peak_lags))
-            self.centroid_lag = (np.mean(self.centroid_lags), np.std(self.centroid_lags))
-            self.rmax = (np.mean(self.rmaxs), np.std(self.rmaxs))
+            if self.is_model1 and self.is_model2:
+                # Need to check further pipeline to see if this is actually needed
+                if self.rates1.shape[0] != self.rates2.shape[0]:
+                    raise ValueError("Model sample shapes do not match.")
                 
-        elif "lin_interp":
+                ccfs, self.peak_lags, self.centroid_lags, self.rmaxs = [], [], [], []
+
+                # Compute ccf and lags for each pair of realizations
+                for i in range(self.rates1.shape[0]):
+                    ccf = self.compute_ccf(self.rates1[i], self.rates2[i])
+                    peak_lag, centroid_lag = self.find_peak_and_centroid(self.lags, ccf)
+                    rmax = np.max(ccf)
+
+                    ccfs.append(ccf)
+                    self.peak_lags.append(peak_lag)
+                    self.centroid_lags.append(centroid_lag)
+                    self.rmaxs.append(rmax)
+
+                # Consider use of CIs
+                self.ccf = np.mean(ccfs, axis=0)
+                self.peak_lag = (np.mean(self.peak_lags), np.std(self.peak_lags))
+                self.centroid_lag = (np.mean(self.centroid_lags), np.std(self.centroid_lags))
+                self.rmax = (np.mean(self.rmaxs), np.std(self.rmaxs))
+                
+        elif mode == "lin_interp":
             self.dt = np.mean(np.diff(self.times)) / 5 if dt=="auto" else dt
             self.lags = np.arange(self.min_lag, self.max_lag + self.dt, self.dt)
             self.ccf = self.compute_ccf_interp()
