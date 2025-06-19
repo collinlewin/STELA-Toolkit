@@ -10,21 +10,27 @@ class CrossCorrelation:
 
     This class supports three primary use cases:
 
-    1. **Regularly sampled `LightCurve` objects**  
-       Computes the CCF directly using Pearson correlation across lag values. Requires aligned time grids.
+    1. **Regularly sampled `LightCurve` objects (`mode="regular"`)**  
+       Computes the CCF directly using array-based shifting of flux values.
+       This mode requires both light curves to be sampled on the same time grid.
 
-    2. **Irregularly sampled `LightCurve` objects**  
-       Uses the interpolated cross-correlation method (ICCF; Gaskell & Peterson 1987), which linearly interpolates
-       one light curve onto the other’s grid to estimate correlations across lags despite uneven sampling.
+    2. **Irregularly sampled `LightCurve` objects (`mode="lin_interp"`)**  
+       Uses the interpolated cross-correlation function (ICCF; Gaskell & Peterson 1987),
+       which linearly interpolates each light curve onto the other's time grid
+       to evaluate the correlation across lags. This supports fully independent time arrays.
 
     3. **`GaussianProcess` models**  
-       If both inputs are trained GP models with sampled realizations (via `.sample()`), STELA computes the CCF for each
-       realization pair, then averages the resulting peak and centroid lags. The final outputs are returned as tuples:
-       `(mean, standard deviation)` for peak lag, centroid lag, and maximum correlation (rmax).
-       
-       If samples have not yet been generated, 1000 realizations will be drawn automatically on a 1000-point time grid.
+       If both inputs are trained GP models with sampled realizations (via `.sample()`),
+       the CCF is computed for each realization pair and averaged.
+       Outputs in this case include the mean and standard deviation of the peak lag,
+       centroid lag, and maximum correlation (`rmax`).
+       This mode currently supports only `mode="regular"`.
 
-    Additionally, optional Monte Carlo resampling is available to assess lag uncertainties from observational errors.
+    Optionally, Monte Carlo resampling can be used to estimate uncertainties on lag measurements.
+    This uses:
+        - Random Subset Selection (RSS) with replacement
+        - Flux Randomization (FR) via Gaussian noise
+    and is only available when using `mode="lin_interp"`.
 
     Parameters
     ----------
@@ -35,13 +41,13 @@ class CrossCorrelation:
         Second input light curve or trained GP model.
         
     mode : {"regular", "lin_interp"}, optional
-        CCF computation mode. Use "regular" for direct shifting, or "lin_interp" for ICCF-based interpolation.
+        CCF computation mode. Use "regular" for array-based shifting, or "lin_interp" for ICCF-based interpolation.
     
     monte_carlo : bool, optional
-        Whether to estimate lag uncertainties using Monte Carlo resampling.
+        Whether to estimate lag uncertainties using Monte Carlo resampling (RSS + FR). Only supported with lin_interp mode.
     
     n_trials : int, optional
-        Number of Monte Carlo trials.
+        Number of Monte Carlo trials (default: 1000).
     
     min_lag : float or "auto", optional
         Minimum lag to evaluate. If "auto", set to `-duration / 2`.
@@ -50,7 +56,8 @@ class CrossCorrelation:
         Maximum lag to evaluate. If "auto", set to `+duration / 2`.
     
     dt : float or "auto", optional
-        Time step for lag evaluation. If "auto", set to 1/5 of the mean sampling interval.
+        Lag grid spacing. If "auto", uses half the native time resolution in "regular" mode,
+        and 1/3 the mean sampling interval in "lin_interp" mode.
     
     centroid_threshold : float, optional
         Threshold (as a fraction of peak correlation) for defining the centroid lag region.
@@ -87,7 +94,8 @@ class CrossCorrelation:
     centroid_lag_ci : tuple or None
         68% confidence interval on centroid lag from MC trials.
     """
-    
+
+
     def __init__(self,
                  lc_or_model1,
                  lc_or_model2,
@@ -134,14 +142,20 @@ class CrossCorrelation:
         self.max_lag = duration / 2 if max_lag=="auto" else max_lag
 
         if mode == "regular":
+            times1 = data1['data'][0]
+            times2 = data2['data'][0]
+
+            # require the same time grid for regular
+            if not np.allclose(times1, times2, rtol=1e-10, atol=1e-12):
+                raise ValueError(
+                    "In 'regular' mode, both light curves must have the same time array.\n"
+                    "Use 'lin_interp' mode for irregular or mismatched time sampling."
+                )
+            
             self.dt = np.diff(self.times)[0] / 2 if dt=="auto" else dt
             self.lags = np.arange(self.min_lag, self.max_lag + self.dt, self.dt)
 
             if self.is_model1 and self.is_model2:
-                # Need to check further pipeline to see if this is actually needed
-                if self.rates1.shape[0] != self.rates2.shape[0]:
-                    raise ValueError("Model sample shapes do not match.")
-                
                 ccfs, self.peak_lags, self.centroid_lags, self.rmaxs = [], [], [], []
 
                 # Compute ccf and lags for each pair of realizations
@@ -162,9 +176,16 @@ class CrossCorrelation:
                 self.rmax = (np.mean(self.rmaxs), np.std(self.rmaxs))
                 
         elif mode == "lin_interp":
-            self.dt = np.mean(np.diff(self.times)) / 5 if dt=="auto" else dt
+            if self.is_model1 or self.is_model2:
+                raise NotImplementedError("GP models are not yet supported with lin_interp mode.")
+
+            self.times1 = data1['data'][0]
+            self.times2 = data2['data'][0]
+
+            self.dt = np.mean([np.mean(np.diff(self.times1)), np.mean(np.diff(self.times2))]) / 3 if dt == "auto" else dt
             self.lags = np.arange(self.min_lag, self.max_lag + self.dt, self.dt)
-            self.ccf = self.compute_ccf_interp()
+
+            self.ccf = self.compute_ccf_interp(self.times1, self.rates1, self.times2, self.rates2)
 
             self.rmax = np.max(self.ccf)
             self.peak_lag, self.centroid_lag = self.find_peak_and_centroid(self.lags, self.ccf)
@@ -176,7 +197,7 @@ class CrossCorrelation:
             if np.all(self.errors1 == 0) or np.all(self.errors2 == 0):
                 print("Skipping Monte Carlo: zero errors for all points in one or both light curves.")
             else:
-                self.peak_lags_mc, self.centroid_lags_mc = self.run_monte_carlo()
+                self.peak_lags_mc, self.centroid_lags_mc = self.run_monte_carlo_rss()
                 self.compute_confidence_intervals()
 
     def compute_ccf(self, rates1, rates2):
@@ -222,6 +243,49 @@ class CrossCorrelation:
                 ccf.append(r)
 
         return np.array(ccf)
+    
+
+    def compute_ccf_interp(self, times1, rates1, times2, rates2):
+        """
+        Compute the cross-correlation function using linear interpolation on both light curves.
+
+        Parameters
+        ----------
+        times1 : ndarray
+            Time values for the first light curve.
+        rates1 : ndarray
+            Flux values for the first light curve.
+        times2 : ndarray
+            Time values for the second light curve.
+        rates2 : ndarray
+            Flux values for the second light curve.
+
+        Returns
+        -------
+        ccf : ndarray
+            Cross-correlation values at each lag.
+        """
+        interp1 = interp1d(times1, rates1, bounds_error=False, fill_value=0.0)
+        interp2 = interp1d(times2, rates2, bounds_error=False, fill_value=0.0)
+        ccf = []
+
+        for lag in self.lags:
+            t_shift1 = times1 + lag
+            t_shift2 = times2 - lag
+
+            mask1 = (t_shift1 >= times2[0]) & (t_shift1 <= times2[-1])
+            mask2 = (t_shift2 >= times1[0]) & (t_shift2 <= times1[-1])
+
+            if np.sum(mask1) < 2 or np.sum(mask2) < 2:
+                ccf.append(0.0)
+                continue
+
+            r1 = np.corrcoef(rates1[mask1], interp2(t_shift1[mask1]))[0, 1]
+            r2 = np.corrcoef(rates2[mask2], interp1(t_shift2[mask2]))[0, 1]
+            ccf.append((r1 + r2) / 2)
+
+        return np.array(ccf)
+
 
     def find_peak_and_centroid(self, lags, ccf):
         """
@@ -285,90 +349,70 @@ class CrossCorrelation:
 
         return peak_lag, centroid_lag
     
-    def compute_ccf_interp(self):
-        """
-        Compute the cross-correlation function using symmetric linear interpolation.
-
-        Returns
-        -------
-        ccf : ndarray
-            Interpolated cross-correlation values for each lag.
-        """
-
-        interp1 = interp1d(self.times, self.rates1, bounds_error=False, fill_value=0.0)
-        interp2 = interp1d(self.times, self.rates2, bounds_error=False, fill_value=0.0)
-        ccf = []
-
-        for lag in self.lags:
-            t_shift1 = self.times + lag
-            t_shift2 = self.times - lag
-
-            mask1 = (t_shift1 >= self.times[0]) & (t_shift1 <= self.times[-1])
-            mask2 = (t_shift2 >= self.times[0]) & (t_shift2 <= self.times[-1])
-
-            if np.sum(mask1) < 2 or np.sum(mask2) < 2:
-                ccf.append(0.0)
-                continue
-
-            r1 = np.corrcoef(self.rates1[mask1], interp2(t_shift1[mask1]))[0, 1]
-            r2 = np.corrcoef(self.rates2[mask2], interp1(t_shift2[mask2]))[0, 1]
-            ccf.append((r1 + r2) / 2)
-
-        return np.array(ccf)
 
     def run_monte_carlo(self):
         """
-        Run Monte Carlo simulations to estimate lag uncertainties.
+        Run Monte Carlo simulations using RSS (only if mode='lin_interp') + FR to estimate the lag uncertainties.
 
-        Perturbs input light curves based on their errors and computes peak and centroid
-        lags for each realization.
+        Each trial performs:
+
+        - Random Subset Selection (RSS): Resample with replacement from each light curve
+            - RSS can only be used when using linear interpolation, for which the time arrays do not need to be the same.
+        - Flux Randomization (FR): Add Gaussian noise based on measurement errors
+        - Discard trials with low correlation (if rmax_threshold is set)
 
         Returns
         -------
         peak_lags : ndarray
-            Peak lag values from all trials.
-        
-        centroid_lags : ndarray
-            Centroid lag values from all trials.
-        """
+            Peak lag values from successful trials.
 
+        centroid_lags : ndarray
+            Centroid lag values from successful trials.
+        """
         peak_lags = []
         centroid_lags = []
 
+        n_points = len(self.times)
+
         for _ in range(self.n_trials):
-            r1_pert = np.random.normal(self.rates1, self.errors1)
-            r2_pert = np.random.normal(self.rates2, self.errors2)
+            # Random subset selection
+            if self.mode == 'lin_interp':
+                idx1 = np.random.randint(0, n_points, n_points)
+                unique1, counts1 = np.unique(idx1, return_counts=True)
+                times1 = self.times[unique1]
+                rates1 = self.rates1[unique1]
+                errors1 = self.errors1[unique1] / np.sqrt(counts1) # reweighting errors based on frequency similar to bootstrap
 
-            if self.mode == "lin_interp":
-                interp1 = interp1d(self.times, r1_pert, bounds_error=False, fill_value=0.0)
-                interp2 = interp1d(self.times, r2_pert, bounds_error=False, fill_value=0.0)
-                ccf = []
+                idx2 = np.random.randint(0, n_points, n_points)
+                unique2, counts2 = np.unique(idx2, return_counts=True)
+                times2 = self.times[unique2]
+                rates2 = self.rates2[unique2]
+                errors2 = self.errors2[unique2] / np.sqrt(counts2)
 
-                for lag in self.lags:
-                    t_shift1 = self.times + lag
-                    t_shift2 = self.times - lag
-
-                    mask1 = (t_shift1 >= self.times[0]) & (t_shift1 <= self.times[-1])
-                    mask2 = (t_shift2 >= self.times[0]) & (t_shift2 <= self.times[-1])
-
-                    if np.sum(mask1) < 2 or np.sum(mask2) < 2:
-                        ccf.append(0.0)
-                        continue
-
-                    r1 = np.corrcoef(r1_pert[mask1], interp2(t_shift1[mask1]))[0, 1]
-                    r2 = np.corrcoef(r2_pert[mask2], interp1(t_shift2[mask2]))[0, 1]
-                    ccf_val = (r1 + r2) / 2
-                    ccf.append(ccf_val)
-
-                ccf = np.array(ccf)
-
+                sort1 = np.argsort(times1)
+                sort2 = np.argsort(times2)
+                times1, rates1, errors1 = times1[sort1], rates1[sort1], errors1[sort1]
+                times2, rates2, errors2 = times2[sort2], rates2[sort2], errors2[sort2]
             else:
-                ccf = self.compute_ccf(r1_pert, r2_pert)
+                rates1, errors1 = self.rates1, self.errors1
+                rates2, errors2 = self.rates2, self.errors2
 
-            if np.max(ccf) < self.rmax_threshold:
+            # Flux randomization
+            perturbed1 = np.random.normal(rates1, errors1)
+            perturbed2 = np.random.normal(rates2, errors2)
+
+            # Compute ccf
+            if self.mode == "lin_interp":
+                ccf = self.compute_ccf_interp(times1, perturbed1, times2, perturbed2)
+            else:
+                ccf = self.compute_ccf(perturbed1, perturbed2)
+
+            # Rmax threshold filter
+            peak, centroid = self.find_peak_and_centroid(self.lags, ccf)
+
+            if np.max(ccf) < self.rmax_threshold or np.isnan(peak) or np.isnan(centroid):
                 continue
 
-            peak, centroid = self.find_peak_and_centroid(self.lags, ccf)
             peak_lags.append(peak)
             centroid_lags.append(centroid)
 
