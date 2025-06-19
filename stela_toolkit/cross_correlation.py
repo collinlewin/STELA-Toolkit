@@ -1,5 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
+from scipy.interpolate import interp1d
 from ._check_inputs import _CheckInputs
 
 
@@ -12,7 +13,11 @@ class CrossCorrelation:
     1. **Regularly sampled `LightCurve` objects**  
        Computes the CCF directly using Pearson correlation across lag values. Requires aligned time grids.
 
-    2. **`GaussianProcess` models**  
+    2. **Irregularly sampled `LightCurve` objects**  
+       Uses the interpolated cross-correlation method (ICCF; Gaskell & Peterson 1987), which linearly interpolates
+       one light curve onto the other’s grid to estimate correlations across lags despite uneven sampling.
+
+    3. **`GaussianProcess` models**  
        If both inputs are trained GP models with sampled realizations (via `.sample()`), STELA computes the CCF for each
        realization pair, then averages the resulting peak and centroid lags. The final outputs are returned as tuples:
        `(mean, standard deviation)` for peak lag, centroid lag, and maximum correlation (rmax).
@@ -28,8 +33,11 @@ class CrossCorrelation:
     
     lc_or_model2 : LightCurve or GaussianProcess
         Second input light curve or trained GP model.
+        
+    mode : {"regular", "lin_interp"}, optional
+        CCF computation mode. Use "regular" for direct shifting, or "lin_interp" for ICCF-based interpolation.
     
-    run_monte_carlo : bool, optional
+    monte_carlo : bool, optional
         Whether to estimate lag uncertainties using Monte Carlo resampling.
     
     n_trials : int, optional
@@ -46,7 +54,7 @@ class CrossCorrelation:
     
     centroid_threshold : float, optional
         Threshold (as a fraction of peak correlation) for defining the centroid lag region.
-    
+
     rmax_threshold : float, optional
         Trials with a maximum correlation (rmax) below this threshold are discarded when using Monte Carlo.
 
@@ -84,7 +92,8 @@ class CrossCorrelation:
     def __init__(self,
                  lc_or_model1,
                  lc_or_model2,
-                 run_monte_carlo=False,
+                 mode="regular",
+                 monte_carlo=False,
                  n_trials=1000,
                  min_lag="auto",
                  max_lag="auto",
@@ -92,11 +101,13 @@ class CrossCorrelation:
                  centroid_threshold=0.8,
                  rmax_threshold=0.0):
 
-        data1 = _CheckInputs._check_lightcurve_or_model(lc_or_model1, req_reg_samp=True)
-        data2 = _CheckInputs._check_lightcurve_or_model(lc_or_model2, req_reg_samp=True)
+        req_reg_samp = True if mode=="regular" else False
+        data1 = _CheckInputs._check_lightcurve_or_model(lc_or_model1, req_reg_samp=req_reg_samp)
+        data2 = _CheckInputs._check_lightcurve_or_model(lc_or_model2, req_reg_samp=req_reg_samp)
 
         self.is_model1 = data1['type'] == 'model'
         self.is_model2 = data2['type'] == 'model'
+        self.monte_carlo = monte_carlo
 
         if self.is_model1:
             if not hasattr(lc_or_model1, 'samples'):
@@ -122,10 +133,12 @@ class CrossCorrelation:
         self.min_lag = -duration / 2 if min_lag=="auto" else min_lag
         self.max_lag = duration / 2 if max_lag=="auto" else max_lag
 
-        self.dt = np.diff(self.times)[0]
-        self.lags = np.arange(self.min_lag, self.max_lag + self.dt, self.dt)
+        if mode == "regular":
+            self.dt = np.diff(self.times)[0] / 2 if dt=="auto" else dt
+            self.lags = np.arange(self.min_lag, self.max_lag + self.dt, self.dt)
 
         if self.is_model1 and self.is_model2:
+            # Need to check further pipeline to see if this is actually needed
             if self.rates1.shape[0] != self.rates2.shape[0]:
                 raise ValueError("Model sample shapes do not match.")
             
@@ -142,17 +155,21 @@ class CrossCorrelation:
                 self.centroid_lags.append(centroid_lag)
                 self.rmaxs.append(rmax)
 
+            # Consider use of CIs
             self.ccf = np.mean(ccfs, axis=0)
             self.peak_lag = (np.mean(self.peak_lags), np.std(self.peak_lags))
             self.centroid_lag = (np.mean(self.centroid_lags), np.std(self.centroid_lags))
             self.rmax = (np.mean(self.rmaxs), np.std(self.rmaxs))
                 
-        self.peak_lags_mc = None
-        self.centroid_lags_mc = None
-        self.peak_lag_ci = None
-        self.centroid_lag_ci = None
+        else:
+            self.dt = np.mean(np.diff(self.times)) / 5 if dt=="auto" else dt
+            self.lags = np.arange(self.min_lag, self.max_lag + self.dt, self.dt)
+            self.ccf = self.compute_ccf_interp()
 
-        if run_monte_carlo:
+            self.rmax = np.max(self.ccf)
+            self.peak_lag, self.centroid_lag = self.find_peak_and_centroid(self.lags, self.ccf)
+
+        if monte_carlo:
             if np.all(self.errors1 == 0) or np.all(self.errors2 == 0):
                 print("Skipping Monte Carlo: zero errors for all points in one or both light curves.")
             else:
@@ -265,6 +282,36 @@ class CrossCorrelation:
 
         return peak_lag, centroid_lag
     
+    def compute_ccf_interp(self):
+        """
+        Compute the cross-correlation function using symmetric linear interpolation.
+
+        Returns
+        -------
+        ccf : ndarray
+            Interpolated cross-correlation values for each lag.
+        """
+
+        interp1 = interp1d(self.times, self.rates1, bounds_error=False, fill_value=0.0)
+        interp2 = interp1d(self.times, self.rates2, bounds_error=False, fill_value=0.0)
+        ccf = []
+
+        for lag in self.lags:
+            t_shift1 = self.times + lag
+            t_shift2 = self.times - lag
+
+            mask1 = (t_shift1 >= self.times[0]) & (t_shift1 <= self.times[-1])
+            mask2 = (t_shift2 >= self.times[0]) & (t_shift2 <= self.times[-1])
+
+            if np.sum(mask1) < 2 or np.sum(mask2) < 2:
+                ccf.append(0.0)
+                continue
+
+            r1 = np.corrcoef(self.rates1[mask1], interp2(t_shift1[mask1]))[0, 1]
+            r2 = np.corrcoef(self.rates2[mask2], interp1(t_shift2[mask2]))[0, 1]
+            ccf.append((r1 + r2) / 2)
+
+        return np.array(ccf)
 
     def run_monte_carlo(self):
         """
@@ -289,7 +336,31 @@ class CrossCorrelation:
             r1_pert = np.random.normal(self.rates1, self.errors1)
             r2_pert = np.random.normal(self.rates2, self.errors2)
 
-            ccf = self.compute_ccf(r1_pert, r2_pert)
+            if self.mode == "lin_interp":
+                interp1 = interp1d(self.times, r1_pert, bounds_error=False, fill_value=0.0)
+                interp2 = interp1d(self.times, r2_pert, bounds_error=False, fill_value=0.0)
+                ccf = []
+
+                for lag in self.lags:
+                    t_shift1 = self.times + lag
+                    t_shift2 = self.times - lag
+
+                    mask1 = (t_shift1 >= self.times[0]) & (t_shift1 <= self.times[-1])
+                    mask2 = (t_shift2 >= self.times[0]) & (t_shift2 <= self.times[-1])
+
+                    if np.sum(mask1) < 2 or np.sum(mask2) < 2:
+                        ccf.append(0.0)
+                        continue
+
+                    r1 = np.corrcoef(r1_pert[mask1], interp2(t_shift1[mask1]))[0, 1]
+                    r2 = np.corrcoef(r2_pert[mask2], interp1(t_shift2[mask2]))[0, 1]
+                    ccf_val = (r1 + r2) / 2
+                    ccf.append(ccf_val)
+
+                ccf = np.array(ccf)
+
+            else:
+                ccf = self.compute_ccf(r1_pert, r2_pert)
 
             if np.max(ccf) < self.rmax_threshold:
                 continue
@@ -358,15 +429,15 @@ class CrossCorrelation:
 
         # Overlay lag distributions on same plot
         if show_mc:
-            peak_data = None
-            centroid_data = None
-
-            if self.peak_lags_mc is not None:
+            # Need to modify this to use the confidence intervals from earlier.
+            # No else statement to ensure code execution for default show_mc even for no mc
+            if self.monte_carlo:
                 peak_data = self.peak_lags_mc
                 centroid_data = self.centroid_lags_mc
                 label_suffix = " (MC)"
                 peak_std = np.std(peak_data)
                 centroid_std = np.std(centroid_data)
+
             elif self.is_model1 and self.is_model2:
                 peak_data = self.peak_lags
                 centroid_data = self.centroid_lags
