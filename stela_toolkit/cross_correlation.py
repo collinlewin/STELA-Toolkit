@@ -88,7 +88,6 @@ class CrossCorrelation:
         68% confidence interval on centroid lag from MC trials.
     """
     
-    
     def __init__(self,
                  lc_or_model1,
                  lc_or_model2,
@@ -107,6 +106,7 @@ class CrossCorrelation:
 
         self.is_model1 = data1['type'] == 'model'
         self.is_model2 = data2['type'] == 'model'
+        self.mode = mode
         self.monte_carlo = monte_carlo
 
         if self.is_model1:
