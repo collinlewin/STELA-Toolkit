@@ -197,7 +197,7 @@ class CrossCorrelation:
             if np.all(self.errors1 == 0) or np.all(self.errors2 == 0):
                 print("Skipping Monte Carlo: zero errors for all points in one or both light curves.")
             else:
-                self.peak_lags_mc, self.centroid_lags_mc = self.run_monte_carlo_rss()
+                self.peak_lags_mc, self.centroid_lags_mc = self.run_monte_carlo()
                 self.compute_confidence_intervals()
 
     def compute_ccf(self, rates1, rates2):
