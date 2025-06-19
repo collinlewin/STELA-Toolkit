@@ -161,7 +161,7 @@ class CrossCorrelation:
             self.centroid_lag = (np.mean(self.centroid_lags), np.std(self.centroid_lags))
             self.rmax = (np.mean(self.rmaxs), np.std(self.rmaxs))
                 
-        else:
+        elif "lin_interp":
             self.dt = np.mean(np.diff(self.times)) / 5 if dt=="auto" else dt
             self.lags = np.arange(self.min_lag, self.max_lag + self.dt, self.dt)
             self.ccf = self.compute_ccf_interp()
@@ -169,6 +169,9 @@ class CrossCorrelation:
             self.rmax = np.max(self.ccf)
             self.peak_lag, self.centroid_lag = self.find_peak_and_centroid(self.lags, self.ccf)
 
+        else:
+            raise AttributeError(f"Invalid mode detected: {mode}. Valid modes are 'regular' and 'lin_interp'.")
+        
         if monte_carlo:
             if np.all(self.errors1 == 0) or np.all(self.errors2 == 0):
                 print("Skipping Monte Carlo: zero errors for all points in one or both light curves.")
@@ -431,6 +434,7 @@ class CrossCorrelation:
         if show_mc:
             # Need to modify this to use the confidence intervals from earlier.
             # No else statement to ensure code execution for default show_mc even for no mc
+            peak_data, centroid_data = None, None
             if self.monte_carlo:
                 peak_data = self.peak_lags_mc
                 centroid_data = self.centroid_lags_mc
