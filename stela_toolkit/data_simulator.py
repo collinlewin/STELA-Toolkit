@@ -46,12 +46,12 @@ class SimulateLightCurve:
     add_noise : str or None, optional
         Type of noise to add. Options are:
         
-        - "Poisson": adds Poisson-distributed noise with optional background
-        - "Gaussian": adds Gaussian noise using `gaussian_frac_err`
+        - "poisson": adds Poisson-distributed noise with optional background
+        - "gaussian": adds Gaussian noise using `gaussian_frac_err`
         - None: no noise is added
 
     gaussian_frac_err : float or None, optional
-        Fractional error to use when `add_noise="Gaussian"`.
+        Fractional error to use when `add_noise="gaussian"`.
 
     bkg_rate : float, optional
         Background count rate (used in Poisson noise simulation). Default is 0.
@@ -136,7 +136,7 @@ class SimulateLightCurve:
                     rates_lagged, _ = self.add_poisson_noise(rates_lagged, self.time_grid,
                                                             bkg_rate=self.bkg_rate)
 
-            elif add_noise.lower() == "gaussian":
+            elif add_noise == "gaussian":
                 rates, errors = self.add_gaussian_noise(rates, frac_err=gaussian_frac_err)
                 if rates_lagged is not None:
                     rates_lagged, _ = self.add_gaussian_noise(rates_lagged, frac_err=gaussian_frac_err)
